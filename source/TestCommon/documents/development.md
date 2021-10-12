@@ -4,8 +4,8 @@ Notes regarding the development of the NuGet package bundle `TestCommon`.
 
 The bundle contains the following packages:
 
-* Energinet.DataHub.Core.FunctionApp.TestCommon
-* Energinet.DataHub.Core.TestCommon
+* `Energinet.DataHub.Core.FunctionApp.TestCommon`
+* `Energinet.DataHub.Core.TestCommon`
 
 The packages contain reusable types, supporting the development and test of Energinet DataHub components.
 
@@ -13,7 +13,7 @@ The packages contain reusable types, supporting the development and test of Ener
 
 ## Setup local environment
 
-First, ensure you have followed any general setup of the developer environment for the Energinet DataHub.
+First, we must ensure we have followed any general setup of the developer environment for the Energinet DataHub.
 
 *TODO: Describe software prerequisites (Azurite + nvm + npm + Azure Core Functions Tools).*
 

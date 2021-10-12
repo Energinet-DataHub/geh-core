@@ -97,6 +97,10 @@ Consider using shorter project file names and folders (see TestCommon example), 
   </PropertyGroup>
 ```
 
+### XML documentation
+
+In all packages we should aim for documenting types using [XML documentation comments](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/).
+
 ## Preparations for a new release
 
 Only packages that has changes should be published as new versions.
