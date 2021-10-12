@@ -50,6 +50,7 @@ Here is an example of the package folder structure using the existing `TestCommo
     │   │  TestCommon.sln
     │   │
     │   ├───documents
+    │   │   │  development.md
     │   │   │  documentation.md
     │   │   │
     │   │   └───release-notes
