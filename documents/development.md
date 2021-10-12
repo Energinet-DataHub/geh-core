@@ -117,7 +117,7 @@ The NuGet packages must use [Semantic Versioning](https://semver.org/)
 The version format is:
 `<major>.<minor>.<patch>$(VersionSuffix)`
 
-Packaging a pre-release version can be done by ensuring the `$(VersionSuffix)` build variable is set to a value.
+Packaging a *prerelease* version can be done by ensuring the `$(VersionSuffix)` build variable is set to a value.
 
 The following example will use `-alpha-01` as version suffix:
 
@@ -163,7 +163,7 @@ Using e.g. Visual Studio, we can now install the local NuGet packages to other p
 
 1. Use local NuGet package.
 
-   Add NuGet packages as usual, but be sure to select the `LocalNuGet` as `Package source` to see the local packages.
+   Add NuGet packages as usual, but be sure to select the `LocalNuGet` as `Package source` to see the local packages. If the package is a prerelease we must also ensure to check `Include prerelease`, otherwise it will not show up on the list.
 
 For another walkthrough, see [How to test NuGet packages locally](http://www.stempowski.net/net-core/how-to-test-nuget-packages-locally/).
 
