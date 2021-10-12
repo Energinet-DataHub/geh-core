@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Tests.Fixtures
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
 {
     /// <summary>
     /// Only one Azurite process can be running at the same time.

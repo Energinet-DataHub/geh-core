@@ -17,7 +17,7 @@ using System.IO;
 using Squadron;
 using Squadron.AzureCloud;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Tests.Fixtures
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
 {
     public class ServiceBusListenerMockServiceBusOptions : AzureCloudServiceBusOptions
     {

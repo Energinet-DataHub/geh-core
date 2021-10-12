@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Database
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
 {
     /// <summary>
     /// An abstract database manager for creating a database for integration tests.

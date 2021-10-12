@@ -15,10 +15,10 @@
 using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using GreenEnergyHub.TestCommon.AutoFixture.Extensions;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Xunit;
 
-namespace GreenEnergyHub.TestCommon.Tests.Unit.AutoFixture
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture
 {
     public class AutoFixtureExtensionsTests
     {

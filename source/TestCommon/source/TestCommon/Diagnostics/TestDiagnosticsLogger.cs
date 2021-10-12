@@ -16,7 +16,7 @@ using System;
 using System.Diagnostics;
 using Xunit.Abstractions;
 
-namespace GreenEnergyHub.TestCommon.Diagnostics
+namespace Energinet.DataHub.Core.TestCommon.Diagnostics
 {
     /// <inheritdoc cref="ITestDiagnosticsLogger"/>
     public class TestDiagnosticsLogger : ITestDiagnosticsLogger

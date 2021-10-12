@@ -19,7 +19,7 @@ using Squadron;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Tests.Fixtures
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
 {
     public class ServiceBusListenerMockFixture : IAsyncLifetime
     {

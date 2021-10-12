@@ -16,7 +16,7 @@ using System;
 using System.Reflection;
 using AutoFixture.Kernel;
 
-namespace GreenEnergyHub.TestCommon.AutoFixture.Customizations
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Customizations
 {
     /// <summary>
     /// If creating a type <typeparamref name="TTypeToConstruct"/> using a constructor,

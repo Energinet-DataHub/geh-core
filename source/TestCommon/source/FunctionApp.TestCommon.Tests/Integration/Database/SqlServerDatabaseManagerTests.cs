@@ -14,12 +14,12 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using GreenEnergyHub.FunctionApp.TestCommon.Database;
-using GreenEnergyHub.FunctionApp.TestCommon.Tests.Fixtures;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Tests.Integration.Database
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Database
 {
     public class SqlServerDatabaseManagerTests
     {

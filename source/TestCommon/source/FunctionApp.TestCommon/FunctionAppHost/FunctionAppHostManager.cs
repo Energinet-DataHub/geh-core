@@ -19,9 +19,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using GreenEnergyHub.TestCommon.Diagnostics;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.FunctionAppHost
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
 {
     /// <summary>
     /// A manager for starting and stopping the Azure Functions host to support integration

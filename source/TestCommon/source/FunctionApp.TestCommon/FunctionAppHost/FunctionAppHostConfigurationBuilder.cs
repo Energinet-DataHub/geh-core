@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.FunctionAppHost
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
 {
     public class FunctionAppHostConfigurationBuilder
     {

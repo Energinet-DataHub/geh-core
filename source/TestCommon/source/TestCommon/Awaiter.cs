@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit.Sdk;
 
-namespace GreenEnergyHub.TestCommon
+namespace Energinet.DataHub.Core.TestCommon
 {
     // TODO: Would rather have something like the following: https://stackoverflow.com/questions/29089417/c-sharp-wait-until-condition-is-true
     public static class Awaiter

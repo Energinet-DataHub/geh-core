@@ -15,9 +15,9 @@
 using System;
 using System.Linq;
 using AutoFixture;
-using GreenEnergyHub.TestCommon.AutoFixture.Customizations;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Customizations;
 
-namespace GreenEnergyHub.TestCommon.AutoFixture.Extensions
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions
 {
     /// <summary>
     /// Fluent API for configuring object builder to use a given value for a constructor parameter.

@@ -15,7 +15,7 @@
 using System;
 using Azure.Messaging.ServiceBus;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
 {
     /// <summary>
     /// Actually service bus listener mock extensions, but we want to separate the fluent API

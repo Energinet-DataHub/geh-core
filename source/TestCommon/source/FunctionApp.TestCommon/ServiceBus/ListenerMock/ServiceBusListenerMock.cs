@@ -20,9 +20,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using GreenEnergyHub.TestCommon.Diagnostics;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
 {
     /// <summary>
     /// Simple Service Bus listener mock with fluent API for setup.

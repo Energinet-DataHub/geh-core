@@ -16,7 +16,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.FunctionAppHost
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
 {
     /// <summary>
     /// Can be used to wait for a Host to start within a process,

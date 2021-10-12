@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
 {
     /// <summary>
     /// Actually service bus listener mock extensions, but we want to separate the fluent API

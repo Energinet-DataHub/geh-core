@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.FunctionAppHost
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
 {
     /// <summary>
     /// Settings used by <see cref="FunctionAppHostManager"/> when starting the

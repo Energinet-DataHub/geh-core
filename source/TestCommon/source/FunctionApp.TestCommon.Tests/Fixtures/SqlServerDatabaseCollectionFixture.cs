@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Tests.Fixtures
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
 {
     /// <summary>
     /// A xUnit collection fixture for ensuring tests don't run in parallel.

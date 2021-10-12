@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon
 {
     public static class IConfigurationExtensions
     {

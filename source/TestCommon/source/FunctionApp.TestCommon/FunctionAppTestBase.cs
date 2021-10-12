@@ -16,7 +16,7 @@ using System;
 using System.Diagnostics;
 using Xunit.Abstractions;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon
 {
     [DebuggerStepThrough]
     public abstract class FunctionAppTestBase<TFixture> : IDisposable

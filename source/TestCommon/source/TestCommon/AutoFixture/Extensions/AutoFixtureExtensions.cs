@@ -14,7 +14,7 @@
 
 using AutoFixture;
 
-namespace GreenEnergyHub.TestCommon.AutoFixture.Extensions
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions
 {
     public static class AutoFixtureExtensions
     {

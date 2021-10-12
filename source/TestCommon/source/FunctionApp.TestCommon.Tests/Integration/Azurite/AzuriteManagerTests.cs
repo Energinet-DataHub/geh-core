@@ -16,11 +16,11 @@ using System;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using FluentAssertions;
-using GreenEnergyHub.FunctionApp.TestCommon.Azurite;
-using GreenEnergyHub.FunctionApp.TestCommon.Tests.Fixtures;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Xunit;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Tests.Integration.Azurite
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurite
 {
     public class AzuriteManagerTests
     {

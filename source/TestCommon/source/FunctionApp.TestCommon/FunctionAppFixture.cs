@@ -15,13 +15,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GreenEnergyHub.FunctionApp.TestCommon.FunctionAppHost;
-using GreenEnergyHub.TestCommon.Diagnostics;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon
 {
     /// <summary>
     /// An xUnit fixture for supporting integration testing of an Azure Function App (container of functions).

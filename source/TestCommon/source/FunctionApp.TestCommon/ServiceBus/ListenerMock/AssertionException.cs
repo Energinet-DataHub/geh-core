@@ -15,7 +15,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
 {
     /// <summary>
     /// Used with assertions of expected messages sent to the service bus listener mock.

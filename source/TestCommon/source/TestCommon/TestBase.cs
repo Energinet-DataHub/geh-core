@@ -17,7 +17,7 @@ using System.Diagnostics;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 
-namespace GreenEnergyHub.TestCommon
+namespace Energinet.DataHub.Core.TestCommon
 {
     /// <summary>
     /// Base class for test classes, which provides a number of features:

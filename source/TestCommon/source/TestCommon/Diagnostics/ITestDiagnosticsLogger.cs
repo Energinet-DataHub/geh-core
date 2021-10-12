@@ -14,7 +14,7 @@
 
 using Xunit.Abstractions;
 
-namespace GreenEnergyHub.TestCommon.Diagnostics
+namespace Energinet.DataHub.Core.TestCommon.Diagnostics
 {
     /// <summary>
     /// Can be used within common test classes to write diagnostics information to output:

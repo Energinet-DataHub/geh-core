@@ -18,7 +18,7 @@ using System.Globalization;
 using System.IO;
 using System.Management;
 
-namespace GreenEnergyHub.FunctionApp.TestCommon.Azurite
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
 {
     /// <summary>
     /// Used to start Azurite, which is the storage emulator that replaced Azure Storage Emulator.

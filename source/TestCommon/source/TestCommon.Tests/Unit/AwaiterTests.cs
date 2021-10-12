@@ -18,7 +18,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Sdk;
 
-namespace GreenEnergyHub.TestCommon.Tests.Unit
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit
 {
     public class AwaiterTests
     {
