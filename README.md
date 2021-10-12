@@ -34,8 +34,8 @@ Contains:
 
 - `.editorconfig` file for configuration of Formatting, Code Style and Analyzers (including StyleCop).
 - `.gitignore` file that defines which files should be ignored (not checked in) by Git.
-- `.licenserc.json` TODO: Needs a description.
-- `LICENSE` TODO: Needs a description.
+- `.licenserc.json` *TODO: Add a description.*
+- `LICENSE` *TODO: Add a description.*
 - `README.md` file that gives an introduction to this repository.
 
 ### `.github`
