@@ -84,7 +84,7 @@ Here is an example of the package folder structure using the existing `TestCommo
 
 Projects within a bundle should use _Project References_ when depending on each other. When doing so, developers must be careful, and seriously consider the best modularization of code into projects, and the impact it has on dependencies.
 
-*TODO:* However, only packages that has changes are actually published, and hence requires an updated version. If only the tests, or `*.md` files for a package has changes, then the package is not published.
+*UNDONE:* However, only packages that has changes are actually published, and hence requires an updated version. If only the tests, or `*.md` files for a package has changes, then the package is not published.
 
 ### Common project configuration
 
@@ -155,14 +155,15 @@ content.
 Using e.g. Visual Studio, we can now install the local NuGet packages to other projects for verification:
 
 1. Add a new NuGet package source to Visual Studio:
+
+   > **Important:** Do not check-in changes this might cause to any `nuget.config` files.
+
    * Select menu item Tools | NuGet Package Manager | Package Manager Settings.
    * Choose Package Sources.
    * Press the "+" (plus) button to add a new source and specify the following:
      * Name: `LocalNuGet`
      * Source: `C:\Projects\LocalNuget`
    * Close the dialog by pressing "OK" button.
-
-   > **Important:** Do not check-in changes this might cause to any `nuget.config` files.
 
 1. Use local NuGet package.
 
