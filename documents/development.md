@@ -82,7 +82,7 @@ Here is an example of the package folder structure using the existing `TestCommo
 
 ### Dependencies, build and publish
 
-Projects within a bundle should use _Project References_ when depending on each other. When doing so, developers must be careful, and seriously consider the best modularization of code into projects, and the impact it has on dependencies.
+Projects within a bundle must use _Project References_ when depending on each other. When doing so, developers must be careful, and seriously consider the best modularization of code into projects, and the impact it has on dependencies.
 
 *UNDONE:* However, only packages that has changes are actually published, and hence requires an updated version. If only the tests, or `*.md` files for a package has changes, then the package is not published.
 
