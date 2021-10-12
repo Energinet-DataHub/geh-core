@@ -15,9 +15,9 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
-using FluentAssertions;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurite

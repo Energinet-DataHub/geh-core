@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using AutoFixture;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture

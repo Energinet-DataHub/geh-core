@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using FluentAssertions;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

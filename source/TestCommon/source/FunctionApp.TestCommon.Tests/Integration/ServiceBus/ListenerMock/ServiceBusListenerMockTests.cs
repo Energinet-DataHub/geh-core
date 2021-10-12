@@ -19,12 +19,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using Azure.Messaging.ServiceBus;
-using FluentAssertions;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus.ListenerMock
