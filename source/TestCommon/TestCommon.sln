@@ -7,6 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 	ProjectSection(SolutionItems) = preProject
 		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
+		documents\functionapp-testcommon.md = documents\functionapp-testcommon.md
+		documents\servicebuslistenermock.md = documents\servicebuslistenermock.md
+		documents\testcommon.md = documents\testcommon.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{A07C3AD4-FD2D-4020-9D25-F49E92463C4F}"
