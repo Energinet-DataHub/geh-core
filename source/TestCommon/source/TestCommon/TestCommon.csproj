@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -35,6 +35,7 @@ limitations under the License.
     <Title>TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
+    <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
     <!-- PackageReleaseNotes:
       Is shown in Azure DevOps artifacts Release Notes section.
