@@ -18,6 +18,10 @@ Artifacts should be organized in the following folder structure:
 │   LICENSE
 │   README.md
 │
+├───.github
+│       └───actions
+│       └───workflows
+│
 ├───documents
 │      development.md
 │
@@ -33,6 +37,10 @@ Contains:
 - `.licenserc.json` TODO: Needs a description.
 - `LICENSE` TODO: Needs a description.
 - `README.md` file that gives an introduction to this repository.
+
+### `.github`
+
+Contains GitHub workflow and action (`*.yml`) files for establishing build pipelines.
 
 ### `documents`
 

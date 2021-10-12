@@ -55,13 +55,9 @@ Here is an example of the package folder structure using the existing `TestCommo
     │   │          release-notes.md
     │   │
     │   └───source
-    │       │
     │       └───FunctionApp.TestCommon
-    │       │
     │       └───FunctionApp.TestCommon.Tests
-    │       │
     │       └───TestCommon
-    │       │
     │       └───TestCommon.Tests
     │
     └───MyNewBundle
@@ -74,9 +70,7 @@ Here is an example of the package folder structure using the existing `TestCommo
         │          release-notes.md
         │
         └───source
-            │
             └───MyNewPackage
-            │
             └───MyNewPackage.Tests
 ```
 
