@@ -24,6 +24,7 @@ All project files belonging to a NuGet package bundle must be added to a `<bundl
 Each bundle has its own:
 
 * `documentation.md` file for documentation the bundle content and possible usage.
+* (optional) `development.md` file for additional information (e.g. setup local environment) necessary to be able to develop the specific package or bundle.
 * `release-notes.md` file for documentation of changes between each version.
 * Source code and tests.
 
