@@ -117,6 +117,6 @@ jobs:
 
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES }}
-        run: dotnet nuget push 'source/TestCommon/source/**/*.nupkg' --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
+        run: dotnet nuget push 'source/TestCommon/source/**/*.nupkg' --api-key ${{ secrets.NUGET_ORG_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
         env:
           NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
