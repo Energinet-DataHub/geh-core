@@ -9,6 +9,7 @@ The package contains reuseable code to help implementing xUnit integration tests
 ## Prerequisites
 
 This library contains [managers](#managers) that depends on certain tools beeing installed:
+
 * [Azurite](https://github.com/Azure/Azurite)
 * [Azure Functions Core Tools](https://github.com/Azure/azure-functions-core-tools)
 * [SQL Server Express LocalDB](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb?view=sql-server-ver15)
@@ -19,20 +20,21 @@ In order to run Azurite and Azure Functions Core Tools we also need Node.js. It 
 
 ## Concept
 
-The following only introduce the types supporting integration testing an Azure Function at a high level. 
+The following only introduce the types supporting integration testing an Azure Function at a high level.
 
 > For a concrete implementation example take a look at the [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
 
 ### Managers
 
-First of all we have a group of types that we use to *manage* ressources. Each type can manage a certain kind of ressource, and are named as `<ressource-type>Manager`.
+First of all we have a group of components that we use to *manage* ressources or tools. Each component can manage a certain kind of ressource/tool, and are named as `<ressource/tool-type>Manager`.
 
-A manager is typically responsible for creating/destroying or starting/stopping the type it manages. As such it helps us control the life-cycle of that ressource.
+A manager is typically responsible for creating/destroying or starting/stopping the type it manages. As such it helps us control the life-cycle of that type.
 
 It is preferable if a manager obey the following principles:
-* DO NOT create/start ressources in the manager constructor
-* DO expose an async initialization method for creating/starting ressources
-* DO expose an async dispose method for destroying/stopping ressources
+
+* DO NOT create/start the managed type in the manager constructor
+* DO expose an async initialization method for creating/starting the managed type
+* DO expose an async dispose method for destroying/stopping the managed type
 
 By following these principles, it becomes easier to orchestrate the full flow of the integration tests and all dependencies.
 
@@ -40,22 +42,42 @@ Currently we have the following managers:
 
 * `AzuriteManager`; this is used to start/stop Azurite (a cross platform storage emulator).
 * `SqlServerDatabaseManager`; this is used to create/destroy local SQL databases. For each database type we have, we should implement a class that inherits from this manager.
-* `FunctionAppHostManager`; this is used to start/stop an Azure Function using Azure Functions Core Tools. It can be the Azure Function we want to integration test, or just one that we depend on in our integration tests. 
+* `FunctionAppHostManager`; this is used to start/stop an Azure Function using Azure Functions Core Tools. It can be the Azure Function we want to integration test, or just one that we depend on in our integration tests.
 
-#### `FunctionAppHostManager`
+### Verify Service Bus messaging
 
-Using the `FunctionAppHostManager` we get additional benefits:
-* The Azure Functions output log can always be seen in the xUnit test output and on the build agent.
-* If we are executing tests in Debug mode, we can also see the Azure Functions output log in the Output window/console of the IDE.
+Another component to help us perform integration tests involving Azure Service Bus, is the `ServiceBusListenerMock`. It allows us to setup expectations on messages send to topics/queues.
 
-### Service Bus listener mock
-
-The Service Bus listener mock allows us to use a fluent API to setup expectations on messages sent to a topic or queue.
-
-See [servicebuslistermock.md](./servicebuslistenermock.md) for a brief explanation on usage.
+For details, see [servicebuslistermock.md](./servicebuslistenermock.md).
 
 ### Test classes and fixtures
 
-*TODO: Mention usage of the `functionapphost.settings.json`.*
+Another important aspect is the use of xUnit *fixtures*.
+> See [Shard context between tests](https://xunit.net/docs/shared-context)
 
-*TODO: Mention function host can be debugged while performing integration tests during a Debug session.*
+We use fixtures to orchestrate the setup, execution and teardown of integration tests. While the fixture is this usage scenario is the orchestrator of the overall life-cycle, it should use *managers* to handle the life-cycle of individual dependencies.
+
+It is preferable if a fixture used by integration tests obey the following principles:
+
+* DO NOT perform any form of async work in the constructor (use InitializeAsync)
+* DO implement the xUnit `IAsyncLifetime` interface
+* DO perform setup logic in InitializeAsync
+* DO perform teardown logic in DisposeAsync
+
+#### `FunctionAppFixture`
+
+If we only have to manage one Azure Function App, we can inherit from the `FunctionAppFixture`.
+
+This class ensures we configure `FunctionAppHostManager` so that:
+
+* The Azure Functions output log can always be seen in the xUnit test output and on the build agent.
+* If we are executing tests in Debug mode, we can also see the Azure Functions output log in the Output window/console of the IDE.
+* `FunctionAppHostSettings` can be configured in a `functionapphost.settings.json` file.
+
+By inheriting from this we can override hooks and handle setup/teardown of additional dependencies, necessary four our specific function app. For this we typically use our managers in `OnInitializeFunctionAppDependenciesAsync` and `OnDisposeFunctionAppDependenciesAsync`.
+
+#### `FunctionAppTestBase`
+
+The `FunctionAppTestBase` is build to make it easy to implement integration tests of an Azure Function App.
+
+We can inherit our test class from `FunctionAppTestBase` and specify the subclass type of the `FunctionAppFixture` implementation matching the specific Azure Function App. All tests within the test class will then have the dependencies prepared, as given by the `FunctionAppFixture` implementation, and can access the `Fixture` property for additional handling/manipulation.
