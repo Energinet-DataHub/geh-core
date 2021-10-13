@@ -1,0 +1,79 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Publish TestCommon bundle
+
+on:
+  # Build, test, pack and publish release packages
+  # Only executed if (*.)TestCommon packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  push:
+    branches:
+      - main
+    paths:
+      - source/TestCommon/source/FunctionApp.TestCommon/**
+      - source/TestCommon/source/TestCommon/**
+      - .github/workflows/testcommon-bundle-publish.yml
+  # Build, test, pack
+  # Executed if TestCommon folder or build scripts has changed; including if documentation or tests has changed
+  pull_request:
+    branches:
+      - main
+    paths:
+      - source/TestCommon/**
+      - .github/workflows/testcommon-bundle-publish.yml
+  # Build, test, pack and publish prerelease packages
+  # Executed if manually triggered
+  workflow_dispatch: {}
+
+env:
+  SOLUTION_FILE_PATH: source/TestCommon/TestCommon.sln
+  BUILD_CONFIGURATION: Release
+  # Conditions
+  PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
+  # Tool versions
+  DOTNET_VERSION: '5.0.202'
+  AZURITE_VERSION: '3.14.0'
+  AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '3.0.3568'
+  # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
+  SUBSCRIPTION_ID: ${{ secrets.XDAST_SUBSCRIPTION_ID }} # TODO: Update secret names; should use new "integration tests" environment
+  RESOURCE_GROUP_NAME: ${{ secrets.XDAST_RESOURCE_GROUP_NAME }}
+  DEFAULT_LOCATION: 'westeurope'
+  TENANT_ID: ${{ secrets.XDAST_TENANT_ID }}
+  CLIENT_ID: ${{ secrets.XDAST_CLIENT_ID }}
+  CLIENT_SECRET: ${{ secrets.XDAST_CLIENT_SECRET }}
+
+jobs:
+  build_and_publish:
+    runs-on: windows-latest
+    name: Publish bundle to NuGet.org
+
+    # # TODO: Verify whether we still needs this
+    # permissions:
+    #   contents: read
+    #   packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@master
+
+      - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Azurite v${{ env.AZURITE_VERSION }}
+        run: npm install -g azurite@${{ env.AZURITE_VERSION }}
+
+      - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+        run: npm install -g azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
