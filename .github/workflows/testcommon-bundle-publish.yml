@@ -115,7 +115,7 @@ jobs:
       - name: Check each NuGet package version does not exists ()
         shell: pswh
         run: |
-          $path = ${{ env.NUGET_FEED_PATH }}
+          $path = ${{ env.NUPKG_RECURSE_PATH }}
 
           # Loop on NuGet package files in path
           $hasError = $false
