@@ -86,7 +86,6 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore NuGet packages
-        if: steps.cache-nuget.outputs.cache-hit != 'true'
         run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
 
       - name: Build solution
