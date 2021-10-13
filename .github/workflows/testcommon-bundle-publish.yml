@@ -76,8 +76,17 @@ jobs:
       - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
         run: npm install -g azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
 
-      # TODO: Enable caching of NuGet packages
+      - name: Cache NuGet packages
+        uses: actions/cache@v2
+        id: cache-nuget
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Restore NuGet packages
+        if: steps.cache-nuget.outputs.cache-hit != 'true'
         run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
 
       - name: Build solution
@@ -114,7 +123,7 @@ jobs:
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         shell: pwsh
         run: |
-          $path = ${{ env.NUPKG_RECURSE_PATH }}
+          $path = "${{ env.NUPKG_RECURSE_PATH }}"
 
           # Loop on NuGet package files in path
           $hasError = $false
