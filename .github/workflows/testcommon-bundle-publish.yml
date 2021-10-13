@@ -15,18 +15,32 @@
 name: Publish TestCommon bundle
 
 on:
+  # Build, test, pack and publish release packages
+  # Only executed if (*.)TestCommon packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  push:
+    branches:
+      - main
+    paths:
+      - source/TestCommon/source/FunctionApp.TestCommon/**
+      - source/TestCommon/source/TestCommon/**
+      - .github/workflows/testcommon-bundle-publish.yml
+  # Build, test, pack
+  # Executed if TestCommon folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
     paths:
       - source/TestCommon/**
       - .github/workflows/testcommon-bundle-publish.yml
-      - .github/actions/dotnet-publish-nuget/**
+  # Build, test, pack and publish prerelease packages
+  # Executed if manually triggered
   workflow_dispatch: {}
 
 env:
   SOLUTION_FILE_PATH: source/TestCommon/TestCommon.sln
   BUILD_CONFIGURATION: Release
+  # Conditions
+  PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Tool versions
   DOTNET_VERSION: '5.0.202'
   AZURITE_VERSION: '3.14.0'
@@ -40,14 +54,14 @@ env:
   CLIENT_SECRET: ${{ secrets.XDAST_CLIENT_SECRET }}
 
 jobs:
-  # TODO: Always build/test/pack, but only publish if package content has actually been changed
   build_and_publish:
     runs-on: windows-latest
     name: Publish bundle to NuGet.org
 
-    permissions: # TODO: Verify whether we still needs this
-      contents: read
-      packages: write
+    # # TODO: Verify whether we still needs this
+    # permissions:
+    #   contents: read
+    #   packages: write
 
     steps:
       - name: Checkout repository
@@ -74,6 +88,7 @@ jobs:
       - name: Run tests
         run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
+      # Pack as release if triggered on main branch; otherwise as prerelease
       - name: Determine version suffix property use
         id: determine_version_suffix
         shell: bash
@@ -100,8 +115,8 @@ jobs:
 
       # TODO: Check that each NuGet package version does not exists (ignoring VersionSuffix part)
 
-      # # TODO: Only push if package content has changed
-      # - name: Push to NuGet.org
-      #   run: dotnet nuget push 'source/TestCommon/source/**/*.nupkg' --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
-      #   env:
-      #     NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
+      - name: Push to NuGet.org
+        if: ${{ env.PUSH_PACKAGES }}
+        run: dotnet nuget push 'source/TestCommon/source/**/*.nupkg' --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
+        env:
+          NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
