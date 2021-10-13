@@ -15,8 +15,17 @@ The packages contain reusable types, supporting the development and test of Ener
 
 First, we must ensure we have followed any general setup of the developer environment for the Energinet DataHub.
 
-*TODO: Describe software prerequisites (Azurite + nvm + npm + Azure Core Functions Tools).*
+Secondly, we must ensure we obey the following [prerequisites](./functionapp-testcommon.md#prerequisites).
 
-*TODO: Explain why and how we use an actual Azure Service Bus namespace.*
+### Azure Service Bus dependency
 
-*TODO: Describe usage of the `integrationtest.local.settings.json.sample`.*
+The `FunctionApp.TestCommon.Tests` have a dependency to an actual Azure Service Bus. We cannot mock, or install a Service Bus locally, so we have to use an actual instance.
+
+The xUnit fixture `ServiceBusListenerMockFixture` is used to orchestrate integration tests for `ServiceBusListenerMock` which depend on Azure Service Bus resources.
+
+For managing the life-cycle of any Azure Service Bus resources, it uses [Squadron](https://github.com/SwissLife-OSS/squadron).
+
+An Azure Service Bus namespace with topics/queues are created on the fly, which requires developers to do the following:
+
+* Copy of the `integrationtest.local.settings.json.sample` file into `integrationtest.local.settings.json`
+* Update `integrationtest.local.settings.json` with information that allows the creation of the mentioned Azure Service Bus ressources.
