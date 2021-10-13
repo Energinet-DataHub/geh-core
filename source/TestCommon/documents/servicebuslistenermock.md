@@ -2,7 +2,7 @@
 
 The `ServiceBusListenerMock` makes it easy to test and verify code that sends messages to a Azure Service Bus queue or topic.
 
-The `ServiceBusListenerMock` connects to a real Service Bus instance. Using a fluent API developers can add listeners and register message handlers for received messages, similar to setting up verifications on a mock. So basically developers tells what message or messages they expect to receive, and what should happen when a message is received.
+The `ServiceBusListenerMock` connects to an actual Azure Service Bus instance. Using a fluent API developers can add listeners and register message handlers for received messages, similar to setting up verifications on a mock. So basically developers tells what message or messages they expect to receive, and what should happen when a message is received.
 
 > For usage, see `ServiceBusListenerMockTests` or [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
 
