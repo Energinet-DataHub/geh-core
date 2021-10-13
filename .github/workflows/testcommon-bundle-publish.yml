@@ -58,10 +58,8 @@ jobs:
     runs-on: windows-latest
     name: Publish bundle to NuGet.org
 
-    # # TODO: Verify whether we still needs this
-    # permissions:
-    #   contents: read
-    #   packages: write
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
