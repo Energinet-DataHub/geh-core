@@ -112,10 +112,73 @@ jobs:
           PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
       # TODO: Check that each NuGet package version does not exists (ignoring VersionSuffix part)
+      - name: Check each NuGet package version does not exists ()
+        shell: pswh
+        run: |
+          $path = ${{ env.NUGET_FEED_PATH }}
+
+          # Loop on NuGet package files in path
+          $hasError = $false
+          foreach($nupkgs in Get-ChildItem -Path $path -Recurse -Filter "*.nupkg")
+          {
+              # Output package name
+              Write-Host "Investigating package: $nupkgs"
+
+              # Unzip package
+              $zipFileName = "$($nupkgs.Directory.FullName)\$($nupkgs.BaseName).zip"
+              Copy-Item $nupkgs.FullName $zipFileName
+              $nugetFolder = "$($nupkgs.Directory.FullName)\$($nupkgs.BaseName)"
+              Expand-Archive $zipFileName $nugetFolder
+
+              # Get NuSpec Xml
+              $nuspecPath = (Get-ChildItem -Path $nugetFolder -Filter "*.nuspec")[0]
+              [xml]$nuspec = Get-Content $nuspecPath.FullName
+
+              # Get package version from NuSpec (without prerelease part)
+              $packageId = $nuspec.package.metadata.id
+              $packageVersion = [regex]::new("^(([0-9]+)\.([0-9]+)\.([0-9]+))(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$").Match($nuspec.package.metadata.version).Groups[1].Value
+
+              $method = "GET"
+              $url = "https://api.nuget.org/v3-flatcontainer/$packageId/$packageVersion/$packageId.nuspec"
+
+              try
+              {
+                  Write-Host "Check that '$packageId' version '$packageVersion' does not exist."
+
+                  $response = Invoke-RestMethod -Uri $url -Method $method
+
+                  Write-Host "::error::'$packageId' version '$packageVersion' exists. You need to create a newer version."
+                  $hasError = $true
+              }
+              catch
+              {
+                  if($_.Exception.Response.StatusCode.value__ -eq 401)
+                  {
+                    Write-Host "::error::Not authorized to access this resource."
+                    $hasError = $true
+                  }
+                  elseif($_.Exception.Response.StatusCode.value__ -ne 404)
+                  {
+                    CreateError "::error::Unknown error."
+                    $hasError = $true
+                  }
+
+                  # If we get 404, the version does not exist.
+                  Write-Host "'$packageId' version '$packageVersion' does not exist."
+              }
+          }
+
+          if ($hasError)
+          {
+            exit 1
+          }
+        env:
+          NUPKG_RECURSE_PATH: 'source/TestCommon/source'
 
       # TODO: Replace NUGET_ORG_TOKEN with NUGET_TOKEN when this has been updated to allow creating new packages
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES }}
-        run: dotnet nuget push 'source/TestCommon/source/**/*.nupkg' --api-key ${{ secrets.NUGET_ORG_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
+        run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_ORG_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
         env:
+          NUPKG_FILTER_PATTERN: 'source/TestCommon/source/**/*.nupkg'
           NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
