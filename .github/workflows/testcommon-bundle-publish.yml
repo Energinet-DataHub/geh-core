@@ -111,9 +111,8 @@ jobs:
         env:
           PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
-      # TODO: Check that each NuGet package version does not exists (ignoring VersionSuffix part)
-      - name: Check each NuGet package version does not exists ()
-        shell: pswh
+      - name: Check each NuGet package version does not exists (not looking at prereleases)
+        shell: pwsh
         run: |
           $path = ${{ env.NUPKG_RECURSE_PATH }}
 
@@ -176,6 +175,7 @@ jobs:
           NUPKG_RECURSE_PATH: 'source/TestCommon/source'
 
       # TODO: Replace NUGET_ORG_TOKEN with NUGET_TOKEN when this has been updated to allow creating new packages
+      # TODO: Remove API key for NUGET_ORG_TOKEN
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_ORG_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
