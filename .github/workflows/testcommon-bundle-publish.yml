@@ -115,6 +115,7 @@ jobs:
 
       # TODO: Check that each NuGet package version does not exists (ignoring VersionSuffix part)
 
+      # TODO: Replace NUGET_ORG_TOKEN with NUGET_TOKEN when this has been updated to allow creating new packages
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES }}
         run: dotnet nuget push 'source/TestCommon/source/**/*.nupkg' --api-key ${{ secrets.NUGET_ORG_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
