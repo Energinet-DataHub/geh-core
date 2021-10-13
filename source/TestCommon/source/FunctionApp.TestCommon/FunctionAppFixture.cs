@@ -113,7 +113,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
         /// Configure host settings to match the name, framework and configuration (debug/release) of the
         /// function app under test.
         /// </summary>
-        protected abstract void OnConfigureHostSettings(FunctionAppHostSettings hostSettings);
+        protected virtual void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
+        {
+        }
 
         /// <summary>
         /// Before starting the host or creating supporting manager/services, we set environment variables
