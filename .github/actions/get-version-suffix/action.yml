@@ -18,21 +18,23 @@ description: 'Do not set version suffix if triggered on master/main branch; othe
 outputs:
   version_suffix_property:
     description: "Version suffix property for NuGet packages"
+    value: ${{ steps.determine_version_suffix.outputs.property }}
 
 runs:
   using: composite
   steps:
     - name: Determine version suffix property value
+      id: determine_version_suffix
       shell: bash
       run: |
         echo ${{ env.BRANCH }}
         if [[ ${{ env.BRANCH }} == 'master' || ${{ env.BRANCH }} == 'main' ]]
         then
           echo "Empty VersionSuffix"
-          echo "##[set-output name=version_suffix_property;]$(echo '')"
+          echo "##[set-output name=property;]$(echo '')"
         else
           echo "Set VersionSuffix"
-          echo "##[set-output name=version_suffix_property;]$(echo '-p:VersionSuffix=-alpha-$(date +'%Y%m%dT%H%M%S')')"
+          echo "##[set-output name=property;]$(echo '-p:VersionSuffix=-alpha-$(date +'%Y%m%dT%H%M%S')')"
         fi
       env:
         BRANCH: ${GITHUB_REF#refs/heads/}
