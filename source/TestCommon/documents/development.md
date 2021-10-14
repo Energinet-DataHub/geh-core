@@ -11,6 +11,19 @@ The packages contain reusable types, supporting the development and test of Ener
 
 > Information that is relevant for multiple NuGet package bundles should be written in the general [development.md](../../../documents/development.md).
 
+## Workflows
+
+The `testcommon-bundle-publish.yml` handles test, build, pack and publish of the bundle.
+
+If any of the packages in the bundle has changes, both currently must be updated with regards to version.
+
+Before publishing anything an action verifies that there is no released version existing with the current version number. This is to help detect if we forgot to update the version number in packages.
+
+If the workflow is triggered:
+* Manually (`workflow_dispatch`, a prerelease version of the packages are published.
+* By `pull_request`, then the packages are not published.
+* By `push` to main, the a release version of the packages are published.
+
 ## Setup local environment
 
 First, we must ensure we have followed any general setup of the developer environment for the Energinet DataHub.
