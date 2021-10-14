@@ -16,7 +16,7 @@ name: Get version suffix for NuGet packages
 description: 'Do not set version suffix if triggered on master/main branch; otherwise set as alpha release with timestamp'
 
 outputs:
-  property:
+  version_suffix_property:
     description: "Version suffix property for NuGet packages"
 
 runs:
@@ -28,9 +28,9 @@ runs:
         echo ${{ env.BRANCH }}
         if [[ ${{ env.BRANCH }} == 'master' || ${{ env.BRANCH }} == 'main' ]]
         then
-          echo "##[set-output name=property;]$(echo '')"
+          echo "::set-output name=version_suffix_property::''"
         else
-          echo "##[set-output name=property;]$(echo '-p:VersionSuffix=-alpha-$(date +'%Y%m%dT%H%M%S')')"
+          echo "::set-output name=version_suffix_property::'-p:VersionSuffix=-alpha-$(date +'%Y%m%dT%H%M%S')'"
         fi
       env:
         BRANCH: ${GITHUB_REF#refs/heads/}
