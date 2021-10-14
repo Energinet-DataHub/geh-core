@@ -94,28 +94,17 @@ jobs:
       - name: Run tests
         run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
-      # Pack as release if triggered on main branch; otherwise as prerelease
-      - name: Determine version suffix property use
-        id: determine_version_suffix
-        shell: bash
-        run: |
-          echo ${{ env.BRANCH }}
-          if [[ ${{ env.BRANCH }} == 'master' || ${{ env.BRANCH }} == 'main' ]]
-          then
-            echo "##[set-output name=property;]$(echo '')"
-          else
-            echo "##[set-output name=property;]$(echo '-p:VersionSuffix=-alpha-$(date +'%Y%m%dT%H%M%S')')"
-          fi
-        env:
-          BRANCH: ${GITHUB_REF#refs/heads/}
+      - name: Get version suffix property value
+        uses: ./.github/actions/get-version-suffix
+        id: get_version_suffix
 
       - name: Pack TestCommon project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.determine_version_suffix.outputs.property }}
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.property }}
         env:
           PROJECT_PATH: 'source/TestCommon/source/TestCommon/TestCommon.csproj'
 
       - name: Pack FunctionApp.TestCommon project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.determine_version_suffix.outputs.property }}
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.property }}
         env:
           PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
