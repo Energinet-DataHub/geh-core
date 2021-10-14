@@ -20,7 +20,8 @@ If any of the packages in the bundle has changes, both currently must be updated
 Before publishing anything an action verifies that there is no released version existing with the current version number. This is to help detect if we forgot to update the version number in packages.
 
 If the workflow is triggered:
-* Manually (`workflow_dispatch`, a prerelease version of the packages are published.
+
+* Manually (`workflow_dispatch`), a prerelease version of the packages are published.
 * By `pull_request`, then the packages are not published.
 * By `push` to main, the a release version of the packages are published.
 
