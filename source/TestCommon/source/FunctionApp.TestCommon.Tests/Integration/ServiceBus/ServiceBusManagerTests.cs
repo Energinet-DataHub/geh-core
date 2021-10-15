@@ -22,11 +22,12 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus
 {
+    // PoC on using identities to manage Azure resources (locally run tests as developer, on build agent run tests as SPN).
     public class ServiceBusManagerTests
     {
-        public class UsingManagedIdentity
+        public class UsingIdentity
         {
-            public UsingManagedIdentity()
+            public UsingIdentity()
             {
                 var integrationtestConfiguration = new ConfigurationBuilder()
                     .AddJsonFile("integrationtest.local.settings.json", optional: true)
@@ -57,6 +58,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
 
                 // Assert
                 actualProperties.Value.Name.Should().Be(queueName);
+
+                await administrationClient.DeleteQueueAsync(queueName);
             }
         }
     }
