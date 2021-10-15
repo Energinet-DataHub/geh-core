@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
-using Azure.Identity;
-using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
