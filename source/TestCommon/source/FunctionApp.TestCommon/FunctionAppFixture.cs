@@ -34,8 +34,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
     {
         protected FunctionAppFixture()
         {
-            RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
-
             TestLogger = new TestDiagnosticsLogger();
 
             HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
@@ -49,11 +47,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
         public FunctionAppHostManager HostManager { get; }
 
         public ITestDiagnosticsLogger TestLogger { get; }
-
-        /// <summary>
-        /// Can be used as suffix when building names for eg. dynamically created queue/topics.
-        /// </summary>
-        public string RandomSuffix { get; }
 
         protected FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
 
@@ -88,13 +81,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
             HostManager.Dispose();
 
             await OnDisposeFunctionAppDependenciesAsync();
-        }
-
-        public string CreateUserRandomName(string commonNamePart)
-        {
-            return string.IsNullOrWhiteSpace(commonNamePart)
-                ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(commonNamePart))
-                : $"{Environment.UserName}-{commonNamePart}-{RandomSuffix}";
         }
 
         /// <summary>
