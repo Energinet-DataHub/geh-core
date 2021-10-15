@@ -115,6 +115,7 @@ jobs:
           PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
+        if: ${{ env.PUSH_PACKAGES == 'true' }}
         uses: ./.github/actions/nuget-assert-release-version
         with:
           NUPKG_RECURSE_PATH: 'source/TestCommon/source'
