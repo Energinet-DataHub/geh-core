@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
         ///
         /// Using <see cref="DefaultAzureCredential"/> it automatically requests access tokens for reading
         /// from the Key Vault. For this to work the identity under which the tests are executied, must have
-        /// access to the Key Vault.
+        /// Get and List permissions to secrets in the Key Vault.
         /// </summary>
         /// <param name="builder">The configuration builder.</param>
         /// <param name="keyVaultUrl">KeyVault URL eg. https://myexamplekeyvault.vault.azure.net/</param>
