@@ -52,6 +52,7 @@ env:
   TENANT_ID: ${{ secrets.INTEGRATIONTEST_TENANT_ID }}
   CLIENT_ID: ${{ secrets.INTEGRATIONTEST_CLIENT_ID }}
   CLIENT_SECRET: ${{ secrets.INTEGRATIONTEST_CLIENT_SECRET }}
+  AZURE_SERVICEBUS_NAMESPACE: ${{ secrets.AZURE_SERVICEBUS_NAMESPACE }}
 
 jobs:
   build_and_publish:
@@ -60,6 +61,8 @@ jobs:
 
     permissions:
       contents: read
+
+    environment: CI
 
     steps:
       - name: Checkout repository
@@ -92,7 +95,10 @@ jobs:
         run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
 
       - name: Run tests
-        run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
+        run: |
+          az login --service-principal --username "${{ secrets.AZURE_SPN_ID }}" --password "${{ secrets.AZURE_SPN_SECRET }}" --tenant "${{ secrets.AZURE_TENANT_ID }}"
+          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
       - name: Get version suffix property value
         uses: ./.github/actions/get-version-suffix
