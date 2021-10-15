@@ -55,6 +55,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
 
         private ServiceBusAdministrationClient AdministrationClient { get; }
 
+        /// <summary>
+        /// The client share its underlying connection with any senders/receivers created
+        /// from it. Disposing the client will close the connection for all senders/receivers.
+        /// See also: https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/servicebus/Azure.Messaging.ServiceBus/MigrationGuide.md#connection-pooling
+        /// </summary>
         private ServiceBusClient Client { get; set; }
 
         public async ValueTask DisposeAsync()
@@ -115,6 +120,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
         private async ValueTask DisposeAsyncCore()
 #pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
+            // Disposing the client closes the underlying connection, which is also
+            // used by any senders/receivers created with this client.
             await Client.DisposeAsync().ConfigureAwait(false);
         }
     }
