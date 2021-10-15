@@ -14,23 +14,17 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
 {
     /// <summary>
-    /// Encapsulates usage of <see cref="ServiceBusAdministrationClient"/> for creating/deleting
-    /// resources in an existing Azure Service Bus namespace.
+    /// Encapsulates creating/deleting resources in an existing Azure Service Bus namespace.
     ///
     /// The queue/topic names are build using a combination of the given name as well as an
     /// manager instance name. This ensures we can easily identity resources from a certain test run;
     /// and avoid name clashing if the test suite is executed by tow identities at the same time.
-    ///
-    /// Using <see cref="DefaultAzureCredential"/> it automatically requests access tokens for managing
-    /// the Service Bus namespace. For this to work the identity under which the tests are executied,
-    /// must be in role 'Contributor' on the namespace.
     ///
     /// Also contains factory methods for easily creation of related sender clients.
     /// </summary>
@@ -38,14 +32,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
     {
         private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(5);
 
-        public ServiceBusManager(string fullyQualifiedNamespace)
+        public ServiceBusManager(string connectionString)
         {
+            ConnectionString = string.IsNullOrWhiteSpace(connectionString)
+                ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
+                : connectionString;
+
             InstanceName = $"{DateTimeOffset.UtcNow.Ticks}-{Guid.NewGuid()}";
 
-            var credential = new DefaultAzureCredential();
-            AdministrationClient = new ServiceBusAdministrationClient(fullyQualifiedNamespace, credential);
-            Client = new ServiceBusClient(fullyQualifiedNamespace, credential);
+            AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
+            Client = new ServiceBusClient(ConnectionString);
         }
+
+        public string ConnectionString { get; }
 
         /// <summary>
         /// Is used as part of the resource names.
@@ -69,8 +68,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
         }
 
         /// <summary>
-        /// Create a queue with a semi random name.
-        /// Tests should cleanup the queue, but if this fails it will automatically be deleted after a period of idle time.
+        /// Create a queue with a name based on <paramref name="queueNamePrefix"/> and <see cref="InstanceName"/>.
+        /// Tests should preferable cleanup the queue, but otherwise the queue will automatically be deleted after a period of idle time.
         /// </summary>
         /// <param name="queueNamePrefix">The queue name will start with this name.</param>
         /// <param name="maxDeliveryCount"></param>

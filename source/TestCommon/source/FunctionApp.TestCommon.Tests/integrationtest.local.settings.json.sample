@@ -7,6 +7,6 @@
     "TENANT_ID": "<Azure tenant id>",
     "CLIENT_ID": "<Azure client id>",
     "CLIENT_SECRET": "<Azure client secret>",
-    "AZURE_SERVICEBUS_NAMESPACE": "<Integration test service bus fully qualified namespace>"
+    "AZURE_KEYVAULT_URL": "<Integration test key vault url>"
   }
 }

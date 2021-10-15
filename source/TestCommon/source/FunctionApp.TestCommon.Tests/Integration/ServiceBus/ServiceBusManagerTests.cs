@@ -16,6 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus.Administration;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -25,41 +26,41 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
     // PoC on using identities to manage Azure resources (locally run tests as developer, on build agent run tests as SPN).
     public class ServiceBusManagerTests
     {
-        public class UsingIdentity
+        public class UsingKeyVaultSecrets
         {
-            public UsingIdentity()
+            public UsingKeyVaultSecrets()
             {
                 var integrationtestConfiguration = new ConfigurationBuilder()
                     .AddJsonFile("integrationtest.local.settings.json", optional: true)
                     .AddEnvironmentVariables()
                     .Build();
 
-                FullyQualifiedNamespace = integrationtestConfiguration.GetValue("AZURE_SERVICEBUS_NAMESPACE");
+                var keyVaultUrl = integrationtestConfiguration.GetValue("AZURE_KEYVAULT_URL");
+                var secrets = new ConfigurationBuilder()
+                    .AddAuthenticatedAzureKeyVault(keyVaultUrl)
+                    .Build();
+
+                ConnectionString = secrets.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
             }
 
-            private string FullyQualifiedNamespace { get; }
+            private string ConnectionString { get; }
 
             [Fact]
             public async Task When_CreateQueueAsync_Then_QueueWithExpectedNameIsCreated()
             {
                 // Arrange
-                var credential = new DefaultAzureCredential();
-                var administrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, credential);
-                var queueName = $"queue-{Guid.NewGuid()}";
-                var createQueueProperties = new CreateQueueOptions(queueName)
-                {
-                    AutoDeleteOnIdle = TimeSpan.FromMinutes(5),
-                    MaxDeliveryCount = 1,
-                    RequiresSession = false,
-                };
+                var manager = new ServiceBusManager(ConnectionString);
+                var queueNamePrefix = "queue";
 
                 // Act
-                var actualProperties = await administrationClient.CreateQueueAsync(createQueueProperties);
+                var actualProperties = await manager.CreateQueueAsync(queueNamePrefix);
 
                 // Assert
-                actualProperties.Value.Name.Should().Be(queueName);
+                actualProperties.Name.Should().StartWith(queueNamePrefix);
+                actualProperties.Name.Should().Contain(manager.InstanceName);
 
-                await administrationClient.DeleteQueueAsync(queueName);
+                await manager.DeleteQueueAsync(actualProperties.Name);
+                await manager.DisposeAsync();
             }
         }
     }
