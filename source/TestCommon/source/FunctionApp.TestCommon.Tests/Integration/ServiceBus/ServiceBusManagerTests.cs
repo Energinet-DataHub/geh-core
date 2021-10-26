@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -58,6 +59,24 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
 
                 await manager.DeleteQueueAsync(actualProperties.Name);
                 await manager.DisposeAsync();
+            }
+
+            [Fact]
+            public async Task When_UsingBuilder_Then_QueueResourceLifecycleIsHandled()
+            {
+                // Arrange
+                var serviceBusResourceBuilder = new ServiceBusResourceBuilder(ConnectionString);
+                var queueNamePrefix = "queue";
+
+                // Act
+                var queueResourceBuilder = await serviceBusResourceBuilder.BuildQueueResoureceAsync(queueNamePrefix);
+                var senderClient = queueResourceBuilder.CreateSenderClient();
+                await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
+
+                // Assert
+                await serviceBusResourceBuilder.DisposeAsync();
+
+                senderClient.IsClosed.Should().BeTrue();
             }
         }
     }
