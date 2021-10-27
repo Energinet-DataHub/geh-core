@@ -15,6 +15,7 @@
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -75,6 +76,32 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
 
                 // Assert
                 await serviceBusResourceBuilder.DisposeAsync();
+
+                senderClient.IsClosed.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_UsingProvider_Then_QueueResourceLifecycleIsHandled()
+            {
+                // Arrange
+                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString);
+                var queueNamePrefix = "queue";
+
+                // Act
+                var queueResource = await serviceBusResourceProvider
+                    .BuildQueue(queueNamePrefix)
+                    .SetEnvironmentVariableToName("test")
+                    .CreateAsync();
+
+                var queueName = queueResource.Name;
+                var senderClient = queueResource.SenderClient!;
+                await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
+
+                // Assert
+                queueName.Should().StartWith(queueNamePrefix);
+                queueName.Should().Contain(serviceBusResourceProvider.RandomSuffix);
+
+                await serviceBusResourceProvider.DisposeAsync();
 
                 senderClient.IsClosed.Should().BeTrue();
             }

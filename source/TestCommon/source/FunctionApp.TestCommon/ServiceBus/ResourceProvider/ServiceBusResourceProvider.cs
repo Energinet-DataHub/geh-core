@@ -13,35 +13,42 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
 {
     /// <summary>
-    /// Encapsulates creating/deleting resources in an existing Azure Service Bus namespace.
+    /// The resource provider and related builders encapsulates the creation of resources in an existing
+    /// Azure Service Bus namespace, and support creating the related client types as well.
     ///
-    /// The queue/topic names are build using a combination of the given name as well as an
-    /// manager instance name. This ensures we can easily identity resources from a certain test run;
-    /// and avoid name clashing if the test suite is executed by tow identities at the same time.
+    /// The queue/topic names are build using a combination of the given name as well as a
+    /// random suffix per provider instance. This ensures we can easily identity resources from a certain
+    /// test run; and avoid name clashing if the test suite is executed by two identities at the same time.
     ///
-    /// Also contains factory methods for easily creation of related sender clients.
+    /// Disposing the service bus resource provider will delete all created resources and dispose any created clients.
     /// </summary>
-    public class ServiceBusManager : IAsyncDisposable
+    public class ServiceBusResourceProvider : IAsyncDisposable
     {
+        /// <summary>
+        /// If created topics/queues are not deleted explicit, they will automatically be deleted after this idle timeout.
+        /// </summary>
         private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(5);
 
-        public ServiceBusManager(string connectionString)
+        public ServiceBusResourceProvider(string connectionString)
         {
             ConnectionString = string.IsNullOrWhiteSpace(connectionString)
                 ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
                 : connectionString;
 
-            InstanceName = $"{DateTimeOffset.UtcNow.Ticks}-{Guid.NewGuid()}";
-
             AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
             Client = new ServiceBusClient(ConnectionString);
+
+            RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
+            QueueResources = new ConcurrentDictionary<string, QueueResource>();
         }
 
         public string ConnectionString { get; }
@@ -50,33 +57,35 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
         /// Is used as part of the resource names.
         /// Allows us to identify resources created using the same instance (e.g. for debugging).
         /// </summary>
-        public string InstanceName { get; }
+        public string RandomSuffix { get; }
 
-        private ServiceBusAdministrationClient AdministrationClient { get; }
+        internal ServiceBusAdministrationClient AdministrationClient { get; }
 
         /// <summary>
         /// The client share its underlying connection with any senders/receivers created
         /// from it. Disposing the client will close the connection for all senders/receivers.
         /// See also: https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/servicebus/Azure.Messaging.ServiceBus/MigrationGuide.md#connection-pooling
         /// </summary>
-        private ServiceBusClient Client { get; }
+        internal ServiceBusClient Client { get; }
+
+        internal IDictionary<string, QueueResource> QueueResources { get; }
 
         public async ValueTask DisposeAsync()
         {
-            await DisposeAsyncCore().ConfigureAwait(false);
+            await DisposeAsyncCore()
+                .ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Create a queue with a name based on <paramref name="queueNamePrefix"/> and <see cref="InstanceName"/>.
-        /// Tests should preferable cleanup the queue, but otherwise the queue will automatically be deleted after a period of idle time.
+        /// Build a queue with a name based on <paramref name="queueNamePrefix"/> and <see cref="RandomSuffix"/>.
         /// </summary>
         /// <param name="queueNamePrefix">The queue name will start with this name.</param>
         /// <param name="maxDeliveryCount"></param>
         /// <param name="lockDuration"></param>
         /// <param name="requireSession"></param>
         /// <returns>Queue properties for the created queue.</returns>
-        public async Task<QueueProperties> CreateQueueAsync(string queueNamePrefix, int maxDeliveryCount = 1, TimeSpan? lockDuration = null, bool requireSession = false)
+        public QueueResourceBuilder BuildQueue(string queueNamePrefix, int maxDeliveryCount = 1, TimeSpan? lockDuration = null, bool requireSession = false)
         {
             var queueName = BuildResourceName(queueNamePrefix);
             var createQueueProperties = new CreateQueueOptions(queueName)
@@ -87,41 +96,31 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus
                 RequiresSession = requireSession,
             };
 
-            var response = await AdministrationClient.CreateQueueAsync(createQueueProperties)
-                .ConfigureAwait(false);
-
-            return response.Value;
+            return new QueueResourceBuilder(this, createQueueProperties);
         }
 
-        public async Task DeleteQueueAsync(string queueName)
-        {
-            await AdministrationClient.DeleteQueueAsync(queueName)
-                .ConfigureAwait(false);
-        }
-
-        public ServiceBusSender CreateSenderClient(string queueName)
-        {
-            return Client.CreateSender(queueName);
-        }
-
-        /// <summary>
-        /// Build resource name.
-        /// Can be overriden to change the final name format (e.g. if we want to make it completely random).
-        /// </summary>
-        protected virtual string BuildResourceName(string namePrefix)
+        private string BuildResourceName(string namePrefix)
         {
             return string.IsNullOrWhiteSpace(namePrefix)
                 ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(namePrefix))
-                : $"{namePrefix}-{InstanceName}";
+                : $"{namePrefix}-{RandomSuffix}";
         }
 
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
         private async ValueTask DisposeAsyncCore()
 #pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
+            foreach (var queueResource in QueueResources)
+            {
+                // TODO: Dispose in parallel
+                await queueResource.Value.DisposeAsync()
+                    .ConfigureAwait(false);
+            }
+
             // Disposing the client closes the underlying connection, which is also
             // used by any senders/receivers created with this client.
-            await Client.DisposeAsync().ConfigureAwait(false);
+            await Client.DisposeAsync()
+                .ConfigureAwait(false);
         }
     }
 }
