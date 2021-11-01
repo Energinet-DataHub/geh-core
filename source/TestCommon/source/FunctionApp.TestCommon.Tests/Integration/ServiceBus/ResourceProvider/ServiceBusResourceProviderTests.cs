@@ -19,7 +19,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus.ResourceProvider
 {
     // PoC on using identities to manage Azure resources (locally run tests as developer, on build agent run tests as SPN).
     public class ServiceBusResourceProviderTests
