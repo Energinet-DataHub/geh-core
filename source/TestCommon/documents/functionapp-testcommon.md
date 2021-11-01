@@ -44,6 +44,14 @@ Currently we have the following managers:
 * `SqlServerDatabaseManager`; this is used to create/destroy local SQL databases. For each database type we have, we should implement a class that inherits from this manager.
 * `FunctionAppHostManager`; this is used to start/stop an Azure Function using Azure Functions Core Tools. It can be the Azure Function we want to integration test, or just one that we depend on in our integration tests.
 
+### Resource providers
+
+The `ServiceBusResourceProvider` is more complex than a *manager*, so we named it differently.
+
+It makes it easy to build a bunch of resources within the same Azure Service Bus namespace, and will automatically track and cleanup any resources created, when it is disposed.
+
+Queues and topics created using the resource provider, will be created using a combination of a given prefix and a random suffix. This is to ensure multiple runs of the same tests can run in parallel without interferring.
+
 ### Verify Service Bus messaging
 
 Another component to help us perform integration tests involving Azure Service Bus, is the `ServiceBusListenerMock`. It allows us to setup expectations on messages send to topics/queues.

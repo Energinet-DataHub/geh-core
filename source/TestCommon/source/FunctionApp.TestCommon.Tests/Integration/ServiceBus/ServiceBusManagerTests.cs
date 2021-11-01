@@ -15,7 +15,6 @@
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using FluentAssertions;
 using Xunit;
@@ -34,42 +33,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             }
 
             private string ConnectionString { get; }
-
-            [Fact]
-            public async Task When_CreateQueueAsync_Then_QueueWithExpectedNameIsCreated()
-            {
-                // Arrange
-                var manager = new ServiceBusManager(ConnectionString);
-                var queueNamePrefix = "queue";
-
-                // Act
-                var actualProperties = await manager.CreateQueueAsync(queueNamePrefix);
-
-                // Assert
-                actualProperties.Name.Should().StartWith(queueNamePrefix);
-                actualProperties.Name.Should().Contain(manager.InstanceName);
-
-                await manager.DeleteQueueAsync(actualProperties.Name);
-                await manager.DisposeAsync();
-            }
-
-            [Fact]
-            public async Task When_UsingBuilder_Then_QueueResourceLifecycleIsHandled()
-            {
-                // Arrange
-                var serviceBusResourceBuilder = new ServiceBusResourceBuilder(ConnectionString);
-                var queueNamePrefix = "queue";
-
-                // Act
-                var queueResourceBuilder = await serviceBusResourceBuilder.BuildQueueResoureceAsync(queueNamePrefix);
-                var senderClient = queueResourceBuilder.CreateSenderClient();
-                await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
-
-                // Assert
-                await serviceBusResourceBuilder.DisposeAsync();
-
-                senderClient.IsClosed.Should().BeTrue();
-            }
 
             [Fact]
             public async Task When_UsingProvider_Then_QueueResourceLifecycleIsHandled()
