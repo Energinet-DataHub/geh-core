@@ -22,7 +22,7 @@ using Xunit;
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus
 {
     // PoC on using identities to manage Azure resources (locally run tests as developer, on build agent run tests as SPN).
-    public class ServiceBusManagerTests
+    public class ServiceBusResourceProviderTests
     {
         public class UsingKeyVaultSecrets
         {
