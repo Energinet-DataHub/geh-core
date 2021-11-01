@@ -46,7 +46,7 @@ env:
   AZURITE_VERSION: '3.14.0'
   AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '3.0.3568'
   # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
-    AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
 
 jobs:
   build_and_publish:
