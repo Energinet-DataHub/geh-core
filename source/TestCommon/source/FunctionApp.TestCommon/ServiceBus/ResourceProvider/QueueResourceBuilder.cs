@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 {
     public class QueueResourceBuilder
     {
-        public QueueResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateQueueOptions createQueueOptions)
+        internal QueueResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateQueueOptions createQueueOptions)
         {
             ServiceBusResource = serviceBusResource;
             CreateQueueOptions = createQueueOptions;

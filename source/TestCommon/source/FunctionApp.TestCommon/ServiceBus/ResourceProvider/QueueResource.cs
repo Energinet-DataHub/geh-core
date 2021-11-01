@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         private readonly QueueProperties _properties;
         private readonly Lazy<ServiceBusSender> _lazySenderClient;
 
-        public QueueResource(ServiceBusResourceProvider serviceBusResource, QueueProperties properties)
+        internal QueueResource(ServiceBusResourceProvider serviceBusResource, QueueProperties properties)
         {
             ServiceBusResource = serviceBusResource;
 

@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 {
     public class TopicResourceBuilder
     {
-        public TopicResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateTopicOptions createTopicOptions)
+        internal TopicResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateTopicOptions createTopicOptions)
         {
             ServiceBusResource = serviceBusResource;
             CreateTopicOptions = createTopicOptions;
