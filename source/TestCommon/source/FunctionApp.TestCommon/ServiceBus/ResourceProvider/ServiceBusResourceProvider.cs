@@ -48,7 +48,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             Client = new ServiceBusClient(ConnectionString);
 
             RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
-            QueueResources = new ConcurrentDictionary<string, QueueResource>();
+            QueueResources = new Dictionary<string, QueueResource>();
+            TopicResources = new Dictionary<string, TopicResource>();
         }
 
         public string ConnectionString { get; }
@@ -70,6 +71,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         internal IDictionary<string, QueueResource> QueueResources { get; }
 
+        internal IDictionary<string, TopicResource> TopicResources { get; }
+
         public async ValueTask DisposeAsync()
         {
             await DisposeAsyncCore()
@@ -84,11 +87,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <param name="maxDeliveryCount"></param>
         /// <param name="lockDuration"></param>
         /// <param name="requireSession"></param>
-        /// <returns>Queue properties for the created queue.</returns>
+        /// <returns>Queue resource builder.</returns>
         public QueueResourceBuilder BuildQueue(string queueNamePrefix, int maxDeliveryCount = 1, TimeSpan? lockDuration = null, bool requireSession = false)
         {
             var queueName = BuildResourceName(queueNamePrefix);
-            var createQueueProperties = new CreateQueueOptions(queueName)
+            var createQueueOptions = new CreateQueueOptions(queueName)
             {
                 AutoDeleteOnIdle = AutoDeleteOnIdleTimeout,
                 MaxDeliveryCount = maxDeliveryCount,
@@ -96,7 +99,23 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                 RequiresSession = requireSession,
             };
 
-            return new QueueResourceBuilder(this, createQueueProperties);
+            return new QueueResourceBuilder(this, createQueueOptions);
+        }
+
+        /// <summary>
+        /// Build a topic with a name based on <paramref name="topicNamePrefix"/> and <see cref="RandomSuffix"/>.
+        /// </summary>
+        /// <param name="topicNamePrefix">The topic name will start with this name.</param>
+        /// <returns>Topic resource builder.</returns>
+        public TopicResourceBuilder BuildTopic(string topicNamePrefix)
+        {
+            var topicName = BuildResourceName(topicNamePrefix);
+            var createTopicOptions = new CreateTopicOptions(topicName)
+            {
+                AutoDeleteOnIdle = AutoDeleteOnIdleTimeout,
+            };
+
+            return new TopicResourceBuilder(this, createTopicOptions);
         }
 
         private string BuildResourceName(string namePrefix)
@@ -114,6 +133,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             {
                 // TODO: Dispose in parallel
                 await queueResource.Value.DisposeAsync()
+                    .ConfigureAwait(false);
+            }
+
+            foreach (var topicResource in TopicResources)
+            {
+                // TODO: Dispose in parallel
+                await topicResource.Value.DisposeAsync()
                     .ConfigureAwait(false);
             }
 

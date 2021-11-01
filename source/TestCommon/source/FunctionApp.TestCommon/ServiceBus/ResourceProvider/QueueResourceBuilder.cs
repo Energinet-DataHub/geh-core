@@ -20,15 +20,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 {
     public class QueueResourceBuilder
     {
-        public QueueResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateQueueOptions createQueueProperties)
+        public QueueResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateQueueOptions createQueueOptions)
         {
             ServiceBusResource = serviceBusResource;
-            CreateQueueProperties = createQueueProperties;
+            CreateQueueOptions = createQueueOptions;
         }
 
         private ServiceBusResourceProvider ServiceBusResource { get; }
 
-        private CreateQueueOptions CreateQueueProperties { get; }
+        private CreateQueueOptions CreateQueueOptions { get; }
 
         public QueueResourceBuilder Do(Action<QueueProperties> postAction)
         {
@@ -38,13 +38,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         public async Task<QueueResource> CreateAsync()
         {
-            var response = await ServiceBusResource.AdministrationClient.CreateQueueAsync(CreateQueueProperties)
+            var response = await ServiceBusResource.AdministrationClient.CreateQueueAsync(CreateQueueOptions)
                 .ConfigureAwait(false);
 
             var queueName = response.Value.Name;
             var queueResource = new QueueResource(ServiceBusResource, response.Value);
             ServiceBusResource.QueueResources.Add(queueName, queueResource);
 
+            // TODO: Call "Do" actions
             return queueResource;
         }
     }
