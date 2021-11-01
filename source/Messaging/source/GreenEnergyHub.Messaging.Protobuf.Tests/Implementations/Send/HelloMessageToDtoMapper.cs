@@ -20,9 +20,9 @@ using Test.Assets;
 
 namespace GreenEnergyHub.Messaging.Protobuf.Tests.Implementations.Send
 {
-    public abstract class HelloMessageToDtoMapper : ProtobufOutboundMapper<SayHelloMessage>
+    public class HelloMessageToDtoMapper : ProtobufOutboundMapper<SayHelloMessage>
     {
-        protected static IMessage Convert(SayHelloMessage obj)
+        protected override IMessage Convert(SayHelloMessage obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 

@@ -12,19 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using GreenEnergyHub.Messaging.MessageRouting;
 using GreenEnergyHub.Messaging.Tests.TestHelpers;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using Xunit.Categories;
 
 namespace GreenEnergyHub.Messaging.Tests
 {
+    [UnitTest]
     public class HandlerExtensionsTests
     {
         [Fact]
-        [Trait("Category", "Unit")]
         public void HandlerExtensionsWithReasonableDefaults_Should_Setup_MediatR()
         {
             const bool validateScopes = true;
@@ -39,7 +43,6 @@ namespace GreenEnergyHub.Messaging.Tests
         }
 
         [Fact]
-        [Trait("Category", "Unit")]
         public void HandlerExtension_Should_Locate_One_IngestionHandler()
         {
             const bool validateScopes = true;
@@ -55,7 +58,6 @@ namespace GreenEnergyHub.Messaging.Tests
         }
 
         [Fact]
-        [Trait("Category", "Unit")]
         public void HandlerExtension_Should_inject_registrations_into_HubMessageTypeMap()
         {
             const bool validateScopes = true;
@@ -71,6 +73,20 @@ namespace GreenEnergyHub.Messaging.Tests
 
             Assert.NotNull(actualType);
             Assert.Equal(expectedType, actualType);
+        }
+
+        [Fact]
+        public void HandlerExtension_ShouldRegisterAllIHubMessagesAsMessageRegistrations()
+        {
+            var expectedTypeOne = typeof(TestMessage);
+            var expectedTypeTwo = typeof(StubMessage);
+            var expectedMessageRegistrationTypes = new List<Type> { expectedTypeOne, expectedTypeTwo };
+
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddGreenEnergyHub(expectedTypeOne.Assembly, expectedTypeOne.Assembly); // Adding the same assembly twice to avoid false positives, where duplicates are added
+            var messageRegistrations = serviceCollection.Where(_ => _.ServiceType == typeof(MessageRegistration));
+
+            Assert.Equal(expectedMessageRegistrationTypes.Count, messageRegistrations.Count());
         }
     }
 }

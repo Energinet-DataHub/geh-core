@@ -23,10 +23,11 @@ using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Test.Assets;
 using Xunit;
+using Xunit.Categories;
 
 namespace GreenEnergyHub.Messaging.Protobuf.Tests
 {
-    [Trait("Category", "Component")]
+    [UnitTest]
     public class ProtobufTests
     {
         [Fact]
@@ -46,7 +47,7 @@ namespace GreenEnergyHub.Messaging.Protobuf.Tests
             {
                 Transaction = new Transaction(expectedMrid),
             };
-            await messageDispatcher.DispatchAsync(outboundMessage, "message").ConfigureAwait(false);
+            await messageDispatcher.DispatchAsync(outboundMessage).ConfigureAwait(false);
             var channel = sendingServiceProvider.GetRequiredService<InProcessChannel>();
 
             // The wire

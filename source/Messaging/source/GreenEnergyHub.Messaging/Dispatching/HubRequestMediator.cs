@@ -14,7 +14,6 @@
 
 using System;
 using System.Threading.Tasks;
-using GreenEnergyHub.Aggregation.Domain;
 using MediatR;
 
 namespace GreenEnergyHub.Messaging.Dispatching

@@ -16,22 +16,23 @@ using System.Text.Json.Serialization;
 
 namespace GreenEnergyHub.Messaging.MessageTypes.Common
 {
-    public class MarketEvaluationPoint
+    public class Transaction
     {
-        public MarketEvaluationPoint()
-        : this(string.Empty)
+        public Transaction()
+            : this(Guid.NewGuid().ToString("N"))
         {
         }
 
-        public MarketEvaluationPoint(string mrid)
+        public Transaction(string mrid)
         {
-            MRid = mrid;
+            MRID = mrid;
         }
-
-        public static MarketEvaluationPoint Empty => new MarketEvaluationPoint();
 
         [JsonPropertyName(name: "mRID")]
-        public string MRid { get; set; }
+        public string MRID { get; set; }
+
+        public static Transaction NewTransaction()
+            => new Transaction(Guid.NewGuid().ToString("N"));
 
         public override bool Equals(object? obj)
         {
@@ -45,22 +46,27 @@ namespace GreenEnergyHub.Messaging.MessageTypes.Common
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((MarketEvaluationPoint)obj);
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return Equals((Transaction)obj);
         }
 
         public override int GetHashCode()
         {
-            return MRid.GetHashCode();
+            return MRID.GetHashCode();
         }
 
-        protected bool Equals(MarketEvaluationPoint other)
+        protected bool Equals(Transaction other)
         {
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return MRid == other.MRid;
+            return MRID == other.MRID;
         }
     }
 }

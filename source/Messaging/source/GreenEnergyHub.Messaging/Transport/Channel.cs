@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,5 +39,5 @@ namespace GreenEnergyHub.Messaging.Transport
         /// <param name="data">data to write</param>
         /// <param name="cancellationToken">cancellation token</param>
         protected abstract Task WriteAsync(byte[] data, CancellationToken cancellationToken = default);
-        }
+    }
 }

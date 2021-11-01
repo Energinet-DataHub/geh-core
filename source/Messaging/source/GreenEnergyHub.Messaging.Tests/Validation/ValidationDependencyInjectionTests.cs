@@ -17,10 +17,11 @@ using GreenEnergyHub.Messaging.Tests.TestHelpers.Validation;
 using GreenEnergyHub.Messaging.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using Xunit.Categories;
 
 namespace GreenEnergyHub.Messaging.Tests.Validation
 {
-    [Trait("Category", "Unit")]
+    [UnitTest]
     public class ValidationDependencyInjectionTests
     {
         [Fact]
@@ -44,7 +45,7 @@ namespace GreenEnergyHub.Messaging.Tests.Validation
             var sp = serviceCollection.BuildServiceProvider();
             var sut = sp.GetService<ServiceProviderDelegate>();
 
-            var result = sut(typeof(ChangeOfSupplier));
+            var result = sut!(typeof(ChangeOfSupplier));
 
             result.Should()
                 .NotBeNull()

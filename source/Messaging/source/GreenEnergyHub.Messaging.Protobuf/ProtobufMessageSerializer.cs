@@ -16,7 +16,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
-using GreenEnergyHub.Aggregation.Domain;
 using GreenEnergyHub.Messaging.Transport;
 
 namespace GreenEnergyHub.Messaging.Protobuf
@@ -38,10 +37,10 @@ namespace GreenEnergyHub.Messaging.Protobuf
         }
 
         /// <inheritdoc cref="MessageSerializer"/>
-        public override Task<byte[]> ToBytesAsync(IOutboundMessage message, string type, CancellationToken cancellationToken = default)
+        public override Task<byte[]> ToBytesAsync(IOutboundMessage message, CancellationToken cancellationToken = default)
         {
             var mapper = _outboundMapperFactory.GetMapper(message);
-            var data = mapper.Convert(message, type).ToByteArray();
+            var data = mapper.Convert(message).ToByteArray();
             return Task.FromResult(data);
         }
     }

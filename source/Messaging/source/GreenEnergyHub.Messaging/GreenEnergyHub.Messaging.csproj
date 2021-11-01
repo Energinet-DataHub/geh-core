@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -16,18 +16,19 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <RootNamespace>GreenEnergyHub.Messaging</RootNamespace>
+        <LangVersion>9</LangVersion>
+        <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="9.5.4" />
         <PackageReference Include="MediatR" Version="9.0.0" />
-        <PackageReference Include="NodaTime" Version="3.0.5" />
+        <PackageReference Include="NodaTime" Version="3.0.7" />
     </ItemGroup>
 
   <ItemGroup>
@@ -40,15 +41,6 @@ limitations under the License.
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>GreenEnergyHub.Messaging.Tests</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
- <ItemGroup>
-    <ProjectReference Include="..\..\..\coordinator\GreenEnergyHub.Aggregation.Application\GreenEnergyHub.Aggregation.Application.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="16.10.56">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>

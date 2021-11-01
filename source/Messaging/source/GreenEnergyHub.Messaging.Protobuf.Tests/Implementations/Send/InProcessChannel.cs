@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using GreenEnergyHub.Messaging.Transport;
@@ -22,7 +21,9 @@ namespace GreenEnergyHub.Messaging.Protobuf.Tests.Implementations.Send
 {
     public class InProcessChannel : Channel
     {
+#pragma warning disable SA1011
         private byte[]? _writtenBytes;
+#pragma warning restore SA1011
 
         public byte[] GetWrittenBytes() => _writtenBytes ?? throw new InvalidOperationException("Write bytes before getting them.");
 
@@ -30,11 +31,6 @@ namespace GreenEnergyHub.Messaging.Protobuf.Tests.Implementations.Send
         {
             _writtenBytes = data;
             await Task.CompletedTask.ConfigureAwait(false);
-        }
-
-        protected override Task WriteBulkAsync(IEnumerable<byte[]> dataList, CancellationToken cancellationToken = default)
-        {
-            return WriteBulkAsync(dataList, cancellationToken);
         }
     }
 }

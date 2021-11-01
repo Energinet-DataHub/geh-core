@@ -37,33 +37,24 @@ namespace GreenEnergyHub.Messaging
                 // Check if the type is a ruleset and add it
                 if (TryGetRuleSetDefinition(type, out var ruleSetServiceDescriptor))
                 {
-                    if (ruleSetServiceDescriptor != null)
-                    {
-                        serviceCollection.Add(ruleSetServiceDescriptor);
-                    }
+                    serviceCollection.Add(ruleSetServiceDescriptor!);
                 }
 
                 // Check if the type is a ruleset and configure the rule engine to support it
                 if (TryGetRuleEngineServiceDescriptor(type, out var ruleEngineServiceDescriptor))
                 {
-                    if (ruleEngineServiceDescriptor != null)
-                    {
-                        serviceCollection.Add(ruleEngineServiceDescriptor);
-                    }
+                    serviceCollection.Add(ruleEngineServiceDescriptor!);
                 }
 
                 // Check if the type is a property rule and add it
                 if (TryGetPropertyRuleServiceDescriptor(type, out var propertyRuleServiceDescriptor))
                 {
-                    if (propertyRuleServiceDescriptor != null)
-                    {
-                        serviceCollection.Add(propertyRuleServiceDescriptor);
-                    }
+                    serviceCollection.Add(propertyRuleServiceDescriptor!);
                 }
             }
 
             // Add our delegate as a singleton
-            serviceCollection.AddSingleton<ServiceProviderDelegate>(sp => sp.GetRequiredService);
+            serviceCollection.AddSingleton<ServiceProviderDelegate>(sp => sp.GetService!);
 
             return serviceCollection;
         }

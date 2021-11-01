@@ -33,13 +33,10 @@ namespace GreenEnergyHub.Messaging.Protobuf
         public static IServiceCollection SendProtobuf<TProtoContract>(this IServiceCollection services)
             where TProtoContract : class, IMessage
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            if (services == null) throw new ArgumentNullException(nameof(services));
 
-            services.TryAddSingleton<ProtobufOutboundMapperFactory>();
-            services.TryAddSingleton<MessageSerializer, ProtobufMessageSerializer>();
+            services.TryAddScoped<ProtobufOutboundMapperFactory>();
+            services.TryAddScoped<MessageSerializer, ProtobufMessageSerializer>();
 
             foreach (var serviceDescriptor in ScanForMappers(typeof(TProtoContract).Assembly))
             {
@@ -65,7 +62,7 @@ namespace GreenEnergyHub.Messaging.Protobuf
 
                 var genericTypeParameter = type.BaseType.GenericTypeArguments[0];
 
-                yield return new ServiceDescriptor(targetType.MakeGenericType(genericTypeParameter), type, ServiceLifetime.Singleton);
+                yield return new ServiceDescriptor(targetType.MakeGenericType(genericTypeParameter), type, ServiceLifetime.Scoped);
             }
         }
     }

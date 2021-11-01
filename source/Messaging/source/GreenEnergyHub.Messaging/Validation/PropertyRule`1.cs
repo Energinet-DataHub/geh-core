@@ -14,7 +14,6 @@
 
 using System;
 using FluentValidation.Validators;
-using GreenEnergyHub.Messaging.Validation.Exceptions;
 
 namespace GreenEnergyHub.Messaging.Validation
 {
@@ -34,14 +33,7 @@ namespace GreenEnergyHub.Messaging.Validation
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            try
-            {
-                if (context.PropertyValue is T propertyValue) return IsValid(propertyValue, context);
-            }
-            catch (NullReferenceException exception)
-            {
-                throw new ValidationPropertyNullException(nameof(context.PropertyValue), exception);
-            }
+            if (context.PropertyValue is T propertyValue) return IsValid(propertyValue, context);
 
             return false;
         }

@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GreenEnergyHub.Aggregation.Domain;
 
 namespace GreenEnergyHub.Messaging.Dispatching
 {

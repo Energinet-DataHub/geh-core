@@ -42,14 +42,6 @@ namespace GreenEnergyHub.Messaging.Validation
         /// </summary>
         public bool Success => _results.Count == 0;
 
-        /// <summary>
-        /// Create a <see cref="RuleResultCollection"/> from a <see cref="IEnumerable"/> of <see cref="RuleResult"/>
-        /// </summary>
-        /// <param name="results">Collection of <see cref="RuleResult"/></param>
-        /// <returns><see cref="RuleResultCollection"/> containing <paramref name="results"/></returns>
-        public static RuleResultCollection From(IEnumerable<RuleResult> results)
-            => new RuleResultCollection(results);
-
         /// <inheritdoc cref="IReadOnlyCollection{T}"/>
         public IEnumerator<RuleResult> GetEnumerator()
         {
@@ -61,5 +53,13 @@ namespace GreenEnergyHub.Messaging.Validation
         {
             return _results.GetEnumerator();
         }
+
+        /// <summary>
+        /// Create a <see cref="RuleResultCollection"/> from a <see cref="IEnumerable"/> of <see cref="RuleResult"/>
+        /// </summary>
+        /// <param name="results">Collection of <see cref="RuleResult"/></param>
+        /// <returns><see cref="RuleResultCollection"/> containing <paramref name="results"/></returns>
+        internal static RuleResultCollection From(IEnumerable<RuleResult> results)
+            => new RuleResultCollection(results);
     }
 }

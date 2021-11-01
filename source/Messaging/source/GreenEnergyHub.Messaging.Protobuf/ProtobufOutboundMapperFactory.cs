@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using GreenEnergyHub.Aggregation.Domain;
+using GreenEnergyHub.Messaging.Transport;
 
 namespace GreenEnergyHub.Messaging.Protobuf
 {
@@ -43,11 +43,7 @@ namespace GreenEnergyHub.Messaging.Protobuf
         /// <exception cref="InvalidOperationException">no mapper found</exception>
         public ProtobufOutboundMapper GetMapper(IOutboundMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
+            if (message == null) throw new ArgumentNullException(nameof(message));
             var typeToLocate = _protobufMapperType.MakeGenericType(message.GetType());
             var mapper = _serviceProvider.GetService(typeToLocate) as ProtobufOutboundMapper;
 

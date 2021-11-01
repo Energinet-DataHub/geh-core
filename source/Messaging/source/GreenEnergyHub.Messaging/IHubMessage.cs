@@ -13,21 +13,20 @@
 // limitations under the License.
 
 using System;
-using MediatR;
+using GreenEnergyHub.Messaging.MessageTypes.Common;
+using NodaTime;
 
 namespace GreenEnergyHub.Messaging
 {
     /// <summary>
-    /// Starts a pipeline behavior
+    /// Represents a message in the Green Energy Hub.
     /// </summary>
-    public interface IApplyPipelineBehavior
+    public interface IHubMessage
     {
         /// <summary>
-        /// Continue with a pipeline behavior
+        /// A unique id for this request.
         /// </summary>
-        /// <param name="pipelineBehavior">pipeline behavior to add</param>
-        /// <param name="depends">Dependencies to register</param>
-        /// <exception cref="ArgumentException"><paramref name="pipelineBehavior"/> does not inherit from <see cref="IPipelineBehavior{TRequest,TResponse}"/></exception>
-        IContinuePipelineBehavior Apply(Type pipelineBehavior, Action<DependsOnConfiguration>? depends = null);
+        /// <value>A string.</value>
+        Transaction Transaction { get; set; }
     }
 }

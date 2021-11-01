@@ -14,9 +14,6 @@
 
 using System;
 using Google.Protobuf;
-using GreenEnergyHub.Aggregation.Application.Coordinator.Interfaces;
-using GreenEnergyHub.Aggregation.Domain;
-using GreenEnergyHub.Aggregation.Domain.DTOs;
 using GreenEnergyHub.Messaging.Transport;
 
 namespace GreenEnergyHub.Messaging.Protobuf
@@ -32,15 +29,11 @@ namespace GreenEnergyHub.Messaging.Protobuf
         /// Convert an <see cref="IOutboundMessage"/> to proto buf contract
         /// </summary>
         /// <param name="obj">Message to map</param>
-        /// <param name="type">Type of message</param>
         /// <returns>Converted message</returns>
         /// <exception cref="InvalidOperationException"><paramref name="obj"/> is not of <typeparamref name="T"> type</typeparamref></exception>
-        public override IMessage Convert(IOutboundMessage obj, string type)
+        public override IMessage Convert(IOutboundMessage obj)
         {
-            if (obj is T outboundMessage)
-            {
-                return Convert(outboundMessage, type);
-            }
+            if (obj is T outboundMessage) return Convert(outboundMessage);
 
             throw new InvalidOperationException();
         }
@@ -49,8 +42,7 @@ namespace GreenEnergyHub.Messaging.Protobuf
         /// Convert to a proto buf contract
         /// </summary>
         /// <param name="obj">Application object to map</param>
-        /// <param name="type">Type of message</param>
         /// <returns>Converted proto buf contract</returns>
-        protected abstract IMessage Convert(T obj, string type);
+        protected abstract IMessage Convert(T obj);
     }
 }

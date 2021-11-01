@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-
-namespace GreenEnergyHub.Messaging.Tests.Dispatching
+namespace GreenEnergyHub.Messaging.Transport
 {
-    public class AuthorizeBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IRequest<TResponse>
+    /// <summary>
+    /// Marker interface for outgoing messages
+    /// </summary>
+    public interface IOutboundMessage : IHubMessage
     {
-        public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
