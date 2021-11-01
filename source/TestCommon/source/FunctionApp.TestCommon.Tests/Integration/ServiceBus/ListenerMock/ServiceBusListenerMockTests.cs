@@ -43,7 +43,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             public async Task When_MessageIsSentToQueueName_Then_MessageIsReceived()
             {
                 // Arrange
-                await Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.QueueName);
+                await Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.Queue!.Name);
 
                 var message = Fixture.Create<ServiceBusMessage>();
 
@@ -52,7 +52,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -84,7 +84,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             public async Task When_MessageIsSentToTopicName_Then_MessageIsReceived()
             {
                 // Arrange
-                await Sut.AddTopicSubscriptionListenerAsync(ServiceBusListenerMockFixture.TopicName, ServiceBusListenerMockFixture.SubscriptionName);
+                await Sut.AddTopicSubscriptionListenerAsync(ServiceBusListenerMockFixture.Topic!.Name, ServiceBusListenerMockFixture.SubscriptionName);
 
                 var message = Fixture.Create<ServiceBusMessage>();
 
@@ -93,7 +93,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 // Act
-                await ServiceBusListenerMockFixture.TopicSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Topic.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -113,7 +113,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             public async Task When_MessageHandlersAndMessagesReceivedIsReset_Then_InstanceCanBeReused()
             {
                 // Arrange
-                await Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.QueueName);
+                await Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.Queue!.Name);
                 await CanReceiveMessageAsync();
 
                 // Act
@@ -131,7 +131,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 var message = Fixture.Create<ServiceBusMessage>();
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 return isReceivedEvent.Wait(DefaultTimeout);
             }
@@ -170,7 +170,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     });
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -182,7 +182,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             {
                 // Arrange
                 var message = Fixture.Create<ServiceBusMessage>();
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
                 await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
 
                 // Act
@@ -200,7 +200,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             {
                 // Arrange
                 var message1 = Fixture.Create<ServiceBusMessage>();
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message1);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message1);
                 await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
 
                 var messagesReceivedInHandler = new List<ServiceBusReceivedMessage>();
@@ -217,7 +217,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var message2 = Fixture.Create<ServiceBusMessage>();
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message2);
+                await ServiceBusListenerMockFixture.Queue.SenderClient.SendMessageAsync(message2);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -243,7 +243,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     });
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -261,7 +261,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -282,7 +282,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -298,7 +298,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var message = Fixture.Create<ServiceBusMessage>();
                 message.MessageId = messageId;
 
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
                 await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
 
                 // Act
@@ -325,7 +325,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
@@ -345,7 +345,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 for (var i = 0; i < expectedCount; i++)
                 {
                     var message = Fixture.Create<ServiceBusMessage>();
-                    _ = ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                    _ = ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
                 }
 
                 // Assert
@@ -358,7 +358,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             /// </summary>
             protected override Task OnInitializeAsync()
             {
-                return Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.QueueName);
+                return Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.Queue!.Name);
             }
         }
 
@@ -384,7 +384,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 isReceivedEvent.Wait(DefaultTimeout);
@@ -406,7 +406,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .VerifyOnceAsync();
 
                 // Act
-                await ServiceBusListenerMockFixture.QueueSenderClient.SendMessageAsync(message);
+                await ServiceBusListenerMockFixture.Queue!.SenderClient.SendMessageAsync(message);
 
                 // Assert
                 isReceivedEvent.Wait(DefaultTimeout);
@@ -420,7 +420,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             /// </summary>
             protected override Task OnInitializeAsync()
             {
-                return Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.QueueName);
+                return Sut.AddQueueListenerAsync(ServiceBusListenerMockFixture.Queue!.Name);
             }
         }
 

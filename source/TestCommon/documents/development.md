@@ -13,7 +13,9 @@ The packages contain reusable types, supporting the development and test of Ener
 
 ## Workflows
 
-The `testcommon-bundle-publish.yml` handles test, build, pack and publish of the bundle.
+### `testcommon-bundle-publish.yml`
+
+This workflow handles test, build, pack and publish of the bundle.
 
 If any of the packages in the bundle has changes, both currently must be updated with regards to version.
 

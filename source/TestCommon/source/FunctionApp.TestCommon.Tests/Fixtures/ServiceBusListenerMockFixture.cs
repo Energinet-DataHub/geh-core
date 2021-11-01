@@ -12,68 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
-using Squadron;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
 {
     public class ServiceBusListenerMockFixture : IAsyncLifetime
     {
-        public ServiceBusListenerMockFixture(IMessageSink messageSink)
+        public ServiceBusListenerMockFixture()
         {
-            ServiceBusResource = new AzureCloudServiceBusResource<ServiceBusListenerMockServiceBusOptions>(messageSink);
-            SubscriptionName = ServiceBusListenerMockServiceBusOptions.SubscriptionName;
+            var integrationTestConfiguration = new IntegrationTestConfiguration();
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(integrationTestConfiguration.ServiceBusConnectionString);
+            ConnectionString = ServiceBusResourceProvider.ConnectionString;
         }
 
-        public string ConnectionString { get; private set; }
-            = string.Empty;
+        public string ConnectionString { get; }
 
-        public string QueueName { get; private set; }
-            = string.Empty;
+        public QueueResource? Queue { get; private set; }
 
-        [NotNull]
-        public ServiceBusSender? QueueSenderClient { get; private set; }
+        public TopicResource? Topic { get; private set; }
 
-        public string TopicName { get; private set; }
-            = string.Empty;
+        public static string SubscriptionName => "defaultSubscription";
 
-        public string SubscriptionName { get; private set; }
-            = string.Empty;
-
-        [NotNull]
-        public ServiceBusSender? TopicSenderClient { get; private set; }
-
-        private AzureCloudServiceBusResource<ServiceBusListenerMockServiceBusOptions> ServiceBusResource { get; }
-
-        [NotNull]
-        private ServiceBusClient? Client { get; set; }
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
         public async Task InitializeAsync()
         {
-            await ServiceBusResource.InitializeAsync();
+            Queue = await ServiceBusResourceProvider
+                .BuildQueue("queue")
+                .CreateAsync();
 
-            ConnectionString = ServiceBusResource.ConnectionString;
-
-            Client = new ServiceBusClient(ConnectionString);
-
-            QueueName = ServiceBusListenerMockServiceBusOptions.QueueName;
-            QueueSenderClient = Client.CreateSender(QueueName);
-
-            TopicName = ServiceBusListenerMockServiceBusOptions.TopicName;
-            TopicSenderClient = Client.CreateSender(TopicName);
+            Topic = await ServiceBusResourceProvider
+                .BuildTopic("topic")
+                .AddSubscription(SubscriptionName)
+                .CreateAsync();
         }
 
         public async Task DisposeAsync()
         {
-            await QueueSenderClient!.CloseAsync();
-            await TopicSenderClient!.CloseAsync();
-            await Client.DisposeAsync();
-
-            await ServiceBusResource.DisposeAsync();
+            await ServiceBusResourceProvider.DisposeAsync();
         }
     }
 }
