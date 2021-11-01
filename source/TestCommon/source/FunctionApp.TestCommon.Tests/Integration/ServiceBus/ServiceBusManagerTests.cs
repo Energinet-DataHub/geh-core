@@ -14,10 +14,10 @@
 
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus
@@ -29,17 +29,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
         {
             public UsingKeyVaultSecrets()
             {
-                var integrationtestConfiguration = new ConfigurationBuilder()
-                    .AddJsonFile("integrationtest.local.settings.json", optional: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-
-                var keyVaultUrl = integrationtestConfiguration.GetValue("AZURE_KEYVAULT_URL");
-                var secrets = new ConfigurationBuilder()
-                    .AddAuthenticatedAzureKeyVault(keyVaultUrl)
-                    .Build();
-
-                ConnectionString = secrets.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
+                var integrationTestConfiguration = new IntegrationTestConfiguration();
+                ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
             }
 
             private string ConnectionString { get; }

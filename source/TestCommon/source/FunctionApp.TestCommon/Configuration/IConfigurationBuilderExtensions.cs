@@ -16,7 +16,7 @@ using System;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
 {
     public static class ConfigurationBuilderExtensions
     {
