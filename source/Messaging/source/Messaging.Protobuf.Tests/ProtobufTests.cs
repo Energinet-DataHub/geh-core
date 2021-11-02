@@ -14,7 +14,6 @@
 
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Messaging.MessageTypes.Common;
-using Energinet.DataHub.Core.Messaging.Protobuf.Integration.ServiceCollection;
 using Energinet.DataHub.Core.Messaging.Protobuf.Tests.Assets.Messages;
 using Energinet.DataHub.Core.Messaging.Protobuf.Tests.Implementations.Send;
 using Energinet.DataHub.Core.Messaging.Transport;

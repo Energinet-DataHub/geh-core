@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.Core.Messaging.Protobuf;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.Core.Messaging.Protobuf.Integration.ServiceCollection
+namespace Energinet.DataHub.Core.Messaging.Protobuf
 {
     /// <summary>
     /// Configuration of proto buf

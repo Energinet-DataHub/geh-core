@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Energinet.DataHub.Core.Messaging.Integration.ServiceCollection;
 using Energinet.DataHub.Core.Messaging.MessageRouting;
 using Energinet.DataHub.Core.Messaging.Tests.TestHelpers;
 using MediatR;

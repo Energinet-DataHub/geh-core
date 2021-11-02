@@ -15,11 +15,10 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Energinet.DataHub.Core.Messaging;
 using Energinet.DataHub.Core.Messaging.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Messaging.Integration.ServiceCollection
+namespace Energinet.DataHub.Core.Messaging
 {
     internal static class ServiceCollectionValidationExtension
     {

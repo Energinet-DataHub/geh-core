@@ -15,13 +15,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Energinet.DataHub.Core.Messaging.Protobuf;
 using Energinet.DataHub.Core.Messaging.Transport;
 using Google.Protobuf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Energinet.DataHub.Core.Messaging.Protobuf.Integration.ServiceCollection
+namespace Energinet.DataHub.Core.Messaging.Protobuf
 {
     public static class ServiceCollectionSendProtobuf
     {

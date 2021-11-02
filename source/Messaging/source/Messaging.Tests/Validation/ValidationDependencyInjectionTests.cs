@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Integration.ServiceCollection;
 using Energinet.DataHub.Core.Messaging.Tests.TestHelpers.Validation;
 using Energinet.DataHub.Core.Messaging.Validation;
 using FluentAssertions;

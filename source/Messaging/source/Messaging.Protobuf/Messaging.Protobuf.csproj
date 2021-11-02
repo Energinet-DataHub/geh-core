@@ -15,16 +15,15 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-      <TargetFramework>net5.0</TargetFramework>
-      <Nullable>enable</Nullable>
-      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-      <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-      <RootNamespace>Energinet.DataHub.Core.Messaging.Protobuf</RootNamespace>
-      <LangVersion>9</LangVersion>
-      <AssemblyName>Energinet.DataHub.Core.Messaging.Protobuf</AssemblyName>
-      <RootNamespace>Energinet.DataHub.Core.Messaging.Protobuf</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <LangVersion>9</LangVersion>
+    <AssemblyName>Energinet.DataHub.Core.Messaging.Protobuf</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Messaging.Protobuf</RootNamespace>
+  </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging.Protobuf</PackageId>
@@ -62,12 +61,12 @@ limitations under the License.
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Google.Protobuf" Version="3.18.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.18.0" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Messaging\Messaging.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Messaging\Messaging.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -20,7 +20,7 @@ using Energinet.DataHub.Core.Messaging.MessageRouting;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Messaging.Integration.ServiceCollection
+namespace Energinet.DataHub.Core.Messaging
 {
     /// <summary>
     /// Static class which allows the Azure Functions runtime IServiceCollection

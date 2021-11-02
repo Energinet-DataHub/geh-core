@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Core.Messaging.Integration.ServiceCollection;
 using Energinet.DataHub.Core.Messaging.Tests.TestHelpers.Validation;
 using Energinet.DataHub.Core.Messaging.Validation;
 using Microsoft.Extensions.DependencyInjection;

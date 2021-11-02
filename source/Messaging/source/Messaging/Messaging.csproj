@@ -15,14 +15,15 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <Nullable>enable</Nullable>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-        <RootNamespace>Energinet.DataHub.Core.Messaging</RootNamespace>
-        <LangVersion>9</LangVersion>
-        <TargetFramework>net5.0</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <AssemblyName>Energinet.DataHub.Core.Messaging.Integration.ServiceCollection</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Messaging</RootNamespace>
+    <LangVersion>9</LangVersion>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
@@ -60,11 +61,11 @@ limitations under the License.
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="9.5.4" />
-        <PackageReference Include="MediatR" Version="9.0.0" />
-        <PackageReference Include="NodaTime" Version="3.0.7" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="9.5.4" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="NodaTime" Version="3.0.7" />
+  </ItemGroup>
 
   <ItemGroup>
   <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
