@@ -127,4 +127,4 @@ As such, having rule sets listing generic `Rule` instances permits for composing
 
 ## Transport Protocol
 
-[transport-protocol.md](./documents/transport-protocol.md)
+[transport-protocol.md](./transport-protocol.md)
