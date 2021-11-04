@@ -51,6 +51,5 @@ limitations under the License.
 
     <ItemGroup>
       <ProjectReference Include="..\Messaging.Integration.ServiceCollection\Messaging.Integration.ServiceCollection.csproj" />
-      <ProjectReference Include="..\Messaging\Messaging.csproj" />
     </ItemGroup>
 </Project>

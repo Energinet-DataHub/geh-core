@@ -29,6 +29,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Protobuf.Tests", "source\Messaging.Protobuf.Tests\Messaging.Protobuf.Tests.csproj", "{78C7BDD9-24BA-4FBF-9C7F-0E2FB87C2D19}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{5731DAF9-B9EF-480B-B4B9-585D41EE21BC}"
+ProjectSection(SolutionItems) = preProject
+	documents\documentation.md = documents\documentation.md
+	documents\transport-protocol.md = documents\transport-protocol.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

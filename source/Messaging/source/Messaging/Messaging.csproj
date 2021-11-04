@@ -16,13 +16,14 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <AssemblyName>Energinet.DataHub.Core.Messaging.Integration.ServiceCollection</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.Messaging</RootNamespace>
     <LangVersion>9</LangVersion>
-    <TargetFramework>net5.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <AssemblyName>Energinet.DataHub.Core.Messaging</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Messaging</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -48,7 +49,7 @@ limitations under the License.
       [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Messaging/documents/release-notes/release-notes.md)
       [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Messaging/documents/documentation.md)
     </PackageDescription>
-    <Description>Library to support the message ingestion and processing of integration events in Green Energy Hub.</Description>
+    <Description>Library to support the message ingestion and processing of integration events in Energinet DataHub.</Description>
     <PackageTags>energinet;datahub;messaging;</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -61,10 +62,20 @@ limitations under the License.
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
+  <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+  <PropertyGroup>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="9.5.4" />
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="NodaTime" Version="3.0.7" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
