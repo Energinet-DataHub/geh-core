@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -72,20 +73,25 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             }
 
             [Fact]
-            public async Task When_BuildingTopic_Then_ResourceLifecycleIsHandled()
+            public async Task When_BuildingTopicWithSubscription_Then_ResourceLifecycleIsHandled()
             {
                 // Arrange
                 var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString);
                 var namePrefix = "topic";
-                var environmentVariable = "ENV_NAME";
+                var topicEnvironmentVariable = "ENV_TOPIC_NAME";
+                var subscription01 = "subscription01";
+                var subscriptionEnvironmentVariable01 = "ENV_SUBSCRIPTION_NAME_01";
+                var subscription02 = "subscription02";
+                var subscriptionEnvironmentVariable02 = "ENV_SUBSCRIPTION_NAME_02";
                 ServiceBusSender? senderClient = null;
 
                 try
                 {
                     // Act
                     var actualResource = await serviceBusResourceProvider
-                        .BuildTopic(namePrefix)
-                        .SetEnvironmentVariableToTopicName(environmentVariable)
+                        .BuildTopic(namePrefix).SetEnvironmentVariableToTopicName(topicEnvironmentVariable)
+                        .AddSubscription(subscription01).SetEnvironmentVariableToSubscriptionName(subscriptionEnvironmentVariable01)
+                        .AddSubscription(subscription02).SetEnvironmentVariableToSubscriptionName(subscriptionEnvironmentVariable02)
                         .CreateAsync();
 
                     // Assert
@@ -93,8 +99,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     actualName.Should().StartWith(namePrefix);
                     actualName.Should().Contain(serviceBusResourceProvider.RandomSuffix);
 
-                    var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
+                    actualResource.Subscriptions.Count().Should().Be(2);
+
+                    var actualEnvironmentValue = Environment.GetEnvironmentVariable(topicEnvironmentVariable);
                     actualEnvironmentValue.Should().Be(actualName);
+
+                    actualEnvironmentValue = Environment.GetEnvironmentVariable(subscriptionEnvironmentVariable01);
+                    actualEnvironmentValue.Should().Be(subscription01);
+
+                    actualEnvironmentValue = Environment.GetEnvironmentVariable(subscriptionEnvironmentVariable02);
+                    actualEnvironmentValue.Should().Be(subscription02);
 
                     senderClient = actualResource.SenderClient!;
                     await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));

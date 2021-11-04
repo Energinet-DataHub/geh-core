@@ -19,7 +19,10 @@ using Azure.Messaging.ServiceBus.Administration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
 {
-    public class TopicResourceBuilder
+    /// <summary>
+    /// Part of fluent API for creating a Service Bus topic resource with subscriptions.
+    /// </summary>
+    public class TopicResourceBuilder : ITopicResourceBuilder
     {
         internal TopicResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateTopicOptions createTopicOptions)
         {
@@ -27,17 +30,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             CreateTopicOptions = createTopicOptions;
 
             PostActions = new List<Action<TopicProperties>>();
-            Subscriptions = new Dictionary<string, CreateSubscriptionOptions>();
+            SubscriptionBuilders = new Dictionary<string, TopicSubscriptionBuilder>();
         }
 
         private ServiceBusResourceProvider ServiceBusResource { get; }
 
         private CreateTopicOptions CreateTopicOptions { get; }
 
+        private IDictionary<string, TopicSubscriptionBuilder> SubscriptionBuilders { get; }
+
         private IList<Action<TopicProperties>> PostActions { get; }
 
-        private IDictionary<string, CreateSubscriptionOptions> Subscriptions { get; }
-
+        /// <summary>
+        /// Add an action that will be called after the topic has been created.
+        /// </summary>
+        /// <param name="postAction">Action to call with topic properties when topic has been created.</param>
+        /// <returns>Topic resouce builder.</returns>
         public TopicResourceBuilder Do(Action<TopicProperties> postAction)
         {
             PostActions.Add(postAction);
@@ -45,14 +53,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             return this;
         }
 
-        /// <summary>
-        /// Add a subscription to the topic we are building.
-        /// </summary>
-        /// <param name="subscriptionName">The subscription name.</param>
-        /// <param name="maxDeliveryCount"></param>
-        /// <param name="lockDuration"></param>
-        /// <returns>Topic resouce builder.</returns>
-        public TopicResourceBuilder AddSubscription(string subscriptionName, int maxDeliveryCount = 1, TimeSpan? lockDuration = null)
+        /// <inheritdoc/>
+        public TopicSubscriptionBuilder AddSubscription(string subscriptionName, int maxDeliveryCount = 1, TimeSpan? lockDuration = null)
         {
             var createSubscriptionOptions = new CreateSubscriptionOptions(CreateTopicOptions.Name, subscriptionName)
             {
@@ -61,17 +63,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                 LockDuration = lockDuration ?? TimeSpan.FromMinutes(1),
             };
 
-            Subscriptions.Add(subscriptionName, createSubscriptionOptions);
+            var subscriptionBuilder = new TopicSubscriptionBuilder(this, createSubscriptionOptions);
+            SubscriptionBuilders.Add(subscriptionName, subscriptionBuilder);
 
-            return this;
+            return subscriptionBuilder;
         }
 
+        /// <inheritdoc/>
         public async Task<TopicResource> CreateAsync()
         {
             var topicResource = await CreateTopicAsync()
                 .ConfigureAwait(false);
 
-            await CreateSubscriptionsAsync()
+            await CreateSubscriptionsAsync(topicResource)
                 .ConfigureAwait(false);
 
             return topicResource;
@@ -94,13 +98,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             return topicResource;
         }
 
-        private async Task CreateSubscriptionsAsync()
+        private async Task CreateSubscriptionsAsync(TopicResource topicResource)
         {
-            foreach (var subcription in Subscriptions)
+            foreach (var subscriptionBuilderPair in SubscriptionBuilders)
             {
-                // TODO: Create in parallel
-                var response = await ServiceBusResource.AdministrationClient.CreateSubscriptionAsync(subcription.Value)
+                var response = await ServiceBusResource.AdministrationClient.CreateSubscriptionAsync(subscriptionBuilderPair.Value.CreateSubscriptionOptions)
                     .ConfigureAwait(false);
+
+                topicResource.AddSubscription(response.Value);
+
+                foreach (var postAction in subscriptionBuilderPair.Value.PostActions)
+                {
+                    postAction(response.Value);
+                }
             }
         }
     }

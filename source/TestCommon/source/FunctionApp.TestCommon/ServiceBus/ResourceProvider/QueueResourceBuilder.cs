@@ -19,6 +19,9 @@ using Azure.Messaging.ServiceBus.Administration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
 {
+    /// <summary>
+    /// Fluent API for creating a Service Bus queue resource.
+    /// </summary>
     public class QueueResourceBuilder
     {
         internal QueueResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateQueueOptions createQueueOptions)
@@ -35,6 +38,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         private IList<Action<QueueProperties>> PostActions { get; }
 
+        /// <summary>
+        /// Add an action that will be called after the queue has been created.
+        /// </summary>
+        /// <param name="postAction">Action to call with queue properties when queue has been created.</param>
+        /// <returns>Queue resouce builder.</returns>
         public QueueResourceBuilder Do(Action<QueueProperties> postAction)
         {
             PostActions.Add(postAction);
@@ -42,6 +50,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             return this;
         }
 
+        /// <summary>
+        /// Create Service Bus queue according to configured builder.
+        /// </summary>
+        /// <returns>Instance with information about the created queue.</returns>
         public async Task<QueueResource> CreateAsync()
         {
             var response = await ServiceBusResource.AdministrationClient.CreateQueueAsync(CreateQueueOptions)

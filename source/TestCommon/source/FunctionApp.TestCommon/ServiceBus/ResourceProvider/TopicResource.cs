@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
@@ -23,6 +25,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
     {
         private readonly TopicProperties _properties;
         private readonly Lazy<ServiceBusSender> _lazySenderClient;
+        private readonly IList<SubscriptionProperties> _subscriptions;
 
         internal TopicResource(ServiceBusResourceProvider serviceBusResource, TopicProperties properties)
         {
@@ -30,11 +33,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
             _properties = properties;
             _lazySenderClient = new Lazy<ServiceBusSender>(CreateSenderClient);
+            _subscriptions = new List<SubscriptionProperties>();
+
+            Subscriptions = new ReadOnlyCollection<SubscriptionProperties>(_subscriptions);
         }
 
         public string Name => _properties.Name;
 
         public ServiceBusSender SenderClient => _lazySenderClient.Value;
+
+        public IReadOnlyCollection<SubscriptionProperties> Subscriptions { get; }
 
         public bool IsDisposed { get; private set; }
 
@@ -45,6 +53,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             await DisposeAsyncCore()
                 .ConfigureAwait(false);
             GC.SuppressFinalize(this);
+        }
+
+        internal void AddSubscription(SubscriptionProperties subscriptionProperties)
+        {
+            _subscriptions.Add(subscriptionProperties);
         }
 
         private ServiceBusSender CreateSenderClient()
