@@ -13,113 +13,301 @@
 // limitations under the License.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus.ResourceProvider
 {
-    // PoC on using identities to manage Azure resources (locally run tests as developer, on build agent run tests as SPN).
     public class ServiceBusResourceProviderTests
     {
-        public class UsingKeyVaultSecrets
+        /// <summary>
+        /// Since we are testing <see cref="ServiceBusResourceProvider.DisposeAsync"/> and the lifecycle
+        /// of resources and clients, we do not use the base class here. Instead we have to explicit
+        /// dispose so we can verify clients state after.
+        /// </summary>
+        [Collection(nameof(ServiceBusResourceProviderCollectionFixture))]
+        public class DisposeAsync
         {
-            public UsingKeyVaultSecrets()
+            private const string DefaultBody = "valid body";
+
+            public DisposeAsync(ServiceBusResourceProviderFixture resourceProviderFixture)
             {
-                var integrationTestConfiguration = new IntegrationTestConfiguration();
-                ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
+                ResourceProviderFixture = resourceProviderFixture;
+
+                // Customize auto fixture
+                Fixture = new Fixture();
+                Fixture.Customize<ServiceBusMessage>(composer => composer
+                    .OmitAutoProperties()
+                    .With(p => p.MessageId)
+                    .With(p => p.Subject)
+                    .With(p => p.Body, new BinaryData(DefaultBody)));
             }
 
-            private string ConnectionString { get; }
+            private ServiceBusResourceProviderFixture ResourceProviderFixture { get; }
+
+            private IFixture Fixture { get; }
 
             [Fact]
-            public async Task When_BuildingQueue_Then_ResourceLifecycleIsHandled()
+            public async Task When_QueueResourceIsDisposed_Then_QueueIsDeletedAndClientIsClosed()
             {
                 // Arrange
-                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString, new TestDiagnosticsLogger());
-                var namePrefix = "queue";
+                var sut = CreateSut();
+
+                var actualResource = await sut
+                    .BuildQueue("queue")
+                    .CreateAsync();
+
+                var actualName = actualResource.Name;
+
+                var senderClient = actualResource.SenderClient;
+                var message = Fixture.Create<ServiceBusMessage>();
+                await senderClient.SendMessageAsync(message);
+
+                // Act
+                await sut.DisposeAsync();
+
+                // Assert
+                var response = await ResourceProviderFixture.AdministrationClient.QueueExistsAsync(actualName);
+                response.Value.Should().BeFalse();
+
+                senderClient.IsClosed.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_TopicResourceIsDisposed_Then_TopicAndSubscriptionsAreDeletedAndClientIsClosed()
+            {
+                // Arrange
+                var sut = CreateSut();
+
+                var actualResource = await sut
+                    .BuildTopic("topic")
+                    .AddSubscription("subscription01")
+                    .AddSubscription("subscription02")
+                    .CreateAsync();
+
+                var topicName = actualResource.Name;
+
+                var senderClient = actualResource.SenderClient;
+                var message = Fixture.Create<ServiceBusMessage>();
+                await senderClient.SendMessageAsync(message);
+
+                // Act
+                await sut.DisposeAsync();
+
+                // Assert
+                var response = await ResourceProviderFixture.AdministrationClient.TopicExistsAsync(topicName);
+                response.Value.Should().BeFalse();
+
+                foreach (var subscription in actualResource.Subscriptions)
+                {
+                    response = await ResourceProviderFixture.AdministrationClient.SubscriptionExistsAsync(topicName, subscription.SubscriptionName);
+                    response.Value.Should().BeFalse();
+                }
+
+                senderClient.IsClosed.Should().BeTrue();
+            }
+
+            private ServiceBusResourceProvider CreateSut()
+            {
+                return new ServiceBusResourceProvider(
+                    ResourceProviderFixture.ConnectionString,
+                    ResourceProviderFixture.TestLogger);
+            }
+        }
+
+        /// <summary>
+        /// Test whole <see cref="ServiceBusResourceProvider.BuildQueue(string, int, TimeSpan?, bool)"/> chain
+        /// with <see cref="QueueResourceBuilder"/> and including related extensions.
+        /// </summary>
+        [Collection(nameof(ServiceBusResourceProviderCollectionFixture))]
+        public class BuildQueue : ServiceBusResourceProviderTestsBase
+        {
+            private const string NamePrefix = "queue";
+
+            public BuildQueue(ServiceBusResourceProviderFixture resourceProviderFixture)
+                : base(resourceProviderFixture)
+            {
+            }
+
+            [Fact]
+            public async Task When_QueueNamePrefix_Then_CreatedQueueNameIsCombinationOfPrefixAndRandomSuffix()
+            {
+                // Arrange
+
+                // Act
+                var actualResource = await Sut
+                    .BuildQueue(NamePrefix)
+                    .CreateAsync();
+
+                // Assert
+                var actualName = actualResource.Name;
+                actualName.Should().StartWith(NamePrefix);
+                actualName.Should().EndWith(Sut.RandomSuffix);
+
+                var response = await ResourceProviderFixture.AdministrationClient.QueueExistsAsync(actualName);
+                response.Value.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_SetEnvironmentVariable_Then_EnvironmentVariableContainsActualName()
+            {
+                // Arrange
                 var environmentVariable = "ENV_NAME";
-                ServiceBusSender? senderClient = null;
 
-                try
-                {
-                    // Act
-                    var actualResource = await serviceBusResourceProvider
-                        .BuildQueue(namePrefix)
-                        .SetEnvironmentVariableToQueueName(environmentVariable)
-                        .CreateAsync();
+                // Act
+                var actualResource = await Sut
+                    .BuildQueue(NamePrefix)
+                    .SetEnvironmentVariableToQueueName(environmentVariable)
+                    .CreateAsync();
 
-                    // Assert
-                    var actualName = actualResource.Name;
-                    actualName.Should().StartWith(namePrefix);
-                    actualName.Should().Contain(serviceBusResourceProvider.RandomSuffix);
+                // Assert
+                var actualName = actualResource.Name;
 
-                    var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
-                    actualEnvironmentValue.Should().Be(actualName);
+                var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
+                actualEnvironmentValue.Should().Be(actualName);
+            }
+        }
 
-                    senderClient = actualResource.SenderClient!;
-                    await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
-                }
-                finally
-                {
-                    await serviceBusResourceProvider.DisposeAsync();
-                }
+        /// <summary>
+        /// Test whole <see cref="ServiceBusResourceProvider.BuildTopic(string)"/> chain
+        /// with <see cref="TopicResourceBuilder"/>, <see cref="TopicSubscriptionBuilder"/>
+        /// and including related extensions.
+        /// </summary>
+        [Collection(nameof(ServiceBusResourceProviderCollectionFixture))]
+        public class BuildTopic : ServiceBusResourceProviderTestsBase
+        {
+            private const string NamePrefix = "topic";
+            private const string SubscriptionName01 = "subscription01";
+            private const string SubscriptionName02 = "subscription02";
 
-                senderClient.IsClosed.Should().BeTrue();
+            public BuildTopic(ServiceBusResourceProviderFixture resourceProviderFixture)
+                : base(resourceProviderFixture)
+            {
             }
 
             [Fact]
-            public async Task When_BuildingTopicWithSubscription_Then_ResourceLifecycleIsHandled()
+            public async Task When_TopicNamePrefix_Then_CreatedTopicNameIsCombinationOfPrefixAndRandomSuffix()
             {
                 // Arrange
-                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString, new TestDiagnosticsLogger());
-                var namePrefix = "topic";
+
+                // Act
+                var actualResource = await Sut
+                    .BuildTopic(NamePrefix)
+                    .CreateAsync();
+
+                // Assert
+                var actualName = actualResource.Name;
+                actualName.Should().StartWith(NamePrefix);
+                actualName.Should().EndWith(Sut.RandomSuffix);
+
+                var response = await ResourceProviderFixture.AdministrationClient.TopicExistsAsync(actualName);
+                response.Value.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_AddSubscriptionName_Then_CreatedSubscriptionHasSubscriptionName()
+            {
+                // Arrange
+
+                // Act
+                var actualResource = await Sut
+                    .BuildTopic(NamePrefix)
+                    .AddSubscription(SubscriptionName01)
+                    .CreateAsync();
+
+                // Assert
+                var topicName = actualResource.Name;
+
+                var response = await ResourceProviderFixture.AdministrationClient.SubscriptionExistsAsync(topicName, SubscriptionName01);
+                response.Value.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_AddMultipleSubscriptionNames_Then_CreatedSubscriptionsHasSubscriptionNames()
+            {
+                // Arrange
+
+                // Act
+                var actualResource = await Sut
+                    .BuildTopic(NamePrefix)
+                    .AddSubscription(SubscriptionName01)
+                    .AddSubscription(SubscriptionName02)
+                    .CreateAsync();
+
+                // Assert
+                var topicName = actualResource.Name;
+
+                actualResource.Subscriptions.Count.Should().Be(2);
+
+                foreach (var subscription in actualResource.Subscriptions)
+                {
+                    var response = await ResourceProviderFixture.AdministrationClient.SubscriptionExistsAsync(topicName, subscription.SubscriptionName);
+                    response.Value.Should().BeTrue();
+                }
+            }
+
+            [Fact]
+            public async Task When_SetEnvironmentVariables_Then_EnvironmentVariablesContainActualNames()
+            {
+                // Arrange
                 var topicEnvironmentVariable = "ENV_TOPIC_NAME";
-                var subscription01 = "subscription01";
                 var subscriptionEnvironmentVariable01 = "ENV_SUBSCRIPTION_NAME_01";
-                var subscription02 = "subscription02";
                 var subscriptionEnvironmentVariable02 = "ENV_SUBSCRIPTION_NAME_02";
-                ServiceBusSender? senderClient = null;
 
-                try
-                {
-                    // Act
-                    var actualResource = await serviceBusResourceProvider
-                        .BuildTopic(namePrefix).SetEnvironmentVariableToTopicName(topicEnvironmentVariable)
-                        .AddSubscription(subscription01).SetEnvironmentVariableToSubscriptionName(subscriptionEnvironmentVariable01)
-                        .AddSubscription(subscription02).SetEnvironmentVariableToSubscriptionName(subscriptionEnvironmentVariable02)
-                        .CreateAsync();
+                // Act
+                var actualResource = await Sut
+                    .BuildTopic(NamePrefix).SetEnvironmentVariableToTopicName(topicEnvironmentVariable)
+                    .AddSubscription(SubscriptionName01).SetEnvironmentVariableToSubscriptionName(subscriptionEnvironmentVariable01)
+                    .AddSubscription(SubscriptionName02).SetEnvironmentVariableToSubscriptionName(subscriptionEnvironmentVariable02)
+                    .CreateAsync();
 
-                    // Assert
-                    var actualName = actualResource.Name;
-                    actualName.Should().StartWith(namePrefix);
-                    actualName.Should().Contain(serviceBusResourceProvider.RandomSuffix);
+                // Assert
+                var topicName = actualResource.Name;
 
-                    actualResource.Subscriptions.Count().Should().Be(2);
+                var actualEnvironmentValue = Environment.GetEnvironmentVariable(topicEnvironmentVariable);
+                actualEnvironmentValue.Should().Be(topicName);
 
-                    var actualEnvironmentValue = Environment.GetEnvironmentVariable(topicEnvironmentVariable);
-                    actualEnvironmentValue.Should().Be(actualName);
+                actualEnvironmentValue = Environment.GetEnvironmentVariable(subscriptionEnvironmentVariable01);
+                actualEnvironmentValue.Should().Be(SubscriptionName01);
 
-                    actualEnvironmentValue = Environment.GetEnvironmentVariable(subscriptionEnvironmentVariable01);
-                    actualEnvironmentValue.Should().Be(subscription01);
+                actualEnvironmentValue = Environment.GetEnvironmentVariable(subscriptionEnvironmentVariable02);
+                actualEnvironmentValue.Should().Be(SubscriptionName02);
+            }
+        }
 
-                    actualEnvironmentValue = Environment.GetEnvironmentVariable(subscriptionEnvironmentVariable02);
-                    actualEnvironmentValue.Should().Be(subscription02);
+        /// <summary>
+        /// A new <see cref="ServiceBusResourceProvider"/> is created and disposed for each test.
+        /// </summary>
+        public abstract class ServiceBusResourceProviderTestsBase : TestBase<ServiceBusResourceProvider>, IAsyncLifetime
+        {
+            protected ServiceBusResourceProviderTestsBase(ServiceBusResourceProviderFixture serviceBusResourceProviderFixture)
+            {
+                ResourceProviderFixture = serviceBusResourceProviderFixture;
 
-                    senderClient = actualResource.SenderClient!;
-                    await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
-                }
-                finally
-                {
-                    await serviceBusResourceProvider.DisposeAsync();
-                }
+                // Customize auto fixture
+                Fixture.Inject<ITestDiagnosticsLogger>(serviceBusResourceProviderFixture.TestLogger);
+                Fixture.ForConstructorOn<ServiceBusResourceProvider>()
+                    .SetParameter("connectionString").To(ResourceProviderFixture.ConnectionString);
+            }
 
-                senderClient.IsClosed.Should().BeTrue();
+            protected ServiceBusResourceProviderFixture ResourceProviderFixture { get; }
+
+            public Task InitializeAsync()
+            {
+                return Task.CompletedTask;
+            }
+
+            public async Task DisposeAsync()
+            {
+                await Sut.DisposeAsync();
             }
         }
     }

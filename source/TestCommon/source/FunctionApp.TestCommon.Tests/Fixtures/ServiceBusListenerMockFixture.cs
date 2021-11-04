@@ -24,9 +24,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
     {
         public ServiceBusListenerMockFixture()
         {
+            TestLogger = new TestDiagnosticsLogger();
+
             var integrationTestConfiguration = new IntegrationTestConfiguration();
-            ServiceBusResourceProvider = new ServiceBusResourceProvider(integrationTestConfiguration.ServiceBusConnectionString, new TestDiagnosticsLogger());
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(integrationTestConfiguration.ServiceBusConnectionString, TestLogger);
         }
+
+        public ITestDiagnosticsLogger TestLogger { get; }
 
         public string ConnectionString => ServiceBusResourceProvider.ConnectionString;
 

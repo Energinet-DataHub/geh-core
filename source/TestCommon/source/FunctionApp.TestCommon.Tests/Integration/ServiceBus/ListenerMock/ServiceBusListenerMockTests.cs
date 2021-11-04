@@ -427,18 +427,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
         }
 
         /// <summary>
-        /// A new <see cref="ServiceBusListenerMock"/> is created for each test.
+        /// A new <see cref="ServiceBusListenerMock"/> is created and disposed for each test.
         /// </summary>
-        public class ServiceBusListenerMockTestsBase : TestBase<ServiceBusListenerMock>, IAsyncLifetime
+        public abstract class ServiceBusListenerMockTestsBase : TestBase<ServiceBusListenerMock>, IAsyncLifetime
         {
             public const string DefaultBody = "valid body";
 
-            public ServiceBusListenerMockTestsBase(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
+            protected ServiceBusListenerMockTestsBase(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
             {
                 ServiceBusListenerMockFixture = serviceBusListenerMockFixture;
 
                 // Customize auto fixture
-                Fixture.Inject<ITestDiagnosticsLogger>(new TestDiagnosticsLogger());
+                Fixture.Inject<ITestDiagnosticsLogger>(ServiceBusListenerMockFixture.TestLogger);
                 Fixture.ForConstructorOn<ServiceBusListenerMock>()
                     .SetParameter("connectionString").To(ServiceBusListenerMockFixture.ConnectionString);
                 Fixture.Customize<ServiceBusMessage>(composer => composer
