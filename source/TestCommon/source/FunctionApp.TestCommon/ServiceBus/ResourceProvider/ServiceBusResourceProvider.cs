@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
@@ -22,8 +21,8 @@ using Azure.Messaging.ServiceBus.Administration;
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
 {
     /// <summary>
-    /// The resource provider and related builders encapsulates the creation of resources in an existing
-    /// Azure Service Bus namespace, and support creating the related client types as well.
+    /// The resource provider and related builders encapsulates the creation of queues/topics/subscriptions
+    /// in an existing Azure Service Bus namespace, and support creating the related client types as well.
     ///
     /// The queue/topic names are build using a combination of the given name as well as a
     /// random suffix per provider instance. This ensures we can easily identity resources from a certain
