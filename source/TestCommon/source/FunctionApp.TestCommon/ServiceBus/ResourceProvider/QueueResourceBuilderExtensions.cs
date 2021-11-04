@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 {
     public static class QueueResourceBuilderExtensions
     {
-        public static QueueResourceBuilder SetEnvironmentVariableToName(this QueueResourceBuilder builder, string variable)
+        public static QueueResourceBuilder SetEnvironmentVariableToQueueName(this QueueResourceBuilder builder, string variable)
         {
             builder.Do(queueProperties => Environment.SetEnvironmentVariable(variable, queueProperties.Name));
 

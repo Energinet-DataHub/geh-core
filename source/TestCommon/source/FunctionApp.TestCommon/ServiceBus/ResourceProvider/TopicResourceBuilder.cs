@@ -26,6 +26,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             ServiceBusResource = serviceBusResource;
             CreateTopicOptions = createTopicOptions;
 
+            PostActions = new List<Action<TopicProperties>>();
             Subscriptions = new Dictionary<string, CreateSubscriptionOptions>();
         }
 
@@ -33,11 +34,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         private CreateTopicOptions CreateTopicOptions { get; }
 
+        private IList<Action<TopicProperties>> PostActions { get; }
+
         private IDictionary<string, CreateSubscriptionOptions> Subscriptions { get; }
 
         public TopicResourceBuilder Do(Action<TopicProperties> postAction)
         {
-            // TODO: Implement "Do" actions
+            PostActions.Add(postAction);
+
             return this;
         }
 
@@ -82,7 +86,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             var topicResource = new TopicResource(ServiceBusResource, response.Value);
             ServiceBusResource.TopicResources.Add(topicResourceName, topicResource);
 
-            // TODO: Call "Do" actions
+            foreach (var postAction in PostActions)
+            {
+                postAction(response.Value);
+            }
+
             return topicResource;
         }
 

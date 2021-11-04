@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 {
     public static class TopicResourceBuilderExtensions
     {
-        public static TopicResourceBuilder SetEnvironmentVariableToName(this TopicResourceBuilder builder, string variable)
+        public static TopicResourceBuilder SetEnvironmentVariableToTopicName(this TopicResourceBuilder builder, string variable)
         {
             builder.Do(topicProperties => Environment.SetEnvironmentVariable(variable, topicProperties.Name));
 

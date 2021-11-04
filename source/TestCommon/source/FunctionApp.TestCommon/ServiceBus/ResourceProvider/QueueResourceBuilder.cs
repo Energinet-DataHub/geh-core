@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus.Administration;
 
@@ -24,15 +25,20 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         {
             ServiceBusResource = serviceBusResource;
             CreateQueueOptions = createQueueOptions;
+
+            PostActions = new List<Action<QueueProperties>>();
         }
 
         private ServiceBusResourceProvider ServiceBusResource { get; }
 
         private CreateQueueOptions CreateQueueOptions { get; }
 
+        private IList<Action<QueueProperties>> PostActions { get; }
+
         public QueueResourceBuilder Do(Action<QueueProperties> postAction)
         {
-            // TODO: Implement "Do" actions
+            PostActions.Add(postAction);
+
             return this;
         }
 
@@ -45,7 +51,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             var queueResource = new QueueResource(ServiceBusResource, response.Value);
             ServiceBusResource.QueueResources.Add(queueName, queueResource);
 
-            // TODO: Call "Do" actions
+            foreach (var postAction in PostActions)
+            {
+                postAction(response.Value);
+            }
+
             return queueResource;
         }
     }

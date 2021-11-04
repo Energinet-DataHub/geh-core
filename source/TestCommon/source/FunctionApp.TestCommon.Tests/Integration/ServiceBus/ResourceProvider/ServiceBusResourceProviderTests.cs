@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -35,27 +36,73 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             private string ConnectionString { get; }
 
             [Fact]
-            public async Task When_UsingProvider_Then_QueueResourceLifecycleIsHandled()
+            public async Task When_BuildingQueue_Then_ResourceLifecycleIsHandled()
             {
                 // Arrange
                 var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString);
-                var queueNamePrefix = "queue";
+                var namePrefix = "queue";
+                var environmentVariable = "ENV_NAME";
+                ServiceBusSender? senderClient = null;
 
-                // Act
-                var queueResource = await serviceBusResourceProvider
-                    .BuildQueue(queueNamePrefix)
-                    .SetEnvironmentVariableToName("test")
-                    .CreateAsync();
+                try
+                {
+                    // Act
+                    var actualResource = await serviceBusResourceProvider
+                        .BuildQueue(namePrefix)
+                        .SetEnvironmentVariableToQueueName(environmentVariable)
+                        .CreateAsync();
 
-                var queueName = queueResource.Name;
-                var senderClient = queueResource.SenderClient!;
-                await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
+                    // Assert
+                    var actualName = actualResource.Name;
+                    actualName.Should().StartWith(namePrefix);
+                    actualName.Should().Contain(serviceBusResourceProvider.RandomSuffix);
 
-                // Assert
-                queueName.Should().StartWith(queueNamePrefix);
-                queueName.Should().Contain(serviceBusResourceProvider.RandomSuffix);
+                    var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
+                    actualEnvironmentValue.Should().Be(actualName);
 
-                await serviceBusResourceProvider.DisposeAsync();
+                    senderClient = actualResource.SenderClient!;
+                    await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
+                }
+                finally
+                {
+                    await serviceBusResourceProvider.DisposeAsync();
+                }
+
+                senderClient.IsClosed.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_BuildingTopic_Then_ResourceLifecycleIsHandled()
+            {
+                // Arrange
+                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString);
+                var namePrefix = "topic";
+                var environmentVariable = "ENV_NAME";
+                ServiceBusSender? senderClient = null;
+
+                try
+                {
+                    // Act
+                    var actualResource = await serviceBusResourceProvider
+                        .BuildTopic(namePrefix)
+                        .SetEnvironmentVariableToTopicName(environmentVariable)
+                        .CreateAsync();
+
+                    // Assert
+                    var actualName = actualResource.Name;
+                    actualName.Should().StartWith(namePrefix);
+                    actualName.Should().Contain(serviceBusResourceProvider.RandomSuffix);
+
+                    var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
+                    actualEnvironmentValue.Should().Be(actualName);
+
+                    senderClient = actualResource.SenderClient!;
+                    await senderClient.SendMessageAsync(new ServiceBusMessage("hello"));
+                }
+                finally
+                {
+                    await serviceBusResourceProvider.DisposeAsync();
+                }
 
                 senderClient.IsClosed.Should().BeTrue();
             }
