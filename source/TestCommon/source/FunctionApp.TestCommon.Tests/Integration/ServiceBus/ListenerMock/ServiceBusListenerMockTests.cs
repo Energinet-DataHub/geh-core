@@ -122,6 +122,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 // Assert
                 var isReceived = await CanReceiveMessageAsync();
                 isReceived.Should().BeTrue();
+
+                Sut.ReceivedMessages.Count.Should().Be(1);
             }
 
             private async Task<bool> CanReceiveMessageAsync()
