@@ -25,10 +25,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
         {
             var integrationTestConfiguration = new IntegrationTestConfiguration();
             ServiceBusResourceProvider = new ServiceBusResourceProvider(integrationTestConfiguration.ServiceBusConnectionString);
-            ConnectionString = ServiceBusResourceProvider.ConnectionString;
         }
 
-        public string ConnectionString { get; }
+        public string ConnectionString => ServiceBusResourceProvider.ConnectionString;
 
         public QueueResource? Queue { get; private set; }
 
