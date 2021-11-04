@@ -424,6 +424,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             }
         }
 
+        /// <summary>
+        /// A new <see cref="ServiceBusListenerMock"/> is created for each test.
+        /// </summary>
         public class ServiceBusListenerMockTestsBase : TestBase<ServiceBusListenerMock>, IAsyncLifetime
         {
             public const string DefaultBody = "valid body";
@@ -441,8 +444,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .With(p => p.MessageId)
                     .With(p => p.Subject)
                     .With(p => p.Body, new BinaryData(DefaultBody)));
-
-                Sut.ResetMessageHandlersAndReceivedMessages();
             }
 
             protected ServiceBusListenerMockFixture ServiceBusListenerMockFixture { get; }
