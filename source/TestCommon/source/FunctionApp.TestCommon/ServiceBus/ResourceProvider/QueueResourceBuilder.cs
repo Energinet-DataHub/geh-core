@@ -56,6 +56,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <returns>Instance with information about the created queue.</returns>
         public async Task<QueueResource> CreateAsync()
         {
+            ServiceBusResource.TestLogger.WriteLine($"Creating queue '{CreateQueueOptions.Name}'");
+
             var response = await ServiceBusResource.AdministrationClient.CreateQueueAsync(CreateQueueOptions)
                 .ConfigureAwait(false);
 

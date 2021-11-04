@@ -15,6 +15,7 @@
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
@@ -24,7 +25,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
         public ServiceBusListenerMockFixture()
         {
             var integrationTestConfiguration = new IntegrationTestConfiguration();
-            ServiceBusResourceProvider = new ServiceBusResourceProvider(integrationTestConfiguration.ServiceBusConnectionString);
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(integrationTestConfiguration.ServiceBusConnectionString, new TestDiagnosticsLogger());
         }
 
         public string ConnectionString => ServiceBusResourceProvider.ConnectionString;

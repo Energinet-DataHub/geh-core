@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
 
@@ -40,7 +41,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             public async Task When_BuildingQueue_Then_ResourceLifecycleIsHandled()
             {
                 // Arrange
-                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString);
+                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString, new TestDiagnosticsLogger());
                 var namePrefix = "queue";
                 var environmentVariable = "ENV_NAME";
                 ServiceBusSender? senderClient = null;
@@ -76,7 +77,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             public async Task When_BuildingTopicWithSubscription_Then_ResourceLifecycleIsHandled()
             {
                 // Arrange
-                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString);
+                var serviceBusResourceProvider = new ServiceBusResourceProvider(ConnectionString, new TestDiagnosticsLogger());
                 var namePrefix = "topic";
                 var topicEnvironmentVariable = "ENV_TOPIC_NAME";
                 var subscription01 = "subscription01";

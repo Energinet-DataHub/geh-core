@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
 {
@@ -37,11 +38,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// </summary>
         private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(5);
 
-        public ServiceBusResourceProvider(string connectionString)
+        public ServiceBusResourceProvider(string connectionString, ITestDiagnosticsLogger testLogger)
         {
             ConnectionString = string.IsNullOrWhiteSpace(connectionString)
                 ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
                 : connectionString;
+            TestLogger = testLogger
+                ?? throw new ArgumentNullException(nameof(testLogger));
 
             AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
             Client = new ServiceBusClient(ConnectionString);
@@ -58,6 +61,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// Allows us to identify resources created using the same instance (e.g. for debugging).
         /// </summary>
         public string RandomSuffix { get; }
+
+        internal ITestDiagnosticsLogger TestLogger { get; }
 
         internal ServiceBusAdministrationClient AdministrationClient { get; }
 

@@ -83,6 +83,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         private async Task<TopicResource> CreateTopicAsync()
         {
+            ServiceBusResource.TestLogger.WriteLine($"Creating topic '{CreateTopicOptions.Name}'");
+
             var response = await ServiceBusResource.AdministrationClient.CreateTopicAsync(CreateTopicOptions)
                 .ConfigureAwait(false);
 
@@ -102,6 +104,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         {
             foreach (var subscriptionBuilderPair in SubscriptionBuilders)
             {
+                ServiceBusResource.TestLogger.WriteLine($"Creating subscription '{subscriptionBuilderPair.Value.CreateSubscriptionOptions.SubscriptionName}'");
+
                 var response = await ServiceBusResource.AdministrationClient.CreateSubscriptionAsync(subscriptionBuilderPair.Value.CreateSubscriptionOptions)
                     .ConfigureAwait(false);
 
