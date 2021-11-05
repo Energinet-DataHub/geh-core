@@ -16,7 +16,7 @@ name: Publish Messaging bundle
 
 on:
   # Build, test, pack and publish release packages
-  # Only executed if (*.)TestCommon packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  # Only executed if (*.)Messaging packages content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
       - main
@@ -36,7 +36,7 @@ on:
       - source/Messaging/source/Messaging.Integration.ServiceCollection/**
       - source/Messaging/source/Messaging.Protobuf/**
       - source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/**
-      - .github/workflows/testcommon-bundle-publish.yml
+      - .github/workflows/messaging-bundle-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
