@@ -26,7 +26,7 @@ The following only introduce the types supporting integration testing an Azure F
 
 ### Integration Test environment
 
-The *Integration Test environment* is a resource group containing shareable Azure resources to support various integration test scenarious. E.g. this resource group contains a Azure Service Bus namespace, so we don't have to spent time creating one in our tests.
+The *Integration Test environment* is a resource group containing shareable Azure resources to support various integration test scenarios. E.g. this resource group contains a Azure Service Bus namespace, so we don't have to spent time creating one in our tests.
 
 Connection strings etc. necessary to connect to shared resources, are stored as secrets in a Key Vault within the same resource group. 
 
