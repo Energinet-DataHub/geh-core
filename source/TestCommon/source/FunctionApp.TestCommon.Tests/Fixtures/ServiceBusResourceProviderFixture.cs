@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
@@ -21,23 +21,23 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
     /// <summary>
     /// This fixtures ensures we reuse <see cref="ConnectionString"/>
     /// so we only have to retrieve an access token and values in Key Vault one time.
-    ///
-    /// When testing the <see cref="ServiceBusListenerMock"/> we must create new queues/topics
-    /// per test, because stopping the underlying processors doesn't seem to be 100% deterministics.
-    /// Also notice the remark on <see cref="ServiceBusListenerMock.ResetMessageReceiversAsync"/>.
     /// </summary>
-    public class ServiceBusListenerMockFixture
+    public class ServiceBusResourceProviderFixture
     {
-        public ServiceBusListenerMockFixture()
+        public ServiceBusResourceProviderFixture()
         {
             TestLogger = new TestDiagnosticsLogger();
 
             var integrationTestConfiguration = new IntegrationTestConfiguration();
             ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
+
+            AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
         }
 
         public ITestDiagnosticsLogger TestLogger { get; }
 
         public string ConnectionString { get; }
+
+        public ServiceBusAdministrationClient AdministrationClient { get; }
     }
 }

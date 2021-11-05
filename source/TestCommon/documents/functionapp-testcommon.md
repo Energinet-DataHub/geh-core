@@ -24,6 +24,14 @@ The following only introduce the types supporting integration testing an Azure F
 
 > For a concrete implementation example take a look at the [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
 
+### Integration Test environment
+
+The *Integration Test environment* is a resource group containing shareable Azure resources to support various integration test scenarios. E.g. this resource group contains a Azure Service Bus namespace, so we don't have to spent time creating one in our tests.
+
+Connection strings etc. necessary to connect to shared resources, are stored as secrets in a Key Vault within the same resource group. 
+
+The `IntegrationTestConfiguration` can be used to retrieve these secrets in integration test setup.
+
 ### Managers
 
 First of all we have a group of components that we use to *manage* ressources or tools. Each component can manage a certain kind of ressource/tool, and are named as `<ressource/tool-type>Manager`.
@@ -43,6 +51,14 @@ Currently we have the following managers:
 * `AzuriteManager`; this is used to start/stop Azurite (a cross platform storage emulator).
 * `SqlServerDatabaseManager`; this is used to create/destroy local SQL databases. For each database type we have, we should implement a class that inherits from this manager.
 * `FunctionAppHostManager`; this is used to start/stop an Azure Function using Azure Functions Core Tools. It can be the Azure Function we want to integration test, or just one that we depend on in our integration tests.
+
+### Resource providers
+
+The `ServiceBusResourceProvider` is more complex than a *manager*, so we named it differently.
+
+It makes it easy to build a bunch of resources within the same Azure Service Bus namespace, and will automatically track and cleanup any resources created, when it is disposed.
+
+Queues and topics created using the resource provider, will be created using a combination of a given prefix and a random suffix. This is to ensure multiple runs of the same tests can run in parallel without interferring.
 
 ### Verify Service Bus messaging
 

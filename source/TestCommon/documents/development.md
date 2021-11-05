@@ -13,7 +13,9 @@ The packages contain reusable types, supporting the development and test of Ener
 
 ## Workflows
 
-The `testcommon-bundle-publish.yml` handles test, build, pack and publish of the bundle.
+### `testcommon-bundle-publish.yml`
+
+This workflow handles test, build, pack and publish of the bundle.
 
 If any of the packages in the bundle has changes, both currently must be updated with regards to version.
 
@@ -37,9 +39,9 @@ The `FunctionApp.TestCommon.Tests` have a dependency to an actual Azure Service 
 
 The xUnit fixture `ServiceBusListenerMockFixture` is used to orchestrate integration tests for `ServiceBusListenerMock` which depend on Azure Service Bus resources.
 
-For managing the life-cycle of any Azure Service Bus resources, it uses [Squadron](https://github.com/SwissLife-OSS/squadron).
+In the Integration Test environment we have created a Azure Service Bus namespace, while topics/queues are created on the fly. For managing the life-cycle of topic/queues we use the `ServiceBusResourceProvider`.
 
-An Azure Service Bus namespace with topics/queues are created on the fly, which requires developers to do the following:
+To be able to manage topics/queue, developers must do the following:
 
 * Copy of the `integrationtest.local.settings.json.sample` file into `integrationtest.local.settings.json`
-* Update `integrationtest.local.settings.json` with information that allows the creation of the mentioned Azure Service Bus ressources.
+* Update `integrationtest.local.settings.json` with information matching the Integration Test environment.
