@@ -164,9 +164,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
         /// Reset all listeners.
         /// </summary>
         /// <remarks>Avoid using this, unless you are removing the queue or topic</remarks>
-        public async Task ResetMessageReceiversAsync()
+        public Task ResetMessageReceiversAsync()
         {
-            await CleanupMessageReceiversAsync().ConfigureAwait(false);
+            return CleanupMessageReceiversAsync();
         }
 
         /// <summary>
