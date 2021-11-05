@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.ServiceBus.ListenerMock
 {
-    public class ServiceBusMockTests
+    public class ServiceBusListenerMockTests
     {
         [Collection(nameof(ServiceBusListenerMockCollectionFixture))]
         public class AddQueueListenerAsync : ServiceBusListenerMockTestsBase
