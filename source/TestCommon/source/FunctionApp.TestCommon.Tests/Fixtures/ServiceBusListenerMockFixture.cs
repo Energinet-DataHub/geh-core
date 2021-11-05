@@ -12,51 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
 {
-    public class ServiceBusListenerMockFixture : IAsyncLifetime
+    /// <summary>
+    /// This fixtures ensures we reuse <see cref="ConnectionString"/>
+    /// so we only have to retrieve an access token and values in Key Vault one time.
+    ///
+    /// When testing the <see cref="ServiceBusListenerMock"/> we must create new queues/topics
+    /// per test, because stopping the underlying processors doesn't seem to be 100% deterministics.
+    /// Also notice the remark on <see cref="ServiceBusListenerMock.ResetMessageReceiversAsync"/>.
+    /// </summary>
+    public class ServiceBusListenerMockFixture
     {
         public ServiceBusListenerMockFixture()
         {
             TestLogger = new TestDiagnosticsLogger();
 
             var integrationTestConfiguration = new IntegrationTestConfiguration();
-            ServiceBusResourceProvider = new ServiceBusResourceProvider(integrationTestConfiguration.ServiceBusConnectionString, TestLogger);
+            ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
         }
 
         public ITestDiagnosticsLogger TestLogger { get; }
 
-        public string ConnectionString => ServiceBusResourceProvider.ConnectionString;
-
-        public QueueResource? Queue { get; private set; }
-
-        public TopicResource? Topic { get; private set; }
-
-        public static string SubscriptionName => "defaultSubscription";
-
-        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
-
-        public async Task InitializeAsync()
-        {
-            Queue = await ServiceBusResourceProvider
-                .BuildQueue("queue")
-                .CreateAsync();
-
-            Topic = await ServiceBusResourceProvider
-                .BuildTopic("topic")
-                .AddSubscription(SubscriptionName)
-                .CreateAsync();
-        }
-
-        public async Task DisposeAsync()
-        {
-            await ServiceBusResourceProvider.DisposeAsync();
-        }
+        public string ConnectionString { get; }
     }
 }
