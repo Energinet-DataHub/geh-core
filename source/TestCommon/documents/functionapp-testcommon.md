@@ -24,6 +24,14 @@ The following only introduce the types supporting integration testing an Azure F
 
 > For a concrete implementation example take a look at the [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
 
+### Integration Test environment
+
+The *Integration Test environment* is a resource group containing shareable Azure resources to support various integration test scenarious. E.g. this resource group contains a Azure Service Bus namespace, so we don't have to spent time creating one in our tests.
+
+Connection strings etc. necessary to connect to shared resources, are stored as secrets in a Key Vault within the same resource group. 
+
+The `IntegrationTestConfiguration` can be used to retrieve these secrets in integration test setup.
+
 ### Managers
 
 First of all we have a group of components that we use to *manage* ressources or tools. Each component can manage a certain kind of ressource/tool, and are named as `<ressource/tool-type>Manager`.
