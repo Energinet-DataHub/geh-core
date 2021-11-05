@@ -31,7 +31,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.TestCommon</PackageId>
-    <PackageVersion>0.0.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
     <Title>TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
