@@ -32,10 +32,7 @@ on:
     branches:
       - main
     paths:
-      - source/Messaging/source/Messaging/**
-      - source/Messaging/source/Messaging.Integration.ServiceCollection/**
-      - source/Messaging/source/Messaging.Protobuf/**
-      - source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/**
+      - source/Messaging/**
       - .github/workflows/messaging-bundle-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
