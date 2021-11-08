@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 1.0.1
+
+- Ensure `AzuriteManager` does not fail when Azure Storage Emulator is not installed on machine.
+
 ## Version 1.0.0
 
 - Implemented `ServiceBusResourceProvider`. See [Resource providers](../functionapp-testcommon.md#resource-providers).

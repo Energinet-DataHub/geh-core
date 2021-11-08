@@ -87,28 +87,32 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         /// </summary>
         private static void StopAzureStorageEmulator()
         {
-            using var storageEmulatorProcess = new Process
+            var storageEmulatorFilePath = @"C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe";
+            if (File.Exists(storageEmulatorFilePath))
             {
-                StartInfo =
+                using var storageEmulatorProcess = new Process
                 {
-                    FileName = @"C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe",
-                    Arguments = "stop",
-                },
-            };
+                    StartInfo =
+                    {
+                        FileName = storageEmulatorFilePath,
+                        Arguments = "stop",
+                    },
+                };
 
-            var success = storageEmulatorProcess.Start();
-            if (!success)
-            {
-                throw new InvalidOperationException("Error when stopping Azure Storage Emulator.");
-            }
+                var success = storageEmulatorProcess.Start();
+                if (!success)
+                {
+                    throw new InvalidOperationException("Error when stopping Azure Storage Emulator.");
+                }
 
-            // Azure Storage Emulator is stopped using a process that will exit right away.
-            var timeout = TimeSpan.FromMinutes(2);
-            var hasExited = storageEmulatorProcess.WaitForExit((int)timeout.TotalMilliseconds);
-            if (!hasExited)
-            {
-                KillAndDisposeProcess(storageEmulatorProcess);
-                throw new InvalidOperationException($"Azure Storage Emulator did not stop within: '{timeout}'");
+                // Azure Storage Emulator is stopped using a process that will exit right away.
+                var timeout = TimeSpan.FromMinutes(2);
+                var hasExited = storageEmulatorProcess.WaitForExit((int)timeout.TotalMilliseconds);
+                if (!hasExited)
+                {
+                    KillAndDisposeProcess(storageEmulatorProcess);
+                    throw new InvalidOperationException($"Azure Storage Emulator did not stop within: '{timeout}'");
+                }
             }
         }
 
