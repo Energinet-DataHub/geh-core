@@ -1,5 +1,6 @@
 # Messaging Release notes
 
-## Version 0.0.1
+## Version 1.0.0
 
-- Preparing packages for initial release.
+- Initial release.
+
