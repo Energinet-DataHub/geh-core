@@ -46,12 +46,7 @@ env:
   AZURITE_VERSION: '3.14.0'
   AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '3.0.3568'
   # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
-  SUBSCRIPTION_ID: ${{ secrets.INTEGRATIONTEST_SUBSCRIPTION_ID }} # TODO: Update secret names; should use new "integration tests" environment
-  RESOURCE_GROUP_NAME: ${{ secrets.INTEGRATIONTEST_RESOURCE_GROUP_NAME }}
-  DEFAULT_LOCATION: ${{ secrets.INTEGRATIONTEST_DEFAULT_LOCATION }}
-  TENANT_ID: ${{ secrets.INTEGRATIONTEST_TENANT_ID }}
-  CLIENT_ID: ${{ secrets.INTEGRATIONTEST_CLIENT_ID }}
-  CLIENT_SECRET: ${{ secrets.INTEGRATIONTEST_CLIENT_SECRET }}
+  AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
 
 jobs:
   build_and_publish:
@@ -60,6 +55,8 @@ jobs:
 
     permissions:
       contents: read
+
+    environment: CI
 
     steps:
       - name: Checkout repository
@@ -92,7 +89,10 @@ jobs:
         run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
 
       - name: Run tests
-        run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
+        run: |
+          az login --service-principal --username "${{ secrets.AZURE_SPN_ID }}" --password "${{ secrets.AZURE_SPN_SECRET }}" --tenant "${{ secrets.AZURE_TENANT_ID }}"
+          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
       - name: Get version suffix property value
         uses: ./.github/actions/get-version-suffix
@@ -109,6 +109,7 @@ jobs:
           PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
+        if: ${{ env.PUSH_PACKAGES == 'true' }}
         uses: ./.github/actions/nuget-assert-release-version
         with:
           NUPKG_RECURSE_PATH: 'source/TestCommon/source'
