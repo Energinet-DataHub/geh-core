@@ -16,7 +16,7 @@ Subscriptions will be created with the name given as parameter and does not cont
 
 ## Automatically cleanup Azure Service Bus resources
 
-Even if the created queues/topics are not deleted explicit by calling dispose on the resource provider, they will still be deleted after an idle timeout.
+Even if the created queues/topics are not deleted explicitly by calling dispose on the resource provider, they will still be deleted after an idle timeout.
 
 See [AutoDeleteOnIdleTimeout](../source/FunctionApp.TestCommon/ServiceBus/ResourceProvider/ServiceBusResourceProvider.cs).
 
