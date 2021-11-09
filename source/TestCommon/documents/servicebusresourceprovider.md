@@ -3,7 +3,7 @@
 The `ServiceBusResourceProvider` and its related types, support us with the following functionality:
 
 - The `ServiceBusResourceProvider` is the fluent API builder root. It automatically tracks and cleanup any resources created, when it is disposed.
-- The `Builder` types encapsulates the creation of queues/topics/subscriptions in an existing Azure Service Bus namespace.
+- The `Builder` types encapsulate the creation of queues/topics/subscriptions in an existing Azure Service Bus namespace.
 - The `Resource` types support lazy creation of matching sender clients.
 
 > For usage, see `ServiceBusResourceProviderTests` or [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
