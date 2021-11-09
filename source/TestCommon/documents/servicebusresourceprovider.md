@@ -2,7 +2,7 @@
 
 The `ServiceBusResourceProvider` and its related types, support us with the following functionality:
 
-- The `ServiceBusResourceProvider` is the fluent API builder root. It automatically tracks and cleanup any resources created, when `ServiceBusResourceProvider` is disposed.
+- The `ServiceBusResourceProvider` is the fluent API builder root. It automatically tracks and cleanup any resources created, when it is disposed.
 - The `Builder` types encapsulates the creation of queues/topics/subscriptions in an existing Azure Service Bus namespace.
 - The `Resource` types support lazy creation of matching sender clients.
 
@@ -19,6 +19,28 @@ Subscriptions will be created with the name given as parameter and does not cont
 Even if the created queues/topics are not deleted explicit by calling dispose on the resource provider, they will still be deleted after an idle timeout.
 
 See [AutoDeleteOnIdleTimeout](../source/FunctionApp.TestCommon/ServiceBus/ResourceProvider/ServiceBusResourceProvider.cs).
+
+## Operations
+
+### `BuildQueue()`, `BuildTopic()` and `CreateAsync()`
+
+The fluent API chain always starts with a `Build()` operation, and ends with `CreateAsync()`.
+
+The `CreateAsync()` operation returns one of the resource types `QueueResource` or `TopicResource`. These `Resource` types give us access to the full resource name created, and a sender client configured to send messages to the created resource.
+
+The `TopicResource` also has a readonly collection of subscriptions added.
+
+Depending on the resource type beeing built, additional operations are available.
+
+### `AddSubscription()`
+
+When building a topic its possible to also add subscriptions.
+
+### `Do()` and `SetEnvironmentVariableTo` extensions
+
+All `Builder` types support the `Do()` operation which allows us to register *post actions*. Each post action will be called just after the resource type has been created, with the properties of the resource type.
+
+On top of `Do()` we have implemented `SetEnvironmentVariableTo` extensions, which let us set a environment variable to the name of the just created resource.
 
 ## Examples
 
