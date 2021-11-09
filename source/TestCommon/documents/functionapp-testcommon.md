@@ -28,7 +28,7 @@ The following only introduce the types supporting integration testing an Azure F
 
 The *Integration Test environment* is a resource group containing shareable Azure resources to support various integration test scenarios. E.g. this resource group contains a Azure Service Bus namespace, so we don't have to spent time creating one in our tests.
 
-Connection strings etc. necessary to connect to shared resources, are stored as secrets in a Key Vault within the same resource group. 
+Connection strings etc. necessary to connect to shared resources, are stored as secrets in a Key Vault within the same resource group.
 
 The `IntegrationTestConfiguration` can be used to retrieve these secrets in integration test setup.
 
@@ -56,9 +56,9 @@ Currently we have the following managers:
 
 The `ServiceBusResourceProvider` is more complex than a *manager*, so we named it differently.
 
-It makes it easy to build a bunch of resources within the same Azure Service Bus namespace, and will automatically track and cleanup any resources created, when it is disposed.
+It makes it easy to manage queues/topics/subscriptions within an existing Azure Service Bus namespace. This is useful from our integration test setup.
 
-Queues and topics created using the resource provider, will be created using a combination of a given prefix and a random suffix. This is to ensure multiple runs of the same tests can run in parallel without interferring.
+For details, see [servicebusresourceprovider.md](./servicebusresourceprovider.md).
 
 ### Verify Service Bus messaging
 
