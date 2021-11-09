@@ -56,7 +56,7 @@ Currently we have the following managers:
 
 The `ServiceBusResourceProvider` is more complex than a *manager*, so we named it differently.
 
-It makes it easy to manage queues/topics/subscriptions within an existing Azure Service Bus namespace. This is usefull from our integration tests setup.
+It makes it easy to manage queues/topics/subscriptions within an existing Azure Service Bus namespace. This is useful from our integration test setup.
 
 For details, see [servicebusresourceprovider.md](./servicebusresourceprovider.md).
 
