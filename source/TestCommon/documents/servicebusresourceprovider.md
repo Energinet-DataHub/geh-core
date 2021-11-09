@@ -10,7 +10,7 @@ The `ServiceBusResourceProvider` and its related types, support us with the foll
 
 ## Resource names
 
-Queues and topics created using the resource provider, will be created using a combination of a given prefix and a random suffix. This is to ensure multiple runs of the same tests can run in parallel without interferring.
+Queues and topics created using the resource provider will be created using a combination of a given prefix and a random suffix. This is to ensure multiple runs of the same tests can run in parallel without interfering.
 
 Subscriptions will be created with the name given as parameter and does not contain a random suffix.
 
