@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
 {
     /// <summary>
@@ -65,5 +67,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
         /// </summary>
         public string Functions { get; set; }
             = string.Empty;
+
+        /// <summary>
+        /// Only support if <see cref="UseShellExecute"/> is "false".
+        /// A dictionary of environment variable that will we set for the Function App host process.
+        /// </summary>
+        public IDictionary<string, string> ProcessEnvironmentVariables { get; set; }
+            = new Dictionary<string, string>();
     }
 }

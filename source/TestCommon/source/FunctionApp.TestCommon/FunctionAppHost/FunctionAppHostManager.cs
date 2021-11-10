@@ -177,6 +177,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 // The following two lines are necessary but also the settings in .runsettings file in the project root.
                 process.StartInfo.EnvironmentVariables["COR_ENABLE_PROFILING"] = "0";
                 process.StartInfo.EnvironmentVariables["CORECLR_ENABLE_PROFILING"] = "0";
+
+                foreach (var item in settings.ProcessEnvironmentVariables)
+                {
+                    process.StartInfo.EnvironmentVariables[item.Key] = item.Value;
+                }
             }
 
             // StartInfo.UseShellExecute cannot be used in combination with redirecting output/error.
