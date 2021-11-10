@@ -160,7 +160,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 StartInfo =
                 {
                     FileName = dotnetExePath,
-                    Arguments = $"\"{functionAppHostPath}\" start -p {settings.Port} --csharp",
+                    Arguments = $"\"{functionAppHostPath}\" start -p {settings.Port} --csharp {BuildFunctionsArgument(settings.Functions)}",
                     WorkingDirectory = functionAppFolder,
                     UseShellExecute = settings.UseShellExecute,
                 },
@@ -212,6 +212,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
             return !Directory.Exists(resolvedFolderPath)
                 ? throw new DirectoryNotFoundException($"Relative folder path does not exist. RelativeFolderPath='{relativeFolderPath}'; ResolvedFolderPath='{resolvedFolderPath}'.")
                 : resolvedFolderPath;
+        }
+
+        private static string BuildFunctionsArgument(string functions)
+        {
+            return string.IsNullOrWhiteSpace(functions)
+                ? string.Empty
+                : $"--functions {functions}";
         }
 
         private static bool IsHostStartedEvent(DataReceivedEventArgs outputEvent)

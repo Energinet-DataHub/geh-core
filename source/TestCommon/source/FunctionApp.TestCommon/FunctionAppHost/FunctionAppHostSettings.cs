@@ -59,5 +59,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
         /// If the host is not ready within expected time, an exception is thrown.
         /// </summary>
         public int MaxWaitSeconds { get; set; }
+
+        /// <summary>
+        /// A space separated list of functions to load. If empty all functions will be loaded.
+        /// </summary>
+        public string Functions { get; set; }
+            = string.Empty;
     }
 }
