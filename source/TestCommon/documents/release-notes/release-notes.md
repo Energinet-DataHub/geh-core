@@ -3,7 +3,9 @@
 ## Version 1.1.0
 
 - Support managing multiple Azure Function Apps from the same test fixture.
-- By use of the `FunctionAppHostSettings.Functions` property, we can control which functions to load in an Azure Function App.
+- Extended control of starting an Azure Function App through use of the `FunctinoAppHostManager`:
+  - Specify which functions to load using `FunctionAppHostSettings.Functions`.
+  - Set environment variables for the process using `FunctionAppHostSettings.ProcessEnvironmentVariables`.
 
 ## Version 1.0.1
 
