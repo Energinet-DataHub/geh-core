@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 1.1.0
+
+- Support managing multiple Azure Function Apps from the same test fixture.
+
 ## Version 1.0.1
 
 - Ensure `AzuriteManager` does not fail when Azure Storage Emulator is not installed on machine.
