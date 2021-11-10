@@ -3,6 +3,7 @@
 ## Version 1.1.0
 
 - Support managing multiple Azure Function Apps from the same test fixture.
+- By use of the `FunctionAppHostSettings.Functions` property, we can control which functions to load in an Azure Function App.
 
 ## Version 1.0.1
 
