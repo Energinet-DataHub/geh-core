@@ -275,6 +275,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
             {
                 throw new InvalidOperationException($"Could not start Azure Functions host within timeout '{timeout}'. Try looking into the host output written at startup. For more on how to get the output, read the documentation on the interface ITestDiagnosticsLogger.");
             }
+
+            TestLogger.WriteLine($"Started host with process id '{FunctionAppHostProcess.Id}'");
         }
 
         private void OnLogOutputToHostLog(object sender, DataReceivedEventArgs outputEvent)
