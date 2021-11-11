@@ -5,7 +5,10 @@
 - Extended control of starting an Azure Function App through use of the `FunctionAppHostManager`:
   - Specify which functions to load using `FunctionAppHostSettings.Functions`.
   - Set environment variables for the process using `FunctionAppHostSettings.ProcessEnvironmentVariables`.
-  - Write host process id to output when started so we know which process to attach debugger to if needed.
+  - Write host process id to output when started, so we know which process to attach debugger to if needed.
+- Implemented `FunctionAppHostManagerExtensions`:
+  - `CheckIfFunctionWasExecuted`
+  - `TriggerFunctionAsync`
 
 ## Version 1.0.1
 
