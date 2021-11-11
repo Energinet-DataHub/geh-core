@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.TestCommon;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Configuration
 {
     public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
     {
