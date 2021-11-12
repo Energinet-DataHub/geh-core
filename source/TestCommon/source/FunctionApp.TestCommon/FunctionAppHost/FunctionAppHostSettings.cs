@@ -48,11 +48,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
         /// functions output (logs) in the console for e.g. debugging issues.
         /// </summary>
         public bool UseShellExecute { get; set; }
+            = false;
 
         /// <summary>
         /// Port on which the host will listen.
         /// </summary>
         public int Port { get; set; }
+            = 7001;
 
         /// <summary>
         /// After starting the host this is the max. time we wait before we expect the
@@ -61,6 +63,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
         /// If the host is not ready within expected time, an exception is thrown.
         /// </summary>
         public int MaxWaitSeconds { get; set; }
+            = 120;
 
         /// <summary>
         /// A space separated list of functions to load. If empty all functions will be loaded.
