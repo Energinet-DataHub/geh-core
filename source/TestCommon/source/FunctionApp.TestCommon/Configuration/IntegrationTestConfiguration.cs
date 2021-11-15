@@ -32,6 +32,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             Configuration = BuildKeyVaultConfigurationRoot();
 
             ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
+            ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
         }
 
         /// <summary>
@@ -43,6 +44,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         /// Connection string to the Azure Service Bus in the Integration Test environment.
         /// </summary>
         public string ServiceBusConnectionString { get; }
+
+        /// <summary>
+        /// Instrumentation Key to the Application Insights in the Integration Test environment.
+        /// </summary>
+        public string ApplicationInsightsInstrumentationKey { get; }
 
         private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
         {

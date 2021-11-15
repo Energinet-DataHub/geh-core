@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 		documents\documentation.md = documents\documentation.md
 		documents\functionapp-testcommon.md = documents\functionapp-testcommon.md
 		documents\servicebuslistenermock.md = documents\servicebuslistenermock.md
+		documents\servicebusresourceprovider.md = documents\servicebusresourceprovider.md
 		documents\testcommon.md = documents\testcommon.md
 	EndProjectSection
 EndProject

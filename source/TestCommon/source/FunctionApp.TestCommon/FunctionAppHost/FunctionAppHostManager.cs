@@ -160,7 +160,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 StartInfo =
                 {
                     FileName = dotnetExePath,
-                    Arguments = $"\"{functionAppHostPath}\" start -p {settings.Port} --csharp",
+                    Arguments = $"\"{functionAppHostPath}\" start -p {settings.Port} --csharp {BuildFunctionsArgument(settings.Functions)}",
                     WorkingDirectory = functionAppFolder,
                     UseShellExecute = settings.UseShellExecute,
                 },
@@ -177,6 +177,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 // The following two lines are necessary but also the settings in .runsettings file in the project root.
                 process.StartInfo.EnvironmentVariables["COR_ENABLE_PROFILING"] = "0";
                 process.StartInfo.EnvironmentVariables["CORECLR_ENABLE_PROFILING"] = "0";
+
+                foreach (var item in settings.ProcessEnvironmentVariables)
+                {
+                    process.StartInfo.EnvironmentVariables[item.Key] = item.Value;
+                }
             }
 
             // StartInfo.UseShellExecute cannot be used in combination with redirecting output/error.
@@ -214,12 +219,20 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 : resolvedFolderPath;
         }
 
+        private static string BuildFunctionsArgument(string functions)
+        {
+            return string.IsNullOrWhiteSpace(functions)
+                ? string.Empty
+                : $"--functions {functions}";
+        }
+
         private static bool IsHostStartedEvent(DataReceivedEventArgs outputEvent)
         {
             return
                 outputEvent.Data.Contains("Application started.") // Version 3.0.2912 and older: When the functions host is ready to serve requests, it will display "Application started".
                 || outputEvent.Data.Contains("Job host started") // Version 3.0.2996: When the functions host is ready to serve requests, it will display "Job host started".
-                || outputEvent.Data.Contains("Host lock lease acquired"); // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
+                || outputEvent.Data.Contains("Host lock lease acquired") // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
+                || outputEvent.Data.Contains("Worker process started and initialized"); // Version 3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
         }
 
         private void HandleHostStartup()
@@ -262,6 +275,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
             {
                 throw new InvalidOperationException($"Could not start Azure Functions host within timeout '{timeout}'. Try looking into the host output written at startup. For more on how to get the output, read the documentation on the interface ITestDiagnosticsLogger.");
             }
+
+            TestLogger.WriteLine($"Started host with process id '{FunctionAppHostProcess.Id}'");
         }
 
         private void OnLogOutputToHostLog(object sender, DataReceivedEventArgs outputEvent)
