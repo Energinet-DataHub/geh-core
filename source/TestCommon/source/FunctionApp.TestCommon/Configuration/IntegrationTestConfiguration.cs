@@ -34,6 +34,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
             EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
             ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
+
+            ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
         }
 
         /// <summary>
@@ -56,6 +58,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         /// </summary>
         public string ServiceBusConnectionString { get; }
 
+        /// <summary>
+        /// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.
+        /// </summary>
+        public AzureResourceManagementSettings ResourceManagementSettings { get; }
+
         private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
         {
             var integrationtestConfiguration = new ConfigurationBuilder()
@@ -68,6 +75,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             return new ConfigurationBuilder()
                 .AddAuthenticatedAzureKeyVault(keyVaultUrl)
                 .Build();
+        }
+
+        private static AzureResourceManagementSettings CreateResourceManagementSettings(IConfigurationRoot configuration)
+        {
+            return new AzureResourceManagementSettings
+            {
+                TenantId = configuration.GetValue("AZURE-SHARED-TENANTID"),
+                SubscriptionId = configuration.GetValue("AZURE-SHARED-SUBSCRIPTIONID"),
+                ResourceGroup = configuration.GetValue("AZURE-SHARED-RESOURCEGROUP"),
+                ClientId = configuration.GetValue("AZURE-SHARED-SPNID"),
+                ClientSecret = configuration.GetValue("AZURE-SHARED-SPNSECRET"),
+            };
         }
     }
 }

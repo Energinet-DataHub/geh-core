@@ -15,12 +15,31 @@
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Configuration
 {
     public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
     {
+        [Fact]
+        public void Given_IdentityHasAccess_When_ResourceManagementSettings_Then_EachPropertyHasValue()
+        {
+            // Arrange
+
+            // Act
+            var actualValue = Sut.ResourceManagementSettings;
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actualValue.Should().NotBeNull();
+            actualValue.TenantId.Should().NotBeNullOrEmpty();
+            actualValue.SubscriptionId.Should().NotBeNullOrEmpty();
+            actualValue.ResourceGroup.Should().NotBeNullOrEmpty();
+            actualValue.ClientId.Should().NotBeNullOrEmpty();
+            actualValue.ClientSecret.Should().NotBeNullOrEmpty();
+        }
+
         [Fact]
         public void Given_IdentityHasAccess_When_ApplicationInsightsInstrumentationKey_Then_HasValue()
         {
