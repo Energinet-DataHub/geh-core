@@ -23,20 +23,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
     {
         private readonly Eventhub _properties;
 
-        internal EventHubResource(EventHubResourceProvider resourceProvider, string resourceGroup, string namespaceName, Eventhub properties)
+        internal EventHubResource(EventHubResourceProvider resourceProvider, Eventhub properties)
         {
             ResourceProvider = resourceProvider;
-            ResourceGroup = resourceGroup;
-            EventHubNamespace = namespaceName;
 
             _properties = properties;
         }
 
+        public string ResourceGroup => ResourceProvider.ResourceManagementSettings.ResourceGroup;
+
+        public string EventHubNamespace => ResourceProvider.EventHubNamespace;
+
         public string Name => _properties.Name;
-
-        public string ResourceGroup { get; }
-
-        public string EventHubNamespace { get; }
 
         public bool IsDisposed { get; private set; }
 

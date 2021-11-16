@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -47,6 +48,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             TestLogger = testLogger
                 ?? throw new ArgumentNullException(nameof(testLogger));
 
+            EventHubNamespace = GetEventHubNamespace(ConnectionString);
             LazyManagementClient = new AsyncLazy<IEventHubManagementClient>(CreateManagementClientAsync);
 
             RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
@@ -56,6 +58,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
         public string ConnectionString { get; }
 
         public AzureResourceManagementSettings ResourceManagementSettings { get; }
+
+        public string EventHubNamespace { get; }
 
         /// <summary>
         /// Is used as part of the resource names.
@@ -91,6 +95,17 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             };
 
             return new EventHubResourceBuilder(this, eventHubName, createEventHubOptions);
+        }
+
+        private static string GetEventHubNamespace(string eventHubConnectionString)
+        {
+            // The connection string is similar to a service bus connection string.
+            // Example connection string: 'Endpoint=sb://xxx.servicebus.windows.net/;'
+            var namespaceMatchPattern = @"Endpoint=sb://(.*?).servicebus.windows.net/";
+            var match = Regex.Match(eventHubConnectionString, namespaceMatchPattern, RegexOptions.IgnoreCase);
+            var eventHubNamespace = match.Groups[1].Value;
+
+            return eventHubNamespace;
         }
 
         private async Task<IEventHubManagementClient> CreateManagementClientAsync()

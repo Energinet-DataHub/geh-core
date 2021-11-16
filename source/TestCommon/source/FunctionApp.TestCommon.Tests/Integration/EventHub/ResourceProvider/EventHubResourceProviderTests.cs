@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
+using AutoFixture;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
@@ -23,37 +28,81 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
 {
     public class EventHubResourceProviderTests
     {
-        private const string NamePrefix = "eventhub";
-
-        public EventHubResourceProviderTests()
+        /// <summary>
+        /// Test whole <see cref="EventHubResourceProvider.BuildEventHub(string)"/> chain
+        /// with <see cref="EventHubResourceBuilder"/> and including related extensions.
+        ///
+        /// A new <see cref="EventHubResourceProvider"/> is created and disposed for each test.
+        /// </summary>
+        [Collection(nameof(EventHubResourceProviderCollectionFixture))]
+        public class BuildEventHub : TestBase<EventHubResourceProvider>, IAsyncLifetime
         {
-        }
+            private const string NamePrefix = "eventhub";
 
-        [Fact]
-        public async Task When_EventHubNamePrefix_Then_CreatedEventHubNameIsCombinationOfPrefixAndRandomSuffix()
-        {
-            // Arrange
-            var integration = new IntegrationTestConfiguration();
-            var sut = new EventHubResourceProvider(
-                integration.EventHubConnectionString,
-                integration.ResourceManagementSettings,
-                new TestDiagnosticsLogger());
+            public BuildEventHub(EventHubResourceProviderFixture resourceProviderFixture)
+            {
+                ResourceProviderFixture = resourceProviderFixture;
 
-            // Act
-            var actualResource = await sut
-                .BuildEventHub(NamePrefix)
-                .CreateAsync();
+                // Customize auto fixture
+                Fixture.Inject<ITestDiagnosticsLogger>(resourceProviderFixture.TestLogger);
+                Fixture.Inject<AzureResourceManagementSettings>(resourceProviderFixture.ResourceManagementSettings);
+                Fixture.ForConstructorOn<EventHubResourceProvider>()
+                    .SetParameter("connectionString").To(ResourceProviderFixture.ConnectionString);
+            }
 
-            // Assert
-            var actualName = actualResource.Name;
-            actualName.Should().StartWith(NamePrefix);
-            actualName.Should().EndWith(sut.RandomSuffix);
+            private EventHubResourceProviderFixture ResourceProviderFixture { get; }
 
-            // TODO: Assert eventhub exists
-            ////var response = await ResourceProviderFixture.AdministrationClient.QueueExistsAsync(actualName);
-            ////response.Value.Should().BeTrue();
+            public Task InitializeAsync()
+            {
+                return Task.CompletedTask;
+            }
 
-            await sut.DisposeAsync();
+            public async Task DisposeAsync()
+            {
+                await Sut.DisposeAsync();
+            }
+
+            [Fact]
+            public async Task When_EventHubNamePrefix_Then_CreatedEventHubNameIsCombinationOfPrefixAndRandomSuffix()
+            {
+                // Arrange
+
+                // Act
+                var actualResource = await Sut
+                    .BuildEventHub(NamePrefix)
+                    .CreateAsync();
+
+                // Assert
+                var actualName = actualResource.Name;
+                actualName.Should().StartWith(NamePrefix);
+                actualName.Should().EndWith(Sut.RandomSuffix);
+
+                // => Validate the event hub exists
+                using var response = await ResourceProviderFixture.ManagementClient.EventHubs.GetWithHttpMessagesAsync(
+                    actualResource.ResourceGroup,
+                    actualResource.EventHubNamespace,
+                    actualResource.Name);
+                response.Body.Name.Should().Be(actualName);
+            }
+
+            [Fact]
+            public async Task When_SetEnvironmentVariable_Then_EnvironmentVariableContainsActualName()
+            {
+                // Arrange
+                var environmentVariable = "ENV_NAME";
+
+                // Act
+                var actualResource = await Sut
+                    .BuildEventHub(NamePrefix)
+                    .SetEnvironmentVariableToQueueName(environmentVariable)
+                    .CreateAsync();
+
+                // Assert
+                var actualName = actualResource.Name;
+
+                var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
+                actualEnvironmentValue.Should().Be(actualName);
+            }
         }
     }
 }

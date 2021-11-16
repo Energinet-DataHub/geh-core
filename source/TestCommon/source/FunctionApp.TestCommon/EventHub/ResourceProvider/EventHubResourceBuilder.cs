@@ -66,20 +66,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             var managementClient = await ResourceProvider.LazyManagementClient
                 .ConfigureAwait(false);
 
-            var eventHubNamespace = GetEventHubNamespace(ResourceProvider.ConnectionString);
             var response = await managementClient.EventHubs
                 .CreateOrUpdateAsync(
                     ResourceProvider.ResourceManagementSettings.ResourceGroup,
-                    eventHubNamespace,
+                    ResourceProvider.EventHubNamespace,
                     EventHubName,
                     CreateEventHubOptions)
                 .ConfigureAwait(false);
 
-            var eventHubResource = new EventHubResource(
-                ResourceProvider,
-                ResourceProvider.ResourceManagementSettings.ResourceGroup,
-                eventHubNamespace,
-                response);
+            var eventHubResource = new EventHubResource(ResourceProvider, response);
             ResourceProvider.EventHubResources.Add(response.Name, eventHubResource);
 
             foreach (var postAction in PostActions)
@@ -88,17 +83,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             }
 
             return eventHubResource;
-        }
-
-        private string GetEventHubNamespace(string eventHubConnectionString)
-        {
-            // The connection string is similar to a service bus connection string.
-            // Example connection string: 'Endpoint=sb://xxx.servicebus.windows.net/;'
-            var namespaceMatchPattern = @"Endpoint=sb://(.*?).servicebus.windows.net/";
-            var match = Regex.Match(eventHubConnectionString, namespaceMatchPattern, RegexOptions.IgnoreCase);
-            var eventHubNamespace = match.Groups[1].Value;
-
-            return eventHubNamespace;
         }
     }
 }
