@@ -12,72 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Microsoft.Azure.Management.EventHub;
-using Microsoft.Azure.Management.EventHub.Models;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Rest;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventHub.ResourceProvider
 {
     public class EventHubResourceProviderTests
     {
+        private const string NamePrefix = "eventhub";
+
         public EventHubResourceProviderTests()
         {
         }
 
         [Fact]
-        public async Task When_Xxx_Then_Yyy()
+        public async Task When_EventHubNamePrefix_Then_CreatedEventHubNameIsCombinationOfPrefixAndRandomSuffix()
         {
             // Arrange
             var integration = new IntegrationTestConfiguration();
-
-            var tenantId = integration.Configuration.GetValue("AZURE-SHARED-TENANTID");
-            var subscriptionId = integration.Configuration.GetValue("AZURE-SHARED-SUBSCRIPTIONID");
-            var resourceGroup = integration.Configuration.GetValue("AZURE-SHARED-RESOURCEGROUP");
-            var clientId = integration.Configuration.GetValue("AZURE-SHARED-SPNID");
-            var clientSecret = integration.Configuration.GetValue("AZURE-SHARED-SPNSECRET");
-
-            var context = new AuthenticationContext($"https://login.microsoftonline.com/{tenantId}");
-            var clientCredential = new ClientCredential(clientId, clientSecret);
-
-            var authenticationResult = await context.AcquireTokenAsync("https://management.azure.com/", clientCredential)
-                .ConfigureAwait(false);
-
-            var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken);
-            IEventHubManagementClient managementClient = new EventHubManagementClient(tokenCredentials)
-            {
-                SubscriptionId = subscriptionId,
-            };
-
-            // Example connection string: 'Endpoint=sb://xxx.servicebus.windows.net/;'
-            var namespaceMatchPattern = @"Endpoint=sb://(.*?).servicebus.windows.net/";
-            var match = Regex.Match(integration.EventHubConnectionString, namespaceMatchPattern, RegexOptions.IgnoreCase);
-            var eventHubNamespace = match.Groups[1].Value;
-
-            var createEventHubOptions = new Eventhub
-            {
-                MessageRetentionInDays = 1,
-                PartitionCount = 1,
-            };
+            var sut = new EventHubResourceProvider(
+                integration.EventHubConnectionString,
+                integration.ResourceManagementSettings,
+                new TestDiagnosticsLogger());
 
             // Act
-            var eventHub = await managementClient.EventHubs.CreateOrUpdateAsync(
-                resourceGroup,
-                eventHubNamespace,
-                "name",
-                createEventHubOptions);
-
-            await managementClient.EventHubs.DeleteAsync(
-                resourceGroup,
-                eventHubNamespace,
-                eventHub.Name);
+            var actualResource = await sut
+                .BuildEventHub(NamePrefix)
+                .CreateAsync();
 
             // Assert
-            managementClient.Dispose();
+            var actualName = actualResource.Name;
+            actualName.Should().StartWith(NamePrefix);
+            actualName.Should().EndWith(sut.RandomSuffix);
+
+            // TODO: Assert eventhub exists
+            ////var response = await ResourceProviderFixture.AdministrationClient.QueueExistsAsync(actualName);
+            ////response.Value.Should().BeTrue();
+
+            await sut.DisposeAsync();
         }
     }
 }
