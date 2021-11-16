@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -22,12 +23,78 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
+using Microsoft.Azure.Management.EventHub.Models;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventHub.ResourceProvider
 {
     public class EventHubResourceProviderTests
     {
+        /// <summary>
+        /// Since we are testing <see cref="EventHubResourceProvider.DisposeAsync"/> and the lifecycle
+        /// of resources and clients, we do not use the base class here. Instead we have to explicit
+        /// dispose so we can verify clients state after.
+        /// </summary>
+        [Collection(nameof(EventHubResourceProviderCollectionFixture))]
+        public class DisposeAsync
+        {
+            private const string DefaultBody = "valid body";
+
+            public DisposeAsync(EventHubResourceProviderFixture resourceProviderFixture)
+            {
+                ResourceProviderFixture = resourceProviderFixture;
+
+                ////// Customize auto fixture
+                ////Fixture = new Fixture();
+                ////Fixture.Customize<ServiceBusMessage>(composer => composer
+                ////    .OmitAutoProperties()
+                ////    .With(p => p.MessageId)
+                ////    .With(p => p.Subject)
+                ////    .With(p => p.Body, new BinaryData(DefaultBody)));
+            }
+
+            private EventHubResourceProviderFixture ResourceProviderFixture { get; }
+
+            ////private IFixture Fixture { get; }
+
+            [Fact]
+            public async Task When_EventHubResourceIsDisposed_Then_EventHubIsDeletedAndClientIsClosed()
+            {
+                // Arrange
+                var sut = CreateSut();
+
+                var actualResource = await sut
+                    .BuildEventHub("eventhub")
+                    .CreateAsync();
+
+                ////var senderClient = actualResource.SenderClient;
+                ////var message = Fixture.Create<ServiceBusMessage>();
+                ////await senderClient.SendMessageAsync(message);
+
+                // Act
+                await sut.DisposeAsync();
+
+                // Assert
+                Func<Task> act = () => ResourceProviderFixture.ManagementClient.EventHubs.GetWithHttpMessagesAsync(
+                    actualResource.ResourceGroup,
+                    actualResource.EventHubNamespace,
+                    actualResource.Name);
+                await act.Should()
+                    .ThrowAsync<ErrorResponseException>()
+                    .WithMessage("Operation returned an invalid status code 'NotFound'");
+
+                ////senderClient.IsClosed.Should().BeTrue();
+            }
+
+            private EventHubResourceProvider CreateSut()
+            {
+                return new EventHubResourceProvider(
+                    ResourceProviderFixture.ConnectionString,
+                    ResourceProviderFixture.ResourceManagementSettings,
+                    ResourceProviderFixture.TestLogger);
+            }
+        }
+
         /// <summary>
         /// Test whole <see cref="EventHubResourceProvider.BuildEventHub(string)"/> chain
         /// with <see cref="EventHubResourceBuilder"/> and including related extensions.
