@@ -22,24 +22,36 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
     public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
     {
         [Fact]
-        public void Given_IdentityHasAccess_When_ServiceBusConnectionString_Then_HasValue()
-        {
-            // Arrange
-
-            // Act
-            var actualValue = Sut.ServiceBusConnectionString;
-
-            // Assert
-            actualValue.Should().NotBeNullOrEmpty();
-        }
-
-        [Fact]
         public void Given_IdentityHasAccess_When_ApplicationInsightsInstrumentationKey_Then_HasValue()
         {
             // Arrange
 
             // Act
             var actualValue = Sut.ApplicationInsightsInstrumentationKey;
+
+            // Assert
+            actualValue.Should().NotBeNullOrEmpty();
+        }
+
+        [Fact]
+        public void Given_IdentityHasAccess_When_EventHubConnectionString_Then_HasValue()
+        {
+            // Arrange
+
+            // Act
+            var actualValue = Sut.EventHubConnectionString;
+
+            // Assert
+            actualValue.Should().NotBeNullOrEmpty();
+        }
+
+        [Fact]
+        public void Given_IdentityHasAccess_When_ServiceBusConnectionString_Then_HasValue()
+        {
+            // Arrange
+
+            // Act
+            var actualValue = Sut.ServiceBusConnectionString;
 
             // Assert
             actualValue.Should().NotBeNullOrEmpty();
