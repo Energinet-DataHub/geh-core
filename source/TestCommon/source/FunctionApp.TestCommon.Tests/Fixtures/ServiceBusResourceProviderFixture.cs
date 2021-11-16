@@ -19,8 +19,9 @@ using Energinet.DataHub.Core.TestCommon.Diagnostics;
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
 {
     /// <summary>
-    /// This fixtures ensures we reuse <see cref="ConnectionString"/>
-    /// so we only have to retrieve an access token and values in Key Vault one time.
+    /// This fixtures ensures we reuse <see cref="ConnectionString"/> and
+    /// relevant instances, so we only have to retrieve an access token
+    /// and values in Key Vault one time.
     /// </summary>
     public class ServiceBusResourceProviderFixture
     {
