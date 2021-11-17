@@ -24,16 +24,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
     /// </summary>
     public class TopicResourceBuilder : ITopicResourceBuilder
     {
-        internal TopicResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateTopicOptions createTopicOptions)
+        internal TopicResourceBuilder(ServiceBusResourceProvider resourceProvider, CreateTopicOptions createTopicOptions)
         {
-            ServiceBusResource = serviceBusResource;
+            ResourceProvider = resourceProvider;
             CreateTopicOptions = createTopicOptions;
 
             PostActions = new List<Action<TopicProperties>>();
             SubscriptionBuilders = new Dictionary<string, TopicSubscriptionBuilder>();
         }
 
-        private ServiceBusResourceProvider ServiceBusResource { get; }
+        private ServiceBusResourceProvider ResourceProvider { get; }
 
         private CreateTopicOptions CreateTopicOptions { get; }
 
@@ -83,14 +83,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         private async Task<TopicResource> CreateTopicAsync()
         {
-            ServiceBusResource.TestLogger.WriteLine($"Creating topic '{CreateTopicOptions.Name}'");
+            ResourceProvider.TestLogger.WriteLine($"Creating topic '{CreateTopicOptions.Name}'");
 
-            var response = await ServiceBusResource.AdministrationClient.CreateTopicAsync(CreateTopicOptions)
+            var response = await ResourceProvider.AdministrationClient.CreateTopicAsync(CreateTopicOptions)
                 .ConfigureAwait(false);
 
             var topicResourceName = response.Value.Name;
-            var topicResource = new TopicResource(ServiceBusResource, response.Value);
-            ServiceBusResource.TopicResources.Add(topicResourceName, topicResource);
+            var topicResource = new TopicResource(ResourceProvider, response.Value);
+            ResourceProvider.TopicResources.Add(topicResourceName, topicResource);
 
             foreach (var postAction in PostActions)
             {
@@ -104,9 +104,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         {
             foreach (var subscriptionBuilderPair in SubscriptionBuilders)
             {
-                ServiceBusResource.TestLogger.WriteLine($"Creating subscription '{subscriptionBuilderPair.Value.CreateSubscriptionOptions.SubscriptionName}'");
+                ResourceProvider.TestLogger.WriteLine($"Creating subscription '{subscriptionBuilderPair.Value.CreateSubscriptionOptions.SubscriptionName}'");
 
-                var response = await ServiceBusResource.AdministrationClient.CreateSubscriptionAsync(subscriptionBuilderPair.Value.CreateSubscriptionOptions)
+                var response = await ResourceProvider.AdministrationClient.CreateSubscriptionAsync(subscriptionBuilderPair.Value.CreateSubscriptionOptions)
                     .ConfigureAwait(false);
 
                 topicResource.AddSubscription(response.Value);

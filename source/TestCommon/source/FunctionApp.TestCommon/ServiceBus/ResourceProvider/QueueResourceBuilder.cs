@@ -24,15 +24,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
     /// </summary>
     public class QueueResourceBuilder
     {
-        internal QueueResourceBuilder(ServiceBusResourceProvider serviceBusResource, CreateQueueOptions createQueueOptions)
+        internal QueueResourceBuilder(ServiceBusResourceProvider resourceProvider, CreateQueueOptions createQueueOptions)
         {
-            ServiceBusResource = serviceBusResource;
+            ResourceProvider = resourceProvider;
             CreateQueueOptions = createQueueOptions;
 
             PostActions = new List<Action<QueueProperties>>();
         }
 
-        private ServiceBusResourceProvider ServiceBusResource { get; }
+        private ServiceBusResourceProvider ResourceProvider { get; }
 
         private CreateQueueOptions CreateQueueOptions { get; }
 
@@ -56,14 +56,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <returns>Instance with information about the created queue.</returns>
         public async Task<QueueResource> CreateAsync()
         {
-            ServiceBusResource.TestLogger.WriteLine($"Creating queue '{CreateQueueOptions.Name}'");
+            ResourceProvider.TestLogger.WriteLine($"Creating queue '{CreateQueueOptions.Name}'");
 
-            var response = await ServiceBusResource.AdministrationClient.CreateQueueAsync(CreateQueueOptions)
+            var response = await ResourceProvider.AdministrationClient.CreateQueueAsync(CreateQueueOptions)
                 .ConfigureAwait(false);
 
             var queueName = response.Value.Name;
-            var queueResource = new QueueResource(ServiceBusResource, response.Value);
-            ServiceBusResource.QueueResources.Add(queueName, queueResource);
+            var queueResource = new QueueResource(ResourceProvider, response.Value);
+            ResourceProvider.QueueResources.Add(queueName, queueResource);
 
             foreach (var postAction in PostActions)
             {

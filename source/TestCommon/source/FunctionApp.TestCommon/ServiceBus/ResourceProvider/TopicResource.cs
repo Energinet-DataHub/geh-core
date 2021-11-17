@@ -27,9 +27,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         private readonly Lazy<ServiceBusSender> _lazySenderClient;
         private readonly IList<SubscriptionProperties> _subscriptions;
 
-        internal TopicResource(ServiceBusResourceProvider serviceBusResource, TopicProperties properties)
+        internal TopicResource(ServiceBusResourceProvider resourceProvider, TopicProperties properties)
         {
-            ServiceBusResource = serviceBusResource;
+            ResourceProvider = resourceProvider;
 
             _properties = properties;
             _lazySenderClient = new Lazy<ServiceBusSender>(CreateSenderClient);
@@ -46,7 +46,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         public bool IsDisposed { get; private set; }
 
-        private ServiceBusResourceProvider ServiceBusResource { get; }
+        private ServiceBusResourceProvider ResourceProvider { get; }
 
         public async ValueTask DisposeAsync()
         {
@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         private ServiceBusSender CreateSenderClient()
         {
-            return ServiceBusResource.Client.CreateSender(Name);
+            return ResourceProvider.Client.CreateSender(Name);
         }
 
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
@@ -80,7 +80,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                     .ConfigureAwait(false);
             }
 
-            await ServiceBusResource.AdministrationClient.DeleteTopicAsync(Name)
+            await ResourceProvider.AdministrationClient.DeleteTopicAsync(Name)
                 .ConfigureAwait(false);
 
             IsDisposed = true;
