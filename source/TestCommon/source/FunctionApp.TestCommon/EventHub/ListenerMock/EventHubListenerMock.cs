@@ -91,17 +91,21 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock
 
         private BlockingCollection<EventData> MutableReceivedEvents { get; set; }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             if (ProcessorClient.IsRunning)
             {
                 throw new InvalidOperationException("Processor is already running.");
             }
 
+            await StorageClient.CreateIfNotExistsAsync()
+                .ConfigureAwait(false);
+
             ProcessorClient.ProcessEventAsync += HandleEventReceivedAsync;
             ProcessorClient.ProcessErrorAsync += HandleEventPumpExceptionAsync;
 
-            return ProcessorClient.StartProcessingAsync();
+            await ProcessorClient.StartProcessingAsync()
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -245,6 +249,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock
             MutableReceivedEvents.Dispose();
 
             MutableReceivedEventsLock.Dispose();
+
+            await StorageClient.DeleteIfExistsAsync()
+                .ConfigureAwait(false);
         }
 
         private void ClearReceivedEvents()

@@ -52,40 +52,42 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 // Arrange
                 var sut = CreateSut();
 
-                var actualResource = await sut
+                var eventHub = await sut
                     .BuildEventHub("eventhub")
                     .CreateAsync();
 
-                var producerClient = actualResource.ProducerClient;
-                using var eventBatch = await producerClient.CreateBatchAsync();
-                FillEventBatch(eventBatch, 3);
-                await producerClient.SendAsync(eventBatch);
+                using var eventBatch = await CreateFilledEventBatchAsync(eventHub.ProducerClient);
+                await eventHub.ProducerClient.SendAsync(eventBatch);
 
                 // Act
                 await sut.DisposeAsync();
 
                 // Assert
                 Func<Task> act = () => ResourceProviderFixture.ManagementClient.EventHubs.GetWithHttpMessagesAsync(
-                    actualResource.ResourceGroup,
-                    actualResource.EventHubNamespace,
-                    actualResource.Name);
+                    eventHub.ResourceGroup,
+                    eventHub.EventHubNamespace,
+                    eventHub.Name);
                 await act.Should()
                     .ThrowAsync<ErrorResponseException>()
                     .WithMessage("Operation returned an invalid status code 'NotFound'");
 
-                producerClient.IsClosed.Should().BeTrue();
+                eventHub.ProducerClient.IsClosed.Should().BeTrue();
             }
 
-            private static void FillEventBatch(EventDataBatch eventBatch, int numberOfEvents)
+            private static async Task<EventDataBatch> CreateFilledEventBatchAsync(EventHubProducerClient producerClient, int numberOfEvents = 3)
             {
-                for (int i = 1; i <= numberOfEvents; i++)
+                var eventBatch = await producerClient.CreateBatchAsync();
+
+                for (var i = 1; i <= numberOfEvents; i++)
                 {
                     if (!eventBatch.TryAdd(new EventData($"Event {i}")))
                     {
-                        // if it is too large for the batch
+                        // If it is too large for the batch
                         throw new Exception($"Event {i} is too large for the batch and cannot be sent.");
                     }
                 }
+
+                return eventBatch;
             }
 
             private EventHubResourceProvider CreateSut()
