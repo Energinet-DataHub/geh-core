@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -55,7 +56,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
 
                 // Assert
                 var numberOfEvents = 3;
-                using var eventBatch = await CreateFilledEventBatchAsync(eventHub.ProducerClient, numberOfEvents);
+                using var eventBatch = await CreateEventBatchAsync(eventHub.ProducerClient, numberOfEvents);
                 await eventHub.ProducerClient.SendAsync(eventBatch);
 
                 using var countDownEvent = new CountdownEvent(numberOfEvents);
@@ -124,7 +125,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
 
             private async Task AssertOneEventIsSendAndReceivedAsync(EventHubProducerClient producerClient)
             {
-                using var eventBatch = await CreateFilledEventBatchAsync(producerClient, numberOfEvents: 1);
+                using var eventBatch = await CreateEventBatchAsync(producerClient, numberOfEvents: 1);
                 await producerClient.SendAsync(eventBatch);
 
                 using var resetEvent = new ManualResetEventSlim(false);
@@ -143,6 +144,242 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 isReceived.Should().BeTrue();
 
                 Sut.ReceivedEvents.Count.Should().Be(1);
+            }
+        }
+
+        /// <summary>
+        /// Test <see cref="WhenProvider.When(EventHubListenerMock, Func{EventData, bool})"/>
+        /// and <see cref="DoProvider.DoAsync"/>,
+        /// including related extensions.
+        /// </summary>
+        [Collection(nameof(EventHubListenerMockCollectionFixture))]
+        public class WhenDoProviders : EventHubListenerMockTestsBase
+        {
+            /// <summary>
+            /// Tests depends on the fact that an event hub has been added in <see cref="OnInitializeAsync"/> and the listener has been initialized.
+            /// </summary>
+            public WhenDoProviders(EventHubListenerMockFixture listenerMockFixture)
+                : base(listenerMockFixture)
+            {
+            }
+
+            [NotNull]
+            private EventHubResource? EventHub { get; set; }
+
+            [Fact]
+            public async Task When_EventMatch_Then_DoIsTriggered()
+            {
+                // Arrange
+                var messageId = Guid.NewGuid().ToString();
+                using var eventBatch = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient, messageId);
+                using var isReceivedEvent = new ManualResetEventSlim(false);
+
+                await Sut
+                    .When(receivedEvent =>
+                        receivedEvent.MessageId == messageId)
+                    .DoAsync(_ =>
+                    {
+                        isReceivedEvent.Set();
+                        return Task.CompletedTask;
+                    });
+
+                // Act
+                await EventHub.ProducerClient.SendAsync(eventBatch);
+
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().BeTrue();
+            }
+
+            ////[Fact]
+            ////public async Task When_AnyMessageAlreadyReceived_Then_DoIsTriggered()
+            ////{
+            ////    // Arrange
+            ////    var message = Fixture.Create<ServiceBusMessage>();
+            ////    await Queue!.SenderClient.SendMessageAsync(message);
+            ////    await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
+
+            ////    // Act
+            ////    using var isReceivedEvent = await Sut
+            ////        .WhenAny()
+            ////        .VerifyOnceAsync();
+
+            ////    // Assert
+            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+            ////    isReceived.Should().BeTrue();
+            ////}
+
+            ////[Fact]
+            ////public async Task When_OneMessageAlreadyReceivedAndSecondMessageIsSentAfterSettingUpHandler_Then_DoIsTriggered()
+            ////{
+            ////    // Arrange
+            ////    var message1 = Fixture.Create<ServiceBusMessage>();
+            ////    await Queue!.SenderClient.SendMessageAsync(message1);
+            ////    await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
+
+            ////    var messagesReceivedInHandler = new List<ServiceBusReceivedMessage>();
+            ////    using var isReceivedEvent = await Sut
+            ////        .WhenAny()
+            ////        .VerifyCountAsync(
+            ////            2,
+            ////            receivedMessage =>
+            ////            {
+            ////                messagesReceivedInHandler.Add(receivedMessage);
+            ////                return Task.CompletedTask;
+            ////            });
+
+            ////    var message2 = Fixture.Create<ServiceBusMessage>();
+
+            ////    // Act
+            ////    await Queue.SenderClient.SendMessageAsync(message2);
+
+            ////    // Assert
+            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+            ////    isReceived.Should().BeTrue();
+
+            ////    messagesReceivedInHandler.Should()
+            ////        .Contain(receivedMessage => receivedMessage.MessageId.Equals(message1.MessageId))
+            ////        .And.Contain(receivedMessage => receivedMessage.MessageId.Equals(message2.MessageId));
+            ////}
+
+            ////[Fact]
+            ////public async Task When_AnyMessage_Then_DoIsTriggered()
+            ////{
+            ////    // Arrange
+            ////    var message = Fixture.Create<ServiceBusMessage>();
+            ////    using var isReceivedEvent = new ManualResetEventSlim(false);
+
+            ////    await Sut.WhenAny()
+            ////        .DoAsync(_ =>
+            ////        {
+            ////            isReceivedEvent.Set();
+            ////            return Task.CompletedTask;
+            ////        });
+
+            ////    // Act
+            ////    await Queue!.SenderClient.SendMessageAsync(message);
+
+            ////    // Assert
+            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+            ////    isReceived.Should().BeTrue();
+            ////}
+
+            ////[Fact]
+            ////public async Task When_AnyMessage_Then_VerifyOnce()
+            ////{
+            ////    // Arrange
+            ////    var message = Fixture.Create<ServiceBusMessage>();
+
+            ////    using var isReceivedEvent = await Sut
+            ////        .WhenAny()
+            ////        .VerifyOnceAsync();
+
+            ////    // Act
+            ////    await Queue!.SenderClient.SendMessageAsync(message);
+
+            ////    // Assert
+            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+            ////    isReceived.Should().BeTrue();
+            ////}
+
+            ////[Theory]
+            ////[InlineData("123", "123", true)]
+            ////[InlineData("123", "456", false)]
+            ////public async Task When_MessageIdFilter_Then_VerifyOnceIfMatch(string messageId, string matchMessageId, bool expectDoIsTriggered)
+            ////{
+            ////    // Arrange
+            ////    var message = Fixture.Create<ServiceBusMessage>();
+            ////    message.MessageId = messageId;
+
+            ////    using var isReceivedEvent = await Sut
+            ////        .WhenMessageId(matchMessageId)
+            ////        .VerifyOnceAsync();
+
+            ////    // Act
+            ////    await Queue!.SenderClient.SendMessageAsync(message);
+
+            ////    // Assert
+            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+            ////    isReceived.Should().Be(expectDoIsTriggered);
+            ////}
+
+            ////[Theory]
+            ////[InlineData("123", "123", true)]
+            ////[InlineData("123", "456", false)]
+            ////public async Task When_MessageIdFilterAndMessageIsReplayed_Then_VerifyOnceIfMatch(string messageId, string matchMessageId, bool expectDoIsTriggered)
+            ////{
+            ////    // Arrange
+            ////    var message = Fixture.Create<ServiceBusMessage>();
+            ////    message.MessageId = messageId;
+
+            ////    await Queue!.SenderClient.SendMessageAsync(message);
+            ////    await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
+
+            ////    // Act
+            ////    using var isReceivedEvent = await Sut
+            ////        .WhenMessageId(matchMessageId)
+            ////        .VerifyOnceAsync();
+
+            ////    // Assert
+            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+            ////    isReceived.Should().Be(expectDoIsTriggered);
+            ////}
+
+            ////[Theory]
+            ////[InlineData("PropelData", "PropelData", true)]
+            ////[InlineData("PropelData", "MeteringData", false)]
+            ////public async Task When_SubjectFilter_Then_VerifyOnceIfMatch(string messageSubject, string matchSubject, bool expectDoIsTriggered)
+            ////{
+            ////    // Arrange
+            ////    var message = Fixture.Create<ServiceBusMessage>();
+            ////    message.Subject = messageSubject;
+
+            ////    using var isReceivedEvent = await Sut
+            ////        .WhenSubject(matchSubject)
+            ////        .VerifyOnceAsync();
+
+            ////    // Act
+            ////    await Queue!.SenderClient.SendMessageAsync(message);
+
+            ////    // Assert
+            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+            ////    isReceived.Should().Be(expectDoIsTriggered);
+            ////}
+
+            ////[Fact]
+            ////public async Task When_AnyMessage_Then_VerifyCount()
+            ////{
+            ////    // Arrange
+            ////    var expectedCount = 3;
+            ////    using var whenAllEvent = await Sut
+            ////        .WhenAny()
+            ////        .VerifyCountAsync(expectedCount);
+
+            ////    // Act
+            ////    for (var i = 0; i < expectedCount; i++)
+            ////    {
+            ////        var message = Fixture.Create<ServiceBusMessage>();
+            ////        await Queue!.SenderClient.SendMessageAsync(message);
+            ////    }
+
+            ////    // Assert
+            ////    var allReceived = whenAllEvent.Wait(DefaultTimeout);
+            ////    allReceived.Should().BeTrue();
+            ////}
+
+            /// <summary>
+            /// Preparing all <see cref="WhenDoProviders"/> tests with a event hub and an initialized listener.
+            /// </summary>
+            protected override async Task OnInitializeAsync()
+            {
+                EventHub = await ResourceProvider
+                    .BuildEventHub("evh")
+                    .CreateAsync();
+
+                EventHubName = EventHub.Name;
+                BlobContainerName = "container";
+
+                await Sut.InitializeAsync();
             }
         }
 
@@ -207,7 +444,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 return base.CreateSut();
             }
 
-            protected static async Task<EventDataBatch> CreateFilledEventBatchAsync(EventHubProducerClient producerClient, int numberOfEvents = 3)
+            protected static async Task<EventDataBatch> CreateEventBatchAsync(EventHubProducerClient producerClient, int numberOfEvents = 3)
             {
                 var eventBatch = await producerClient.CreateBatchAsync();
 
@@ -218,6 +455,24 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                         // If it is too large for the batch
                         throw new Exception($"Event {i} is too large for the batch and cannot be sent.");
                     }
+                }
+
+                return eventBatch;
+            }
+
+            protected static async Task<EventDataBatch> CreateEventBatchWithIdsAsync(EventHubProducerClient producerClient, string? messageId = null, string? correlationId = null)
+            {
+                var eventData = new EventData($"Event {messageId}")
+                {
+                    MessageId = messageId,
+                    CorrelationId = correlationId,
+                };
+
+                var eventBatch = await producerClient.CreateBatchAsync();
+                if (!eventBatch.TryAdd(eventData))
+                {
+                    // If it is too large for the batch
+                    throw new Exception($"Event is too large for the batch and cannot be sent.");
                 }
 
                 return eventBatch;
