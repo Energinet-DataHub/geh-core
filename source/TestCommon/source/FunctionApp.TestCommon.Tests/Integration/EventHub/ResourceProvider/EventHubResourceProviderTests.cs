@@ -13,9 +13,10 @@
 // limitations under the License.
 
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
+using Azure.Messaging.EventHubs;
+using Azure.Messaging.EventHubs.Producer;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
@@ -38,24 +39,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
         [Collection(nameof(EventHubResourceProviderCollectionFixture))]
         public class DisposeAsync
         {
-            private const string DefaultBody = "valid body";
-
             public DisposeAsync(EventHubResourceProviderFixture resourceProviderFixture)
             {
                 ResourceProviderFixture = resourceProviderFixture;
-
-                ////// Customize auto fixture
-                ////Fixture = new Fixture();
-                ////Fixture.Customize<ServiceBusMessage>(composer => composer
-                ////    .OmitAutoProperties()
-                ////    .With(p => p.MessageId)
-                ////    .With(p => p.Subject)
-                ////    .With(p => p.Body, new BinaryData(DefaultBody)));
             }
 
             private EventHubResourceProviderFixture ResourceProviderFixture { get; }
-
-            ////private IFixture Fixture { get; }
 
             [Fact]
             public async Task When_EventHubResourceIsDisposed_Then_EventHubIsDeletedAndClientIsClosed()
@@ -67,9 +56,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                     .BuildEventHub("eventhub")
                     .CreateAsync();
 
-                ////var senderClient = actualResource.SenderClient;
-                ////var message = Fixture.Create<ServiceBusMessage>();
-                ////await senderClient.SendMessageAsync(message);
+                var producerClient = actualResource.ProducerClient;
+                using var eventBatch = await producerClient.CreateBatchAsync();
+                FillEventBatch(eventBatch, 3);
+                await producerClient.SendAsync(eventBatch);
 
                 // Act
                 await sut.DisposeAsync();
@@ -83,7 +73,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                     .ThrowAsync<ErrorResponseException>()
                     .WithMessage("Operation returned an invalid status code 'NotFound'");
 
-                ////senderClient.IsClosed.Should().BeTrue();
+                producerClient.IsClosed.Should().BeTrue();
+            }
+
+            private static void FillEventBatch(EventDataBatch eventBatch, int numberOfEvents)
+            {
+                for (int i = 1; i <= numberOfEvents; i++)
+                {
+                    if (!eventBatch.TryAdd(new EventData($"Event {i}")))
+                    {
+                        // if it is too large for the batch
+                        throw new Exception($"Event {i} is too large for the batch and cannot be sent.");
+                    }
+                }
             }
 
             private EventHubResourceProvider CreateSut()

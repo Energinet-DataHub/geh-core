@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Messaging.EventHubs.Producer;
 using Microsoft.Azure.Management.EventHub;
 using Microsoft.Azure.Management.EventHub.Models;
 
@@ -22,12 +23,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
     public class EventHubResource : IAsyncDisposable
     {
         private readonly Eventhub _properties;
+        private readonly Lazy<EventHubProducerClient> _lazyProducerClient;
 
         internal EventHubResource(EventHubResourceProvider resourceProvider, Eventhub properties)
         {
             ResourceProvider = resourceProvider;
 
             _properties = properties;
+            _lazyProducerClient = new Lazy<EventHubProducerClient>(CreateProducerClient);
         }
 
         public string ResourceGroup => ResourceProvider.ResourceManagementSettings.ResourceGroup;
@@ -35,6 +38,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
         public string EventHubNamespace => ResourceProvider.EventHubNamespace;
 
         public string Name => _properties.Name;
+
+        public EventHubProducerClient ProducerClient => _lazyProducerClient.Value;
 
         public bool IsDisposed { get; private set; }
 
@@ -47,6 +52,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             GC.SuppressFinalize(this);
         }
 
+        private EventHubProducerClient CreateProducerClient()
+        {
+            return new EventHubProducerClient(ResourceProvider.ConnectionString, Name);
+        }
+
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
         private async ValueTask DisposeAsyncCore()
 #pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
@@ -54,6 +64,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             if (IsDisposed)
             {
                 return;
+            }
+
+            if (_lazyProducerClient.IsValueCreated)
+            {
+                await _lazyProducerClient.Value.DisposeAsync()
+                    .ConfigureAwait(false);
             }
 
             var managementClient = await ResourceProvider.LazyManagementClient
