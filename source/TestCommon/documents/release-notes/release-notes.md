@@ -3,6 +3,7 @@
 ## Version 1.2.0
 
 - Extended `IntegrationTestConfiguration` to support using Event Hub.
+- Implemented `EventHubResourceProvider`. See [Resource providers](../functionapp-testcommon.md#resource-providers).
 
 ## Version 1.1.0
 

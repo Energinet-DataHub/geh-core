@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 {
     public static class EventHubResourceBuilderExtensions
     {
-        public static EventHubResourceBuilder SetEnvironmentVariableToQueueName(this EventHubResourceBuilder builder, string variable)
+        public static EventHubResourceBuilder SetEnvironmentVariableToEventHubName(this EventHubResourceBuilder builder, string variable)
         {
             builder.Do(eventHubProperties => Environment.SetEnvironmentVariable(variable, eventHubProperties.Name));
 

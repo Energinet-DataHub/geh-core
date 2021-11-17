@@ -54,11 +54,15 @@ Currently we have the following managers:
 
 ### Resource providers
 
-The `ServiceBusResourceProvider` is more complex than a *manager*, so we named it differently.
+A *resource provider* is more complex than a *manager*. Apart from beeing a builder pipeline it also knows tracks the resources that has been created, and ensures these resources are deleted or disposed as necessary.
 
-It makes it easy to manage queues/topics/subscriptions within an existing Azure Service Bus namespace. This is useful from our integration test setup.
+The `ServiceBusResourceProvider` makes it easy to manage queues/topics/subscriptions within an existing Azure Service Bus namespace. 
 
 For details, see [servicebusresourceprovider.md](./servicebusresourceprovider.md).
+
+The `EventHubResourceProvider` makes it easy to manage event hubs within an existing Azure Event Hub namespace. 
+
+For details, see [eventhubresourceprovider.md](./eventhubresourceprovider.md).
 
 ### Verify Service Bus messaging
 

@@ -163,7 +163,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 // Act
                 var actualResource = await Sut
                     .BuildEventHub(NamePrefix)
-                    .SetEnvironmentVariableToQueueName(environmentVariable)
+                    .SetEnvironmentVariableToEventHubName(environmentVariable)
                     .CreateAsync();
 
                 // Assert
