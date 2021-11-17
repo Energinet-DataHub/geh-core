@@ -54,10 +54,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 await Sut.InitializeAsync();
 
                 // Assert
-                using var eventBatch = await CreateFilledEventBatchAsync(eventHub.ProducerClient, numberOfEvents: 1);
+                var numberOfEvents = 3;
+                using var eventBatch = await CreateFilledEventBatchAsync(eventHub.ProducerClient, numberOfEvents);
                 await eventHub.ProducerClient.SendAsync(eventBatch);
 
-                using var resetEvent = new ManualResetEventSlim(false);
+                using var countDownEvent = new CountdownEvent(numberOfEvents);
                 await Sut.AddEventHandlerAsync(
                     _ =>
                     {
@@ -65,12 +66,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                     },
                     _ =>
                     {
-                        resetEvent.Set();
+                        countDownEvent.Signal();
                         return Task.CompletedTask;
                     });
 
-                var isReceived = resetEvent.Wait(DefaultTimeout);
-                isReceived.Should().BeTrue();
+                var allWasReceived = countDownEvent.Wait(DefaultTimeout);
+                allWasReceived.Should().BeTrue();
+
+                Sut.ReceivedEvents.Count.Should().Be(numberOfEvents);
             }
 
             [Fact]
@@ -87,6 +90,59 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 await act.Should()
                     .ThrowAsync<EventHubsException>()
                     .WithMessage($"*{EventHubName}' could not be found*");
+            }
+        }
+
+        [Collection(nameof(EventHubListenerMockCollectionFixture))]
+        public class Reset : EventHubListenerMockTestsBase
+        {
+            public Reset(EventHubListenerMockFixture listenerMockFixture)
+                : base(listenerMockFixture)
+            {
+            }
+
+            [Fact]
+            public async Task When_PreviouslyUsed_Then_InstanceCanBeReused()
+            {
+                // Arrange
+                var eventHub = await ResourceProvider
+                    .BuildEventHub("evh")
+                    .CreateAsync();
+
+                EventHubName = eventHub.Name;
+                BlobContainerName = "container";
+
+                await Sut.InitializeAsync();
+                await AssertOneEventIsSendAndReceivedAsync(eventHub.ProducerClient);
+
+                // Act
+                Sut.Reset();
+
+                // Assert
+                await AssertOneEventIsSendAndReceivedAsync(eventHub.ProducerClient);
+            }
+
+            private async Task AssertOneEventIsSendAndReceivedAsync(EventHubProducerClient producerClient)
+            {
+                using var eventBatch = await CreateFilledEventBatchAsync(producerClient, numberOfEvents: 1);
+                await producerClient.SendAsync(eventBatch);
+
+                using var resetEvent = new ManualResetEventSlim(false);
+                await Sut.AddEventHandlerAsync(
+                    _ =>
+                    {
+                        return true;
+                    },
+                    _ =>
+                    {
+                        resetEvent.Set();
+                        return Task.CompletedTask;
+                    });
+
+                var isReceived = resetEvent.Wait(DefaultTimeout);
+                isReceived.Should().BeTrue();
+
+                Sut.ReceivedEvents.Count.Should().Be(1);
             }
         }
 
