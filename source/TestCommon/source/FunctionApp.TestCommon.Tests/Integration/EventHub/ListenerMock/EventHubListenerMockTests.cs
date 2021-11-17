@@ -44,11 +44,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
             {
                 // Arrange
                 var eventHub = await ResourceProvider
-                    .BuildEventHub("evh")
+                    .BuildEventHub("evh-01")
                     .CreateAsync();
 
                 EventHubName = eventHub.Name;
-                BlobContainerName = "evh";
+                BlobContainerName = "container-01";
 
                 // Act
                 await Sut.InitializeAsync();
@@ -71,6 +71,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
 
                 var isReceived = resetEvent.Wait(DefaultTimeout);
                 isReceived.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_EventHubNameDoesNotExist_Then_InvalidOperationExceptionIsThrown()
+            {
+                // Arrange
+                EventHubName = "evh-02";
+                BlobContainerName = "container-02";
+
+                // Act
+                Func<Task> act = () => Sut.InitializeAsync();
+
+                // Assert
+                await act.Should()
+                    .ThrowAsync<EventHubsException>()
+                    .WithMessage($"*{EventHubName}' could not be found*");
             }
         }
 

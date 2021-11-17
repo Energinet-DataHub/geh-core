@@ -71,10 +71,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 // Arrange
 
                 // Act
-                Func<Task> action = async () => await Sut.AddQueueListenerAsync(Fixture.Create<string>());
+                Func<Task> act = () => Sut.AddQueueListenerAsync(Fixture.Create<string>());
 
                 // Assert
-                await action.Should().ThrowAsync<InvalidOperationException>();
+                await act.Should().ThrowAsync<InvalidOperationException>();
             }
         }
 
