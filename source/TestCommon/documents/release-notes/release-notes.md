@@ -4,6 +4,7 @@
 
 - Extended `IntegrationTestConfiguration` to support using Event Hub.
 - Implemented `EventHubResourceProvider`. See [Resource providers](../functionapp-testcommon.md#resource-providers).
+- Implemented `EventHubListenerMock`.
 
 ## Version 1.1.0
 
