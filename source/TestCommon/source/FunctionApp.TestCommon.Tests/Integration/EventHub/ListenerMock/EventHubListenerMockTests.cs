@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,8 +150,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
 
         /// <summary>
         /// Test <see cref="WhenProvider.When(EventHubListenerMock, Func{EventData, bool})"/>
-        /// and <see cref="DoProvider.DoAsync"/>,
-        /// including related extensions.
+        /// and <see cref="DoProvider.DoAsync"/>, including related extensions.
         /// </summary>
         [Collection(nameof(EventHubListenerMockCollectionFixture))]
         public class WhenDoProviders : EventHubListenerMockTestsBase
@@ -191,181 +191,178 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 isReceived.Should().BeTrue();
             }
 
-            ////[Fact]
-            ////public async Task When_AnyMessageAlreadyReceived_Then_DoIsTriggered()
-            ////{
-            ////    // Arrange
-            ////    var message = Fixture.Create<ServiceBusMessage>();
-            ////    await Queue!.SenderClient.SendMessageAsync(message);
-            ////    await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
+            [Fact]
+            public async Task When_AnyEventAlreadyReceived_Then_DoIsTriggered()
+            {
+                // Arrange
+                using var eventBatch = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient);
+                await EventHub.ProducerClient.SendAsync(eventBatch);
+                await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedEvents.Count == 1, DefaultTimeout);
 
-            ////    // Act
-            ////    using var isReceivedEvent = await Sut
-            ////        .WhenAny()
-            ////        .VerifyOnceAsync();
+                // Act
+                using var isReceivedEvent = await Sut
+                    .WhenAny()
+                    .VerifyOnceAsync();
 
-            ////    // Assert
-            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
-            ////    isReceived.Should().BeTrue();
-            ////}
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().BeTrue();
+            }
 
-            ////[Fact]
-            ////public async Task When_OneMessageAlreadyReceivedAndSecondMessageIsSentAfterSettingUpHandler_Then_DoIsTriggered()
-            ////{
-            ////    // Arrange
-            ////    var message1 = Fixture.Create<ServiceBusMessage>();
-            ////    await Queue!.SenderClient.SendMessageAsync(message1);
-            ////    await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
+            [Fact]
+            public async Task When_OneEventAlreadyReceivedAndSecondEventIsSentAfterSettingUpHandler_Then_DoIsTriggered()
+            {
+                // Arrange
+                var messageId1 = Guid.NewGuid().ToString();
+                using var eventBatch1 = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient, messageId1);
+                await EventHub.ProducerClient.SendAsync(eventBatch1);
+                await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedEvents.Count == 1, DefaultTimeout);
 
-            ////    var messagesReceivedInHandler = new List<ServiceBusReceivedMessage>();
-            ////    using var isReceivedEvent = await Sut
-            ////        .WhenAny()
-            ////        .VerifyCountAsync(
-            ////            2,
-            ////            receivedMessage =>
-            ////            {
-            ////                messagesReceivedInHandler.Add(receivedMessage);
-            ////                return Task.CompletedTask;
-            ////            });
+                var eventsReceivedInHandler = new List<EventData>();
+                using var isReceivedEvent = await Sut
+                    .WhenAny()
+                    .VerifyCountAsync(
+                        2,
+                        receivedEvent =>
+                        {
+                            eventsReceivedInHandler.Add(receivedEvent);
+                            return Task.CompletedTask;
+                        });
 
-            ////    var message2 = Fixture.Create<ServiceBusMessage>();
+                var messageId2 = Guid.NewGuid().ToString();
+                using var eventBatch2 = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient, messageId2);
 
-            ////    // Act
-            ////    await Queue.SenderClient.SendMessageAsync(message2);
+                // Act
+                await EventHub.ProducerClient.SendAsync(eventBatch2);
 
-            ////    // Assert
-            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
-            ////    isReceived.Should().BeTrue();
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().BeTrue();
 
-            ////    messagesReceivedInHandler.Should()
-            ////        .Contain(receivedMessage => receivedMessage.MessageId.Equals(message1.MessageId))
-            ////        .And.Contain(receivedMessage => receivedMessage.MessageId.Equals(message2.MessageId));
-            ////}
+                eventsReceivedInHandler.Should()
+                    .Contain(receivedEvent => receivedEvent.MessageId.Equals(messageId1))
+                    .And.Contain(receivedEvent => receivedEvent.MessageId.Equals(messageId2));
+            }
 
-            ////[Fact]
-            ////public async Task When_AnyMessage_Then_DoIsTriggered()
-            ////{
-            ////    // Arrange
-            ////    var message = Fixture.Create<ServiceBusMessage>();
-            ////    using var isReceivedEvent = new ManualResetEventSlim(false);
+            [Fact]
+            public async Task When_AnyEvent_Then_DoIsTriggered()
+            {
+                // Arrange
+                using var eventBatch = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient);
+                using var isReceivedEvent = new ManualResetEventSlim(false);
 
-            ////    await Sut.WhenAny()
-            ////        .DoAsync(_ =>
-            ////        {
-            ////            isReceivedEvent.Set();
-            ////            return Task.CompletedTask;
-            ////        });
+                await Sut.WhenAny()
+                    .DoAsync(_ =>
+                    {
+                        isReceivedEvent.Set();
+                        return Task.CompletedTask;
+                    });
 
-            ////    // Act
-            ////    await Queue!.SenderClient.SendMessageAsync(message);
+                // Act
+                await EventHub.ProducerClient.SendAsync(eventBatch);
 
-            ////    // Assert
-            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
-            ////    isReceived.Should().BeTrue();
-            ////}
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().BeTrue();
+            }
 
-            ////[Fact]
-            ////public async Task When_AnyMessage_Then_VerifyOnce()
-            ////{
-            ////    // Arrange
-            ////    var message = Fixture.Create<ServiceBusMessage>();
+            [Fact]
+            public async Task When_AnyEvent_Then_VerifyOnce()
+            {
+                // Arrange
+                using var eventBatch = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient);
 
-            ////    using var isReceivedEvent = await Sut
-            ////        .WhenAny()
-            ////        .VerifyOnceAsync();
+                using var isReceivedEvent = await Sut
+                    .WhenAny()
+                    .VerifyOnceAsync();
 
-            ////    // Act
-            ////    await Queue!.SenderClient.SendMessageAsync(message);
+                // Act
+                await EventHub.ProducerClient.SendAsync(eventBatch);
 
-            ////    // Assert
-            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
-            ////    isReceived.Should().BeTrue();
-            ////}
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().BeTrue();
+            }
 
-            ////[Theory]
-            ////[InlineData("123", "123", true)]
-            ////[InlineData("123", "456", false)]
-            ////public async Task When_MessageIdFilter_Then_VerifyOnceIfMatch(string messageId, string matchMessageId, bool expectDoIsTriggered)
-            ////{
-            ////    // Arrange
-            ////    var message = Fixture.Create<ServiceBusMessage>();
-            ////    message.MessageId = messageId;
+            [Theory]
+            [InlineData("123", "123", true)]
+            [InlineData("123", "456", false)]
+            public async Task When_MessageIdFilter_Then_VerifyOnceIfMatch(string messageId, string matchMessageId, bool expectDoIsTriggered)
+            {
+                // Arrange
+                using var eventBatch = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient, messageId);
 
-            ////    using var isReceivedEvent = await Sut
-            ////        .WhenMessageId(matchMessageId)
-            ////        .VerifyOnceAsync();
+                using var isReceivedEvent = await Sut
+                    .WhenMessageId(matchMessageId)
+                    .VerifyOnceAsync();
 
-            ////    // Act
-            ////    await Queue!.SenderClient.SendMessageAsync(message);
+                // Act
+                await EventHub.ProducerClient.SendAsync(eventBatch);
 
-            ////    // Assert
-            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
-            ////    isReceived.Should().Be(expectDoIsTriggered);
-            ////}
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().Be(expectDoIsTriggered);
+            }
 
-            ////[Theory]
-            ////[InlineData("123", "123", true)]
-            ////[InlineData("123", "456", false)]
-            ////public async Task When_MessageIdFilterAndMessageIsReplayed_Then_VerifyOnceIfMatch(string messageId, string matchMessageId, bool expectDoIsTriggered)
-            ////{
-            ////    // Arrange
-            ////    var message = Fixture.Create<ServiceBusMessage>();
-            ////    message.MessageId = messageId;
+            [Theory]
+            [InlineData("123", "123", true)]
+            [InlineData("123", "456", false)]
+            public async Task When_MessageIdFilterAndEventIsReplayed_Then_VerifyOnceIfMatch(string messageId, string matchMessageId, bool expectDoIsTriggered)
+            {
+                // Arrange
+                using var eventBatch = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient, messageId);
 
-            ////    await Queue!.SenderClient.SendMessageAsync(message);
-            ////    await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedMessages.Count == 1, TimeSpan.FromSeconds(5));
+                await EventHub.ProducerClient.SendAsync(eventBatch);
+                await Awaiter.WaitUntilConditionAsync(() => Sut.ReceivedEvents.Count == 1, DefaultTimeout);
 
-            ////    // Act
-            ////    using var isReceivedEvent = await Sut
-            ////        .WhenMessageId(matchMessageId)
-            ////        .VerifyOnceAsync();
+                // Act
+                using var isReceivedEvent = await Sut
+                    .WhenMessageId(matchMessageId)
+                    .VerifyOnceAsync();
 
-            ////    // Assert
-            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
-            ////    isReceived.Should().Be(expectDoIsTriggered);
-            ////}
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().Be(expectDoIsTriggered);
+            }
 
-            ////[Theory]
-            ////[InlineData("PropelData", "PropelData", true)]
-            ////[InlineData("PropelData", "MeteringData", false)]
-            ////public async Task When_SubjectFilter_Then_VerifyOnceIfMatch(string messageSubject, string matchSubject, bool expectDoIsTriggered)
-            ////{
-            ////    // Arrange
-            ////    var message = Fixture.Create<ServiceBusMessage>();
-            ////    message.Subject = messageSubject;
+            [Theory]
+            [InlineData("123", "123", true)]
+            [InlineData("123", "456", false)]
+            public async Task When_CorrelationIdFilter_Then_VerifyOnceIfMatch(string correlationId, string matchCorrelationId, bool expectDoIsTriggered)
+            {
+                // Arrange
+                using var eventBatch = await CreateEventBatchWithIdsAsync(EventHub.ProducerClient, correlationId: correlationId);
 
-            ////    using var isReceivedEvent = await Sut
-            ////        .WhenSubject(matchSubject)
-            ////        .VerifyOnceAsync();
+                using var isReceivedEvent = await Sut
+                    .WhenCorrelationId(matchCorrelationId)
+                    .VerifyOnceAsync();
 
-            ////    // Act
-            ////    await Queue!.SenderClient.SendMessageAsync(message);
+                // Act
+                await EventHub.ProducerClient.SendAsync(eventBatch);
 
-            ////    // Assert
-            ////    var isReceived = isReceivedEvent.Wait(DefaultTimeout);
-            ////    isReceived.Should().Be(expectDoIsTriggered);
-            ////}
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().Be(expectDoIsTriggered);
+            }
 
-            ////[Fact]
-            ////public async Task When_AnyMessage_Then_VerifyCount()
-            ////{
-            ////    // Arrange
-            ////    var expectedCount = 3;
-            ////    using var whenAllEvent = await Sut
-            ////        .WhenAny()
-            ////        .VerifyCountAsync(expectedCount);
+            [Fact]
+            public async Task When_AnyEvent_Then_VerifyCount()
+            {
+                // Arrange
+                var expectedCount = 3;
+                using var whenAllEvent = await Sut
+                    .WhenAny()
+                    .VerifyCountAsync(expectedCount);
 
-            ////    // Act
-            ////    for (var i = 0; i < expectedCount; i++)
-            ////    {
-            ////        var message = Fixture.Create<ServiceBusMessage>();
-            ////        await Queue!.SenderClient.SendMessageAsync(message);
-            ////    }
+                using var eventBatch = await CreateEventBatchAsync(EventHub.ProducerClient, expectedCount);
 
-            ////    // Assert
-            ////    var allReceived = whenAllEvent.Wait(DefaultTimeout);
-            ////    allReceived.Should().BeTrue();
-            ////}
+                // Act
+                await EventHub.ProducerClient.SendAsync(eventBatch);
+
+                // Assert
+                var allReceived = whenAllEvent.Wait(DefaultTimeout);
+                allReceived.Should().BeTrue();
+            }
 
             /// <summary>
             /// Preparing all <see cref="WhenDoProviders"/> tests with a event hub and an initialized listener.
