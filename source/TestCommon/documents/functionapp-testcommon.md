@@ -38,7 +38,7 @@ nvm version
 
 1. Open Command Prompt as Administrator and run the following:
 
-    > Use of the `lts` (lont-time-support version) parameter requires at least version 1.1.8 of `nvm`.
+    > Use of the `lts` (long-time-support version) parameter requires at least version 1.1.8 of `nvm`.
 
     ```Prompt
     nvm install lts
