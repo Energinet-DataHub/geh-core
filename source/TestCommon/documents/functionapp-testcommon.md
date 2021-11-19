@@ -16,7 +16,67 @@ This library contains [managers](#managers) that depends on certain tools beeing
 
 The tools must be available on the developer machine as well as on any build agent that must be able to run the integration tests that depends on this library.
 
-In order to run Azurite and Azure Functions Core Tools we also need Node.js. It is recommended to use `nvm` to handle this. See [nvm-windows](https://github.com/coreybutler/nvm-windows/wiki#installation).
+### Developer machine
+
+**Important:** If any version of Node is already installed, it must be uninstalled before proceeding.
+
+The following commands can be executed in a Command Prompt, PowerShell or similar.
+
+#### Install NVM for Windows
+
+In order to run Azurite and Azure Functions Core Tools we also need Node.js. It is recommended to use `nvm` to handle this.
+
+1. Install `nvm` as [documented here](https://github.com/coreybutler/nvm-windows#installation--upgrades)
+
+Afterwards we can check our version using:
+
+```Prompt
+nvm version
+```
+
+#### Install Node and NPM using NVM
+
+1. Open Command Prompt as Administrator and run the following:
+
+    > Use of the `lts` (lont-time-support version) parameter requires at least version 1.1.8 of `nvm`.
+
+    ```Prompt
+    nvm install lts
+    nvm use <version>
+    ```
+
+Afterwards we can check our versions using:
+
+```Prompt
+node -v
+npm -v
+```
+
+#### Install Azurite using NPM
+
+1. Find possible versions:
+
+    * [Latest version supported by NPM](https://www.npmjs.com/package/azurite?activeTab=versions)
+    * To see if a given version is in prerelease or release use this [link](https://github.com/Azure/azurite/releases)
+
+1. Open Command Prompt and run the following:
+
+```Prompt
+npm install -g azurite@<version>
+```
+
+#### Install Azure Functions Core Tools using NPM
+
+1. Find possible versions:
+
+    * [Latest version supported by NPM](https://www.npmjs.com/package/azure-functions-core-tools?activeTab=versions)
+    * To see if a given version is in prerelease or release use this [link](https://github.com/Azure/azure-functions-core-tools/releases)
+
+1. Open Command Prompt and run the following:
+
+    ```Prompt
+    npm install -g azure-functions-core-tools@<version>
+    ```
 
 ## Concept
 
@@ -56,11 +116,11 @@ Currently we have the following managers:
 
 A *resource provider* is more complex than a *manager*. Apart from beeing a builder pipeline it also knows tracks the resources that has been created, and ensures these resources are deleted or disposed as necessary.
 
-The `ServiceBusResourceProvider` makes it easy to manage queues/topics/subscriptions within an existing Azure Service Bus namespace. 
+The `ServiceBusResourceProvider` makes it easy to manage queues/topics/subscriptions within an existing Azure Service Bus namespace.
 
 For details, see [servicebusresourceprovider.md](./servicebusresourceprovider.md).
 
-The `EventHubResourceProvider` makes it easy to manage event hubs within an existing Azure Event Hub namespace. 
+The `EventHubResourceProvider` makes it easy to manage event hubs within an existing Azure Event Hub namespace.
 
 For details, see [eventhubresourceprovider.md](./eventhubresourceprovider.md).
 
