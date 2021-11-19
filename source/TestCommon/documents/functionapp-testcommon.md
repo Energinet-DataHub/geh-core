@@ -78,6 +78,28 @@ npm install -g azurite@<version>
     npm install -g azure-functions-core-tools@<version>
     ```
 
+#### Install SQL LocalDB 2019 (optional)
+
+Some developer machines have SQL local DB installed already. We only need to do the following if our scripts or code depends on functionality only available in SQL 2019.
+
+1. Uninstall existing "Microsoft SQL Server Xxx LocalDB", where Xxx is the version.
+
+2. Download <https://go.microsoft.com/fwlink/?LinkID=866658>
+
+3. Run and choose to just download "LocalDB" (SqlLocal.DB.msi) <https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb?view=sql-server-ver15#install-localdb>
+
+4. Run MSI installer.
+
+5. In PowerShell or similar, use "SqlLocalDB" commands (<https://docs.microsoft.com/en-us/sql/relational-databases/express-localdb-instance-apis/command-line-management-tool-sqllocaldb-exe?view=sql-server-ver15>)
+
+    ```PowerShell
+    SqlLocalDB stop MSSQLLocalDB
+    SqlLocalDB delete MSSQLLocalDB
+    SqlLocalDB create MSSQLLocalDB
+    ```
+
+6. In VS - SQL Server Object Explorer disconnect from localdb and connect again.
+
 ## Concept
 
 The following only introduce the types supporting integration testing an Azure Function at a high level.
