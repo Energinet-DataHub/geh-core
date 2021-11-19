@@ -288,12 +288,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
         /// </summary>
         public abstract class ServiceBusResourceProviderTestsBase : TestBase<ServiceBusResourceProvider>, IAsyncLifetime
         {
-            protected ServiceBusResourceProviderTestsBase(ServiceBusResourceProviderFixture serviceBusResourceProviderFixture)
+            protected ServiceBusResourceProviderTestsBase(ServiceBusResourceProviderFixture resourceProviderFixture)
             {
-                ResourceProviderFixture = serviceBusResourceProviderFixture;
+                ResourceProviderFixture = resourceProviderFixture;
 
                 // Customize auto fixture
-                Fixture.Inject<ITestDiagnosticsLogger>(serviceBusResourceProviderFixture.TestLogger);
+                Fixture.Inject<ITestDiagnosticsLogger>(resourceProviderFixture.TestLogger);
                 Fixture.ForConstructorOn<ServiceBusResourceProvider>()
                     .SetParameter("connectionString").To(ResourceProviderFixture.ConnectionString);
             }

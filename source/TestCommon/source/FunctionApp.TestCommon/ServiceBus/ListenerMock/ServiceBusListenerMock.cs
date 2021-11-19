@@ -271,6 +271,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
             await ResetMessageReceiversAsync().ConfigureAwait(false);
             ResetMessageHandlersAndReceivedMessages();
             await Client.DisposeAsync().ConfigureAwait(false);
+            MutableReceivedMessagesLock.Dispose();
         }
 
         private async Task CleanupMessageReceiversAsync()

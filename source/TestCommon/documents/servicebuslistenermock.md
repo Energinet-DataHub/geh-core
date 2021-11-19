@@ -20,7 +20,7 @@ Add a listener to start receiving messages from either a queue and/or a topic/su
 
 ### `When()` and `DoAsync()`
 
-At the lowest level we can use `When()` to setup a filter based on any service bus message property. If an incomming message matches the filter, the action registered with `Do()` is executed.
+At the lowest level we can use `When()` to setup a filter based on any service bus message property. If an incomming message matches the filter, the action registered with `DoAsync()` is executed.
 
 ```csharp
 await serviceBusListenerMock
@@ -36,7 +36,7 @@ await serviceBusListenerMock
 
 #### Extensions
 
-On top of `When()` and `Do()` we have implemented several extensions to make the usage simpler.
+On top of `When()` and `DoAsync()` we have implemented several extensions to make the usage simpler.
 
 When extensions:
 
@@ -62,12 +62,12 @@ Use this between tests.
 
 ### `ResetMessageReceiversAsync`
 
-The service bus mock can be reset to clear all listeners.
+The service bus listener mock can be reset to clear all listeners.
 We should only use this if we are also removing the queue or topic.
 
 ## Examples
 
-Prepare service bus mock:
+Prepare service bus listener mock:
 
 ```csharp
 // Remember to Dispose() the mock to shutdown listeners and close connections.
@@ -81,7 +81,7 @@ await serviceBusListenerMock.AddQueueListenerAsync(queueName);
 Example using `WhenMessageId()` and `VerifyOnceAsync()` extensions:
 
 ```csharp
-// Constructor or `BeforeScenario`
+// E.g. reset between tests by adding this to test class constructor.
 serviceBusListenerMock.ResetMessageHandlersAndReceivedMessages();
 
 // Setup verification.

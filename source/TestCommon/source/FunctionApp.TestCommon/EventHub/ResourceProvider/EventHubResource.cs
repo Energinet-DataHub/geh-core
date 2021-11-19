@@ -13,40 +13,37 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
+using Azure.Messaging.EventHubs.Producer;
+using Microsoft.Azure.Management.EventHub;
+using Microsoft.Azure.Management.EventHub.Models;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider
 {
-    public class TopicResource : IAsyncDisposable
+    public class EventHubResource : IAsyncDisposable
     {
-        private readonly TopicProperties _properties;
-        private readonly Lazy<ServiceBusSender> _lazySenderClient;
-        private readonly IList<SubscriptionProperties> _subscriptions;
+        private readonly Eventhub _properties;
+        private readonly Lazy<EventHubProducerClient> _lazyProducerClient;
 
-        internal TopicResource(ServiceBusResourceProvider resourceProvider, TopicProperties properties)
+        internal EventHubResource(EventHubResourceProvider resourceProvider, Eventhub properties)
         {
             ResourceProvider = resourceProvider;
 
             _properties = properties;
-            _lazySenderClient = new Lazy<ServiceBusSender>(CreateSenderClient);
-            _subscriptions = new List<SubscriptionProperties>();
-
-            Subscriptions = new ReadOnlyCollection<SubscriptionProperties>(_subscriptions);
+            _lazyProducerClient = new Lazy<EventHubProducerClient>(CreateProducerClient);
         }
+
+        public string ResourceGroup => ResourceProvider.ResourceManagementSettings.ResourceGroup;
+
+        public string EventHubNamespace => ResourceProvider.EventHubNamespace;
 
         public string Name => _properties.Name;
 
-        public ServiceBusSender SenderClient => _lazySenderClient.Value;
-
-        public IReadOnlyCollection<SubscriptionProperties> Subscriptions { get; }
+        public EventHubProducerClient ProducerClient => _lazyProducerClient.Value;
 
         public bool IsDisposed { get; private set; }
 
-        private ServiceBusResourceProvider ResourceProvider { get; }
+        private EventHubResourceProvider ResourceProvider { get; }
 
         public async ValueTask DisposeAsync()
         {
@@ -55,14 +52,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             GC.SuppressFinalize(this);
         }
 
-        internal void AddSubscription(SubscriptionProperties subscriptionProperties)
+        private EventHubProducerClient CreateProducerClient()
         {
-            _subscriptions.Add(subscriptionProperties);
-        }
-
-        private ServiceBusSender CreateSenderClient()
-        {
-            return ResourceProvider.Client.CreateSender(Name);
+            return new EventHubProducerClient(ResourceProvider.ConnectionString, Name);
         }
 
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
@@ -74,13 +66,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                 return;
             }
 
-            if (_lazySenderClient.IsValueCreated)
+            if (_lazyProducerClient.IsValueCreated)
             {
-                await _lazySenderClient.Value.DisposeAsync()
+                await _lazyProducerClient.Value.DisposeAsync()
                     .ConfigureAwait(false);
             }
 
-            await ResourceProvider.AdministrationClient.DeleteTopicAsync(Name)
+            var managementClient = await ResourceProvider.LazyManagementClient
+                .ConfigureAwait(false);
+
+            await managementClient.EventHubs.DeleteAsync(ResourceGroup, EventHubNamespace, Name)
                 .ConfigureAwait(false);
 
             IsDisposed = true;

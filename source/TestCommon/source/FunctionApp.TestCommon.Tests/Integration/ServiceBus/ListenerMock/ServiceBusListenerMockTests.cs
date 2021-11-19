@@ -36,8 +36,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
         [Collection(nameof(ServiceBusListenerMockCollectionFixture))]
         public class AddQueueListenerAsync : ServiceBusListenerMockTestsBase
         {
-            public AddQueueListenerAsync(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
-                : base(serviceBusListenerMockFixture)
+            public AddQueueListenerAsync(ServiceBusListenerMockFixture listenerMockFixture)
+                : base(listenerMockFixture)
             {
             }
 
@@ -71,18 +71,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 // Arrange
 
                 // Act
-                Func<Task> action = async () => await Sut.AddQueueListenerAsync(Fixture.Create<string>());
+                Func<Task> act = () => Sut.AddQueueListenerAsync(Fixture.Create<string>());
 
                 // Assert
-                await action.Should().ThrowAsync<InvalidOperationException>();
+                await act.Should().ThrowAsync<InvalidOperationException>();
             }
         }
 
         [Collection(nameof(ServiceBusListenerMockCollectionFixture))]
         public class AddTopicSubscriptionListenerAsync : ServiceBusListenerMockTestsBase
         {
-            public AddTopicSubscriptionListenerAsync(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
-                : base(serviceBusListenerMockFixture)
+            public AddTopicSubscriptionListenerAsync(ServiceBusListenerMockFixture listenerMockFixture)
+                : base(listenerMockFixture)
             {
             }
 
@@ -115,8 +115,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
         [Collection(nameof(ServiceBusListenerMockCollectionFixture))]
         public class ResetMessageHandlersAndReceiveMessages : ServiceBusListenerMockTestsBase
         {
-            public ResetMessageHandlersAndReceiveMessages(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
-                : base(serviceBusListenerMockFixture)
+            public ResetMessageHandlersAndReceiveMessages(ServiceBusListenerMockFixture listenerMockFixture)
+                : base(listenerMockFixture)
             {
             }
 
@@ -165,8 +165,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             /// <summary>
             /// Tests depends on the fact that a queue and queue listener has been added in <see cref="OnInitializeAsync"/>.
             /// </summary>
-            public WhenDoProviders(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
-                : base(serviceBusListenerMockFixture)
+            public WhenDoProviders(ServiceBusListenerMockFixture listenerMockFixture)
+                : base(listenerMockFixture)
             {
             }
 
@@ -391,8 +391,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             /// <summary>
             /// Tests depends on the fact that a queue and queue listener has been added in <see cref="OnInitializeAsync"/>.
             /// </summary>
-            public ReceivedMessages(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
-                : base(serviceBusListenerMockFixture)
+            public ReceivedMessages(ServiceBusListenerMockFixture listenerMockFixture)
+                : base(listenerMockFixture)
             {
             }
 
@@ -455,30 +455,30 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
 
         /// <summary>
         /// A new <see cref="ServiceBusListenerMock"/> is created and disposed for each test.
-        /// Similar we must create new queues/topics for each test; see summary on <see cref="ServiceBusListenerMockFixture"/>.
+        /// Similar we must create new queues/topics for each test; see summary on <see cref="ListenerMockFixture"/>.
         /// </summary>
         public abstract class ServiceBusListenerMockTestsBase : TestBase<ServiceBusListenerMock>, IAsyncLifetime
         {
             public const string DefaultBody = "valid body";
 
-            protected ServiceBusListenerMockTestsBase(ServiceBusListenerMockFixture serviceBusListenerMockFixture)
+            protected ServiceBusListenerMockTestsBase(ServiceBusListenerMockFixture listenerMockFixture)
             {
-                ServiceBusListenerMockFixture = serviceBusListenerMockFixture;
+                ListenerMockFixture = listenerMockFixture;
 
                 // Customize auto fixture
-                Fixture.Inject<ITestDiagnosticsLogger>(ServiceBusListenerMockFixture.TestLogger);
+                Fixture.Inject<ITestDiagnosticsLogger>(ListenerMockFixture.TestLogger);
                 Fixture.ForConstructorOn<ServiceBusListenerMock>()
-                    .SetParameter("connectionString").To(ServiceBusListenerMockFixture.ConnectionString);
+                    .SetParameter("connectionString").To(ListenerMockFixture.ConnectionString);
                 Fixture.Customize<ServiceBusMessage>(composer => composer
                     .OmitAutoProperties()
                     .With(p => p.MessageId)
                     .With(p => p.Subject)
                     .With(p => p.Body, new BinaryData(DefaultBody)));
 
-                ResourceProvider = new ServiceBusResourceProvider(ServiceBusListenerMockFixture.ConnectionString, ServiceBusListenerMockFixture.TestLogger);
+                ResourceProvider = new ServiceBusResourceProvider(ListenerMockFixture.ConnectionString, ListenerMockFixture.TestLogger);
             }
 
-            protected ServiceBusListenerMockFixture ServiceBusListenerMockFixture { get; }
+            protected ServiceBusListenerMockFixture ListenerMockFixture { get; }
 
             protected ServiceBusResourceProvider ResourceProvider { get; }
 
@@ -491,18 +491,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
 
             public async Task DisposeAsync()
             {
-                await OnDisposeAsync();
-
                 await Sut.DisposeAsync();
                 await ResourceProvider.DisposeAsync();
             }
 
             protected virtual Task OnInitializeAsync()
-            {
-                return Task.CompletedTask;
-            }
-
-            protected virtual Task OnDisposeAsync()
             {
                 return Task.CompletedTask;
             }

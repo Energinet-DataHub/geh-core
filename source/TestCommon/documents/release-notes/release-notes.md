@@ -1,5 +1,11 @@
 # TestCommon Release notes
 
+## Version 1.2.0
+
+- Extended `IntegrationTestConfiguration` to support using Event Hub.
+- Implemented `EventHubResourceProvider`. See [Resource providers](../functionapp-testcommon.md#resource-providers).
+- Implemented `EventHubListenerMock`. See [EventHubListenerMock](../eventhublistenermock.md)
+
 ## Version 1.1.0
 
 - Extended control of starting an Azure Function App through use of the `FunctionAppHostManager`:

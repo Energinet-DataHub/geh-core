@@ -31,8 +31,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         {
             Configuration = BuildKeyVaultConfigurationRoot();
 
-            ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
             ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
+            EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
+            ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
+
+            ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
         }
 
         /// <summary>
@@ -41,14 +44,24 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         public IConfigurationRoot Configuration { get; }
 
         /// <summary>
+        /// Instrumentation Key to the Application Insights in the Integration Test environment.
+        /// </summary>
+        public string ApplicationInsightsInstrumentationKey { get; }
+
+        /// <summary>
+        /// Connection string to the Azure Event Hub in the Integration Test environment.
+        /// </summary>
+        public string EventHubConnectionString { get; }
+
+        /// <summary>
         /// Connection string to the Azure Service Bus in the Integration Test environment.
         /// </summary>
         public string ServiceBusConnectionString { get; }
 
         /// <summary>
-        /// Instrumentation Key to the Application Insights in the Integration Test environment.
+        /// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.
         /// </summary>
-        public string ApplicationInsightsInstrumentationKey { get; }
+        public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
         private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
         {
@@ -62,6 +75,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             return new ConfigurationBuilder()
                 .AddAuthenticatedAzureKeyVault(keyVaultUrl)
                 .Build();
+        }
+
+        private static AzureResourceManagementSettings CreateResourceManagementSettings(IConfigurationRoot configuration)
+        {
+            return new AzureResourceManagementSettings
+            {
+                TenantId = configuration.GetValue("AZURE-SHARED-TENANTID"),
+                SubscriptionId = configuration.GetValue("AZURE-SHARED-SUBSCRIPTIONID"),
+                ResourceGroup = configuration.GetValue("AZURE-SHARED-RESOURCEGROUP"),
+                ClientId = configuration.GetValue("AZURE-SHARED-SPNID"),
+                ClientSecret = configuration.GetValue("AZURE-SHARED-SPNSECRET"),
+            };
         }
     }
 }
