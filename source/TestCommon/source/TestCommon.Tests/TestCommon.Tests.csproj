@@ -23,7 +23,6 @@ limitations under the License.
     <AssemblyName>Energinet.DataHub.Core.TestCommon.Tests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.TestCommon.Tests</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
