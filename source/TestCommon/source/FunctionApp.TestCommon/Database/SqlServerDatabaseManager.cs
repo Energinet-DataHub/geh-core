@@ -160,7 +160,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
                 (ctx, ct) =>
                 {
                     using var masterDbConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;");
+#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
                     using var command = new SqlCommand(createDatabaseCommandText, masterDbConnection);
+#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
                     masterDbConnection.Open();
                     try
                     {
