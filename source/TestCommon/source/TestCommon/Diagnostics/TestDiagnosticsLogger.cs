@@ -40,9 +40,7 @@ namespace Energinet.DataHub.Core.TestCommon.Diagnostics
             // Running the command 'dotnet test --logger "console;verbosity=detailed"' will show the
             // test output in the console.
             if (TestOutputHelper != null)
-            {
                 TestOutputHelper.WriteLine(message);
-            }
         }
     }
 }
