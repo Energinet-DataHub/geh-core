@@ -15,7 +15,6 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Schema;
 using Energinet.DataHub.Core.SchemaValidation;
 
@@ -42,15 +41,9 @@ namespace SchemaValidation.Tests
   </xs:element>
 </xs:schema>";
 
-            // TODO:
-#pragma warning disable SA1009
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(anyRootSchema));
-            _anyRootAllowed = XmlSchema.Read(stream, null)!;
-        }
-
-        public Task<XmlResolver> GetXmlResolverAsync()
-        {
-            return Task.FromResult<XmlResolver>(new XmlUrlResolver());
+            var xmlSchema = XmlSchema.Read(stream, null);
+            _anyRootAllowed = xmlSchema!;
         }
 
         public Task<XmlSchema> GetXmlSchemaAsync()
