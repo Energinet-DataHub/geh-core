@@ -18,6 +18,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.SchemaValidation
 {
+#pragma warning disable SA1600 // Internal interface.
     internal interface ISourceValidatingReader
     {
         string CurrentNodeName { get; }
@@ -44,4 +45,5 @@ namespace Energinet.DataHub.Core.SchemaValidation
 
         Task<Instant> ReadValueAsNodaTimeAsync();
     }
+#pragma warning restore SA1600
 }

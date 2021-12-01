@@ -16,6 +16,12 @@ namespace Energinet.DataHub.Core.SchemaValidation
 {
     public readonly struct SchemaValidationError
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SchemaValidationError"/> struct.
+        /// </summary>
+        /// <param name="lineNumber">The line number at which the error occurred.</param>
+        /// <param name="linePosition">The line position at which the error occurred.</param>
+        /// <param name="description">The description of the occurred error.</param>
         public SchemaValidationError(int lineNumber, int linePosition, string description)
         {
             LineNumber = lineNumber;
@@ -23,10 +29,19 @@ namespace Energinet.DataHub.Core.SchemaValidation
             Description = description;
         }
 
+        /// <summary>
+        /// Gets the line number at which the error occurred.
+        /// </summary>
         public int LineNumber { get; }
 
+        /// <summary>
+        /// Gets the line position at which the error occurred.
+        /// </summary>
         public int LinePosition { get; }
 
+        /// <summary>
+        /// Gets the description of the occurred error.
+        /// </summary>
         public string Description { get; }
     }
 }

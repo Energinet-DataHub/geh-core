@@ -17,8 +17,15 @@ using System.Xml.Schema;
 
 namespace Energinet.DataHub.Core.SchemaValidation
 {
+    /// <summary>
+    /// Represents an XML schema.
+    /// </summary>
     public interface IXmlSchema
     {
+        /// <summary>
+        /// Reads and returns the XmlSchema.
+        /// </summary>
+        /// <returns>The loaded XmlSchema.</returns>
         Task<XmlSchema> GetXmlSchemaAsync();
     }
 }

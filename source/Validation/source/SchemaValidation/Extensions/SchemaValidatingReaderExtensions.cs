@@ -19,6 +19,13 @@ namespace Energinet.DataHub.Core.SchemaValidation.Extensions
 {
     public static class SchemaValidatingReaderExtensions
     {
+        /// <summary>
+        /// Advances the reader to the next node, skipping EndElements, and returns true.
+        /// If the next node is a EndElement with the specified name, stops and returns false.
+        /// </summary>
+        /// <param name="reader">The reader to advance.</param>
+        /// <param name="nodeName">The name of the EndElement to stop advancing at.</param>
+        /// <returns>Returns true until the specified EndElement is found; false otherwise.</returns>
         public static async Task<bool> AdvanceUntilClosedAsync(this ISchemaValidatingReader reader, string nodeName)
         {
             while (await reader.AdvanceAsync().ConfigureAwait(false))

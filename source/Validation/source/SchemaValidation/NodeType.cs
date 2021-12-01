@@ -16,9 +16,24 @@ namespace Energinet.DataHub.Core.SchemaValidation
 {
     public enum NodeType
     {
+        /// <summary>
+        /// The reader is not positioned at a node. Occurs before reading has begun or once the reader has read to end.
+        /// </summary>
         None,
+
+        /// <summary>
+        /// The current node is a start element.
+        /// </summary>
         StartElement,
+
+        /// <summary>
+        /// The current node is an end element.
+        /// </summary>
         EndElement,
+
+        /// <summary>
+        /// The current node is an attribute node.
+        /// </summary>
         Attribute,
     }
 }
