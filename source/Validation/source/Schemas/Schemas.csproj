@@ -29,7 +29,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Schemas</PackageId>
-    <PackageVersion>0.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
     <Title>Schema Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
