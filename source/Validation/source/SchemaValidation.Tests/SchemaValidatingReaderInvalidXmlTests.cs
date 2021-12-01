@@ -16,12 +16,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.SchemaValidation;
-using SchemaValidation.Tests.Examples;
+using Energinet.DataHub.Core.SchemaValidation.Tests.Examples;
 using Xunit;
 using Xunit.Categories;
 
-namespace SchemaValidation.Tests
+namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
     [UnitTest]
     public sealed class SchemaValidatingReaderInvalidXmlTests
@@ -30,15 +29,16 @@ namespace SchemaValidation.Tests
         public async Task AdvanceAsync_InvalidXml_ListsErrors()
         {
             // Arrange
-            var xmlWithErrors = BookstoreExample
-                .ExampleXml
+            var origStream = LoadStreamIntoString(ExampleResources.BookstoreXml);
+            var xmlWithErrors = origStream
                 .Replace("genre=\"philosophy\"", string.Empty) // Remove attribute.
                 .Replace("<title>The Autobiography of Benjamin Franklin</title>", string.Empty) // Remove node.
                 .Replace("<price>11.99</price>", "<price invalidAttr=\"Invalid attribute.\">11.99</price>") // Add attribute.
                 .Replace("<name>Plato</name>", "<name>Plato</name><unknown>Invalid node.</unknown>"); // Add node.
 
             var xmlStream = LoadStringIntoStream(xmlWithErrors);
-            var target = new SchemaValidatingReader(xmlStream, new BookstoreExampleSchema());
+            var xmlSchema = new StreamSchema(ExampleResources.BookstoreSchema);
+            var target = new SchemaValidatingReader(xmlStream, xmlSchema);
 
             // Act
             while (await target.AdvanceAsync())
@@ -68,6 +68,12 @@ namespace SchemaValidation.Tests
         private static Stream LoadStringIntoStream(string contents)
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(contents));
+        }
+
+        private static string LoadStreamIntoString(Stream stream)
+        {
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
         }
     }
 }

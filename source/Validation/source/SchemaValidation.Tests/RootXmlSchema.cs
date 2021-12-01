@@ -16,14 +16,13 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
-using Energinet.DataHub.Core.SchemaValidation;
 
-namespace SchemaValidation.Tests
+namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
     /// <summary>
     /// XML schema that allows everything under a <root></root> element, e.g. <root><anytag /></root>.
     /// </summary>
-    internal sealed class RootXmlSchema : IXmlSchema
+    public sealed class RootXmlSchema : IXmlSchema
     {
         private readonly XmlSchema _anyRootAllowed;
 

@@ -12,30 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.SchemaValidation.Tests.Examples;
-using Xunit;
-using Xunit.Categories;
+using System.Xml.Schema;
 
 namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
-    [UnitTest]
-    public sealed class SchemaValidatingReaderCimXmlTests
+    public sealed class StreamSchema : IXmlSchema
     {
-        [Fact]
-        public async Task AdvanceAsync_ValidXml_ValidatesToEnd()
+        private readonly Stream _schemaStream;
+
+        public StreamSchema(Stream schemaStream)
         {
-            // Arrange
-            var xmlStream = ExampleResources.CimXmlGenericNotification;
-            var target = new SchemaValidatingReader(xmlStream, Schemas.Schemas.CimXml.StructureGenericnotification);
+            _schemaStream = schemaStream;
+        }
 
-            // Act
-            while (await target.AdvanceAsync())
-            {
-            }
-
-            // Assert
-            Assert.False(target.HasErrors);
+        public Task<XmlSchema> GetXmlSchemaAsync()
+        {
+            var xmlSchema = XmlSchema.Read(_schemaStream, null);
+            return Task.FromResult(xmlSchema!);
         }
     }
 }

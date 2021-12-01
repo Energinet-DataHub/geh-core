@@ -19,13 +19,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
-using Energinet.DataHub.Core.SchemaValidation;
+using Energinet.DataHub.Core.SchemaValidation.Tests.Examples;
 using NodaTime;
-using SchemaValidation.Tests.Examples;
 using Xunit;
 using Xunit.Categories;
 
-namespace SchemaValidation.Tests
+namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
     [UnitTest]
     public sealed class SchemaValidatingReaderTests
@@ -67,7 +66,7 @@ namespace SchemaValidation.Tests
         {
             // Arrange
             var xmlStream = LoadStringIntoStream("<root>< <> ></root>");
-            var target = new SchemaValidatingReader(xmlStream, new BookstoreExampleSchema());
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
 
             // Act + Assert
             await Assert.ThrowsAsync<XmlException>(() => target.AdvanceAsync());
@@ -78,7 +77,7 @@ namespace SchemaValidation.Tests
         {
             // Arrange
             var xmlStream = LoadStringIntoStream("<root><content /></root>");
-            var target = new SchemaValidatingReader(xmlStream, new BrokenExampleSchema());
+            var target = new SchemaValidatingReader(xmlStream, new StreamSchema(ExampleResources.BrokenSchema));
 
             // Act + Assert
             await Assert.ThrowsAsync<XmlSchemaException>(() => target.AdvanceAsync());

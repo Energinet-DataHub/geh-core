@@ -16,12 +16,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.SchemaValidation;
 using Energinet.DataHub.Core.SchemaValidation.Extensions;
 using Xunit;
 using Xunit.Categories;
 
-namespace SchemaValidation.Tests
+namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
     [UnitTest]
     public sealed class SchemaValidatingReaderExtensionsTests

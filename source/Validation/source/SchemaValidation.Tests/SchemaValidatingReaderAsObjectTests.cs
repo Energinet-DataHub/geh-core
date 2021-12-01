@@ -17,14 +17,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.SchemaValidation;
 using Energinet.DataHub.Core.SchemaValidation.Extensions;
+using Energinet.DataHub.Core.SchemaValidation.Tests.Examples;
 using NodaTime;
-using SchemaValidation.Tests.Examples;
 using Xunit;
 using Xunit.Categories;
 
-namespace SchemaValidation.Tests
+namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
     [UnitTest]
     public sealed class SchemaValidatingReaderAsObjectTests
@@ -33,10 +32,11 @@ namespace SchemaValidation.Tests
         public async Task Reconstruction_ValidXml_RebuildsObject()
         {
             // Arrange
-            var xmlStream = LoadStringIntoStream($"<root>{BookstoreExample.ExampleXml}</root>");
+            var origStream = LoadStreamIntoString(ExampleResources.BookstoreXml);
+            var xmlStream = LoadStringIntoStream($"<root>{origStream}</root>");
             var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
 
-            BookstoreExample.Bookstore? bookstore = null;
+            Bookstore? bookstore = null;
 
             // Act
             while (await target.AdvanceAsync())
@@ -86,9 +86,9 @@ namespace SchemaValidation.Tests
             Assert.Null(thirdBook.Author?.LastName);
         }
 
-        private static async Task<BookstoreExample.Bookstore> ReadBookstoreAsync(ISchemaValidatingReader reader)
+        private static async Task<Bookstore> ReadBookstoreAsync(ISchemaValidatingReader reader)
         {
-            var books = new List<BookstoreExample.Book>();
+            var books = new List<Book>();
 
             do
             {
@@ -96,12 +96,12 @@ namespace SchemaValidation.Tests
             }
             while (await reader.AdvanceUntilClosedAsync("bookstore"));
 
-            return new BookstoreExample.Bookstore { Books = books.ToArray() };
+            return new Bookstore { Books = books.ToArray() };
         }
 
-        private static async Task<BookstoreExample.Book> ReadBookAsync(ISchemaValidatingReader reader)
+        private static async Task<Book> ReadBookAsync(ISchemaValidatingReader reader)
         {
-            var book = new BookstoreExample.Book();
+            var book = new Book();
 
             do
             {
@@ -132,9 +132,9 @@ namespace SchemaValidation.Tests
             return book;
         }
 
-        private static async Task<BookstoreExample.Author> ReadAuthorAsync(ISchemaValidatingReader reader)
+        private static async Task<Author> ReadAuthorAsync(ISchemaValidatingReader reader)
         {
-            var author = new BookstoreExample.Author();
+            var author = new Author();
 
             do
             {
@@ -157,6 +157,12 @@ namespace SchemaValidation.Tests
         private static Stream LoadStringIntoStream(string contents)
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(contents));
+        }
+
+        private static string LoadStreamIntoString(Stream stream)
+        {
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
         }
     }
 }

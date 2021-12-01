@@ -16,24 +16,21 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.Schemas;
-using Energinet.DataHub.Core.SchemaValidation;
-using SchemaValidation.Tests.Examples;
+using Energinet.DataHub.Core.SchemaValidation.Tests.Examples;
 using Xunit;
 using Xunit.Categories;
 
-namespace SchemaValidation.Tests
+namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
     [UnitTest]
     public sealed class SchemaValidatingReaderAsXmlTests
     {
-        private const string ReconstructedXml = @"<root><bookstore xmlns=""http://www.contoso.com/books""><book genre=""autobiography"" publicationdate=""1981-03-22"" ISBN=""1-861003-11-0""><title>The Autobiography of Benjamin Franklin</title><author><first-name>Benjamin</first-name><last-name>Franklin</last-name></author><price>8.99</price></book><book genre=""novel"" publicationdate=""1967-11-17"" ISBN=""0-201-63361-2""><title>The Confidence Man</title><author><first-name>Herman</first-name><last-name>Melville</last-name></author><price>11.99</price></book><book genre=""philosophy"" publicationdate=""1991-02-15"" ISBN=""1-861001-57-6""><title>The Gorgias</title><author><name>Plato</name></author><price>9.99</price></book></bookstore></root>";
-
         [Fact]
         public async Task Reconstruction_ValidXml_RebuildsXml()
         {
             // Arrange
-            var xmlStream = LoadStringIntoStream($"<root>{BookstoreExample.ExampleXml}</root>");
+            var origStream = LoadStreamIntoString(ExampleResources.BookstoreXml);
+            var xmlStream = LoadStringIntoStream($"<root>{origStream}</root>");
 
             var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
             var builder = new StringBuilder();
@@ -82,12 +79,19 @@ namespace SchemaValidation.Tests
             // Assert
             Assert.False(target.HasErrors);
             var actual = builder.ToString();
-            Assert.Equal(ReconstructedXml, actual);
+            var expected = LoadStreamIntoString(ExampleResources.ReconstructedXml);
+            Assert.Equal(expected, actual);
         }
 
         private static Stream LoadStringIntoStream(string contents)
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(contents));
+        }
+
+        private static string LoadStreamIntoString(Stream stream)
+        {
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
         }
     }
 }
