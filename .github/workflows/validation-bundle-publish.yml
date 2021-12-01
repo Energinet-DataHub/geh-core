@@ -43,7 +43,6 @@ env:
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Tool versions
   DOTNET_VERSION: '5.0.202'
-  AZURITE_VERSION: '3.14.0'
 
 jobs:
   build_and_publish:
@@ -78,11 +77,10 @@ jobs:
         run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
 
       - name: Run tests
-        run: |
-          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
+        run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
       - name: Get version suffix property value
-        uses: ./.github/actions/get-version-suffix
+        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@2.3.0
         id: get_version_suffix
       
       - name: Pack Schemas project
@@ -92,7 +90,7 @@ jobs:
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
-        uses: ./.github/actions/nuget-assert-release-version
+        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.3.0
         with:
           NUPKG_RECURSE_PATH: 'source/Validation/source'
       
