@@ -24,162 +24,162 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
         public IXmlSchema GeneralAcknowledgement { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-general-acknowledgement-0-1.xsd");
 
-        public IXmlSchema GeneralAcknowledgementdokument { get; }
+        public IXmlSchema GeneralAcknowledgementDokument { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-general-acknowledgementdokument-0-1.xsd");
 
-        public IXmlSchema MeasureNotifyaggregatedtimeseries { get; }
+        public IXmlSchema MeasureNotifyAggregatedTimeseries { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-notifyaggregatedtimeseries-0-1.xsd");
 
-        public IXmlSchema MeasureNotifyvalidatedmeasuredata { get; }
+        public IXmlSchema MeasureNotifyValidatedMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-notifyvalidatedmeasuredata-0-1.xsd");
 
-        public IXmlSchema MeasureNotifywholesaleservices { get; }
+        public IXmlSchema MeasureNotifyWholesaleServices { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-notifywholesaleservices-0-1.xsd");
 
-        public IXmlSchema MeasureRejectrequestaggregatedmeasuredata { get; }
+        public IXmlSchema MeasureRejectRequestAggregatedMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-rejectrequestaggregatedmeasuredata-0-1.xsd");
 
-        public IXmlSchema MeasureRejectrequestforreminders { get; }
+        public IXmlSchema MeasureRejectRequestForReminders { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-rejectrequestforreminders-0-1.xsd");
 
-        public IXmlSchema MeasureRejectrequestvalidatedmeasuredata { get; }
+        public IXmlSchema MeasureRejectRequestValidatedMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-rejectrequestvalidatedmeasuredata-0-1.xsd");
 
-        public IXmlSchema MeasureRejectrequestwholesalesettlement { get; }
+        public IXmlSchema MeasureRejectRequestWholesaleSettlement { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-rejectrequestwholesalesettlement-0-1.xsd");
 
-        public IXmlSchema MeasureReminderofmissingmeasuredata { get; }
+        public IXmlSchema MeasureReminderOfMissingMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-reminderofmissingmeasuredata-0-1.xsd");
 
-        public IXmlSchema MeasureRequestaggregatedmeasuredata { get; }
+        public IXmlSchema MeasureRequestAggregatedMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-requestaggregatedmeasuredata-0-1.xsd");
 
-        public IXmlSchema MeasureRequestforreminders { get; }
+        public IXmlSchema MeasureRequestForReminders { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-requestforreminders-0-1.xsd");
 
-        public IXmlSchema MeasureRequestvalidatedmeasuredata { get; }
+        public IXmlSchema MeasureRequestValidatedMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-requestvalidatedmeasuredata-0-1.xsd");
 
-        public IXmlSchema MeasureRequestwholesalesettlement { get; }
+        public IXmlSchema MeasureRequestWholesaleSettlement { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-requestwholesalesettlement-0-1.xsd");
 
-        public IXmlSchema StructureAccountingpointcharacteristics { get; }
+        public IXmlSchema StructureAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-accountingpointcharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureCharacteristicsofacustomeratanap { get; }
+        public IXmlSchema StructureCharacteristicsOfACustomerAtanap { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-characteristicsofacustomeratanap-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestcancellation { get; }
+        public IXmlSchema StructureConfirmRequestCancellation { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestcancellation-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestchangebillingmasterdata { get; }
+        public IXmlSchema StructureConfirmRequestChangeBillingMasterData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestchangebillingmasterdata-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestchangecustomercharacteristics { get; }
+        public IXmlSchema StructureConfirmRequestChangeCustomerCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestchangecustomercharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestchangeofaccountingpointcharacteristics { get; }
+        public IXmlSchema StructureConfirmRequestChangeOfAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer(
                 "urn-ediel-org-structure-confirmrequestchangeofaccountingpointcharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestchangeofpricelist { get; }
+        public IXmlSchema StructureConfirmRequestChangeOfPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestchangeofpricelist-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestchangeofsupplier { get; }
+        public IXmlSchema StructureConfirmRequestChangeOfSupplier { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestendofsupply { get; }
+        public IXmlSchema StructureConfirmRequestEndOfSupply { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestendofsupply-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestreallocatechangeofsupplier { get; }
+        public IXmlSchema StructureConfirmRequestReallocateChangeOfSupplier { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestreallocatechangeofsupplier-0-1.xsd");
 
-        public IXmlSchema StructureConfirmrequestservice { get; }
+        public IXmlSchema StructureConfirmRequestService { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestservice-0-1.xsd");
 
-        public IXmlSchema StructureGenericnotification { get; }
+        public IXmlSchema StructureGenericNotification { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-genericnotification-0-1.xsd");
 
-        public IXmlSchema StructureNotifybillingmasterdata { get; }
+        public IXmlSchema StructureNotifyBillingMasterData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-notifybillingmasterdata-0-1.xsd");
 
-        public IXmlSchema StructureNotifycancellation { get; }
+        public IXmlSchema StructureNotifyCancellation { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-notifycancellation-0-1.xsd");
 
-        public IXmlSchema StructureNotifypricelist { get; }
+        public IXmlSchema StructureNotifyPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-notifypricelist-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestaccountingpointcharacteristics { get; }
+        public IXmlSchema StructureRejectRequestAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestaccountingpointcharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestbillingmasterdata { get; }
+        public IXmlSchema StructureRejectRequestBillingMasterData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestbillingmasterdata-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestcancellation { get; }
+        public IXmlSchema StructureRejectRequestCancellation { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestcancellation-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestchangebillingmasterdata { get; }
+        public IXmlSchema StructureRejectRequestChangeBillingMasterData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestchangebillingmasterdata-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestchangecustomercharacteristics { get; }
+        public IXmlSchema StructureRejectRequestChangeCustomerCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestchangecustomercharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestchangeofaccountingpointcharacteristics { get; }
+        public IXmlSchema StructureRejectRequestChangeOfAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer(
                 "urn-ediel-org-structure-rejectrequestchangeofaccountingpointcharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestchangeofpricelist { get; }
+        public IXmlSchema StructureRejectRequestChangeOfPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestchangeofpricelist-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestchangeofsupplier { get; }
+        public IXmlSchema StructureRejectRequestChangeOfSupplier { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestchangeofsupplier-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestendofsupply { get; }
+        public IXmlSchema StructureRejectRequestEndOfSupply { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestendofsupply-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestpricelist { get; }
+        public IXmlSchema StructureRejectRequestPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestpricelist-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestreallocatechangeofsupplier { get; }
+        public IXmlSchema StructureRejectRequestRealLocateChangeOfSupplier { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestreallocatechangeofsupplier-0-1.xsd");
 
-        public IXmlSchema StructureRejectrequestservice { get; }
+        public IXmlSchema StructureRejectRequestService { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestservice-0-1.xsd");
 
-        public IXmlSchema StructureRequestaccountingpointcharacteristics { get; }
+        public IXmlSchema StructureRequestAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestaccountingpointcharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureRequestbillingmasterdata { get; }
+        public IXmlSchema StructureRequestBillingMasterData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestbillingmasterdata-0-1.xsd");
 
-        public IXmlSchema StructureRequestcancellation { get; }
+        public IXmlSchema StructureRequestCancellation { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestcancellation-0-1.xsd");
 
-        public IXmlSchema StructureRequestchangeaccountingpointcharacteristics { get; }
+        public IXmlSchema StructureRequestChangeAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestchangeaccountingpointcharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureRequestchangebillingmasterdata { get; }
+        public IXmlSchema StructureRequestChangeBillingMasterData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestchangebillingmasterdata-0-1.xsd");
 
-        public IXmlSchema StructureRequestchangecustomercharacteristics { get; }
+        public IXmlSchema StructureRequestChangeCustomerCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestchangecustomercharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureRequestchangeofpricelist { get; }
+        public IXmlSchema StructureRequestChangeOfPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestchangeofpricelist-0-1.xsd");
 
-        public IXmlSchema StructureRequestchangeofsupplier { get; }
+        public IXmlSchema StructureRequestChangeOfSupplier { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd");
 
-        public IXmlSchema StructureRequestendofsupply { get; }
+        public IXmlSchema StructureRequestEndOfSupply { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestendofsupply-0-1.xsd");
 
-        public IXmlSchema StructureRequestpricelist { get; }
+        public IXmlSchema StructureRequestPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestpricelist-0-1.xsd");
 
-        public IXmlSchema StructureRequestreallocatechangeofsupplier { get; }
+        public IXmlSchema StructureRequestRealLocateChangeOfSupplier { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestreallocatechangeofsupplier-0-1.xsd");
 
-        public IXmlSchema StructureRequestservice { get; }
+        public IXmlSchema StructureRequestService { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-requestservice-0-1.xsd");
 
         public IXmlSchema LocalExtensionTypes { get; }
