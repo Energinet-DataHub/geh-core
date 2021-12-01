@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             Assert.Equal("autobiography", firstBook.Genre);
             Assert.Equal("1-861003-11-0", firstBook.Isbn);
             Assert.Equal(8.99m, firstBook.Price);
-            Assert.Equal(Instant.FromDateTimeOffset(new DateTimeOffset(1981, 03, 22, 0, 0, 0, TimeSpan.FromHours(1))), firstBook.PublicationDate);
+            Assert.Equal(Instant.FromDateTimeOffset(new DateTimeOffset(1981, 03, 22, 0, 0, 0, TimeSpan.FromHours(0))), firstBook.PublicationDate);
             Assert.Equal("Benjamin", firstBook.Author?.FirstName);
             Assert.Equal("Franklin", firstBook.Author?.LastName);
 
@@ -72,7 +72,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             Assert.Equal("novel", secondBook.Genre);
             Assert.Equal("0-201-63361-2", secondBook.Isbn);
             Assert.Equal(11.99m, secondBook.Price);
-            Assert.Equal(Instant.FromDateTimeOffset(new DateTimeOffset(1967, 11, 17, 0, 0, 0, TimeSpan.FromHours(1))), secondBook.PublicationDate);
+            Assert.Equal(Instant.FromDateTimeOffset(new DateTimeOffset(1967, 11, 17, 0, 0, 0, TimeSpan.FromHours(0))), secondBook.PublicationDate);
             Assert.Equal("Herman", secondBook.Author?.FirstName);
             Assert.Equal("Melville", secondBook.Author?.LastName);
 
@@ -81,7 +81,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             Assert.Equal("philosophy", thirdBook.Genre);
             Assert.Equal("1-861001-57-6", thirdBook.Isbn);
             Assert.Equal(9.99m, thirdBook.Price);
-            Assert.Equal(Instant.FromDateTimeOffset(new DateTimeOffset(1991, 02, 15, 0, 0, 0, TimeSpan.FromHours(1))), thirdBook.PublicationDate);
+            Assert.Equal(Instant.FromDateTimeOffset(new DateTimeOffset(1991, 02, 15, 0, 0, 0, TimeSpan.FromHours(0))), thirdBook.PublicationDate);
             Assert.Equal("Plato", thirdBook.Author?.FirstName);
             Assert.Null(thirdBook.Author?.LastName);
         }
