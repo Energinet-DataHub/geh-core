@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Energinet.DataHub.Core.SchemaValidation.Xml;
 using NodaTime;
 

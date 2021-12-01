@@ -27,14 +27,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Examples\BookstoreExample.xml" />
-    <None Remove="Examples\BookstoreExample.xsd" />
-    <None Remove="Examples\BrokenExample.xsd" />
-    <None Remove="Examples\CimXmlGenericNotificationExample.xml" />
-    <None Remove="Examples\Reconstructed.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Examples\Reconstructed.xml" />
     <EmbeddedResource Include="Examples\BookstoreExample.xml" />
     <EmbeddedResource Include="Examples\BookstoreExample.xsd" />

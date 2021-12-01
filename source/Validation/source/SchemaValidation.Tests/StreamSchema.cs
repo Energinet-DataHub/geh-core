@@ -27,10 +27,12 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             _schemaStream = schemaStream;
         }
 
-        public Task<XmlSchema> GetXmlSchemaAsync()
+        public Task<XmlSchemaSet> GetXmlSchemaSetAsync()
         {
             var xmlSchema = XmlSchema.Read(_schemaStream, null);
-            return Task.FromResult(xmlSchema!);
+            var xmlSchemaSet = new XmlSchemaSet();
+            xmlSchemaSet.Add(xmlSchema!);
+            return Task.FromResult(xmlSchemaSet);
         }
     }
 }

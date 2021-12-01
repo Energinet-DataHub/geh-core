@@ -31,9 +31,11 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
             _resourceName = resourceName;
         }
 
-        public Task<XmlSchema> GetXmlSchemaAsync()
+        public async Task<XmlSchemaSet> GetXmlSchemaSetAsync()
         {
-            return LoadSchemaRecusivelyAsync(_resourceName);
+            var xmlSchemaSet = new XmlSchemaSet();
+            xmlSchemaSet.Add(await LoadSchemaRecusivelyAsync(_resourceName).ConfigureAwait(false));
+            return xmlSchemaSet;
         }
 
         private static Task<XmlSchema> GetXmlSchemaAsync(string location)

@@ -254,7 +254,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 
                 foreach (var schema in _inputSchemas)
                 {
-                    var xmlSchema = await schema.GetXmlSchemaAsync().ConfigureAwait(false);
+                    var xmlSchema = await schema.GetXmlSchemaSetAsync().ConfigureAwait(false);
                     xmlReaderSettings.Schemas.Add(xmlSchema);
                 }
 

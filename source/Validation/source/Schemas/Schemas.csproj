@@ -68,64 +68,7 @@ limitations under the License.
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="CimXml\urn-ediel-org-codelists.xsd" />
-    <None Remove="CimXml\urn-ediel-org-general-acknowledgement-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-general-acknowledgementdokument-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-notifyaggregatedtimeseries-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-notifyvalidatedmeasuredata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-notifywholesaleservices-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-rejectrequestaggregatedmeasuredata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-rejectrequestforreminders-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-rejectrequestvalidatedmeasuredata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-rejectrequestwholesalesettlement-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-reminderofmissingmeasuredata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-requestaggregatedmeasuredata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-requestforreminders-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-requestvalidatedmeasuredata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-measure-requestwholesalesettlement-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-accountingpointcharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-characteristicsofacustomeratanap-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestcancellation-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestchangebillingmasterdata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestchangecustomercharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestchangeofaccountingpointcharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestchangeofpricelist-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestendofsupply-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestreallocatechangeofsupplier-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-confirmrequestservice-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-genericnotification-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-notifybillingmasterdata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-notifycancellation-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-notifypricelist-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestaccountingpointcharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestbillingmasterdata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestcancellation-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestchangebillingmasterdata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestchangecustomercharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestchangeofaccountingpointcharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestchangeofpricelist-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestchangeofsupplier-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestendofsupply-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestpricelist-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestreallocatechangeofsupplier-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-rejectrequestservice-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestaccountingpointcharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestbillingmasterdata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestcancellation-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestchangeaccountingpointcharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestchangebillingmasterdata-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestchangecustomercharacteristics-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestchangeofpricelist-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestendofsupply-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestpricelist-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestreallocatechangeofsupplier-0-1.xsd" />
-    <None Remove="CimXml\urn-ediel-org-structure-requestservice-0-1.xsd" />
-    <None Remove="CimXml\urn-entsoe-eu-local-extension-types.xsd" />
-    <None Remove="CimXml\urn-entsoe-eu-wgedi-codelists.xsd" />
-  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-codelists.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-general-acknowledgement-0-1.xsd" />
@@ -184,6 +127,7 @@ limitations under the License.
     <EmbeddedResource Include="CimXml\Resources\urn-entsoe-eu-local-extension-types.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-entsoe-eu-wgedi-codelists.xsd" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\SchemaValidation\SchemaValidation.csproj" />
   </ItemGroup>

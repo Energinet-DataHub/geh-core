@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
     /// </summary>
     public sealed class RootXmlSchema : IXmlSchema
     {
-        private readonly XmlSchema _anyRootAllowed;
+        private readonly XmlSchemaSet _anyRootAllowedSchemaSet;
 
         public RootXmlSchema(string rootName = "root")
         {
@@ -42,12 +42,14 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
 
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(anyRootSchema));
             var xmlSchema = XmlSchema.Read(stream, null);
-            _anyRootAllowed = xmlSchema!;
+            var xmlSchemaSet = new XmlSchemaSet();
+            xmlSchemaSet.Add(xmlSchema!);
+            _anyRootAllowedSchemaSet = xmlSchemaSet;
         }
 
-        public Task<XmlSchema> GetXmlSchemaAsync()
+        public Task<XmlSchemaSet> GetXmlSchemaSetAsync()
         {
-            return Task.FromResult(_anyRootAllowed);
+            return Task.FromResult(_anyRootAllowedSchemaSet);
         }
     }
 }

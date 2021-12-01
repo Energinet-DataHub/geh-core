@@ -18,14 +18,14 @@ using System.Xml.Schema;
 namespace Energinet.DataHub.Core.SchemaValidation
 {
     /// <summary>
-    /// Represents an XML schema.
+    /// Represents one or more related XML schemas.
     /// </summary>
     public interface IXmlSchema
     {
         /// <summary>
-        /// Reads and returns the XmlSchema.
+        /// Reads and returns a XmlSchemaSet for all the schemas.
         /// </summary>
-        /// <returns>The loaded XmlSchema.</returns>
-        Task<XmlSchema> GetXmlSchemaAsync();
+        /// <returns>The final XmlSchemaSet.</returns>
+        Task<XmlSchemaSet> GetXmlSchemaSetAsync();
     }
 }
