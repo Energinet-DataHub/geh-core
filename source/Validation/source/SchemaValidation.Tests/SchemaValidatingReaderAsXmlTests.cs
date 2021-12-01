@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.SchemaValidation.Tests.Examples;
 using Xunit;
@@ -80,6 +80,8 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             Assert.False(target.HasErrors);
             var actual = builder.ToString();
             var expected = LoadStreamIntoString(ExampleResources.ReconstructedXml);
+            // Remove copyright comment before comparison.
+            expected = Regex.Replace(expected, "(?s)<!--.*?-->", string.Empty);
             Assert.Equal(expected, actual);
         }
 
