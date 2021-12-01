@@ -1,0 +1,135 @@
+﻿<!--
+Copyright 2020 Energinet DataHub A/S
+
+Licensed under the Apache License, Version 2.0 (the "License2");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>enable</Nullable>
+    <ProjectGuid>{21B3FA27-B935-4749-B3C3-E615B14AC090}</ProjectGuid>
+    <AssemblyName>Energinet.DataHub.Core.Schemas</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Schemas</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Energinet.DataHub.Core.Schemas</PackageId>
+    <PackageVersion>0.1.0$(VersionSuffix)</PackageVersion>
+    <Title>Schema Library</Title>
+    <Company>Energinet-DataHub</Company>
+    <Authors>Energinet-DataHub</Authors>
+    <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
+    <!-- PackageReleaseNotes:
+      Is shown in Azure DevOps artifacts Release Notes section.
+    -->
+    <PackageReleaseNotes>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/documentation.md)
+    </PackageReleaseNotes>
+    <!-- PackageDescription:
+      Is shown in GitHub packages "About this package" section,
+      and in Visual Studio package manager view.
+    -->
+    <PackageDescription>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/documentation.md)
+    </PackageDescription>
+    <Description>Provides schemas for validating incoming formats in Energinet.DataHub.</Description>
+    <PackageTags>energinet;datahub</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <!-- Disable warning on your public types/methods for not having added full documentation tags -->
+    <NoWarn>$(NoWarn);1591;</NoWarn>
+  </PropertyGroup>
+
+  <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+  <PropertyGroup>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-codelists.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-general-acknowledgement-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-general-acknowledgementdokument-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyaggregatedtimeseries-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyvalidatedmeasuredata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifywholesaleservices-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-rejectrequestaggregatedmeasuredata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-rejectrequestforreminders-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-rejectrequestvalidatedmeasuredata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-rejectrequestwholesalesettlement-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-reminderofmissingmeasuredata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-requestaggregatedmeasuredata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-requestforreminders-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-requestvalidatedmeasuredata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-requestwholesalesettlement-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-accountingpointcharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-characteristicsofacustomeratanap-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestcancellation-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangebillingmasterdata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangecustomercharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangeofaccountingpointcharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangeofpricelist-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestendofsupply-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestreallocatechangeofsupplier-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestservice-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-genericnotification-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-notifybillingmasterdata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-notifycancellation-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-notifypricelist-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestaccountingpointcharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestbillingmasterdata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestcancellation-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangebillingmasterdata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangecustomercharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangeofaccountingpointcharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangeofpricelist-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangeofsupplier-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestendofsupply-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestpricelist-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestreallocatechangeofsupplier-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestservice-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestaccountingpointcharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestbillingmasterdata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestcancellation-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestchangeaccountingpointcharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestchangebillingmasterdata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestchangecustomercharacteristics-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestchangeofpricelist-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestendofsupply-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestpricelist-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestreallocatechangeofsupplier-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-requestservice-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-entsoe-eu-local-extension-types.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-entsoe-eu-wgedi-codelists.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SchemaValidation\SchemaValidation.csproj" />
+  </ItemGroup>
+
+</Project>
