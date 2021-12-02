@@ -252,10 +252,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
         private static bool IsHostStartedEvent(DataReceivedEventArgs outputEvent)
         {
             return
-                outputEvent.Data.Contains("Application started.") // Version 3.0.2912 and older: When the functions host is ready to serve requests, it will display "Application started".
-                || outputEvent.Data.Contains("Job host started") // Version 3.0.2996: When the functions host is ready to serve requests, it will display "Job host started".
-                || outputEvent.Data.Contains("Host lock lease acquired") // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
-                || outputEvent.Data.Contains("Worker process started and initialized"); // Version 3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
+                outputEvent.Data.Contains("Host lock lease acquired") // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
+                || outputEvent.Data.Contains("Worker process started and initialized"); // Version >=3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
         }
 
         private static bool MergeDictionaries(IDictionary<string, string> existing, IEnumerable<KeyValuePair<string, string>> incoming)
