@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 1.3.0
+
+- Implemented `FunctionAppHostManager.RestartHostIfChanges(IEnumerable<KeyValuePair<string, string>> environmentVariables)` that only restarts the function app if process environment variables has changed.
+
 ## Version 1.2.0
 
 - Extended `IntegrationTestConfiguration` to support using Event Hub.

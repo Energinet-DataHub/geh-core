@@ -80,10 +80,33 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
             FunctionAppHostProcess = null;
         }
 
+        /// <summary>
+        /// Restarts the Function App.
+        /// </summary>
         public void RestartHost()
         {
             StopHost();
             StartHost();
+        }
+
+        /// <summary>
+        /// Only restarts the Function App if merging the existing process environment variables
+        /// with incoming environment variables results in any changes.
+        /// The merge will add new key/value pairs and update existing keys if their value differs from the incoming.
+        /// </summary>
+        public void RestartHostIfChanges(IEnumerable<KeyValuePair<string, string>> environmentVariables)
+        {
+            if (environmentVariables == null)
+            {
+                throw new ArgumentNullException(nameof(environmentVariables));
+            }
+
+            var hasChanges = MergeDictionaries(Settings.ProcessEnvironmentVariables, environmentVariables);
+            if (hasChanges)
+            {
+                StopHost();
+                StartHost();
+            }
         }
 
         /// <summary>
@@ -233,6 +256,27 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 || outputEvent.Data.Contains("Job host started") // Version 3.0.2996: When the functions host is ready to serve requests, it will display "Job host started".
                 || outputEvent.Data.Contains("Host lock lease acquired") // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
                 || outputEvent.Data.Contains("Worker process started and initialized"); // Version 3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
+        }
+
+        private static bool MergeDictionaries(IDictionary<string, string> existing, IEnumerable<KeyValuePair<string, string>> incoming)
+        {
+            var hasChanges = false;
+
+            foreach (var pair in incoming)
+            {
+                if (!existing.ContainsKey(pair.Key))
+                {
+                    hasChanges = true;
+                    existing.Add(pair.Key, pair.Value);
+                }
+                else if (existing[pair.Key] != pair.Value)
+                {
+                    hasChanges = true;
+                    existing[pair.Key] = pair.Value;
+                }
+            }
+
+            return hasChanges;
         }
 
         private void HandleHostStartup()
