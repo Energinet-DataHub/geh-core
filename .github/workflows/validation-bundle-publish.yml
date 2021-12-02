@@ -83,6 +83,11 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@2.3.0
         id: get_version_suffix
       
+      - name: Pack SchemaValidation project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/Validation/source/SchemaValidation/SchemaValidation.csproj'
+
       - name: Pack Schemas project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
