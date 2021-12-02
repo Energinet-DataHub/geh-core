@@ -56,8 +56,11 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Schemas\Schemas.csproj" />
     <ProjectReference Include="..\SchemaValidation\SchemaValidation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.Schemas" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
