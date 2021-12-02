@@ -249,10 +249,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 : $"--functions {functions}";
         }
 
-        private static bool IsHostStartedEvent(DataReceivedEventArgs outputEvent)
+        private bool IsDefaultHostStartedEvent(DataReceivedEventArgs outputEvent)
         {
             return
-                outputEvent.Data.Contains("Worker process started and initialized"); // Version >=3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
+                outputEvent.Data.Contains("Host lock lease acquired") // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
+                || outputEvent.Data.Contains("Worker process started and initialized"); // Version >=3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
         }
 
         private static bool MergeDictionaries(IDictionary<string, string> existing, IEnumerable<KeyValuePair<string, string>> incoming)
@@ -292,7 +293,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
 
         private void HandleInvisibleHostStartup()
         {
-            var hostStartedListener = new HostStartedOutputListener(FunctionAppHostProcess!, IsHostStartedEvent);
+            Func<DataReceivedEventArgs, bool> isStartedEventPredicate = string.IsNullOrWhiteSpace(Settings.HostStartedEvent)
+                ? IsDefaultHostStartedEvent
+                : IsConfiguredHostStartedEvent;
+            var hostStartedListener = new HostStartedOutputListener(FunctionAppHostProcess!, isStartedEventPredicate);
 
             FunctionAppHostProcess!.OutputDataReceived += OnLogOutputToHostLog;
             FunctionAppHostProcess.OutputDataReceived += OnLogOutputToTestLogger;
@@ -318,6 +322,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
             }
 
             TestLogger.WriteLine($"Started host with process id '{FunctionAppHostProcess.Id}'");
+        }
+
+        private bool IsConfiguredHostStartedEvent(DataReceivedEventArgs outputEvent)
+        {
+            return outputEvent.Data.Contains(Settings.HostStartedEvent);
         }
 
         private void OnLogOutputToHostLog(object sender, DataReceivedEventArgs outputEvent)
