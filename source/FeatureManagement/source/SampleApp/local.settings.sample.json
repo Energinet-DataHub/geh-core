@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+
+    // On Windows it is also possible to use ":" as separator, but "__" is supported on multiple platforms.
+    "FeatureManagement__UseGuidMessage": false,
+
+    // Setting this "true" will disable the Azure Function.
+    "AzureWebJobs.CreateMessage.Disabled": false
+  }
+}
