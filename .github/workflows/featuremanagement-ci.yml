@@ -1,0 +1,76 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: FeatureManagement CI
+
+on:
+  # NOTICE: As FeatureManagement is only a sample, and doesn't produce any output, we don't need to build on "push to main"
+  #
+  # Build and test
+  # Executed if FeatureManagement folder or build scripts has changed; including if documentation or tests has changed
+  pull_request:
+    branches:
+      - main
+    paths:
+      - source/FeatureManagement/**
+      - .github/workflows/featuremanagement-ci.yml
+  # Build and test
+  # Executed if manually triggered
+  workflow_dispatch: {}
+
+env:
+  SOLUTION_FILE_PATH: source/FeatureManagement/FeatureManagement.sln
+  BUILD_CONFIGURATION: Release
+  # Tool versions
+  DOTNET_VERSION: '5.0.202'
+  AZURITE_VERSION: '3.14.0'
+  AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '3.0.3568'
+
+jobs:
+  build_and_test:
+    runs-on: windows-latest
+    name: Build and test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@master
+
+      - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Azurite v${{ env.AZURITE_VERSION }}
+        run: npm install -g azurite@${{ env.AZURITE_VERSION }}
+
+      - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+        run: npm install -g azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v2
+        id: cache-nuget
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore NuGet packages
+        run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
+
+      - name: Build solution
+        run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
+
+      - name: Run tests
+        run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
