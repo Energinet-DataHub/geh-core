@@ -33,15 +33,11 @@ First, we must ensure we have followed any general setup of the developer enviro
 
 Secondly, we must ensure we obey the following [prerequisites](./functionapp-testcommon.md#prerequisites).
 
-### Azure Service Bus dependency
+### Dependencies to live Azure resources
 
-The `FunctionApp.TestCommon.Tests` have a dependency to an actual Azure Service Bus. We cannot mock, or install a Service Bus locally, so we have to use an actual instance.
+The `FunctionApp.TestCommon.Tests` depends on live Azure resources like Service Bus end Event Hub. We cannot mock, or install these locally, so we have to use actual instances.
 
-The xUnit fixture `ServiceBusListenerMockFixture` is used to orchestrate integration tests for `ServiceBusListenerMock` which depend on Azure Service Bus resources.
+To be able to use the Azure resources prepared in the Integration Test environment, developers must do the following:
 
-In the Integration Test environment we have created a Azure Service Bus namespace, while topics/queues are created on the fly. For managing the life-cycle of topic/queues we use the `ServiceBusResourceProvider`.
-
-To be able to manage topics/queue, developers must do the following:
-
-* Copy of the `integrationtest.local.settings.json.sample` file into `integrationtest.local.settings.json`
+* Copy of the `integrationtest.local.settings.sample.json` file into `integrationtest.local.settings.json`
 * Update `integrationtest.local.settings.json` with information matching the Integration Test environment.

@@ -56,15 +56,4 @@ limitations under the License.
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.0.64">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
 </Project>

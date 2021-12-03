@@ -31,7 +31,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.FunctionApp.TestCommon</PackageId>
-    <PackageVersion>1.2.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.3.0$(VersionSuffix)</PackageVersion>
     <Title>FunctionApp TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -100,17 +100,6 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\TestCommon\TestCommon.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.0.64">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>
