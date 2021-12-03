@@ -33,7 +33,7 @@ env:
   SOLUTION_FILE_PATH: source/FeatureManagement/FeatureManagement.sln
   BUILD_CONFIGURATION: Release
   # Tool versions
-  DOTNET_VERSION: '5.0.202'
+  DOTNET_VERSION: '5.0.403'
   AZURITE_VERSION: '3.14.0'
   AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '3.0.3568'
 
