@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 	ProjectSection(SolutionItems) = preProject
 		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
+		documents\quickstarts-feature-flag.md = documents\quickstarts-feature-flag.md
+		documents\samples.md = documents\samples.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{2F62412D-77D2-48C7-BC45-AAA8359F8BA7}"
