@@ -77,5 +77,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
         /// </summary>
         public IDictionary<string, string> ProcessEnvironmentVariables { get; set; }
             = new Dictionary<string, string>();
+
+        /// <summary>
+        /// The log message that indicates the Azure Functions host or worker is started and ready to server.
+        /// During startup the host manager blocks until this message is logged, or a timeout occurs.
+        /// Normally the default values implemented in code is sufficient; but sometimes it is necessary
+        /// to have full control of which message to expect.
+        /// If empty the current default values implemented in code will be used.
+        /// </summary>
+        public string HostStartedEvent { get; set; }
+            = string.Empty;
     }
 }

@@ -80,10 +80,33 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
             FunctionAppHostProcess = null;
         }
 
+        /// <summary>
+        /// Restarts the Function App.
+        /// </summary>
         public void RestartHost()
         {
             StopHost();
             StartHost();
+        }
+
+        /// <summary>
+        /// Only restarts the Function App if merging the existing process environment variables
+        /// with incoming environment variables results in any changes.
+        /// The merge will add new key/value pairs and update existing keys if their value differs from the incoming.
+        /// </summary>
+        public void RestartHostIfChanges(IEnumerable<KeyValuePair<string, string>> environmentVariables)
+        {
+            if (environmentVariables == null)
+            {
+                throw new ArgumentNullException(nameof(environmentVariables));
+            }
+
+            var hasChanges = MergeDictionaries(Settings.ProcessEnvironmentVariables, environmentVariables);
+            if (hasChanges)
+            {
+                StopHost();
+                StartHost();
+            }
         }
 
         /// <summary>
@@ -226,13 +249,32 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
                 : $"--functions {functions}";
         }
 
-        private static bool IsHostStartedEvent(DataReceivedEventArgs outputEvent)
+        private bool IsDefaultHostStartedEvent(DataReceivedEventArgs outputEvent)
         {
             return
-                outputEvent.Data.Contains("Application started.") // Version 3.0.2912 and older: When the functions host is ready to serve requests, it will display "Application started".
-                || outputEvent.Data.Contains("Job host started") // Version 3.0.2996: When the functions host is ready to serve requests, it will display "Job host started".
-                || outputEvent.Data.Contains("Host lock lease acquired") // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
-                || outputEvent.Data.Contains("Worker process started and initialized"); // Version 3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
+                outputEvent.Data.Contains("Host lock lease acquired") // Version >3.0.2996: The functions host does not explicit log a "started" event anymore.
+                || outputEvent.Data.Contains("Worker process started and initialized"); // Version >=3.0.3568: When the functions host is ready to serve requests, it will display "Worker process started and initialized".
+        }
+
+        private static bool MergeDictionaries(IDictionary<string, string> existing, IEnumerable<KeyValuePair<string, string>> incoming)
+        {
+            var hasChanges = false;
+
+            foreach (var pair in incoming)
+            {
+                if (!existing.ContainsKey(pair.Key))
+                {
+                    hasChanges = true;
+                    existing.Add(pair.Key, pair.Value);
+                }
+                else if (existing[pair.Key] != pair.Value)
+                {
+                    hasChanges = true;
+                    existing[pair.Key] = pair.Value;
+                }
+            }
+
+            return hasChanges;
         }
 
         private void HandleHostStartup()
@@ -251,7 +293,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
 
         private void HandleInvisibleHostStartup()
         {
-            var hostStartedListener = new HostStartedOutputListener(FunctionAppHostProcess!, IsHostStartedEvent);
+            Func<DataReceivedEventArgs, bool> isStartedEventPredicate = string.IsNullOrWhiteSpace(Settings.HostStartedEvent)
+                ? IsDefaultHostStartedEvent
+                : IsConfiguredHostStartedEvent;
+            var hostStartedListener = new HostStartedOutputListener(FunctionAppHostProcess!, isStartedEventPredicate);
 
             FunctionAppHostProcess!.OutputDataReceived += OnLogOutputToHostLog;
             FunctionAppHostProcess.OutputDataReceived += OnLogOutputToTestLogger;
@@ -277,6 +322,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
             }
 
             TestLogger.WriteLine($"Started host with process id '{FunctionAppHostProcess.Id}'");
+        }
+
+        private bool IsConfiguredHostStartedEvent(DataReceivedEventArgs outputEvent)
+        {
+            return outputEvent.Data.Contains(Settings.HostStartedEvent);
         }
 
         private void OnLogOutputToHostLog(object sender, DataReceivedEventArgs outputEvent)
