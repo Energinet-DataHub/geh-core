@@ -32,7 +32,7 @@ on:
 jobs:
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@dstenroejl/optional-az-login
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@2.5.0
     with:
       SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
       DOTNET_VERSION: '5.0.403'
