@@ -1,0 +1,41 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: FeatureManagement CI
+
+on:
+  # NOTICE: As FeatureManagement is only a sample, and doesn't produce any output, we don't need to build on "push to main"
+  #
+  # Build and test
+  # Executed if FeatureManagement folder or build scripts has changed; including if documentation or tests has changed
+  pull_request:
+    branches:
+      - main
+    paths:
+      - source/FeatureManagement/**
+      - .github/workflows/featuremanagement-ci.yml
+  # Build and test
+  # Executed if manually triggered
+  workflow_dispatch: {}
+
+jobs:
+  # Build and test solution, and publish coverage report
+  dotnet_solution_ci:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@2.5.0
+    with:
+      SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
+      DOTNET_VERSION: '5.0.403'
+      USE_AZURITE: true
+      USE_AZURE_FUNCTIONS_CORE_TOOLS: true
+      USE_AZURE_RESOURCES: false
