@@ -29,55 +29,13 @@ on:
   # Executed if manually triggered
   workflow_dispatch: {}
 
-env:
-  SOLUTION_FILE_PATH: source/FeatureManagement/FeatureManagement.sln
-  BUILD_CONFIGURATION: Release
-  # Tool versions
-  DOTNET_VERSION: '5.0.403'
-  AZURITE_VERSION: '3.14.0'
-  AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '3.0.3568'
-  # Overrides settings in 'functionhost.settings.json'
-  FunctionAppHostPath: 'C:\npm\prefix\node_modules\azure-functions-core-tools\bin\func.dll'
-
 jobs:
-  build_and_test:
-    runs-on: windows-latest
-    name: Build and test
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@master
-
-      - name: Setup .NET 3.1.x
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.x'
-
-      - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Install Azurite v${{ env.AZURITE_VERSION }}
-        run: npm install -g azurite@${{ env.AZURITE_VERSION }}
-
-      - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-        run: npm install -g azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v2
-        id: cache-nuget
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore NuGet packages
-        run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
-
-      - name: Build solution
-        run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
-
-      - name: Run tests
-        run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
+  # Build and test solution, and publish coverage report
+  dotnet_solution_ci:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@dstenroejl/optional-az-login
+    with:
+      SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
+      DOTNET_VERSION: '5.0.403'
+      USE_AZURITE: true
+      USE_AZURE_FUNCTIONS_CORE_TOOLS: true
+      USE_AZURE_RESOURCES: false
