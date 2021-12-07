@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Energinet.DataHub.Core.SchemaValidation.Extensions;
 using Xunit;
 using Xunit.Categories;
@@ -85,6 +86,50 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             // Assert
             Assert.False(target.HasErrors);
             Assert.Equal(NodeType.None, target.CurrentNodeType);
+        }
+
+        [Fact]
+        public async Task AsXElementAsync_ValidXml_ReadsToEnd()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<root><test attr=""val""><other/></test></root>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xelement = await target.AsXElementAsync();
+
+            // Assert
+            Assert.NotNull(xelement);
+            Assert.Equal("root", xelement.Name);
+            Assert.False(target.HasErrors);
+            Assert.Equal(NodeType.None, target.CurrentNodeType);
+        }
+
+        [Fact]
+        public async Task AsXElementAsync_InvalidXml_HasErrors()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<wrong><test attr=""val""><other/></test></wrong>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xelement = await target.AsXElementAsync();
+
+            // Assert
+            Assert.NotNull(xelement);
+            Assert.Equal("wrong", xelement.Name);
+            Assert.True(target.HasErrors);
+        }
+
+        [Fact]
+        public async Task AsXElementAsync_NotXml_ThrowsException()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<root> <<>> </root>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act + Assert
+            await Assert.ThrowsAsync<XmlException>(() => target.AsXElementAsync());
         }
 
         private static Stream LoadStringIntoStream(string contents)

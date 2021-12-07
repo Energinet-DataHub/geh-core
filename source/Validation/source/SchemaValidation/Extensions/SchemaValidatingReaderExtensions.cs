@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Energinet.DataHub.Core.SchemaValidation.Extensions
 {
@@ -49,6 +50,18 @@ namespace Energinet.DataHub.Core.SchemaValidation.Extensions
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Do not use this method, it is provided for compatibility.
+        /// Uses the specified reader to validate and read XML into an XElement.
+        /// </summary>
+        /// <param name="reader">The reader to use.</param>
+        /// <returns>A loaded XElement.</returns>
+        public static Task<XElement> AsXElementAsync(this SchemaValidatingReader reader)
+        {
+            var innerReader = reader.GetXmlValidatingReader();
+            return innerReader.ReadIntoXElementAsync();
         }
     }
 }

@@ -15,8 +15,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using NodaTime;
 
@@ -119,6 +121,15 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
         {
             var dt = await ReadValueAsAsync(XmlConvert.ToDateTimeOffset).ConfigureAwait(false);
             return Instant.FromDateTimeOffset(dt);
+        }
+
+        internal async Task<XElement> ReadIntoXElementAsync()
+        {
+            await EnsureReaderAsync().ConfigureAwait(false);
+
+            return await XElement
+                .LoadAsync(_xmlReader!, LoadOptions.None, CancellationToken.None)
+                .ConfigureAwait(false);
         }
 
         private async Task<T> ReadValueAsAsync<T>(Func<string, T> attributeFunc)
