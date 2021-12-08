@@ -14,9 +14,9 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using Energinet.DataHub.Core.SchemaValidation.Extensions;
 using Xunit;
 using Xunit.Categories;
@@ -100,7 +100,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
 
             // Assert
             Assert.NotNull(xelement);
-            Assert.Equal("root", xelement.Name);
+            Assert.Equal("root", xelement!.Name);
             Assert.False(target.HasErrors);
             Assert.Equal(NodeType.None, target.CurrentNodeType);
         }
@@ -116,20 +116,28 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             var xelement = await target.AsXElementAsync();
 
             // Assert
-            Assert.NotNull(xelement);
-            Assert.Equal("wrong", xelement.Name);
+            Assert.Null(xelement);
             Assert.True(target.HasErrors);
         }
 
         [Fact]
-        public async Task AsXElementAsync_NotXml_ThrowsException()
+        public async Task AsXElementAsync_NotXml_HasErrors()
         {
             // Arrange
             var xmlStream = LoadStringIntoStream(@"<root> <<>> </root>");
             var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
 
-            // Act + Assert
-            await Assert.ThrowsAsync<XmlException>(() => target.AsXElementAsync());
+            // Act
+            var actual = await target.AsXElementAsync();
+
+            // Assert
+            Assert.Null(actual);
+            Assert.True(target.HasErrors);
+
+            var error = target.Errors.Single();
+            Assert.Equal(1, error.LineNumber);
+            Assert.Equal(9, error.LinePosition);
+            Assert.Equal("Name cannot begin with the '<' character, hexadecimal value 0x3C. Line 1, position 9.", error.Description);
         }
 
         private static Stream LoadStringIntoStream(string contents)

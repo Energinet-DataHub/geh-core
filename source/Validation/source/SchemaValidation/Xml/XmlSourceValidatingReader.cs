@@ -66,24 +66,31 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
                 return true;
             }
 
-            do
+            try
             {
-                _attributeValue = null;
-
-                switch (_xmlReader!.NodeType)
+                do
                 {
-                    case XmlNodeType.Element:
-                        ProcessElement();
-                        return true;
-                    case XmlNodeType.EndElement:
-                        ProcessEndElement();
-                        return true;
-                    case XmlNodeType.Attribute:
-                        ProcessAttribute();
-                        return true;
+                    _attributeValue = null;
+
+                    switch (_xmlReader!.NodeType)
+                    {
+                        case XmlNodeType.Element:
+                            ProcessElement();
+                            return true;
+                        case XmlNodeType.EndElement:
+                            ProcessEndElement();
+                            return true;
+                        case XmlNodeType.Attribute:
+                            ProcessAttribute();
+                            return true;
+                    }
                 }
+                while (await ValidatingReadAsync().ConfigureAwait(false));
             }
-            while (await ValidatingReadAsync().ConfigureAwait(false));
+            catch (XmlException ex)
+            {
+                _errors.Add(new SchemaValidationError(ex.LineNumber, ex.LinePosition, ex.Message));
+            }
 
             CurrentNodeName = string.Empty;
             CurrentNodeType = NodeType.None;
@@ -123,13 +130,24 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             return Instant.FromDateTimeOffset(dt);
         }
 
-        internal async Task<XElement> ReadIntoXElementAsync()
+        internal async Task<XElement?> ReadIntoXElementAsync()
         {
             await EnsureReaderAsync().ConfigureAwait(false);
 
-            return await XElement
-                .LoadAsync(_xmlReader!, LoadOptions.None, CancellationToken.None)
-                .ConfigureAwait(false);
+            try
+            {
+                var element = await XElement
+                    .LoadAsync(_xmlReader!, LoadOptions.None, CancellationToken.None)
+                    .ConfigureAwait(false);
+
+                return HasErrors ? null : element;
+            }
+            catch (XmlException ex)
+            {
+                _errors.Add(new SchemaValidationError(ex.LineNumber, ex.LinePosition, ex.Message));
+            }
+
+            return null;
         }
 
         private async Task<T> ReadValueAsAsync<T>(Func<string, T> attributeFunc)
