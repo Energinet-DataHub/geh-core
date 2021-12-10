@@ -140,6 +140,43 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             Assert.Equal("Name cannot begin with the '<' character, hexadecimal value 0x3C. Line 1, position 9.", error.Description);
         }
 
+        [Fact]
+        public async Task AsXmlReaderAsync_ValidXml_ReadsToEnd()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<root><test attr=""val""><other/></test></root>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xmlReader = await target.AsXmlReaderAsync();
+
+            while (await xmlReader.ReadAsync())
+            {
+            }
+
+            // Assert
+            Assert.False(target.HasErrors);
+            Assert.Equal(NodeType.None, target.CurrentNodeType);
+        }
+
+        [Fact]
+        public async Task AsXmlReaderAsync_InvalidXml_HasErrors()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<wrong><test attr=""val""><other/></test></wrong>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xmlReader = await target.AsXmlReaderAsync();
+
+            while (await xmlReader.ReadAsync())
+            {
+            }
+
+            // Assert
+            Assert.True(target.HasErrors);
+        }
+
         private static Stream LoadStringIntoStream(string contents)
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(contents));

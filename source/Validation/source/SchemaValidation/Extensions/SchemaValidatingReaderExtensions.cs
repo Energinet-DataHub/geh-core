@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Energinet.DataHub.Core.SchemaValidation.Extensions
@@ -62,6 +63,21 @@ namespace Energinet.DataHub.Core.SchemaValidation.Extensions
         {
             var innerReader = reader.GetXmlValidatingReader();
             return innerReader.ReadIntoXElementAsync();
+        }
+
+        /// <summary>
+        /// Do not use this method, it is provided for compatibility.
+        /// Provides access to the underlying asynchronous XmlReader.
+        /// Schema validation errors are still stored in the SchemaValidatingReader,
+        /// but do note that malformed XML errors are not and will be thrown as XmlException from the returned XmlReader.
+        /// Do not use anything from SchemaValidatingReader, except error-related functionality.
+        /// </summary>
+        /// <param name="reader">The reader to use.</param>
+        /// <returns>The internal XmlReader.</returns>
+        public static Task<XmlReader> AsXmlReaderAsync(this SchemaValidatingReader reader)
+        {
+            var innerReader = reader.GetXmlValidatingReader();
+            return innerReader.GetInternalReaderAsync();
         }
     }
 }
