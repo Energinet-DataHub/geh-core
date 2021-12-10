@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 {
     internal sealed class XmlSourceValidatingReader : ISourceValidatingReader
     {
-        private readonly List<SchemaValidationError> _errors = new ();
+        private readonly List<SchemaValidationError> _errors = new();
         private readonly Stream _inputStream;
         private readonly IEnumerable<IXmlSchema> _inputSchemas;
 
@@ -148,6 +148,12 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             }
 
             return null;
+        }
+
+        internal async Task<XmlReader> GetInternalReaderAsync()
+        {
+            await EnsureReaderAsync().ConfigureAwait(false);
+            return _xmlReader!;
         }
 
         private async Task<T> ReadValueAsAsync<T>(Func<string, T> attributeFunc)
