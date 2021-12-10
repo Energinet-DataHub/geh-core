@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
@@ -24,13 +26,17 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         /// <summary>
         /// Logs request
         /// </summary>
-        /// <returns>Work task</returns>
-        Task LogRequestAsync();
+        /// <param name="logStream">stream to log</param>
+        /// <param name="metaData">log metaData</param>
+        /// <returns>work task</returns>
+        Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData);
 
         /// <summary>
         /// Logs response
         /// </summary>
+        /// <param name="logStream">stream to log</param>
+        /// <param name="metaData">log metaData</param>
         /// <returns>Work task</returns>
-        Task LogResponseAsync();
+        Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData);
     }
 }

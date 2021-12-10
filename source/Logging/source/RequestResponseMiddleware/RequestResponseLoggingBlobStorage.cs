@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
@@ -32,18 +33,18 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             _storageContainerName = storageContainerName;
         }
 
-        public async Task LogRequestAsync()
+        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData)
         {
             var blobName = "request";
             var blobClientRequest = new BlobClient(_storageConnectionString, _storageContainerName, blobName);
-            await blobClientRequest.UploadAsync("content");
+            await blobClientRequest.UploadAsync(logStream, null, metaData);
         }
 
-        public async Task LogResponseAsync()
+        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData)
         {
             var blobName = "request";
             var blobClientResponse = new BlobClient(_storageConnectionString, _storageContainerName, blobName);
-            await blobClientResponse.UploadAsync("content");
+            await blobClientResponse.UploadAsync(logStream, null, metaData);
         }
     }
 }
