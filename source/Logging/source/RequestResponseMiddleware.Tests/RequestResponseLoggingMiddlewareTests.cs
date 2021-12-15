@@ -101,8 +101,8 @@ namespace RequestResponseMiddleware.Tests
         {
             var httpRequest = new MockedHttpRequestData(functionContext);
             var responseData = httpRequest.HttpResponseData;
-            httpRequest.HttpResponseData.StatusCode = statusCode;
-            httpRequest.SetResponseHeaderCollection(new HttpHeadersCollection(responseHeader));
+            httpRequest.SetResponseHeaderCollection(new HttpHeadersCollection(
+                new List<KeyValuePair<string, string>>() { new ("TestId", "200") }));
 
             var invocationFeatures = new MockedFunctionInvocationFeatures();
             invocationFeatures.Set(new IFunctionBindingsFeature()

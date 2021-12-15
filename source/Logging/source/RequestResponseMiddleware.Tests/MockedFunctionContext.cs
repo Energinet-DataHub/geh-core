@@ -21,12 +21,12 @@ namespace RequestResponseMiddleware.Tests
 {
     public sealed class MockedFunctionContext
     {
-        private readonly Mock<FunctionContext> _functionContextMock = new();
-        private readonly Mock<BindingContext> _bindingContextMock = new();
-        private readonly Mock<FunctionDefinition> _functionDefinitionMock = new();
-        private readonly Mock<IServiceProvider> _serviceProviderMock = new();
-        private readonly Mock<ILoggerFactory> _loggerFactoryMock = new();
-        private readonly Mock<IInvocationFeatures> _features = new();
+        private readonly Mock<FunctionContext> _functionContextMock = new ();
+        private readonly Mock<BindingContext> _bindingContextMock = new ();
+        private readonly Mock<FunctionDefinition> _functionDefinitionMock = new ();
+        private readonly Mock<IServiceProvider> _serviceProviderMock = new ();
+        private readonly Mock<ILoggerFactory> _loggerFactoryMock = new ();
+        private readonly Mock<IInvocationFeatures> _features = new ();
 
         public MockedFunctionContext()
         {
@@ -79,7 +79,7 @@ namespace RequestResponseMiddleware.Tests
 
         private static Mock CreateMockOfType(Type t)
         {
-            return (Mock)Activator.CreateInstance(typeof(Mock<>).MakeGenericType(t))!;
+            return (Mock)Activator.CreateInstance(typeof(Mock<>).MakeGenericType(t)) !;
         }
     }
 }
