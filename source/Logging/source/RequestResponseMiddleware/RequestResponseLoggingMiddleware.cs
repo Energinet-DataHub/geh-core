@@ -40,46 +40,64 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
             await next(context).ConfigureAwait(false);
 
-            var responseLog = BuildResponse(context);
+            var responseLog = BuildResponseLogInformation(context);
             await _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData).ConfigureAwait(false);
         }
 
         private static (Stream LogStream, Dictionary<string, string> MetaData) BuildRequestLogInformation(FunctionContext context)
         {
-            byte[] bytes = Encoding.ASCII.GetBytes(context.BindingContext.BindingData.ToString() ?? string.Empty);
-            var dictionary = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string);
-            return new ValueTuple<Stream, Dictionary<string, string>>(new MemoryStream(bytes), dictionary);
-        }
+            var bindingsFeature = context.GetHttpRequestData();
 
-        private static (Stream LogStream, Dictionary<string, string> MetaData) BuildResponse(FunctionContext context)
-        {
-            var functionBindingsFeature = context.Features.SingleOrDefault(f => f.Key.Name == "IFunctionBindingsFeature").Value;
-            if (functionBindingsFeature == null)
+            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string);
+            if (bindingsFeature is { } requestData)
             {
-                throw new ArgumentException("Cannot get function bindings feature, IFunctionBindingsFeature");
+                foreach (var (key, value) in ReadHeaderDataFromCollection(requestData.Headers))
+                {
+                    metaData.TryAdd(key, value);
+                }
+
+                metaData.TryAdd("FunctionId", context.FunctionId);
+                metaData.TryAdd("InvocationId", context.InvocationId);
+                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+
+                // TODO Should we "reset" stream ?
+                return new ValueTuple<Stream, Dictionary<string, string>>(requestData.Body, metaData);
             }
 
-            var type = functionBindingsFeature.GetType();
-            var result = type.GetProperties().Single(p => p.Name == "InvocationResult");
+            return new ValueTuple<Stream, Dictionary<string, string>>(Stream.Null, metaData);
+        }
 
-            if (result.GetValue(functionBindingsFeature) is HttpResponseData responseData)
+        private static (Stream LogStream, Dictionary<string, string> MetaData) BuildResponseLogInformation(FunctionContext context)
+        {
+            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
+            if (context.GetHttpResponseData() is { } responseData)
             {
-                var metaData = ReadHeaderData(responseData.Headers);
-                metaData.Add("StatusCode", responseData.StatusCode.ToString());
+                foreach (var (key, value) in ReadHeaderDataFromCollection(responseData.Headers))
+                {
+                    metaData.TryAdd(key, value);
+                }
 
+                metaData.TryAdd("StatusCode", responseData.StatusCode.ToString());
+                metaData.TryAdd("FunctionId", context.FunctionId);
+                metaData.TryAdd("InvocationId", context.InvocationId);
+                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+
+                // TODO Should we "reset" stream ?
                 return new ValueTuple<Stream, Dictionary<string, string>>(responseData.Body, metaData);
             }
 
-            return new ValueTuple<Stream, Dictionary<string, string>>(Stream.Null, new Dictionary<string, string>());
+            return new ValueTuple<Stream, Dictionary<string, string>>(Stream.Null, metaData);
         }
 
-        private static Dictionary<string, string> ReadHeaderData(HttpHeadersCollection headersCollection)
+        private static Dictionary<string, string> ReadHeaderDataFromCollection(HttpHeadersCollection headersCollection)
         {
-            var metaData = new Dictionary<string, string>();
-            foreach (var (key, value) in headersCollection)
+            if (headersCollection is null)
             {
-                metaData.Add(key, value.ToString() ?? string.Empty);
+                return new Dictionary<string, string>();
             }
+
+            var metaData = headersCollection
+                .ToDictionary(e => e.Key, e => string.Join(",", e.Value));
 
             return metaData;
         }
