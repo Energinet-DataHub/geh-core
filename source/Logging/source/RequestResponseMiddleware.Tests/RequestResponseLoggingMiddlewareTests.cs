@@ -56,7 +56,7 @@ namespace RequestResponseMiddleware.Tests
             var httpRequest = new MockedHttpRequestData(functionContext);
             var responseData = httpRequest.HttpResponseData;
             httpRequest.SetResponseHeaderCollection(new HttpHeadersCollection(
-                new List<KeyValuePair<string, string>>() { new ("TestId", "200") }));
+                new List<KeyValuePair<string, string>>() { new("TestId", "200") }));
 
             var invocationFeatures = new MockedFunctionInvocationFeatures();
             invocationFeatures.Set(new IFunctionBindingsFeature()
