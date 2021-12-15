@@ -23,10 +23,40 @@ limitations under the License.
         <RootNamespace>Energinet.DataHub.Core.Logging.RequestResponseMiddleware</RootNamespace>
         <AssemblyName>Energinet.DataHub.Core.Logging.RequestResponseMiddleware</AssemblyName>
     </PropertyGroup>
+	
+	<PropertyGroup>
+    <PackageId>Energinet.DataHub.Core.Logging</PackageId>
+    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+    <Title>Logging Middleware For Requests and Responses</Title>
+    <Company>Energinet-DataHub</Company>
+    <Authors>Energinet-DataHub</Authors>
+    <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
+    <!-- PackageReleaseNotes:
+      Is shown in Azure DevOps artifacts Release Notes section.
+    -->
+    <PackageReleaseNotes>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/documentation.md)
+    </PackageReleaseNotes>
+    <!-- PackageDescription:
+      Is shown in GitHub packages "About this package" section,
+      and in Visual Studio package manager view.
+    -->
+    <PackageDescription>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/documentation.md)
+    </PackageDescription>
+    <Description>Middleware that logs requests and responses to external storage</Description>
+    <PackageTags>energinet;datahub</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Azure.Storage.Blobs" Version="12.10.0" />
       <PackageReference Include="Microsoft.Azure.Functions.Worker.Core" Version="1.4.0" />
     </ItemGroup>
+
 
 </Project>
