@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#nullable enable
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -27,36 +31,78 @@ namespace RequestResponseMiddleware.Tests
     public class RequestResponseLoggingMiddlewareTests
     {
         [Fact]
-        public async Task RequestResponseLoggingMiddleware_AllOk()
+        public async Task RequestResponseLoggingMiddleware_Body_AllOk()
         {
             // Arrange
-            var blobStorage = new Mock<IRequestResponseLogging>();
-            var middleware = new RequestResponseLoggingMiddleware(blobStorage.Object);
+            var testStorage = new LocalLogStorage();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage);
             var functionContext = new MockedFunctionContext();
 
-            var data = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
-            };
+            var responseHeaderData = new List<KeyValuePair<string, string>>() { new ("StatusCodeTest", "200") };
 
-            functionContext.BindingContext.Setup(x => x.BindingData)
-                .Returns(data);
+            functionContext.BindingContext
+                .Setup(x => x.BindingData)
+                .Returns(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase));
 
-            SetUpTest(functionContext);
+            var expectedStatusCode = HttpStatusCode.Accepted;
+
+            var (request, response) = SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
+
+            var expectedLogBody = "BODYTEXT";
+            response.Body = new MemoryStream(Encoding.UTF8.GetBytes(expectedLogBody));
 
             // Act
             await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
 
             // Assert
-            await Task.Delay(1);
+            var savedLogs = testStorage.GetLogs();
+            Assert.Contains(savedLogs, e => e.Body.Equals(expectedLogBody));
         }
 
-        private void SetUpTest(MockedFunctionContext functionContext)
+        [Fact]
+        public async Task RequestResponseLoggingMiddleware_AllOk()
+        {
+            // Arrange
+            var testStorage = new LocalLogStorage();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage);
+            var functionContext = new MockedFunctionContext();
+
+            var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
+                { "marketOperator", "232323232" },
+            };
+
+            var responseHeaderData = new List<KeyValuePair<string, string>>() { new ("StatusCodeTest", "200") };
+
+            functionContext.BindingContext
+                .Setup(x => x.BindingData)
+                .Returns(inputData);
+
+            var expectedStatusCode = HttpStatusCode.Accepted;
+
+            var (request, response) = SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
+
+            // Act
+            await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+
+            // Assert
+            var savedLogs = testStorage.GetLogs();
+            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("Headers"));
+            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("marketOperator"));
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("StatusCodeTest", out var value) && value == "200");
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("StatusCode", out var value) && value == expectedStatusCode.ToString());
+        }
+
+        private (MockedHttpRequestData HttpRequestData, HttpResponseData HttpResponseData) SetUpContext(
+            MockedFunctionContext functionContext,
+            List<KeyValuePair<string, string>> responseHeader,
+            HttpStatusCode statusCode)
         {
             var httpRequest = new MockedHttpRequestData(functionContext);
             var responseData = httpRequest.HttpResponseData;
-            httpRequest.SetResponseHeaderCollection(new HttpHeadersCollection(
-                new List<KeyValuePair<string, string>>() { new ("TestId", "200") }));
+            httpRequest.HttpResponseData.StatusCode = statusCode;
+            httpRequest.SetResponseHeaderCollection(new HttpHeadersCollection(responseHeader));
 
             var invocationFeatures = new MockedFunctionInvocationFeatures();
             invocationFeatures.Set(new IFunctionBindingsFeature()
@@ -65,6 +111,8 @@ namespace RequestResponseMiddleware.Tests
                 InputData = new Dictionary<string, object> { { "request", httpRequest.HttpRequestData } },
             });
             functionContext.SetInvocationFeatures(invocationFeatures);
+
+            return new (httpRequest, responseData);
         }
 
         private class IFunctionBindingsFeature

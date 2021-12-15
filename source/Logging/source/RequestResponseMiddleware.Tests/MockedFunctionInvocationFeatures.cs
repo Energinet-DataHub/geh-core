@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Azure.Functions.Worker;
 
 namespace RequestResponseMiddleware.Tests
@@ -24,19 +24,9 @@ namespace RequestResponseMiddleware.Tests
     {
         private readonly Dictionary<Type, object> _features = new ();
 
-        public MockedFunctionInvocationFeatures()
-        {
-        }
-
         public T? Get<T>()
         {
-            var type = typeof(T);
-            if (!_features.TryGetValue(type, out object? feature))
-            {
-                 feature = _features[type];
-            }
-
-            return feature is null ? default : (T)feature;
+            throw new NotImplementedException();
         }
 
         public IEnumerator<KeyValuePair<Type, object>> GetEnumerator()

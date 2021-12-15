@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Specialized;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
@@ -42,7 +41,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData)
         {
-            var blobName = "request";
+            var blobName = "response";
             var blobClientResponse = new BlobClient(_storageConnectionString, _storageContainerName, blobName);
             await blobClientResponse.UploadAsync(logStream, null, metaData);
         }
