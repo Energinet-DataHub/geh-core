@@ -22,7 +22,7 @@ namespace RequestResponseMiddleware.Tests
 {
     public class MockedFunctionInvocationFeatures : IInvocationFeatures
     {
-        private readonly Dictionary<Type, object> _features = new();
+        private readonly Dictionary<Type, object> _features = new ();
 
         public T? Get<T>()
         {
