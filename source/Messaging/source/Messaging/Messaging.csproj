@@ -72,7 +72,7 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="1.0.3" />
     <PackageReference Include="FluentValidation" Version="9.5.4" />
     <PackageReference Include="MediatR" Version="9.0.0" />
-    <PackageReference Include="NodaTime" Version="3.0.7" />
+    <PackageReference Include="NodaTime" Version="3.0.9" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
