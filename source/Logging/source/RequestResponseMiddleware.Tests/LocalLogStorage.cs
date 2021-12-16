@@ -22,7 +22,7 @@ namespace RequestResponseMiddleware.Tests
 {
     public class LocalLogStorage : IRequestResponseLogging
     {
-        public static readonly List<LocalLog> Logs = new ();
+        public static readonly List<LocalLog> Logs = new();
 
         public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
         {
