@@ -28,15 +28,17 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         /// </summary>
         /// <param name="logStream">stream to log</param>
         /// <param name="metaData">log metaData</param>
+        /// <param name="logName"></param>
         /// <returns>work task</returns>
-        Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData);
+        Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, string logName);
 
         /// <summary>
         /// Logs response
         /// </summary>
         /// <param name="logStream">stream to log</param>
         /// <param name="metaData">log metaData</param>
+        /// <param name="logName"></param>
         /// <returns>Work task</returns>
-        Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData);
+        Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, string logName);
     }
 }
