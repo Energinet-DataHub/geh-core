@@ -15,9 +15,9 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Schema;
 using Energinet.DataHub.Core.SchemaValidation.Tests.Examples;
 using NodaTime;
@@ -62,14 +62,22 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         }
 
         [Fact]
-        public async Task AdvanceAsync_NotXml_ThrowsException()
+        public async Task AdvanceAsync_NotXml_ReturnsAsError()
         {
             // Arrange
             var xmlStream = LoadStringIntoStream("<root>< <> ></root>");
             var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
 
-            // Act + Assert
-            await Assert.ThrowsAsync<XmlException>(() => target.AdvanceAsync());
+            // Act
+            await target.AdvanceAsync();
+
+            // Assert
+            Assert.True(target.HasErrors);
+
+            var error = target.Errors.Single();
+            Assert.Equal(1, error.LineNumber);
+            Assert.Equal(8, error.LinePosition);
+            Assert.Equal("Name cannot begin with the ' ' character, hexadecimal value 0x20. Line 1, position 8.", error.Description);
         }
 
         [Fact]

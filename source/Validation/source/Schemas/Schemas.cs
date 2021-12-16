@@ -18,6 +18,6 @@ namespace Energinet.DataHub.Core.Schemas
 {
     public static class Schemas
     {
-        public static CimXmlSchemaCollection CimXml { get; } = new ();
+        public static CimXmlSchemaCollection CimXml { get; } = new();
     }
 }

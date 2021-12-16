@@ -27,6 +27,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         {
             // Arrange
             var xmlStream = ExampleResources.CimXmlGenericNotification;
+
             var target = new SchemaValidatingReader(xmlStream, Schemas.Schemas.CimXml.StructureGenericNotification);
 
             // Act

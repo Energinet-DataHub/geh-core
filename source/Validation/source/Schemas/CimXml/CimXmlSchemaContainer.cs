@@ -21,8 +21,8 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
 {
     internal sealed class CimXmlSchemaContainer : IXmlSchema
     {
-        private static readonly CimXmlSchemaResolver _xmlResolver = new ();
-        private static readonly ConcurrentDictionary<string, Task<XmlSchema>> _schemaCache = new ();
+        private static readonly CimXmlSchemaResolver _xmlResolver = new();
+        private static readonly ConcurrentDictionary<string, Task<XmlSchema>> _schemaCache = new();
 
         private readonly string _resourceName;
 

@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.SchemaValidation.Extensions;
@@ -85,6 +86,95 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             // Assert
             Assert.False(target.HasErrors);
             Assert.Equal(NodeType.None, target.CurrentNodeType);
+        }
+
+        [Fact]
+        public async Task AsXElementAsync_ValidXml_ReadsToEnd()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<root><test attr=""val""><other/></test></root>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xelement = await target.AsXElementAsync();
+
+            // Assert
+            Assert.NotNull(xelement);
+            Assert.Equal("root", xelement!.Name);
+            Assert.False(target.HasErrors);
+            Assert.Equal(NodeType.None, target.CurrentNodeType);
+        }
+
+        [Fact]
+        public async Task AsXElementAsync_InvalidXml_HasErrors()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<wrong><test attr=""val""><other/></test></wrong>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xelement = await target.AsXElementAsync();
+
+            // Assert
+            Assert.Null(xelement);
+            Assert.True(target.HasErrors);
+        }
+
+        [Fact]
+        public async Task AsXElementAsync_NotXml_HasErrors()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<root> <<>> </root>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var actual = await target.AsXElementAsync();
+
+            // Assert
+            Assert.Null(actual);
+            Assert.True(target.HasErrors);
+
+            var error = target.Errors.Single();
+            Assert.Equal(1, error.LineNumber);
+            Assert.Equal(9, error.LinePosition);
+            Assert.Equal("Name cannot begin with the '<' character, hexadecimal value 0x3C. Line 1, position 9.", error.Description);
+        }
+
+        [Fact]
+        public async Task AsXmlReaderAsync_ValidXml_ReadsToEnd()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<root><test attr=""val""><other/></test></root>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xmlReader = await target.AsXmlReaderAsync();
+
+            while (await xmlReader.ReadAsync())
+            {
+            }
+
+            // Assert
+            Assert.False(target.HasErrors);
+            Assert.Equal(NodeType.None, target.CurrentNodeType);
+        }
+
+        [Fact]
+        public async Task AsXmlReaderAsync_InvalidXml_HasErrors()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream(@"<wrong><test attr=""val""><other/></test></wrong>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            var xmlReader = await target.AsXmlReaderAsync();
+
+            while (await xmlReader.ReadAsync())
+            {
+            }
+
+            // Assert
+            Assert.True(target.HasErrors);
         }
 
         private static Stream LoadStringIntoStream(string contents)
