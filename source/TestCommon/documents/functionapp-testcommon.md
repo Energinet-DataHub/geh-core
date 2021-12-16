@@ -82,7 +82,8 @@ npm install -g azurite@<version>
 
 Some developer machines have SQL local DB installed already. We only need to do the following if our scripts or code depends on functionality only available in SQL 2019.
 
-1. Uninstall existing "Microsoft SQL Server Xxx LocalDB", where Xxx is the version.
+1. **!IMPORTANT!** Uninstall existing "Microsoft SQL Server Xxx LocalDB", where Xxx is the version.
+ Older versions may have been installed if you have Visual Studio installed.
 
 2. Download <https://go.microsoft.com/fwlink/?LinkID=866658>
 
