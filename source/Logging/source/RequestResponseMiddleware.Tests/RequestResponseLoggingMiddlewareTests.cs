@@ -38,7 +38,7 @@ namespace RequestResponseMiddleware.Tests
             var middleware = new RequestResponseLoggingMiddleware(testStorage);
             var functionContext = new MockedFunctionContext();
 
-            var responseHeaderData = new List<KeyValuePair<string, string>>() { new ("StatusCodeTest", "200") };
+            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("StatusCodeTest", "200") };
 
             functionContext.BindingContext
                 .Setup(x => x.BindingData)
@@ -73,7 +73,7 @@ namespace RequestResponseMiddleware.Tests
                 { "marketOperator", "232323232" },
             };
 
-            var responseHeaderData = new List<KeyValuePair<string, string>>() { new ("StatusCodeTest", "200") };
+            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("StatusCodeTest", "200") };
 
             functionContext.BindingContext
                 .Setup(x => x.BindingData)
@@ -112,7 +112,7 @@ namespace RequestResponseMiddleware.Tests
             });
             functionContext.SetInvocationFeatures(invocationFeatures);
 
-            return new (httpRequest, responseData);
+            return new(httpRequest, responseData);
         }
 
         private class IFunctionBindingsFeature
