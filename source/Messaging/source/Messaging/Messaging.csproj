@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -28,7 +28,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
-    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.1.0$(VersionSuffix)</PackageVersion>
     <Title>Messaging library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -69,9 +69,10 @@ limitations under the License.
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="1.0.4" />
     <PackageReference Include="FluentValidation" Version="9.5.4" />
     <PackageReference Include="MediatR" Version="9.0.0" />
-    <PackageReference Include="NodaTime" Version="3.0.7" />
+    <PackageReference Include="NodaTime" Version="3.0.9" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
