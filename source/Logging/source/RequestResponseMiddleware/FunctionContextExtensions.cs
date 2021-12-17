@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             try
             {
                 var functionBindingsFeature = functionContext?.Features.SingleOrDefault(f => f.Key.Name == "IFunctionBindingsFeature").Value;
-                if (functionBindingsFeature == null)
+                if (functionBindingsFeature is null)
                 {
                     throw new ArgumentException("Cannot get function bindings feature, IFunctionBindingsFeature");
                 }
@@ -50,7 +50,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             try
             {
                 var functionBindingsFeature = functionContext.Features.SingleOrDefault(f => f.Key.Name == "IFunctionBindingsFeature").Value;
-                if (functionBindingsFeature == null)
+                if (functionBindingsFeature is null)
                 {
                     throw new ArgumentException("Cannot get function bindings feature, IFunctionBindingsFeature");
                 }
