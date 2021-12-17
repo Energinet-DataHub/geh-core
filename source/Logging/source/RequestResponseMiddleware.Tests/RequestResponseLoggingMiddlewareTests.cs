@@ -21,7 +21,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Microsoft.Azure.Functions.Worker.Http;
-using Moq;
 using Xunit;
 using Xunit.Categories;
 
@@ -102,7 +101,7 @@ namespace RequestResponseMiddleware.Tests
             var httpRequest = new MockedHttpRequestData(functionContext);
             var responseData = httpRequest.HttpResponseData;
             httpRequest.SetResponseHeaderCollection(new HttpHeadersCollection(
-                new List<KeyValuePair<string, string>>() { new ("TestId", "200") }));
+                new List<KeyValuePair<string, string>>() { new("TestId", "200") }));
 
             var invocationFeatures = new MockedFunctionInvocationFeatures();
             invocationFeatures.Set(new IFunctionBindingsFeature()
