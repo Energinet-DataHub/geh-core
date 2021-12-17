@@ -12,18 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Energinet.DataHub.Core.SchemaValidation.Tests.Examples
 {
     public sealed class Bookstore
     {
-#pragma warning disable SA1011 // Conflicting rules: SA1011 wants Book[] ? and SA1018 wants Book[]?.
         public Book[]? Books { get; set; }
-#pragma warning restore SA1011
     }
 }

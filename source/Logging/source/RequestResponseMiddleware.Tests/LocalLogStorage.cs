@@ -22,14 +22,14 @@ namespace RequestResponseMiddleware.Tests
 {
     public class LocalLogStorage : IRequestResponseLogging
     {
-        public static readonly List<LocalLog> Logs = new ();
+        public static readonly List<LocalLog> Logs = new();
 
-        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData)
+        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
         {
             await SaveLogAsync(logStream, metaData);
         }
 
-        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData)
+        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
         {
             await SaveLogAsync(logStream, metaData);
         }

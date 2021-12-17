@@ -32,17 +32,15 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             _storageContainerName = storageContainerName;
         }
 
-        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData)
+        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
         {
-            var blobName = "request";
-            var blobClientRequest = new BlobClient(_storageConnectionString, _storageContainerName, blobName);
+            var blobClientRequest = new BlobClient(_storageConnectionString, _storageContainerName, logName);
             await blobClientRequest.UploadAsync(logStream, null, metaData);
         }
 
-        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData)
+        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
         {
-            var blobName = "response";
-            var blobClientResponse = new BlobClient(_storageConnectionString, _storageContainerName, blobName);
+            var blobClientResponse = new BlobClient(_storageConnectionString, _storageContainerName, logName);
             await blobClientResponse.UploadAsync(logStream, null, metaData);
         }
     }

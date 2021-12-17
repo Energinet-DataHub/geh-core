@@ -18,7 +18,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Schema;
 using Energinet.DataHub.Core.SchemaValidation.Xml;
 using NodaTime;
 
@@ -87,6 +86,16 @@ namespace Energinet.DataHub.Core.SchemaValidation
         public Task<Instant> ReadValueAsNodaTimeAsync()
         {
             return _sourceReader.ReadValueAsNodaTimeAsync();
+        }
+
+        internal XmlSourceValidatingReader GetXmlValidatingReader()
+        {
+            if (_sourceReader is XmlSourceValidatingReader xmlReader)
+            {
+                return xmlReader;
+            }
+
+            throw new InvalidOperationException("The reader is not configured to read XML.");
         }
     }
 }

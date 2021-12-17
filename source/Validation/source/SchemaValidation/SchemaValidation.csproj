@@ -29,7 +29,8 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.SchemaValidation</PackageId>
-    <PackageVersion>1.0.1$(VersionSuffix)</PackageVersion>
+    <!-- Remember to bump Schemas version. -->
+    <PackageVersion>1.0.3$(VersionSuffix)</PackageVersion>
     <Title>Schema Validation Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -59,8 +60,7 @@ limitations under the License.
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <!-- Disable warning on your public types/methods for not having added full documentation tags -->
-    <NoWarn>$(NoWarn);1591;</NoWarn>
+    <NoWarn>$(NoWarn);</NoWarn>
   </PropertyGroup>
 
   <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->

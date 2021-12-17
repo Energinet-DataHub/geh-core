@@ -51,16 +51,12 @@ limitations under the License.
   </ItemGroup>
 
   <PropertyGroup>
-    <!-- Disable warning on your public types/methods for not having added full documentation tags -->
-    <NoWarn>$(NoWarn);</NoWarn>
+    <NoWarn>$(NoWarn);SA0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SchemaValidation\SchemaValidation.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.Schemas" Version="1.0.1" />
+    <ProjectReference Include="..\Schemas\Schemas.csproj" />
   </ItemGroup>
 
 </Project>

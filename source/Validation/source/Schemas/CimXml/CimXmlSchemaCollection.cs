@@ -18,6 +18,10 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
 {
     public sealed class CimXmlSchemaCollection
     {
+        internal CimXmlSchemaCollection()
+        {
+        }
+
         public IXmlSchema Codelists { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-codelists.xsd");
 

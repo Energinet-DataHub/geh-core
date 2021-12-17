@@ -15,8 +15,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using NodaTime;
 
@@ -24,7 +26,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 {
     internal sealed class XmlSourceValidatingReader : ISourceValidatingReader
     {
-        private readonly List<SchemaValidationError> _errors = new ();
+        private readonly List<SchemaValidationError> _errors = new();
         private readonly Stream _inputStream;
         private readonly IEnumerable<IXmlSchema> _inputSchemas;
 
@@ -64,24 +66,31 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
                 return true;
             }
 
-            do
+            try
             {
-                _attributeValue = null;
-
-                switch (_xmlReader!.NodeType)
+                do
                 {
-                    case XmlNodeType.Element:
-                        ProcessElement();
-                        return true;
-                    case XmlNodeType.EndElement:
-                        ProcessEndElement();
-                        return true;
-                    case XmlNodeType.Attribute:
-                        ProcessAttribute();
-                        return true;
+                    _attributeValue = null;
+
+                    switch (_xmlReader!.NodeType)
+                    {
+                        case XmlNodeType.Element:
+                            ProcessElement();
+                            return true;
+                        case XmlNodeType.EndElement:
+                            ProcessEndElement();
+                            return true;
+                        case XmlNodeType.Attribute:
+                            ProcessAttribute();
+                            return true;
+                    }
                 }
+                while (await ValidatingReadAsync().ConfigureAwait(false));
             }
-            while (await ValidatingReadAsync().ConfigureAwait(false));
+            catch (XmlException ex)
+            {
+                _errors.Add(new SchemaValidationError(ex.LineNumber, ex.LinePosition, ex.Message));
+            }
 
             CurrentNodeName = string.Empty;
             CurrentNodeType = NodeType.None;
@@ -119,6 +128,32 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
         {
             var dt = await ReadValueAsAsync(XmlConvert.ToDateTimeOffset).ConfigureAwait(false);
             return Instant.FromDateTimeOffset(dt);
+        }
+
+        internal async Task<XElement?> ReadIntoXElementAsync()
+        {
+            await EnsureReaderAsync().ConfigureAwait(false);
+
+            try
+            {
+                var element = await XElement
+                    .LoadAsync(_xmlReader!, LoadOptions.None, CancellationToken.None)
+                    .ConfigureAwait(false);
+
+                return HasErrors ? null : element;
+            }
+            catch (XmlException ex)
+            {
+                _errors.Add(new SchemaValidationError(ex.LineNumber, ex.LinePosition, ex.Message));
+            }
+
+            return null;
+        }
+
+        internal async Task<XmlReader> GetInternalReaderAsync()
+        {
+            await EnsureReaderAsync().ConfigureAwait(false);
+            return _xmlReader!;
         }
 
         private async Task<T> ReadValueAsAsync<T>(Func<string, T> attributeFunc)

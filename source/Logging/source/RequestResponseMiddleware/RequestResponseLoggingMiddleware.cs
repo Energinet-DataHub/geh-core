@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
+using NodaTime;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
@@ -36,19 +37,21 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             var requestLog = BuildRequestLogInformation(context);
-            await _requestResponseLogging.LogRequestAsync(requestLog.LogStream, requestLog.MetaData).ConfigureAwait(false);
+            var requestLogName = BuildLogName(requestLog.MetaData) + " response";
+            await _requestResponseLogging.LogRequestAsync(requestLog.LogStream, requestLog.MetaData, requestLogName).ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
 
             var responseLog = BuildResponseLogInformation(context);
-            await _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData).ConfigureAwait(false);
+            var responseLogName = BuildLogName(requestLog.MetaData) + " response";
+            await _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData, responseLogName).ConfigureAwait(false);
         }
 
         private static (Stream LogStream, Dictionary<string, string> MetaData) BuildRequestLogInformation(FunctionContext context)
         {
             var bindingsFeature = context.GetHttpRequestData();
 
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string);
+            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
             if (bindingsFeature is { } requestData)
             {
                 foreach (var (key, value) in ReadHeaderDataFromCollection(requestData.Headers))
@@ -100,6 +103,30 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 .ToDictionary(e => e.Key, e => string.Join(",", e.Value));
 
             return metaData;
+        }
+
+        private static string BuildLogName(Dictionary<string, string> metaData)
+        {
+            metaData.TryGetValue("marketOperator", out var marketOperator);
+            metaData.TryGetValue("recipient", out var recipient);
+            metaData.TryGetValue("gln", out var gln);
+            metaData.TryGetValue("glnNumber", out var glnNumber);
+            metaData.TryGetValue("InvocationId", out var invocationId);
+            metaData.TryGetValue("TraceParent", out var traceParent);
+            metaData.TryGetValue("CorrelationId", out var correlationId);
+            metaData.TryGetValue("FunctionId", out var functionId);
+
+            var time = SystemClock.Instance.GetCurrentInstant().ToString();
+            string name = $"{marketOperator ?? string.Empty}-" +
+                          $"{recipient ?? string.Empty}-" +
+                          $"{gln ?? string.Empty}-" +
+                          $"{glnNumber ?? string.Empty}-" +
+                          $"{invocationId ?? string.Empty}-" +
+                          $"{traceParent ?? string.Empty}-" +
+                          $"{correlationId ?? string.Empty}-" +
+                          $"{functionId ?? string.Empty}-" +
+                          $"{time}";
+            return name.Replace("--", "-");
         }
     }
 }
