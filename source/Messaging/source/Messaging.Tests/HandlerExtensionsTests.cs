@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Energinet.DataHub.Core.Messaging.MessageRouting;
 using Energinet.DataHub.Core.Messaging.Tests.TestHelpers;
+using Energinet.DataHub.Core.Messaging.Transport.SchemaValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -51,7 +52,7 @@ namespace Energinet.DataHub.Core.Messaging.Tests
             var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes);
             var messageRegistrations = serviceProvider.GetServices(typeof(MessageRegistration)).Count();
 
-            const int expected = 2;
+            const int expected = 3;
 
             Assert.Equal(expected, messageRegistrations);
         }
@@ -79,7 +80,8 @@ namespace Energinet.DataHub.Core.Messaging.Tests
         {
             var expectedTypeOne = typeof(TestMessage);
             var expectedTypeTwo = typeof(StubMessage);
-            var expectedMessageRegistrationTypes = new List<Type> { expectedTypeOne, expectedTypeTwo };
+            var expectedTypeThree = typeof(SchemaValidatedInboundMessage<>);
+            var expectedMessageRegistrationTypes = new List<Type> { expectedTypeOne, expectedTypeTwo, expectedTypeThree };
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGreenEnergyHub(expectedTypeOne.Assembly, expectedTypeOne.Assembly); // Adding the same assembly twice to avoid false positives, where duplicates are added
