@@ -163,7 +163,7 @@
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.geoInfoReference" type="cim:UUID36_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Location.geoInfoReference">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.officialAddressIndicator" type="xs:boolean" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#DK_Ext_UsagePointLocation.officialAddressIndicator">
+      <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.actualAddressIndicator" type="xs:boolean" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#DK_Ext_UsagePointLocation.actualAddressIndicator">
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.mainAddress" type="cim:StreetAddress" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Location.mainAddress">
       </xs:element>
