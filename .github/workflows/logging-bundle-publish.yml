@@ -89,7 +89,7 @@ jobs:
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
-        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.3.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
         with:
           NUPKG_RECURSE_PATH: 'source/Logging/source'
       
