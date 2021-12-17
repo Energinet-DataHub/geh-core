@@ -10,9 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{9D0B1FD4-68F1-4F52-B213-DE36ED6FCC58}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchemaValidation", "source\SchemaValidation\SchemaValidation.csproj", "{5EAEA68C-424C-40A2-B68B-C5FAEB02BD6B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchemaValidation.Tests", "source\SchemaValidation.Tests\SchemaValidation.Tests.csproj", "{99F7C9E7-39FF-4324-94FE-D3071B61DD11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schemas", "source\Schemas\Schemas.csproj", "{21B3FA27-B935-4749-B3C3-E615B14AC090}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{1FF062C0-42F8-4D4B-B8A5-F5E136C29A8E}"
 	ProjectSection(SolutionItems) = preProject
@@ -25,21 +23,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5EAEA68C-424C-40A2-B68B-C5FAEB02BD6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5EAEA68C-424C-40A2-B68B-C5FAEB02BD6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5EAEA68C-424C-40A2-B68B-C5FAEB02BD6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5EAEA68C-424C-40A2-B68B-C5FAEB02BD6B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99F7C9E7-39FF-4324-94FE-D3071B61DD11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99F7C9E7-39FF-4324-94FE-D3071B61DD11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99F7C9E7-39FF-4324-94FE-D3071B61DD11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99F7C9E7-39FF-4324-94FE-D3071B61DD11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21B3FA27-B935-4749-B3C3-E615B14AC090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21B3FA27-B935-4749-B3C3-E615B14AC090}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21B3FA27-B935-4749-B3C3-E615B14AC090}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21B3FA27-B935-4749-B3C3-E615B14AC090}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5EAEA68C-424C-40A2-B68B-C5FAEB02BD6B} = {9D0B1FD4-68F1-4F52-B213-DE36ED6FCC58}
-		{99F7C9E7-39FF-4324-94FE-D3071B61DD11} = {9D0B1FD4-68F1-4F52-B213-DE36ED6FCC58}
+		{21B3FA27-B935-4749-B3C3-E615B14AC090} = {9D0B1FD4-68F1-4F52-B213-DE36ED6FCC58}
 		{1FF062C0-42F8-4D4B-B8A5-F5E136C29A8E} = {0DD515E4-381E-4E42-B9CA-7B7908165544}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
