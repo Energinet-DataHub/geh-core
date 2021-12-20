@@ -158,6 +158,26 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
+			<xsd:enumeration value="D01">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Remote disconnection</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D02">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Manual disconnection</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="MeteredDataCollectionMethodTypeList">
@@ -248,6 +268,36 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
+			<xsd:enumeration value="D01">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Physical</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D02">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Virtual</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D03">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Calculated</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="MeteringPointTypeList">
@@ -294,6 +344,176 @@
 						<CodeDescription>
 							<Title>Exchange</Title>
 							<Definition>The Metering Point is an exchange Metering Point.</Definition>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D01">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>VE production</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D02">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Analysis</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D03">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Not used</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D04">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Surplus production group 6</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D05">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Net production</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D06">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Supply to grid</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D07">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Consumption from grid</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D08">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Whole sale services / information</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D09">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Own production</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D10">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Net from grid</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D11">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Net to grid</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D12">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Total consumption</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D13">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Net loss correction</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D14">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Electrical heating</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D15">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Net Consumption</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D20">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Exchange - Reactive energy</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D99">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Internal use</Title>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -404,6 +624,36 @@
 						<CodeDescription>
 							<Title>Demolished</Title>
 							<Definition>The Metering Point is demolished.</Definition>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D01">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Not used</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D02">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Closed down</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D03">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>New</Title>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -604,6 +854,16 @@
 						<CodeDescription>
 							<Title>Non-profiled with special rules</Title>
 							<Definition>The Settlement Method is non-profiled with special rules.</Definition>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D01">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Flex settled</Title>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>

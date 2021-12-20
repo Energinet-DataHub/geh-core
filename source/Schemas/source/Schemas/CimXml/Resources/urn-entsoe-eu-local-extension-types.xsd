@@ -21,6 +21,166 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
+			<xsd:enumeration value="D01">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Steam turbine with back-pressure mode</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D02">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Gas turbine</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D03">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Combined cycle</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D04">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Combustion engine gas</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D05">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Steam turbine with condensation / steam</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D06">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Boiler</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D07">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Stirling engine</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D10">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Fuel Cells</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D11">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Photo voltaic cells</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D12">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Wind turbines</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D13">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Hydroelectric power</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D14">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Wave power</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D17">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Dispatch able wind turbines</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D19">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Combustion engine – diesel</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D20">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Combustion engine - bio</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D99">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Unknown technology</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>			
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="LocalAuctionType">
@@ -730,7 +890,26 @@
 	</xsd:simpleType>
 	<xsd:simpleType name="LocalEnergyProductType">
 		<xsd:restriction base="xsd:NMTOKEN">
-			<xsd:enumeration value="8716867000016"/>
+			<xsd:enumeration value="5790001330590">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Tariff</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="5790001330606">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Fuel quantity</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="LocalHVDCModeType">
@@ -1018,6 +1197,16 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Notify missing data</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="D25">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Request missing data</Title>
 							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
@@ -1991,147 +2180,7 @@
 				<xsd:annotation>
 					<xsd:documentation>
 						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D47">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D48">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D49">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D50">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D51">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D52">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D53">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D54">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D55">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D56">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D57">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D58">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D59">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition/>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D60">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
+							<Title>Incorrect MeteringGridArea</Title>
 							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
@@ -2480,7 +2529,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>The document is approved</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2490,7 +2539,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>General error</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2500,7 +2549,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Missing consumer name or address</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2510,7 +2559,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Not used</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2520,7 +2569,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Metering point ID does not match the one from the original document</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2530,7 +2579,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Reference to transaction ID does not match the one from the original document</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2540,7 +2589,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Ongoing move process</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2550,7 +2599,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Balance supplier does not match the current Balance Supplier</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2560,7 +2609,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Not used</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2570,7 +2619,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Combination of search criteria not possible</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2580,7 +2629,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Invalid Quantity Quality Code</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2590,7 +2639,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>DataHub Internal error</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2600,7 +2649,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect charge information </Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2610,7 +2659,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect settlement</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2620,7 +2669,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect connection status</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2630,7 +2679,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect CPR/CVR</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2640,7 +2689,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect type of meteringpoint</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2650,7 +2699,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Functioncode not allowed</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2660,7 +2709,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Violated process</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2670,7 +2719,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Cancel Meterreading</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2680,7 +2729,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Change of supply on MP, new</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2690,7 +2739,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Resolution not correct</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2700,7 +2749,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect contract information</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2710,7 +2759,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Balance Responsible Party does not match the current Balance Responsible Party</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2720,7 +2769,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Unauthorized TSO</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2730,7 +2779,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Illegal request</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2740,7 +2789,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Service request rejected</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2750,7 +2799,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>No existing contract</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2760,7 +2809,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>The attribute cannot be updated in this process </Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2770,7 +2819,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect meter information according to rules</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2780,7 +2829,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Metering point sub type cannot be changed</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2790,7 +2839,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Metering point is part of a calculation structure</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2800,7 +2849,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Parent metering point has children</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2810,7 +2859,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Balance supplier exist at metering point</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2820,7 +2869,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Metering point cannot be connected</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2830,7 +2879,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Illegal metering point sub type</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2840,7 +2889,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Stop of supply not registered for metering point</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2850,7 +2899,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Ongoing stop of supply</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2860,7 +2909,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Illegal process</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2870,7 +2919,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>The municipality must be involved in the disconnection</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2880,7 +2929,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>The police must be involved in the disconnection</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2890,7 +2939,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>The bailiff’s court must be involved in the disconnection</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2900,7 +2949,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Other rejection reason</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2910,7 +2959,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Rejection 5</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2920,7 +2969,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect MeteringGridArea </Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2930,7 +2979,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Operation not allowed for net settlement group 6</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2940,7 +2989,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Marketplayer is blocked for operation in this MeteringGridArea</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2950,7 +2999,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Other marketplayer is blocked for operation in this MeteringGridArea</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2960,7 +3009,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>No delegation found</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2970,7 +3019,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Change of electrical heating status not allowed</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2980,7 +3029,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Process could not be carried out. Please contact DataHub Support</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -2990,7 +3039,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect MeterReading Occurrence</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3000,7 +3049,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>A move is not allowed because of a completed “End of Supply” process</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3010,7 +3059,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect MPConnectionType</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3020,7 +3069,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect MPCapacity</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3030,7 +3079,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect PowerPlant</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3040,7 +3089,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>No access to the meter</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3050,7 +3099,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect MPTechnologyCode</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3060,7 +3109,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Illegal use of code</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3069,8 +3118,8 @@
 				<xsd:annotation>
 					<xsd:documentation>
 						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
+							<Title>Unauthorized Meteringpoint Responsible party</Title>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3079,8 +3128,8 @@
 				<xsd:annotation>
 					<xsd:documentation>
 						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
+							<Title>Incorrect Resolution</Title>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3089,278 +3138,8 @@
 				<xsd:annotation>
 					<xsd:documentation>
 						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D64">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D65">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D66">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D67">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D68">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D69">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D70">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D71">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D72">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D73">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D74">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D75">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D76">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D77">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D78">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D79">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D80">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D81">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D82">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D83">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D84">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D85">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D86">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D87">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D88">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D89">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
-						</CodeDescription>
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="D90">
-				<xsd:annotation>
-					<xsd:documentation>
-						<CodeDescription>
-							<Title>Reserved for later use</Title>
-							<Definition></Definition>
+							<Title>Actual Address indicator is not correct</Title>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3370,7 +3149,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Installation not identifiable</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3380,7 +3159,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Metering point not identifiable</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3390,7 +3169,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Measuring problem</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3400,7 +3179,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Other Reason</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3410,7 +3189,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Unauthorized balance supplier</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3420,7 +3199,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Requested switch date not within time limits</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3430,7 +3209,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Unauthorized balance responsible</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3440,7 +3219,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Meter readings not within limits</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3450,7 +3229,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Metering point blocked for switching</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3460,7 +3239,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Product code unknown or not related to MP</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3470,7 +3249,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>No ongoing switch for MP</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3480,7 +3259,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Invalid period</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3490,7 +3269,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Invalid number of decimals</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3500,7 +3279,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Unathorised metered data responsible</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3510,7 +3289,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Already existing relation</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3520,7 +3299,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Meter not identifiable</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3530,7 +3309,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect measure unit</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3540,7 +3319,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>MeteringPoint is not connected</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3550,7 +3329,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Incorrect value</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3560,7 +3339,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Number of observations dosn't fit observation period/resolution</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3570,7 +3349,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Measurement beyond plausibility limits</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3580,7 +3359,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Estimate is not acceptable</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3590,7 +3369,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Measurement should not be zero</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3600,7 +3379,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Measurement has wrong sign</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3610,7 +3389,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Data not available</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -3620,7 +3399,7 @@
 					<xsd:documentation>
 						<CodeDescription>
 							<Title>Unauthorised Grid Access Provider</Title>
-							<Definition></Definition>
+							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>
 				</xsd:annotation>
@@ -4175,12 +3954,51 @@
 	</xsd:simpleType>
 	<xsd:simpleType name="LocalUnitSymbol">
 		<xsd:restriction base="xsd:NMTOKEN">
-			<xsd:enumeration value="AMP"/>
-			<xsd:enumeration value="MAW">
+			<xsd:enumeration value="H87">
 				<xsd:annotation>
 					<xsd:documentation>
 						<CodeDescription>
-							<Title>MegaWatt (MW)</Title>
+							<Title>STK</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="K3">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>kVArh</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="TNE">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Tonne</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="Z03">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>MVAr</Title>
+							<Definition/>
+						</CodeDescription>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="Z14">
+				<xsd:annotation>
+					<xsd:documentation>
+						<CodeDescription>
+							<Title>Danish Tariff code</Title>
 							<Definition/>
 						</CodeDescription>
 					</xsd:documentation>

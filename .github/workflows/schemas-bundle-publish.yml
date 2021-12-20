@@ -12,32 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Publish Validation bundle
+name: Publish Schemas bundle
 
 on:
   # Build, test, pack and publish release packages
-  # Only executed if (*.)Validation packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  # Only executed if (*.)Schemas packages content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
       - main
     paths:
-      - source/Validation/source/Validation/**
-      - source/Validation/source/SchemaValidation/**
-      - .github/workflows/validation-bundle-publish.yml
+      - source/Schemas/source/Schemas/**
+      - .github/workflows/schemas-bundle-publish.yml
   # Build, test, pack
   # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
     paths:
-      - source/Validation/**
-      - .github/workflows/validation-bundle-publish.yml
+      - source/Schemas/**
+      - .github/workflows/schemas-bundle-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
 
 env:
-  SOLUTION_FILE_PATH: source/Validation/Validation.sln
+  SOLUTION_FILE_PATH: source/Schemas/Schemas.sln
   BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
@@ -82,21 +81,21 @@ jobs:
       - name: Get version suffix property value
         uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@2.3.0
         id: get_version_suffix
-      
-      - name: Pack SchemaValidation project
+
+      - name: Pack Schemas project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/Validation/source/SchemaValidation/SchemaValidation.csproj'
+          PROJECT_PATH: 'source/Schemas/source/Schemas/Schemas.csproj'
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
         with:
-          NUPKG_RECURSE_PATH: 'source/Validation/source'
+          NUPKG_RECURSE_PATH: 'source/Schemas/source'
       
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
         env:
-          NUPKG_FILTER_PATTERN: 'source/Validation/source/**/*.nupkg'
+          NUPKG_FILTER_PATTERN: 'source/Schemas/source/**/*.nupkg'
           NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'

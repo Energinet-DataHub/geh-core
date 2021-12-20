@@ -1,5 +1,10 @@
 # Schema Validation Release notes
 
+## Version 1.0.4
+
+- No API changes.
+- Schemas moved to separate solution.
+
 ## Version 1.0.3
 
 - Added CreateErrorResponse extension method.

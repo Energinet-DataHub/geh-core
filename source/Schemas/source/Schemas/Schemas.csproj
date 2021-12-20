@@ -29,8 +29,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Schemas</PackageId>
-    <!-- Remember to bump Schemas.Validation version. -->
-    <PackageVersion>1.0.3$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.5$(VersionSuffix)</PackageVersion>
     <Title>Schema Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -40,16 +39,16 @@ limitations under the License.
       Is shown in Azure DevOps artifacts Release Notes section.
     -->
     <PackageReleaseNotes>
-      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/release-notes/release-notes.md)
-      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Schemas/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Schemas/documents/documentation.md)
     </PackageReleaseNotes>
     <!-- PackageDescription:
       Is shown in GitHub packages "About this package" section,
       and in Visual Studio package manager view.
     -->
     <PackageDescription>
-      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/release-notes/release-notes.md)
-      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Validation/documents/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Schemas/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Schemas/documents/documentation.md)
     </PackageDescription>
     <Description>Provides schemas for validating incoming formats in Energinet.DataHub.</Description>
     <PackageTags>energinet;datahub</PackageTags>
