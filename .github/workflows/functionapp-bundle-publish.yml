@@ -12,32 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Publish AzureFunction bundle
+name: Publish FunctionApp bundle
 
 on:
   # Build, test, pack and publish release packages
-  # Only executed if (*.)AzureFunction packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  # Only executed if (*.)FunctionApp packages content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
       - main
     paths:
-      - source/AzureFunction/source/Common/**
-      - source/AzureFunction/source/Common.Abstractions/**
-      - .github/workflows/azurefunction-bundle-publish.yml
+      - source/FunctionApp/source/Common/**
+      - source/FunctionApp/source/Common.Abstractions/**
+      - .github/workflows/functionapp-bundle-publish.yml
   # Build, test, pack
-  # Executed if AzureFunction folder or build scripts has changed; including if documentation or tests has changed
+  # Executed if FunctionApp folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
     paths:
-      - source/AzureFunction/**
-      - .github/workflows/azurefunction-bundle-publish.yml
+      - source/FunctionApp/**
+      - .github/workflows/functionapp-bundle-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
 
 env:
-  SOLUTION_FILE_PATH: source/AzureFunction/AzureFunction.sln
+  SOLUTION_FILE_PATH: source/FunctionApp/FunctionApp.sln
   BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
@@ -86,22 +86,22 @@ jobs:
       - name: Pack Common project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/AzureFunction/source/Common/Common.csproj'
+          PROJECT_PATH: 'source/FunctionApp/source/Common/Common.csproj'
 
       - name: Pack Common.Abstractions project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/AzureFunction/source/Common.Abstractions/Common.Abstractions.csproj'
+          PROJECT_PATH: 'source/FunctionApp/source/Common.Abstractions/Common.Abstractions.csproj'
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
         with:
-          NUPKG_RECURSE_PATH: 'source/AzureFunction/source'
+          NUPKG_RECURSE_PATH: 'source/FunctionApp/source'
       
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
         env:
-          NUPKG_FILTER_PATTERN: 'source/AzureFunction/source/**/*.nupkg'
+          NUPKG_FILTER_PATTERN: 'source/FunctionApp/source/**/*.nupkg'
           NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
