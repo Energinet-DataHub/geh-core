@@ -48,7 +48,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 await memoryStream.CopyToAsync(originalBodyStream);
 
                 var logMetaData = BuildResponseLogInformation(context);
-                var logName = LogDataBuilder.BuildLogName(logMetaData);
+                var logName = LogDataBuilder.BuildLogName(logMetaData) + " response";
                 memoryStream.Position = 0;
                 _requestResponseLogging.LogResponseAsync(memoryStream, logMetaData, logName);
             }
@@ -60,18 +60,20 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static Dictionary<string, string> BuildResponseLogInformation(FunctionContext context)
         {
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
+            var metaData = context.BindingContext.BindingData
+                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+
             if (context.GetHttpResponseData() is { } responseData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
                 {
-                    metaData.TryAdd(key, value);
+                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
-                metaData.TryAdd("StatusCode", responseData.StatusCode.ToString());
-                metaData.TryAdd("FunctionId", context.FunctionId);
-                metaData.TryAdd("InvocationId", context.InvocationId);
-                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
 
                 return metaData;
             }

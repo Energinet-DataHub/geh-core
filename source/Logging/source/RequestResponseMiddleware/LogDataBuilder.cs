@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -57,5 +58,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                           $"{time}";
             return name.Replace("--", "-");
         }
+
+        internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();
     }
 }

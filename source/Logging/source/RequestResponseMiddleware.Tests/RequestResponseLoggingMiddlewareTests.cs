@@ -70,6 +70,7 @@ namespace RequestResponseMiddleware.Tests
             {
                 { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
                 { "MarketOperator", "232323232" },
+                { "Accept-Type", "232323232" },
             };
 
             var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
@@ -87,10 +88,10 @@ namespace RequestResponseMiddleware.Tests
 
             // Assert
             var savedLogs = testStorage.GetLogs();
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("_headers"));
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("_marketoperator"));
-            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("_statuscodetest", out var value) && value == "200");
-            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("_statuscode", out var value) && value == expectedStatusCode.ToString());
+            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("headers"));
+            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("marketoperator"));
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscodetest", out var value) && value == "200");
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscode", out var value) && value == expectedStatusCode.ToString());
         }
 
         private (MockedHttpRequestData HttpRequestData, HttpResponseData HttpResponseData) SetUpContext(

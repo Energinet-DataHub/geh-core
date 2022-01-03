@@ -47,7 +47,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 true);
 
             var metaData = BuildRequestLogInformation(context);
-            var logName = LogDataBuilder.BuildLogName(metaData);
+            var logName = LogDataBuilder.BuildLogName(metaData) + " request";
             await _requestResponseLogging.LogRequestAsync(reader.BaseStream, metaData, logName);
 
             requestContext.Body.Position = 0;
@@ -58,17 +58,19 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             var bindingsFeature = context.GetHttpRequestData();
 
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
+            var metaData = context.BindingContext.BindingData
+                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+
             if (bindingsFeature is { } requestData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
                 {
-                    metaData.TryAdd(key, value);
+                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
-                metaData.TryAdd("FunctionId", context.FunctionId);
-                metaData.TryAdd("InvocationId", context.InvocationId);
-                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
 
                 return metaData;
             }

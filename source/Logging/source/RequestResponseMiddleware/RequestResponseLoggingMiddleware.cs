@@ -34,7 +34,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             var requestLog = BuildRequestLogInformation(context);
-            var requestLogName = LogDataBuilder.BuildLogName(requestLog.MetaData) + " response";
+            var requestLogName = LogDataBuilder.BuildLogName(requestLog.MetaData) + " request";
             await _requestResponseLogging.LogRequestAsync(requestLog.LogStream, requestLog.MetaData, requestLogName).ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
@@ -48,45 +48,49 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             var bindingsFeature = context.GetHttpRequestData();
 
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => $"_{e.Key.ToLower()}", pair => pair.Value as string ?? string.Empty);
+            var metaData = context.BindingContext.BindingData
+                .ToDictionary(e => e.Key.Replace("-", string.Empty).ToLower(), pair => pair.Value as string ?? string.Empty);
+
             if (bindingsFeature is { } requestData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
                 {
-                    metaData.TryAdd($"_{key.ToLower()}", value);
+                    metaData.TryAdd($"{key.ToLower()}", value);
                 }
 
-                metaData.TryAdd("_functionid", context.FunctionId);
-                metaData.TryAdd("_invocationid", context.InvocationId);
-                metaData.TryAdd("_traceparent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
 
                 // TODO Should we "reset" stream ?
-                return new ValueTuple<Stream, Dictionary<string, string>>(requestData.Body, metaData);
+                return (requestData.Body, metaData);
             }
 
-            return new ValueTuple<Stream, Dictionary<string, string>>(Stream.Null, metaData);
+            return (Stream.Null, metaData);
         }
 
         private static (Stream LogStream, Dictionary<string, string> MetaData) BuildResponseLogInformation(FunctionContext context)
         {
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => $"_{e.Key.ToLower()}", pair => pair.Value as string ?? string.Empty);
+            var metaData = context.BindingContext.BindingData
+                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+
             if (context.GetHttpResponseData() is { } responseData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
                 {
-                    metaData.TryAdd($"_{key.ToLower()}", value);
+                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
-                metaData.TryAdd("_statuscode", responseData.StatusCode.ToString());
-                metaData.TryAdd("_functionid", context.FunctionId);
-                metaData.TryAdd("_invocationid", context.InvocationId);
-                metaData.TryAdd("_traceparent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
 
                 // TODO Should we "reset" stream ?
-                return new ValueTuple<Stream, Dictionary<string, string>>(responseData.Body, metaData);
+                return (responseData.Body, metaData);
             }
 
-            return new ValueTuple<Stream, Dictionary<string, string>>(Stream.Null, metaData);
+            return (Stream.Null, metaData);
         }
     }
 }
