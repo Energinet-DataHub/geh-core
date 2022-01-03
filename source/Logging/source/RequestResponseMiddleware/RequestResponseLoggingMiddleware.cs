@@ -48,7 +48,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             var bindingsFeature = context.GetHttpRequestData();
 
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
+            var metaData = context.BindingContext.BindingData.ToDictionary(e => $"_{e.Key.ToLower()}", pair => pair.Value as string ?? string.Empty);
             if (bindingsFeature is { } requestData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
@@ -56,9 +56,9 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                     metaData.TryAdd($"_{key.ToLower()}", value);
                 }
 
-                metaData.TryAdd("_FunctionId", context.FunctionId);
-                metaData.TryAdd("_InvocationId", context.InvocationId);
-                metaData.TryAdd("_TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd("_functionid", context.FunctionId);
+                metaData.TryAdd("_invocationid", context.InvocationId);
+                metaData.TryAdd("_traceparent", context.TraceContext?.TraceParent ?? string.Empty);
 
                 // TODO Should we "reset" stream ?
                 return new ValueTuple<Stream, Dictionary<string, string>>(requestData.Body, metaData);
@@ -69,7 +69,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static (Stream LogStream, Dictionary<string, string> MetaData) BuildResponseLogInformation(FunctionContext context)
         {
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
+            var metaData = context.BindingContext.BindingData.ToDictionary(e => $"_{e.Key.ToLower()}", pair => pair.Value as string ?? string.Empty);
             if (context.GetHttpResponseData() is { } responseData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
@@ -77,10 +77,10 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                     metaData.TryAdd($"_{key.ToLower()}", value);
                 }
 
-                metaData.TryAdd("_StatusCode", responseData.StatusCode.ToString());
-                metaData.TryAdd("_FunctionId", context.FunctionId);
-                metaData.TryAdd("_InvocationId", context.InvocationId);
-                metaData.TryAdd("_TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd("_statuscode", responseData.StatusCode.ToString());
+                metaData.TryAdd("_functionid", context.FunctionId);
+                metaData.TryAdd("_invocationid", context.InvocationId);
+                metaData.TryAdd("_traceparent", context.TraceContext?.TraceParent ?? string.Empty);
 
                 // TODO Should we "reset" stream ?
                 return new ValueTuple<Stream, Dictionary<string, string>>(responseData.Body, metaData);

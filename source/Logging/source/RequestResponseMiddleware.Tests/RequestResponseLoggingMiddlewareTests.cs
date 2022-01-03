@@ -69,10 +69,10 @@ namespace RequestResponseMiddleware.Tests
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
-                { "marketOperator", "232323232" },
+                { "MarketOperator", "232323232" },
             };
 
-            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("StatusCodeTest", "200") };
+            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
 
             functionContext.BindingContext
                 .Setup(x => x.BindingData)
@@ -87,10 +87,10 @@ namespace RequestResponseMiddleware.Tests
 
             // Assert
             var savedLogs = testStorage.GetLogs();
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("Headers"));
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("marketOperator"));
-            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("StatusCodeTest", out var value) && value == "200");
-            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("StatusCode", out var value) && value == expectedStatusCode.ToString());
+            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("_headers"));
+            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("_marketoperator"));
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("_statuscodetest", out var value) && value == "200");
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("_statuscode", out var value) && value == expectedStatusCode.ToString());
         }
 
         private (MockedHttpRequestData HttpRequestData, HttpResponseData HttpResponseData) SetUpContext(
