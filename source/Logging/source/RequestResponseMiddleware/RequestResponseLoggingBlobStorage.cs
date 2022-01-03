@@ -19,7 +19,7 @@ using Azure.Storage.Blobs;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
-    public class RequestResponseLoggingBlobStorage : IRequestResponseLogging
+    internal class RequestResponseLoggingBlobStorage : IRequestResponseLogging
     {
         private readonly string _storageConnectionString;
         private readonly string _storageContainerName;

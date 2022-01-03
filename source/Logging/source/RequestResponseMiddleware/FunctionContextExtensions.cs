@@ -20,7 +20,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
-    public static class FunctionContextExtensions
+    internal static class FunctionContextExtensions
     {
         public static HttpRequestData? GetHttpRequestData(this FunctionContext functionContext)
         {

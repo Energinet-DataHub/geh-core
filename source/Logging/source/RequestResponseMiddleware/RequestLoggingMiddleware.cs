@@ -39,7 +39,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             var requestContext = context.GetHttpRequestData();
 
-            // Leave stream open so next middleware can read it
             using var reader = new StreamReader(
                 requestContext.Body,
                 Encoding.UTF8,
@@ -47,7 +46,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 512,
                 true);
 
-            // Write request body to App Insights
             var metaData = BuildRequestLogInformation(context);
             var logName = LogDataBuilder.BuildLogName(metaData);
             await _requestResponseLogging.LogRequestAsync(reader.BaseStream, metaData, logName);

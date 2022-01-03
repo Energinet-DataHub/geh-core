@@ -19,7 +19,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
-    public static class LogDataBuilder
+    internal static class LogDataBuilder
     {
         public static Dictionary<string, string> ReadHeaderDataFromCollection(HttpHeadersCollection headersCollection)
         {
@@ -36,14 +36,14 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public static string BuildLogName(Dictionary<string, string> metaData)
         {
-            metaData.TryGetValue("marketOperator", out var marketOperator);
-            metaData.TryGetValue("recipient", out var recipient);
-            metaData.TryGetValue("gln", out var gln);
-            metaData.TryGetValue("glnNumber", out var glnNumber);
-            metaData.TryGetValue("InvocationId", out var invocationId);
-            metaData.TryGetValue("TraceParent", out var traceParent);
-            metaData.TryGetValue("CorrelationId", out var correlationId);
-            metaData.TryGetValue("FunctionId", out var functionId);
+            metaData.TryGetValue("_marketoperator", out var marketOperator);
+            metaData.TryGetValue("_recipient", out var recipient);
+            metaData.TryGetValue("_gln", out var gln);
+            metaData.TryGetValue("_glnnumber", out var glnNumber);
+            metaData.TryGetValue("_invocationid", out var invocationId);
+            metaData.TryGetValue("_traceparent", out var traceParent);
+            metaData.TryGetValue("_correlationid", out var correlationId);
+            metaData.TryGetValue("_functionid", out var functionId);
 
             var time = SystemClock.Instance.GetCurrentInstant().ToString();
             string name = $"{marketOperator ?? string.Empty}-" +

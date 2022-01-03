@@ -53,12 +53,12 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
                 {
-                    metaData.TryAdd(key, value);
+                    metaData.TryAdd($"_{key.ToLower()}", value);
                 }
 
-                metaData.TryAdd("FunctionId", context.FunctionId);
-                metaData.TryAdd("InvocationId", context.InvocationId);
-                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd("_FunctionId", context.FunctionId);
+                metaData.TryAdd("_InvocationId", context.InvocationId);
+                metaData.TryAdd("_TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
 
                 // TODO Should we "reset" stream ?
                 return new ValueTuple<Stream, Dictionary<string, string>>(requestData.Body, metaData);
@@ -74,13 +74,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
                 {
-                    metaData.TryAdd(key, value);
+                    metaData.TryAdd($"_{key.ToLower()}", value);
                 }
 
-                metaData.TryAdd("StatusCode", responseData.StatusCode.ToString());
-                metaData.TryAdd("FunctionId", context.FunctionId);
-                metaData.TryAdd("InvocationId", context.InvocationId);
-                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd("_StatusCode", responseData.StatusCode.ToString());
+                metaData.TryAdd("_FunctionId", context.FunctionId);
+                metaData.TryAdd("_InvocationId", context.InvocationId);
+                metaData.TryAdd("_TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
 
                 // TODO Should we "reset" stream ?
                 return new ValueTuple<Stream, Dictionary<string, string>>(responseData.Body, metaData);
