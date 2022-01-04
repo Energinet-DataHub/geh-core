@@ -1,0 +1,76 @@
+<!--
+Copyright 2020 Energinet DataHub A/S
+
+Licensed under the Apache License, Version 2.0 (the "License2");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions</PackageId>
+    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+    <Title>XmlConverter Abstractions Library</Title>
+    <Company>Energinet-DataHub</Company>
+    <Authors>Energinet-DataHub</Authors>
+    <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
+    <!-- PackageReleaseNotes:
+      Is shown in Azure DevOps artifacts Release Notes section.
+    -->
+    <PackageReleaseNotes>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/XmlConversion/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/XmlConversion/documents/documentation.md)
+    </PackageReleaseNotes>
+    <!-- PackageDescription:
+      Is shown in GitHub packages "About this package" section,
+      and in Visual Studio package manager view.
+    -->
+    <PackageDescription>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/XmlConversion/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/XmlConversion/documents/documentation.md)
+    </PackageDescription>
+    <Description>Provides abstractions supporting conversion of CIM Xml to C#.</Description>
+    <PackageTags>energinet;datahub</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);</NoWarn>
+  </PropertyGroup>
+
+  <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+  <PropertyGroup>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
