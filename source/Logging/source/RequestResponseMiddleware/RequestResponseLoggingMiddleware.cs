@@ -35,17 +35,17 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             var requestLogInformation = BuildRequestLogInformation(context);
 
-            await LogRequestAsync(context, requestLogInformation).ConfigureAwait(false);
+            await LogRequestAsync(requestLogInformation).ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
 
             await LogResponseAsync(context, requestLogInformation.MetaData).ConfigureAwait(false);
         }
 
-        private Task LogRequestAsync(FunctionContext context, (Stream LogStream, Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) requestLogInfo)
+        private Task LogRequestAsync(LogInformation requestLogInformation)
         {
-            var requestLogName = LogDataBuilder.BuildLogName(requestLogInfo.MetaData) + " request";
-            return _requestResponseLogging.LogRequestAsync(requestLogInfo.LogStream, requestLogInfo.MetaData, requestLogInfo.IndexTags, requestLogName);
+            var requestLogName = LogDataBuilder.BuildLogName(requestLogInformation.MetaData) + " request";
+            return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName);
         }
 
         private Task LogResponseAsync(FunctionContext context, Dictionary<string, string> requestMetaData)
@@ -55,17 +55,15 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             return _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData, responseLog.IndexTags, responseLogName);
         }
 
-        private static (Stream LogStream, Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) BuildRequestLogInformation(FunctionContext context)
+        private static LogInformation BuildRequestLogInformation(FunctionContext context)
         {
-            var bindingsFeature = context.GetHttpRequestData();
-
             var metaData = context.BindingContext.BindingData
                 .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
             var indexTags =
                 new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(10));
 
-            if (bindingsFeature is { } requestData)
+            if (context.GetHttpRequestData() is { } requestData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
                 {
@@ -84,13 +82,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "request");
 
-                return (requestData.Body, metaData, indexTags);
+                return new LogInformation(requestData.Body, metaData, indexTags);
             }
 
-            return (Stream.Null, metaData, indexTags);
+            return new LogInformation(Stream.Null, metaData, indexTags);
         }
 
-        private static (Stream LogStream, Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) BuildResponseLogInformation(FunctionContext context)
+        private static LogInformation BuildResponseLogInformation(FunctionContext context)
         {
             var metaData = context.BindingContext.BindingData
                 .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
@@ -119,10 +117,10 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "response");
 
-                return (responseData.Body, metaData, indexTags);
+                return new LogInformation(responseData.Body, metaData, indexTags);
             }
 
-            return (Stream.Null, metaData, indexTags);
+            return new LogInformation(Stream.Null, metaData, indexTags);
         }
     }
 }
