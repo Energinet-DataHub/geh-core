@@ -33,15 +33,26 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-            var requestLog = BuildRequestLogInformation(context);
-            var requestLogName = LogDataBuilder.BuildLogName(requestLog.MetaData) + " request";
-            await _requestResponseLogging.LogRequestAsync(requestLog.LogStream, requestLog.MetaData, requestLog.IndexTags, requestLogName).ConfigureAwait(false);
+            var requestLogInformation = BuildRequestLogInformation(context);
+
+            await LogRequestAsync(context, requestLogInformation).ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
 
+            await LogResponseAsync(context, requestLogInformation.MetaData).ConfigureAwait(false);
+        }
+
+        private Task LogRequestAsync(FunctionContext context, (Stream LogStream, Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) requestLogInfo)
+        {
+            var requestLogName = LogDataBuilder.BuildLogName(requestLogInfo.MetaData) + " request";
+            return _requestResponseLogging.LogRequestAsync(requestLogInfo.LogStream, requestLogInfo.MetaData, requestLogInfo.IndexTags, requestLogName);
+        }
+
+        private Task LogResponseAsync(FunctionContext context, Dictionary<string, string> requestMetaData)
+        {
             var responseLog = BuildResponseLogInformation(context);
-            var responseLogName = LogDataBuilder.BuildLogName(requestLog.MetaData) + " response";
-            await _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData, responseLog.IndexTags, responseLogName).ConfigureAwait(false);
+            var responseLogName = LogDataBuilder.BuildLogName(requestMetaData) + " response";
+            return _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData, responseLog.IndexTags, responseLogName);
         }
 
         private static (Stream LogStream, Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) BuildRequestLogInformation(FunctionContext context)
@@ -67,6 +78,12 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "request");
 
+                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
+                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "request");
+
                 return (requestData.Body, metaData, indexTags);
             }
 
@@ -86,7 +103,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
                 {
                     metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
-                    indexTags.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
