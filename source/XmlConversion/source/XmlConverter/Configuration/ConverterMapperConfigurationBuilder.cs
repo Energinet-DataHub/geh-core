@@ -18,6 +18,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions;
 
 namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Configuration
 {

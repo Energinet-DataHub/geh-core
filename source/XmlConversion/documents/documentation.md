@@ -42,8 +42,34 @@ private static string TranslateProcessType(string processType)
 }
 ```
 
-Use XML deserializer as below 
+A concrete implementation of `XmlMappingConfigurationBase` must be added for each type that implements `IInternalMarketDocument`.
 
 ```c#
-await _xmlConverter.DeserializeAsync(request.Body).ConfigureAwait(false);
+public class MasterDataDocumentXmlMappingConfiguration : XmlMappingConfigurationBase
+{
+    public MasterDataDocumentXmlMappingConfiguration()
+    {
+        CreateMapping<MasterDataDocument>("MktActivityRecord", mapper => mapper
+            .AddProperty(x => x.PropertyName, "MarketEvaluationPoint", "xmlNodeName")
+            .AddProperty(x => x.SpecialProperty, OptionalTranslationMethod, "MarketEvaluationPoint", "anotherXmlNodeName")
+            ....
+    }
+    
+    private static string OptionalTranslationMethod(XmlElementInfo element)
+    {
+        return element.SourceValue.ToUpperInvariant() switch
+        {
+            "E01" => "RealValue1",
+            "E02" => "RealValue2",
+            "E03" => "RealValue3",
+            _ => element.SourceValue,
+        };
+    }
+} 
+```
+
+Use XML deserializer as below
+
+```c#
+var xmlDeserializationResult = await _xmlConverter.DeserializeAsync(request.Body);
 ```

@@ -12,21 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO;
-using System.Threading.Tasks;
-
 namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions
 {
-    /// <summary>
-    /// XML deserializer
-    /// </summary>
-    public interface IXmlDeserializer
-    {
-        /// <summary>
-        /// Deserializes an EDI message in XML format to a generic collection
-        /// </summary>
-        /// <param name="body"></param>
-        /// <returns>An XML deserialization result <seealso cref="XmlDeserializationResult"/></returns>
-        public Task<XmlDeserializationResult> DeserializeAsync(Stream body);
-    }
+    public record XmlHeaderData(string Mrid, string Type, string ProcessType, XmlHeaderSender Sender);
 }

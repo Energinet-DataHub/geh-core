@@ -35,7 +35,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
             _processTypeTranslator = processTypeTranslator;
         }
 
-        public IEnumerable<IInternalMarketDocument> Map(XElement rootElement)
+        public XmlDeserializationResult Map(XElement rootElement)
         {
             if (rootElement == null) throw new ArgumentNullException(nameof(rootElement));
 
@@ -50,7 +50,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
             return elements;
         }
 
-        private static IEnumerable<IInternalMarketDocument> InternalMap(
+        private static XmlDeserializationResult InternalMap(
             XmlMappingConfigurationBase xmlMappingConfigurationBase, XContainer rootElement, XNamespace ns, XmlHeaderData xmlHeaderData)
         {
             var configuration = xmlMappingConfigurationBase.Configuration;
@@ -81,12 +81,25 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
                 messages.Add(instance);
             }
 
-            return messages;
+            return new XmlDeserializationResult(messages, xmlHeaderData);
         }
 
         private static string ExtractElementValue(XContainer element, XName name)
         {
             return element.Element(name)?.Value ?? string.Empty;
+        }
+
+        private static string ExtractCodingScheme(XContainer element, XName name)
+        {
+            return element.Element(name)?.Attributes().SingleOrDefault(x => x.Name == "codingScheme")?.Value ?? string.Empty;
+        }
+
+        private static (string Value, string CodingScheme) ExtractElementValueAndCodingScheme(XContainer element, XName name)
+        {
+            var value = ExtractElementValue(element, name);
+            var codingScheme = ExtractCodingScheme(element, name);
+
+            return (value, codingScheme);
         }
 
         private static XElement? GetXmlElement(XContainer? container, Queue<string> hierarchyQueue, XNamespace ns)
@@ -151,8 +164,10 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
             var mrid = ExtractElementValue(rootElement, ns + "mRID");
             var type = ExtractElementValue(rootElement, ns + "type");
             var processType = _processTypeTranslator(ExtractElementValue(rootElement, ns + "process.processType"));
+            var (value, codingScheme) = ExtractElementValueAndCodingScheme(rootElement, ns + "sender_MarketParticipant.mRID");
+            var senderRole = ExtractElementValue(rootElement, ns + "sender_MarketParticipant.marketRole.type");
 
-            var headerData = new XmlHeaderData(mrid, type, processType);
+            var headerData = new XmlHeaderData(mrid, type, processType, new XmlHeaderSender(value, codingScheme, senderRole));
 
             return headerData;
         }

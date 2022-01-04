@@ -22,6 +22,7 @@ limitations under the License.
     <AssemblyName>Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

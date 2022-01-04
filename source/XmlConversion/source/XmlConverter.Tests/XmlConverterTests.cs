@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
         [Fact]
         public void AssertConfigurationsValid()
         {
-            Action assertConfigurationValid = () => ConverterMapperConfigurations.AssertConfigurationValid(typeof(MasterDataDocument));
+            Action assertConfigurationValid = () => ConverterMapperConfigurations.AssertConfigurationValid(typeof(MasterDataDocument), typeof(MasterDataDocumentXmlMappingConfiguration).Assembly);
             assertConfigurationValid.Should().NotThrow();
         }
 
@@ -49,10 +49,14 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
 
             var xmlConverter = new XmlDeserializer(xmlMapper);
 
-            var commandsRaw = await xmlConverter.DeserializeAsync(_xmlStream).ConfigureAwait(false);
-            var commands = commandsRaw.Cast<MasterDataDocument>();
-
+            var deserializationResult = await xmlConverter.DeserializeAsync(_xmlStream).ConfigureAwait(false);
+            var headerData = deserializationResult.HeaderData;
+            var commands = deserializationResult.Documents.Cast<MasterDataDocument>();
             var command = commands.First();
+
+            headerData.Sender.Id.Should().Be("123456789");
+            headerData.Sender.Role.Should().Be("DDM");
+            headerData.Sender.CodingScheme.Should().Be("A10");
 
             command.TypeOfMeteringPoint.Should().Be("Consumption");
             command.GsrnNumber.Should().Be("571234567891234605");
@@ -93,8 +97,8 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             var xmlMapper = new XmlMapper((type) => new MasterDataDocumentXmlMappingConfiguration(), (processType) => "CreateMeteringPoint");
 
             var xmlConverter = new XmlDeserializer(xmlMapper);
-            var commandsRaw = await xmlConverter.DeserializeAsync(_xmlStream).ConfigureAwait(false);
-            var commands = commandsRaw.Cast<MasterDataDocument>();
+            var deserializationResult = await xmlConverter.DeserializeAsync(_xmlStream).ConfigureAwait(false);
+            var commands = deserializationResult.Documents.Cast<MasterDataDocument>();
 
             var command = commands.First();
 

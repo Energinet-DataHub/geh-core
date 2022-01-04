@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
             _xmlMapper = xmlMapper;
         }
 
-        public async Task<IEnumerable<IInternalMarketDocument>> DeserializeAsync(Stream body)
+        public async Task<XmlDeserializationResult> DeserializeAsync(Stream body)
         {
             var rootElement = await XElement.LoadAsync(body, LoadOptions.None, CancellationToken.None).ConfigureAwait(false);
             return _xmlMapper.Map(rootElement);

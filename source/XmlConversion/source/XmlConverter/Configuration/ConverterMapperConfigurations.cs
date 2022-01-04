@@ -22,11 +22,11 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Configuration
 {
     public static class ConverterMapperConfigurations
     {
-        public static void AssertConfigurationValid(Type requestType)
+        public static void AssertConfigurationValid(Type requestType, Assembly? configurationsAssembly = null)
         {
             var businessRequests = GetBusinessRequests(requestType);
 
-            var configurations = GetAllConfigurations(requestType);
+            var configurations = GetAllConfigurations(configurationsAssembly ?? requestType.Assembly);
 
             foreach (var type in businessRequests)
             {
@@ -66,9 +66,9 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Configuration
             return properties.Where(p => !excludedProperties.Contains(p.Name)).ToArray();
         }
 
-        private static List<XmlMappingConfigurationBase> GetAllConfigurations(Type requestType)
+        private static List<XmlMappingConfigurationBase> GetAllConfigurations(Assembly configurationsAssembly)
         {
-            return requestType.Assembly.GetTypes()
+            return configurationsAssembly.GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(XmlMappingConfigurationBase)) && !t.IsAbstract)
                 .Select(Activator.CreateInstance)
                 .Cast<XmlMappingConfigurationBase>()

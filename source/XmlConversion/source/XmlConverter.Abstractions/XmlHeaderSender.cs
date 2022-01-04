@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
+namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions
 {
-    public record XmlHeaderData(string Mrid, string Type, string ProcessType);
+    public record XmlHeaderSender(string Id, string CodingScheme, string Role);
 }

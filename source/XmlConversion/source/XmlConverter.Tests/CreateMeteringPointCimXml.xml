@@ -17,9 +17,9 @@ limitations under the License.
     <cim:type>A99</cim:type>
     <cim:process.processType>E02</cim:process.processType>
     <cim:businessSector.type>E24</cim:businessSector.type>
-    <cim:sender_MarketParticipant.mRID codingScheme="NFI">afsender</cim:sender_MarketParticipant.mRID>
+    <cim:sender_MarketParticipant.mRID codingScheme="A10">123456789</cim:sender_MarketParticipant.mRID>
     <cim:sender_MarketParticipant.marketRole.type>DDM</cim:sender_MarketParticipant.marketRole.type>
-    <cim:receiver_MarketParticipant.mRID codingScheme="NLT">DHGLN</cim:receiver_MarketParticipant.mRID>
+    <cim:receiver_MarketParticipant.mRID codingScheme="A10">DHGLN</cim:receiver_MarketParticipant.mRID>
     <cim:receiver_MarketParticipant.marketRole.type>DDZ</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>2021-06-17T09:30:47Z</cim:createdDateTime>
     <cim:MktActivityRecord>
