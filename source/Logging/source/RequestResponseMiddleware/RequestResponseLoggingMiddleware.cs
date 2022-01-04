@@ -49,13 +49,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             var bindingsFeature = context.GetHttpRequestData();
 
             var metaData = context.BindingContext.BindingData
-                .ToDictionary(e => e.Key.Replace("-", string.Empty).ToLower(), pair => pair.Value as string ?? string.Empty);
+                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
             if (bindingsFeature is { } requestData)
             {
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
                 {
-                    metaData.TryAdd($"{key.ToLower()}", value);
+                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
