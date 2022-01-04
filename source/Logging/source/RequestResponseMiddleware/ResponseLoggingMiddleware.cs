@@ -34,28 +34,21 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
+            await next(context);
+
             var contextResponse = context.GetHttpResponseData();
-            var originalBodyStream = contextResponse?.Body;
+            await using var memoryStream = new MemoryStream();
 
-            try
-            {
-                await using var memoryStream = new MemoryStream();
-                contextResponse.Body = memoryStream;
+            memoryStream.Position = 0;
+            await memoryStream.CopyToAsync(contextResponse.Body);
 
-                await next(context);
+            var logMetaData = BuildResponseLogInformation(context);
+            var indexTags = new Dictionary<string, string>() { { "testIndex", "1" } };
+            var logName = LogDataBuilder.BuildLogName(logMetaData) + " response";
+            memoryStream.Position = 0;
+            await _requestResponseLogging.LogResponseAsync(memoryStream, logMetaData, indexTags, logName);
 
-                memoryStream.Position = 0;
-                await memoryStream.CopyToAsync(originalBodyStream);
-
-                var logMetaData = BuildResponseLogInformation(context);
-                var logName = LogDataBuilder.BuildLogName(logMetaData) + " response";
-                memoryStream.Position = 0;
-                _requestResponseLogging.LogResponseAsync(memoryStream, logMetaData, logName);
-            }
-            finally
-            {
-                contextResponse.Body = originalBodyStream;
-            }
+            contextResponse.Body.Position = 0;
         }
 
         private static Dictionary<string, string> BuildResponseLogInformation(FunctionContext context)

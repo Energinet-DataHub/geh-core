@@ -47,8 +47,9 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 true);
 
             var metaData = BuildRequestLogInformation(context);
+            var indexTags = new Dictionary<string, string>() { { "testIndex", "1" } };
             var logName = LogDataBuilder.BuildLogName(metaData) + " request";
-            await _requestResponseLogging.LogRequestAsync(reader.BaseStream, metaData, logName);
+            await _requestResponseLogging.LogRequestAsync(reader.BaseStream, metaData, indexTags, logName);
 
             requestContext.Body.Position = 0;
             await next(context);

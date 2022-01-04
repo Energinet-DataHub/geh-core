@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Azure.Functions.Worker.Http;
 using NodaTime;
 
@@ -37,28 +38,23 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public static string BuildLogName(Dictionary<string, string> metaData)
         {
-            metaData.TryGetValue("marketoperator", out var marketOperator);
-            metaData.TryGetValue("recipient", out var recipient);
-            metaData.TryGetValue("gln", out var gln);
-            metaData.TryGetValue("glnnumber", out var glnNumber);
-            metaData.TryGetValue("invocationid", out var invocationId);
-            metaData.TryGetValue("traceparent", out var traceParent);
-            metaData.TryGetValue("correlationid", out var correlationId);
-            metaData.TryGetValue("functionid", out var functionId);
-
             var time = SystemClock.Instance.GetCurrentInstant().ToString();
-            string name = $"{marketOperator ?? string.Empty}-" +
-                          $"{recipient ?? string.Empty}-" +
-                          $"{gln ?? string.Empty}-" +
-                          $"{glnNumber ?? string.Empty}-" +
-                          $"{invocationId ?? string.Empty}-" +
-                          $"{traceParent ?? string.Empty}-" +
-                          $"{correlationId ?? string.Empty}-" +
-                          $"{functionId ?? string.Empty}-" +
+
+            string name = $"{LookUpInDictionary("marketoperator", metaData)}" +
+                          $"{LookUpInDictionary("recipient", metaData)}" +
+                          $"{LookUpInDictionary("gln", metaData)}" +
+                          $"{LookUpInDictionary("glnnumber", metaData)}" +
+                          $"{LookUpInDictionary("invocationid", metaData)}" +
+                          $"{LookUpInDictionary("traceparent", metaData)}" +
+                          $"{LookUpInDictionary("correlationid", metaData)}" +
+                          $"{LookUpInDictionary("functionid", metaData)}" +
                           $"{time}";
-            return name.Replace("--", "-");
+            return name;
         }
 
         internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();
+
+        private static Func<string, Dictionary<string, string>, string> LookUpInDictionary
+            => (n, d) => d.TryGetValue(n, out var value) ? $"{value}_" : string.Empty;
     }
 }
