@@ -209,11 +209,11 @@
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="meter.mRID" type="cim:ID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
       </xs:element>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Series" type="cim:Series" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketEvaluationPoint.Series">
+      </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="energySupplier_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="supplyStart_DateAndOrTime.dateTime" type="xs:dateTime" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#DateAndOrTime.dateTime">
-      </xs:element>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Series" type="cim:Series" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketEvaluationPoint.Series">
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.description">
       </xs:element>
