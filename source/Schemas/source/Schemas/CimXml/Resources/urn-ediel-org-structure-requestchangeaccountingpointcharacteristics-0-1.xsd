@@ -159,17 +159,17 @@
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="meter.mRID" type="cim:ID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
       </xs:element>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Series" type="cim:Series" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketEvaluationPoint.Series">
+      </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.description">
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.geoInfoReference" type="cim:UUID36_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Location.geoInfoReference">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.actualAddressIndicator" type="xs:boolean" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#DK_Ext_UsagePointLocation.actualAddressIndicator">
-      </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.mainAddress" type="cim:StreetAddress" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Location.mainAddress">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="parent_MarketEvaluationPoint.mRID" type="cim:MeasurementPointID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="0" maxOccurs="1" name="usagePointLocation.actualAddressIndicator" type="xs:boolean" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#DK_Ext_UsagePointLocation.actualAddressIndicator">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Series" type="cim:Series" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketEvaluationPoint.Series">
+      <xs:element minOccurs="0" maxOccurs="1" name="parent_MarketEvaluationPoint.mRID" type="cim:MeasurementPointID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
       </xs:element>
     </xs:sequence>
   </xs:complexType>
