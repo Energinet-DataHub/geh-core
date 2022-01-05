@@ -57,11 +57,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static LogInformation BuildRequestLogInformation(FunctionContext context)
         {
-            var metaData = context.BindingContext.BindingData
-                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
-
-            var indexTags =
-                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(10));
+            var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, true);
 
             if (context.GetHttpRequestData() is { } requestData)
             {
@@ -69,18 +65,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 {
                     metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
-
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "request");
-
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "request");
 
                 return new LogInformation(requestData.Body, metaData, indexTags);
             }
@@ -90,11 +74,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static LogInformation BuildResponseLogInformation(FunctionContext context)
         {
-            var metaData = context.BindingContext.BindingData
-                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
-
-            var indexTags =
-                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(10));
+            var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, false);
 
             if (context.GetHttpResponseData() is { } responseData)
             {
@@ -104,23 +84,34 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 }
 
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "response");
-
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), "response");
 
                 return new LogInformation(responseData.Body, metaData, indexTags);
             }
 
             return new LogInformation(Stream.Null, metaData, indexTags);
+        }
+
+        private static (Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) GetMetaDataAndIndexTagsDictionaries(FunctionContext context, bool isRequest)
+        {
+            var metaData = context.BindingContext.BindingData
+                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+
+            var indexTags =
+                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(5));
+
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
+
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
+
+            return (metaData, indexTags);
         }
     }
 }
