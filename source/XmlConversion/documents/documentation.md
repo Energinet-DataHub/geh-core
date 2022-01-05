@@ -10,15 +10,15 @@ Install following packages
 
 * `Energinet.DataHub.Core.XmlConversion.XmlConverter`
 * `Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions`
-  
+
 Register in IoC (in example below SimpleInjector is used)
 
 ```c#
 protected override void ConfigureContainer(Container container)
 {
-    container.Register(() => new XmlMapper(XmlMappingConfiguration, TranslateProcessType), Lifestyle.Singleton);
-    container.Register<IXmlConverter, XmlDeserializer>(Lifestyle.Singleton);
-    ...
+    …
+    container.AddXmlDeserialization(XmlMappingConfiguration, TranslateProcessType)
+    …
 }
 
 private static XmlMappingConfigurationBase XmlMappingConfiguration(string documentType)
@@ -52,7 +52,7 @@ public class MasterDataDocumentXmlMappingConfiguration : XmlMappingConfiguration
         CreateMapping<MasterDataDocument>("MktActivityRecord", mapper => mapper
             .AddProperty(x => x.PropertyName, "MarketEvaluationPoint", "xmlNodeName")
             .AddProperty(x => x.SpecialProperty, OptionalTranslationMethod, "MarketEvaluationPoint", "anotherXmlNodeName")
-            ....
+            …
     }
     
     private static string OptionalTranslationMethod(XmlElementInfo element)
