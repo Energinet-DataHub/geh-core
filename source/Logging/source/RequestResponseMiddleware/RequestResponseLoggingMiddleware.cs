@@ -91,9 +91,12 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
 
                 var streamToLog = new MemoryStream();
+
                 await responseData.Body.CopyToAsync(streamToLog);
-                responseData.Body.Position = 0;
+                var responseStream = new MemoryStream(streamToLog.ToArray());
+
                 streamToLog.Position = 0;
+                responseData.Body = responseStream;
 
                 return new LogInformation(streamToLog, metaData, indexTags);
             }
