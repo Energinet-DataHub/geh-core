@@ -52,7 +52,7 @@ limitations under the License.
                 <cim:estimatedAnnualVolume_Quantity.quantity>0</cim:estimatedAnnualVolume_Quantity.quantity>
                 <cim:quantity_Measure_Unit.name>KWh</cim:quantity_Measure_Unit.name>
             </cim:Series>
-            <cim:contractedConnectionCapacity unit="MAW">2000</cim:contractedConnectionCapacity>
+            <cim:contractedConnectionCapacity unit="MAW"></cim:contractedConnectionCapacity>
             <cim:ratedCurrent unit="AMP">5000</cim:ratedCurrent>
             <cim:meter.mRID>123456789</cim:meter.mRID>
             <cim:energySupplier_MarketParticipant.mRID codingScheme="A02">a</cim:energySupplier_MarketParticipant.mRID>
@@ -72,7 +72,7 @@ limitations under the License.
                     <cim:code>12</cim:code>
                     <cim:section>String</cim:section>
                     <cim:name>Test city</cim:name>
-                    <cim:stateOrProvince>String</cim:stateOrProvince>
+                    <cim:stateOrProvince></cim:stateOrProvince>
                     <cim:country>DK</cim:country>
                 </cim:townDetail>
                 <cim:status>

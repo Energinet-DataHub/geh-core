@@ -19,16 +19,16 @@ limitations under the License.
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
-    <AssemblyName>Energinet.DataHub.Core.XmlConversion.XmlConverter</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.XmlConversion.XmlConverter</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.XmlConversion.XmlConverter.SimpleInjector</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.XmlConversion.XmlConverter.SimpleInjector</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Energinet.DataHub.Core.XmlConversion.XmlConverter</PackageId>
+    <PackageId>Energinet.DataHub.Core.XmlConversion.XmlConverter.SimpleInjector</PackageId>
     <PackageVersion>1.0.1$(VersionSuffix)</PackageVersion>
-    <Title>XmlConverter Library</Title>
+    <Title>XmlConverter SimpleInjector Extension Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
     <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
@@ -48,7 +48,7 @@ limitations under the License.
       [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/XmlConversion/documents/release-notes/release-notes.md)
       [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/XmlConversion/documents/documentation.md)
     </PackageDescription>
-    <Description>Provides functionality for conversion of CIM XML to C#.</Description>
+    <Description>Provides extension for SimpleInjector to simplify registration of XmlDeserializer.</Description>
     <PackageTags>energinet;datahub</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -71,10 +71,12 @@ limitations under the License.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="SimpleInjector" Version="5.3.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\XmlConverter.Abstractions\XmlConverter.Abstractions.csproj" />
+    <ProjectReference Include="..\XmlConverter\XmlConverter.csproj" />
   </ItemGroup>
 
 </Project>
