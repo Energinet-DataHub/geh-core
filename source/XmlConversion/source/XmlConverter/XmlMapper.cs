@@ -19,6 +19,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions;
 using Energinet.DataHub.Core.XmlConversion.XmlConverter.Configuration;
+using Energinet.DataHub.Core.XmlConversion.XmlConverter.Extensions;
 
 namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
 {
@@ -28,8 +29,8 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
         private readonly Func<string, string> _processTypeTranslator;
 
         public XmlMapper(
-                Func<string, XmlMappingConfigurationBase> mappingConfigurationFactory,
-                Func<string, string> processTypeTranslator)
+            Func<string, XmlMappingConfigurationBase> mappingConfigurationFactory,
+            Func<string, string> processTypeTranslator)
         {
             _mappingConfigurationFactory = mappingConfigurationFactory;
             _processTypeTranslator = processTypeTranslator;
@@ -51,7 +52,10 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
         }
 
         private static XmlDeserializationResult InternalMap(
-            XmlMappingConfigurationBase xmlMappingConfigurationBase, XContainer rootElement, XNamespace ns, XmlHeaderData xmlHeaderData)
+            XmlMappingConfigurationBase xmlMappingConfigurationBase,
+            XContainer rootElement,
+            XNamespace ns,
+            XmlHeaderData xmlHeaderData)
         {
             var configuration = xmlMappingConfigurationBase.Configuration;
             var properties = configuration.Properties;
@@ -137,11 +141,15 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
         {
             if (source is null) return default;
 
-            var xmlElementInfo = new XmlElementInfo(source.Value, source.Attributes());
-
-            if (TryUseTranslatorFunc(dest))
+            if (TryUseTranslatorFunc(dest) && valueTranslatorFunc != null)
             {
-                return valueTranslatorFunc != null ? valueTranslatorFunc(xmlElementInfo) : source.Value;
+                var xmlElementInfo = new XmlElementInfo(source.Value, source.Attributes());
+                return valueTranslatorFunc(xmlElementInfo);
+            }
+
+            if (string.IsNullOrWhiteSpace(source.Value))
+            {
+                return dest == typeof(string) ? source.Value : dest.GetDefaultValue();
             }
 
             return System.Convert.ChangeType(source.Value, dest, CultureInfo.InvariantCulture);
@@ -149,12 +157,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
 
         private static bool TryUseTranslatorFunc(Type dest)
         {
-            var types = new HashSet<Type>
-            {
-                typeof(bool),
-                typeof(bool?),
-                typeof(string),
-            };
+            var types = new HashSet<Type> { typeof(bool), typeof(bool?), typeof(string), };
 
             return types.Contains(dest);
         }
