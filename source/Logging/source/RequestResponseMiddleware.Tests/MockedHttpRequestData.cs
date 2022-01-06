@@ -27,6 +27,7 @@ namespace RequestResponseMiddleware.Tests
             HttpResponseDataMock.SetupProperty(x => x.Body);
 
             HttpRequestDataMock = new Mock<HttpRequestData>(functionContext);
+            HttpResponseDataMock.SetupProperty(x => x.Body);
             HttpRequestDataMock.Setup(x => x.CreateResponse()).Returns(HttpResponseDataMock.Object);
         }
 

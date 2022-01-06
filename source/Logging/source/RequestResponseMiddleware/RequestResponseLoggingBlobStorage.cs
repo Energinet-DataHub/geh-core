@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
@@ -32,16 +33,18 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             _storageContainerName = storageContainerName;
         }
 
-        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
+        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName)
         {
             var blobClientRequest = new BlobClient(_storageConnectionString, _storageContainerName, logName);
-            await blobClientRequest.UploadAsync(logStream, null, metaData);
+            var options = new BlobUploadOptions { Tags = indexTags, Metadata = metaData };
+            await blobClientRequest.UploadAsync(logStream, options);
         }
 
-        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
+        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName)
         {
             var blobClientResponse = new BlobClient(_storageConnectionString, _storageContainerName, logName);
-            await blobClientResponse.UploadAsync(logStream, null, metaData);
+            var options = new BlobUploadOptions { Tags = indexTags, Metadata = metaData };
+            await blobClientResponse.UploadAsync(logStream, options);
         }
     }
 }
