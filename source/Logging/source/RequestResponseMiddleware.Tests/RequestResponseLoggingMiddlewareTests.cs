@@ -48,6 +48,9 @@ namespace RequestResponseMiddleware.Tests
             var (request, response) = SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
 
             var expectedLogBody = "BODYTEXT";
+
+            request.HttpRequestDataMock.SetupGet(e => e.Body).Returns(new MemoryStream(Encoding.UTF8.GetBytes(expectedLogBody)));
+
             response.Body = new MemoryStream(Encoding.UTF8.GetBytes(expectedLogBody));
 
             // Act
@@ -82,6 +85,10 @@ namespace RequestResponseMiddleware.Tests
             var expectedStatusCode = HttpStatusCode.Accepted;
 
             var (request, response) = SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
+
+            var logBody = "BODYTEXT";
+            request.HttpRequestDataMock.SetupGet(e => e.Body).Returns(new MemoryStream(Encoding.UTF8.GetBytes(logBody)));
+            response.Body = new MemoryStream(Encoding.UTF8.GetBytes(logBody));
 
             // Act
             await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);

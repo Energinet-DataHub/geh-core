@@ -33,13 +33,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-            var requestLogInformation = BuildRequestLogInformation(context);
-
+            var requestLogInformation = await BuildRequestLogInformationAsync(context);
             await LogRequestAsync(requestLogInformation).ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
 
-            await LogResponseAsync(context, requestLogInformation.MetaData).ConfigureAwait(false);
+            var responseLogInformation = await BuildResponseLogInformationAsync(context);
+            await LogResponseAsync(responseLogInformation, requestLogInformation.MetaData).ConfigureAwait(false);
         }
 
         private Task LogRequestAsync(LogInformation requestLogInformation)
@@ -48,14 +48,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName);
         }
 
-        private Task LogResponseAsync(FunctionContext context, Dictionary<string, string> requestMetaData)
+        private Task LogResponseAsync(LogInformation responseLogInformation, Dictionary<string, string> requestMetaData)
         {
-            var responseLog = BuildResponseLogInformation(context);
             var responseLogName = LogDataBuilder.BuildLogName(requestMetaData) + " response";
-            return _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData, responseLog.IndexTags, responseLogName);
+            return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName);
         }
 
-        private static LogInformation BuildRequestLogInformation(FunctionContext context)
+        private static async Task<LogInformation> BuildRequestLogInformationAsync(FunctionContext context)
         {
             var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, true);
 
@@ -66,13 +65,18 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                     metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
-                return new LogInformation(requestData.Body, metaData, indexTags);
+                var streamToLog = new MemoryStream();
+                await requestData.Body.CopyToAsync(streamToLog);
+                requestData.Body.Position = 0;
+                streamToLog.Position = 0;
+
+                return new LogInformation(streamToLog, metaData, indexTags);
             }
 
             return new LogInformation(Stream.Null, metaData, indexTags);
         }
 
-        private static LogInformation BuildResponseLogInformation(FunctionContext context)
+        private static async Task<LogInformation> BuildResponseLogInformationAsync(FunctionContext context)
         {
             var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, false);
 
@@ -86,7 +90,12 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
 
-                return new LogInformation(responseData.Body, metaData, indexTags);
+                var streamToLog = new MemoryStream();
+                await responseData.Body.CopyToAsync(streamToLog);
+                responseData.Body.Position = 0;
+                streamToLog.Position = 0;
+
+                return new LogInformation(streamToLog, metaData, indexTags);
             }
 
             return new LogInformation(Stream.Null, metaData, indexTags);
