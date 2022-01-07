@@ -76,7 +76,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             command.EffectiveDate.Should().Be("2021-07-13T22:00:00Z");
             command.MeteringGridArea.Should().Be("870");
             command.NetSettlementGroup.Should().Be("Zero");
-            command.MaximumCurrent.Should().Be(5000);
+            command.MaximumCurrent.Should().BeNull();
             command.TransactionId.Should().Be("1234");
             command.PostCode.Should().Be("8000");
             command.StreetName.Should().Be("Test street name");
