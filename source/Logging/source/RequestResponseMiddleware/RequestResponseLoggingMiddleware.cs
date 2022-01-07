@@ -16,12 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
@@ -36,97 +33,97 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-            var requestLog = BuildRequestLogInformation(context);
-            var requestLogName = BuildLogName(requestLog.MetaData) + " response";
-            await _requestResponseLogging.LogRequestAsync(requestLog.LogStream, requestLog.MetaData, requestLogName).ConfigureAwait(false);
+            var requestLogInformation = await BuildRequestLogInformationAsync(context);
+            await LogRequestAsync(requestLogInformation).ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
 
-            var responseLog = BuildResponseLogInformation(context);
-            var responseLogName = BuildLogName(requestLog.MetaData) + " response";
-            await _requestResponseLogging.LogResponseAsync(responseLog.LogStream, responseLog.MetaData, responseLogName).ConfigureAwait(false);
+            var responseLogInformation = await BuildResponseLogInformationAsync(context);
+            await LogResponseAsync(responseLogInformation, requestLogInformation.MetaData).ConfigureAwait(false);
         }
 
-        private static (Stream LogStream, Dictionary<string, string> MetaData) BuildRequestLogInformation(FunctionContext context)
+        private Task LogRequestAsync(LogInformation requestLogInformation)
         {
-            var bindingsFeature = context.GetHttpRequestData();
+            var requestLogName = LogDataBuilder.BuildLogName(requestLogInformation.MetaData) + " request";
+            return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName);
+        }
 
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
-            if (bindingsFeature is { } requestData)
+        private Task LogResponseAsync(LogInformation responseLogInformation, Dictionary<string, string> requestMetaData)
+        {
+            var responseLogName = LogDataBuilder.BuildLogName(requestMetaData) + " response";
+            return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName);
+        }
+
+        private static async Task<LogInformation> BuildRequestLogInformationAsync(FunctionContext context)
+        {
+            var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, true);
+
+            if (context.GetHttpRequestData() is { } requestData)
             {
-                foreach (var (key, value) in ReadHeaderDataFromCollection(requestData.Headers))
+                foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
                 {
-                    metaData.TryAdd(key, value);
+                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
-                metaData.TryAdd("FunctionId", context.FunctionId);
-                metaData.TryAdd("InvocationId", context.InvocationId);
-                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                var streamToLog = new MemoryStream();
+                await requestData.Body.CopyToAsync(streamToLog);
+                requestData.Body.Position = 0;
+                streamToLog.Position = 0;
 
-                // TODO Should we "reset" stream ?
-                return new ValueTuple<Stream, Dictionary<string, string>>(requestData.Body, metaData);
+                return new LogInformation(streamToLog, metaData, indexTags);
             }
 
-            return new ValueTuple<Stream, Dictionary<string, string>>(Stream.Null, metaData);
+            return new LogInformation(Stream.Null, metaData, indexTags);
         }
 
-        private static (Stream LogStream, Dictionary<string, string> MetaData) BuildResponseLogInformation(FunctionContext context)
+        private static async Task<LogInformation> BuildResponseLogInformationAsync(FunctionContext context)
         {
-            var metaData = context.BindingContext.BindingData.ToDictionary(e => e.Key, pair => pair.Value as string ?? string.Empty);
+            var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, false);
+
             if (context.GetHttpResponseData() is { } responseData)
             {
-                foreach (var (key, value) in ReadHeaderDataFromCollection(responseData.Headers))
+                foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
                 {
-                    metaData.TryAdd(key, value);
+                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
 
-                metaData.TryAdd("StatusCode", responseData.StatusCode.ToString());
-                metaData.TryAdd("FunctionId", context.FunctionId);
-                metaData.TryAdd("InvocationId", context.InvocationId);
-                metaData.TryAdd("TraceParent", context.TraceContext?.TraceParent ?? string.Empty);
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
+                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
 
-                // TODO Should we "reset" stream ?
-                return new ValueTuple<Stream, Dictionary<string, string>>(responseData.Body, metaData);
+                var streamToLog = new MemoryStream();
+
+                await responseData.Body.CopyToAsync(streamToLog);
+                var responseStream = new MemoryStream(streamToLog.ToArray());
+
+                streamToLog.Position = 0;
+                responseData.Body = responseStream;
+
+                return new LogInformation(streamToLog, metaData, indexTags);
             }
 
-            return new ValueTuple<Stream, Dictionary<string, string>>(Stream.Null, metaData);
+            return new LogInformation(Stream.Null, metaData, indexTags);
         }
 
-        private static Dictionary<string, string> ReadHeaderDataFromCollection(HttpHeadersCollection headersCollection)
+        private static (Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) GetMetaDataAndIndexTagsDictionaries(FunctionContext context, bool isRequest)
         {
-            if (headersCollection is null)
-            {
-                return new Dictionary<string, string>();
-            }
+            var metaData = context.BindingContext.BindingData
+                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
-            var metaData = headersCollection
-                .ToDictionary(e => e.Key, e => string.Join(",", e.Value));
+            var indexTags =
+                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(5));
 
-            return metaData;
-        }
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
-        private static string BuildLogName(Dictionary<string, string> metaData)
-        {
-            metaData.TryGetValue("marketOperator", out var marketOperator);
-            metaData.TryGetValue("recipient", out var recipient);
-            metaData.TryGetValue("gln", out var gln);
-            metaData.TryGetValue("glnNumber", out var glnNumber);
-            metaData.TryGetValue("InvocationId", out var invocationId);
-            metaData.TryGetValue("TraceParent", out var traceParent);
-            metaData.TryGetValue("CorrelationId", out var correlationId);
-            metaData.TryGetValue("FunctionId", out var functionId);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
-            var time = SystemClock.Instance.GetCurrentInstant().ToString();
-            string name = $"{marketOperator ?? string.Empty}-" +
-                          $"{recipient ?? string.Empty}-" +
-                          $"{gln ?? string.Empty}-" +
-                          $"{glnNumber ?? string.Empty}-" +
-                          $"{invocationId ?? string.Empty}-" +
-                          $"{traceParent ?? string.Empty}-" +
-                          $"{correlationId ?? string.Empty}-" +
-                          $"{functionId ?? string.Empty}-" +
-                          $"{time}";
-            return name.Replace("--", "-");
+            return (metaData, indexTags);
         }
     }
 }

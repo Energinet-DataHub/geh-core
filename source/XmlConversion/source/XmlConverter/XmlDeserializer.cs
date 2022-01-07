@@ -34,5 +34,10 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
             var rootElement = await XElement.LoadAsync(body, LoadOptions.None, CancellationToken.None).ConfigureAwait(false);
             return _xmlMapper.Map(rootElement);
         }
+
+        public XmlDeserializationResult Deserialize(XElement rootElement)
+        {
+            return _xmlMapper.Map(rootElement);
+        }
     }
 }

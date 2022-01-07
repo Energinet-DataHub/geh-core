@@ -14,6 +14,7 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions
 {
@@ -23,10 +24,17 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions
     public interface IXmlDeserializer
     {
         /// <summary>
-        /// Deserializes an EDI message in XML format to a generic collection
+        /// Deserializes an EDI message in XML format
         /// </summary>
         /// <param name="body"></param>
         /// <returns>An XML deserialization result <seealso cref="XmlDeserializationResult"/></returns>
         public Task<XmlDeserializationResult> DeserializeAsync(Stream body);
+
+        /// <summary>
+        /// Deserializes an EDI message in XML format
+        /// </summary>
+        /// <param name="rootElement"></param>
+        /// <returns>An XML deserialization result <seealso cref="XmlDeserializationResult"/></returns>
+        XmlDeserializationResult Deserialize(XElement rootElement);
     }
 }
