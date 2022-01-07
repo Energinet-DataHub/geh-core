@@ -34,6 +34,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             string? MeteringMethod = null,
             string MeterReadingOccurrence = "",
             int? MaximumCurrent = null,
+            int? MinimumCurrent = null,
             int MaximumPower = 0,
             string MeteringGridArea = "",
             string? PowerPlant = null,
@@ -52,6 +53,10 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             string? PhysicalConnectionCapacity = null,
             string? GeoInfoReference = null,
             string MeasureUnitType = "",
-            string? ScheduledMeterReadingDate = "")
+            string? ScheduledMeterReadingDate = "",
+            short? ShortCurrent = null,
+            short? ShortCurrentWithValue = null,
+            long? LongCurrent = null,
+            long? LongCurrentWithValue = null)
         : IInternalMarketDocument;
 }

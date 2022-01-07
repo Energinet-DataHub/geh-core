@@ -53,6 +53,11 @@ limitations under the License.
                 <cim:quantity_Measure_Unit.name>KWh</cim:quantity_Measure_Unit.name>
             </cim:Series>
             <cim:contractedConnectionCapacity unit="MAW"></cim:contractedConnectionCapacity>
+            <cim:nullableintwithvalue unit="MAW">123</cim:nullableintwithvalue>
+            <cim:nullablelong unit="MAW"></cim:nullablelong>
+            <cim:nullablelongwithvalue unit="MAW">43753457345234</cim:nullablelongwithvalue>
+            <cim:nullableshort unit="MAW"></cim:nullableshort>
+            <cim:nullableshortwithvalue unit="MAW">50</cim:nullableshortwithvalue>
             <cim:ratedCurrent unit="AMP"></cim:ratedCurrent>
             <cim:meter.mRID>123456789</cim:meter.mRID>
             <cim:energySupplier_MarketParticipant.mRID codingScheme="A02">a</cim:energySupplier_MarketParticipant.mRID>

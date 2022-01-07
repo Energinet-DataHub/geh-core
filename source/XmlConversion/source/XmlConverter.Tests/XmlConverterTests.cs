@@ -61,6 +61,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             command.TypeOfMeteringPoint.Should().Be("Consumption");
             command.GsrnNumber.Should().Be("571234567891234605");
             command.MaximumPower.Should().Be(0);
+            command.MaximumPower.Should().Be(0);
             command.MeasureUnitType.Should().Be("KWh");
             command.PowerPlant.Should().Be("571234567891234636");
             command.SettlementMethod.Should().Be("Flex");
@@ -77,6 +78,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             command.MeteringGridArea.Should().Be("870");
             command.NetSettlementGroup.Should().Be("Zero");
             command.MaximumCurrent.Should().BeNull();
+            command.MinimumCurrent.Should().Be(123);
             command.TransactionId.Should().Be("1234");
             command.PostCode.Should().Be("8000");
             command.StreetName.Should().Be("Test street name");
@@ -88,6 +90,12 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             command.FromGrid.Should().Be("869");
             command.ToGrid.Should().Be("871");
             command.IsActualAddress.Should().BeNull();
+
+            command.ShortCurrentWithValue.Should().Be(50);
+            command.ShortCurrent.Should().BeNull();
+            command.LongCurrentWithValue.Should().Be(43753457345234);
+            command.LongCurrent.Should().BeNull();
+
             Assert.Null(command.ParentRelatedMeteringPoint);
         }
 
