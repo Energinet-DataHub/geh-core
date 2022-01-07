@@ -147,12 +147,19 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
                 return valueTranslatorFunc(xmlElementInfo);
             }
 
-            if (string.IsNullOrWhiteSpace(source.Value))
+            return ConvertType(source.Value, dest);
+        }
+
+        private static object? ConvertType(string? sourceValue, Type dest)
+        {
+            if (string.IsNullOrWhiteSpace(sourceValue))
             {
-                return dest == typeof(string) ? source.Value : dest.GetDefaultValue();
+                return dest != typeof(string) ? dest.GetDefaultValue() : sourceValue;
             }
 
-            return System.Convert.ChangeType(source.Value, dest, CultureInfo.InvariantCulture);
+            var destinationType = Nullable.GetUnderlyingType(dest) ?? dest;
+
+            return System.Convert.ChangeType(sourceValue, destinationType);
         }
 
         private static bool TryUseTranslatorFunc(Type dest)
