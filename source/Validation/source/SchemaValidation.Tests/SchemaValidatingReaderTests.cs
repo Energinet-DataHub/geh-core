@@ -233,6 +233,25 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             Assert.Equal("expected", actual);
         }
 
+        [Fact]
+        public async Task ReadValueAsStringAsync_ContentAndAttribute_ReturnsValue()
+        {
+            // Arrange
+            const string xml = @"<root><abc attribute=""attr"">expected</abc></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+            await target.AdvanceAsync(); // <root>
+            await target.AdvanceAsync(); // <abc>
+
+            // Act
+            var actual = await target.ReadValueAsStringAsync();
+
+            // Assert
+            Assert.True(target.CanReadValue);
+            Assert.Equal("expected", actual);
+        }
+
         [Theory]
         [InlineData("true")]
         [InlineData("false")]

@@ -23,7 +23,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.SchemaValidation
 {
-    [DebuggerDisplay("Node {CurrentNodeName}, Type: {CurrentNodeType}, HasValue: {CanReadValue}, HasErrors: {HasErrors}")]
+    [DebuggerDisplay("Node {CurrentNodeName}, Type: {CurrentNodeType}, CanReadValue: {CanReadValue}, HasErrors: {HasErrors}")]
     public sealed class SchemaValidatingReader : ISchemaValidatingReader
     {
         private readonly ISourceValidatingReader _sourceReader;

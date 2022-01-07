@@ -1,5 +1,10 @@
 # Schema Validation Release notes
 
+## Version 1.0.5
+
+ - CanReadValue could incorrectly return false when an attribute was preceding the element content.
+ - This only applies to the Reader API - extension methods AsXmlReaderAsync and AsXElementAsync are not affected.
+
 ## Version 1.0.4
 
 - No API changes.
