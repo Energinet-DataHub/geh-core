@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             string TypeOfMeteringPoint = "",
             string? MeteringMethod = null,
             string MeterReadingOccurrence = "",
-            int MaximumCurrent = 0,
+            int? MaximumCurrent = null,
             int MaximumPower = 0,
             string MeteringGridArea = "",
             string? PowerPlant = null,
