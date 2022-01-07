@@ -27,6 +27,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
     internal sealed class XmlSourceValidatingReader : ISourceValidatingReader
     {
         private readonly List<SchemaValidationError> _errors = new();
+        private readonly Queue<Attribute> _attributes = new();
         private readonly Stream _inputStream;
         private readonly IEnumerable<IXmlSchema> _inputSchemas;
 
@@ -59,6 +60,15 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
         {
             await EnsureReaderAsync().ConfigureAwait(false);
 
+            if (_attributes.TryDequeue(out var attribute))
+            {
+                _attributeValue = attribute.Value;
+                CurrentNodeName = attribute.Name;
+                CurrentNodeType = NodeType.Attribute;
+                CanReadValue = true;
+                return true;
+            }
+
             if (_emptyElementTag != null)
             {
                 ProcessEmptyElement(_emptyElementTag);
@@ -79,9 +89,6 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
                             return true;
                         case XmlNodeType.EndElement:
                             ProcessEndElement();
-                            return true;
-                        case XmlNodeType.Attribute:
-                            ProcessAttribute();
                             return true;
                     }
                 }
@@ -194,24 +201,6 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             return false;
         }
 
-        private void ProcessAttribute()
-        {
-            _attributeValue = _xmlReader!.Value;
-            CurrentNodeName = _xmlReader.LocalName;
-            CurrentNodeType = NodeType.Attribute;
-            CanReadValue = true;
-
-            // Advance to next attribute.
-            if (_xmlReader.MoveToNextAttribute())
-            {
-                return;
-            }
-
-            // Once we are out of attributes, read to next element.
-            _xmlReader.MoveToElement();
-            HandleEmptyElement();
-        }
-
         private void ProcessElement()
         {
             CurrentNodeName = _xmlReader!.LocalName;
@@ -220,8 +209,13 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 
             if (_xmlReader.HasAttributes)
             {
-                _xmlReader.MoveToNextAttribute();
-                return;
+                while (_xmlReader.MoveToNextAttribute())
+                {
+                    _attributes.Enqueue(new Attribute { Name = _xmlReader.LocalName, Value = _xmlReader.Value });
+                }
+
+                // Once we are out of attributes, read to next element.
+                _xmlReader.MoveToElement();
             }
 
             if (HandleEmptyElement())
@@ -229,7 +223,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
                 return;
             }
 
-            if (_xmlReader!.NodeType == XmlNodeType.Text)
+            if (_xmlReader.NodeType == XmlNodeType.Text)
             {
                 CanReadValue = true;
             }
@@ -295,6 +289,13 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 
                 _xmlReader = XmlReader.Create(_inputStream, xmlReaderSettings);
             }
+        }
+
+        private readonly struct Attribute
+        {
+            public string Name { get; init; }
+
+            public string Value { get; init; }
         }
     }
 }
