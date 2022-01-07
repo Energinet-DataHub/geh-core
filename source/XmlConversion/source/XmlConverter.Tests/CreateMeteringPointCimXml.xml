@@ -53,7 +53,7 @@ limitations under the License.
                 <cim:quantity_Measure_Unit.name>KWh</cim:quantity_Measure_Unit.name>
             </cim:Series>
             <cim:contractedConnectionCapacity unit="MAW"></cim:contractedConnectionCapacity>
-            <cim:ratedCurrent unit="AMP">5000</cim:ratedCurrent>
+            <cim:ratedCurrent unit="AMP"></cim:ratedCurrent>
             <cim:meter.mRID>123456789</cim:meter.mRID>
             <cim:energySupplier_MarketParticipant.mRID codingScheme="A02">a</cim:energySupplier_MarketParticipant.mRID>
             <cim:supplyStart_DateAndOrTime.dateTime>2001-12-17T09:30:47Z</cim:supplyStart_DateAndOrTime.dateTime>

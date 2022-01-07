@@ -56,6 +56,11 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Configuration
             return AddPropertyInternal(selector, xmlHierarchy);
         }
 
+        public ConverterMapperConfigurationBuilder<T> AddProperty(Expression<Func<T, int?>> selector, params string[] xmlHierarchy)
+        {
+            return AddPropertyInternal(selector, xmlHierarchy);
+        }
+
         public ConverterMapperConfigurationBuilder<T> AddProperty<TProperty>(Expression<Func<T, TProperty>> selector, params string[] xmlHierarchy)
             where TProperty : struct, IComparable, IComparable<TProperty>, IEquatable<TProperty>
         {
