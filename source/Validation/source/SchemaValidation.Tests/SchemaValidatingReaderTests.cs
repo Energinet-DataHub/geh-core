@@ -252,6 +252,47 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             Assert.Equal("expected", actual);
         }
 
+        [Fact]
+        public async Task ReadValueAsStringAsync_XsdDuration_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            const string xml = @"<root><typedAsDuration>P1M</typedAsDuration></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new TypedXmlSchema());
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act + Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => target.ReadValueAsStringAsync());
+        }
+
+        [Theory]
+        [InlineData("PT15M")]
+        [InlineData("PT1H")]
+        [InlineData("P1D")]
+        [InlineData("P1M")]
+        [InlineData("P2M")]
+        [InlineData("   P2M")]
+        [InlineData("P2M   ")]
+        [InlineData(" P2M ")]
+        public async Task ReadValueAsDurationAsync_XsdDuration_ThrowsInvalidOperationException(string duration)
+        {
+            // Arrange
+            var xml = @$"<root><typedAsDuration>{duration}</typedAsDuration></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new TypedXmlSchema());
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act
+            var actual = await target.ReadValueAsDurationAsync();
+
+            // Assert
+            Assert.Equal(duration.Trim(), actual);
+        }
+
         [Theory]
         [InlineData("true")]
         [InlineData("false")]
