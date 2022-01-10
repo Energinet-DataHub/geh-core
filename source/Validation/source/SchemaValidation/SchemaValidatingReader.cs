@@ -63,6 +63,11 @@ namespace Energinet.DataHub.Core.SchemaValidation
             return _sourceReader.ReadValueAsStringAsync();
         }
 
+        public Task<string> ReadValueAsDurationAsync()
+        {
+            return _sourceReader.ReadValueAsDurationAsync();
+        }
+
         public Task<int> ReadValueAsIntAsync()
         {
             return _sourceReader.ReadValueAsIntAsync();

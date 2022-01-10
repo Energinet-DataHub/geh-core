@@ -106,9 +106,41 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             return false;
         }
 
-        public Task<string> ReadValueAsStringAsync()
+        public async Task<string> ReadValueAsStringAsync()
         {
-            return ReadValueAsAsync(x => x);
+            var value = await ReadValueAsAsync(x => x).ConfigureAwait(false);
+
+            // xs:duration is converted internally through TimeSpan, which gives a lossy conversion.
+            // E.g.: P1M is converted to P30D.
+            if (_xmlReader!.ValueType == typeof(TimeSpan))
+            {
+                throw new InvalidOperationException("Use ReadValueAsDurationAsync() for xs:duration data types.");
+            }
+
+            return value;
+        }
+
+        public async Task<string> ReadValueAsDurationAsync()
+        {
+            await EnsureReaderAsync().ConfigureAwait(false);
+
+            string value;
+
+            if (_attributeValue != null)
+            {
+                value = _attributeValue.Trim();
+            }
+            else
+            {
+                value = _xmlReader!.ReadString();
+
+                if (_xmlReader!.ValueType != typeof(TimeSpan))
+                {
+                    throw new InvalidOperationException("Cannot read value as date type is not xs:duration.");
+                }
+            }
+
+            return value.Trim();
         }
 
         public Task<int> ReadValueAsIntAsync()

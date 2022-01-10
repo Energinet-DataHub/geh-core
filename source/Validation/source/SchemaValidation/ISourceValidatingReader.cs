@@ -35,6 +35,8 @@ namespace Energinet.DataHub.Core.SchemaValidation
 
         Task<string> ReadValueAsStringAsync();
 
+        Task<string> ReadValueAsDurationAsync();
+
         Task<int> ReadValueAsIntAsync();
 
         Task<long> ReadValueAsLongAsync();
