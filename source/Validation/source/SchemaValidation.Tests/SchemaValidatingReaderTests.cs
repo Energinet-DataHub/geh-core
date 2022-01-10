@@ -276,7 +276,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         [InlineData("   P2M")]
         [InlineData("P2M   ")]
         [InlineData(" P2M ")]
-        public async Task ReadValueAsDurationAsync_XsdDuration_ThrowsInvalidOperationException(string duration)
+        public async Task ReadValueAsDurationAsync_XsdDuration_ReturnsDuration(string duration)
         {
             // Arrange
             var xml = @$"<root><typedAsDuration>{duration}</typedAsDuration></root>";
@@ -291,6 +291,24 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
 
             // Assert
             Assert.Equal(duration.Trim(), actual);
+        }
+
+        [Fact]
+        public async Task ReadValueAsDurationAsync_InvalidXsdDuration_HasErrors()
+        {
+            // Arrange
+            const string xml = @"<root><typedAsDuration>P1B</typedAsDuration></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new TypedXmlSchema());
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act
+            await target.ReadValueAsDurationAsync();
+
+            // Assert
+            Assert.True(target.HasErrors);
         }
 
         [Theory]
