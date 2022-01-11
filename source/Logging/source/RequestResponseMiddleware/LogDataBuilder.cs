@@ -55,6 +55,9 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();
 
         private static Func<string, Dictionary<string, string>, string> LookUpInDictionary
-            => (n, d) => d.TryGetValue(n, out var value) ? $"{value}_" : string.Empty;
+            => (n, d) =>
+                d.TryGetValue(n, out var value)
+                    ? string.IsNullOrWhiteSpace(value) ? string.Empty : $"{value}_"
+                    : string.Empty;
     }
 }

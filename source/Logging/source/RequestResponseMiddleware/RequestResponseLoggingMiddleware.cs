@@ -126,15 +126,16 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(4));
 
             var jwtTokenGln = ReadJwtGln(context);
+            var glnToWrite = string.IsNullOrWhiteSpace(jwtTokenGln) ? "nojwtgln" : jwtTokenGln;
 
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), jwtTokenGln);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), glnToWrite);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
-            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), jwtTokenGln);
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), glnToWrite);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
