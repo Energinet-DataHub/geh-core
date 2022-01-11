@@ -93,8 +93,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
 
-                var streamToLog = new MemoryStream();
-
                 if (responseData.Body.Position > 0)
                 {
                     if (responseData.Body.CanSeek)
@@ -107,9 +105,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                     }
                 }
 
+                var streamToLog = new MemoryStream();
                 await responseData.Body.CopyToAsync(streamToLog);
-                responseData.Body.Position = 0;
-                streamToLog.Position = 0;
+
+                var responseStream = new MemoryStream(streamToLog.ToArray());
+                streamToLog.Seek(0, SeekOrigin.Begin);
+
+                responseData.Body = responseStream;
 
                 return new LogInformation(streamToLog, metaData, indexTags);
             }
@@ -146,15 +148,22 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static string ReadJwtGln(FunctionContext context)
         {
-            if (context.BindingContext.BindingData.TryGetValue("headers", out var headerParams))
+            try
             {
-                var headerMatch = Regex.Match(headerParams as string ?? string.Empty, "\"[aA]uthorization\"\\s*:\\s*\"Bearer (.*?)\"");
-                if (headerMatch.Success && headerMatch.Groups.Count == 2)
+                if (context.BindingContext.BindingData.TryGetValue("headers", out var headerParams))
                 {
-                    var token = headerMatch.Groups[1].Value;
-                    var parsed = _tokenHandler.ReadJwtToken(token);
-                    return parsed?.Subject ?? string.Empty;
+                    var headerMatch = Regex.Match(headerParams as string ?? string.Empty, "\"[aA]uthorization\"\\s*:\\s*\"Bearer (.*?)\"");
+                    if (headerMatch.Success && headerMatch.Groups.Count == 2)
+                    {
+                        var token = headerMatch.Groups[1].Value;
+                        var parsed = _tokenHandler.ReadJwtToken(token);
+                        return parsed?.Subject ?? string.Empty;
+                    }
                 }
+            }
+            catch
+            {
+                return string.Empty;
             }
 
             return string.Empty;
