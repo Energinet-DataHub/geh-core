@@ -28,7 +28,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging.Integration.ServiceCollection</PackageId>
-    <PackageVersion>1.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.1.2$(VersionSuffix)</PackageVersion>
     <Title>Messaging Integration library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
