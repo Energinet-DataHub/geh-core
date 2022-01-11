@@ -150,9 +150,9 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             try
             {
-                if (context.BindingContext.BindingData.TryGetValue("headers", out var headerParams))
+                if (context.BindingContext.BindingData.TryGetValue("headers", out var headerParams) && headerParams is string headerParamsString)
                 {
-                    var headerMatch = Regex.Match(headerParams as string ?? string.Empty, "\"[aA]uthorization\"\\s*:\\s*\"Bearer (.*?)\"");
+                    var headerMatch = Regex.Match(headerParamsString, "\"[aA]uthorization\"\\s*:\\s*\"Bearer (.*?)\"");
                     if (headerMatch.Success && headerMatch.Groups.Count == 2)
                     {
                         var token = headerMatch.Groups[1].Value;
