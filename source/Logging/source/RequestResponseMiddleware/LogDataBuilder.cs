@@ -14,8 +14,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using Microsoft.Azure.Functions.Worker.Http;
 using NodaTime;
 
@@ -38,17 +38,17 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public static string BuildLogName(Dictionary<string, string> metaData)
         {
-            var time = SystemClock.Instance.GetCurrentInstant().ToString();
+            var time = SystemClock.Instance.GetCurrentInstant();
+            var timeYMD = time.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-            string name = $"{LookUpInDictionary("marketoperator", metaData)}" +
-                          $"{LookUpInDictionary("recipient", metaData)}" +
-                          $"{LookUpInDictionary("gln", metaData)}" +
-                          $"{LookUpInDictionary("glnnumber", metaData)}" +
+            string name = $"{timeYMD}/" +
+                          $"{LookUpInDictionary("functionname", metaData)}" +
+                          $"{LookUpInDictionary("jwtgln", metaData)}" +
                           $"{LookUpInDictionary("invocationid", metaData)}" +
                           $"{LookUpInDictionary("traceparent", metaData)}" +
                           $"{LookUpInDictionary("correlationid", metaData)}" +
-                          $"{LookUpInDictionary("functionid", metaData)}" +
-                          $"{time}";
+                          $"{time.ToString()}";
+
             return name;
         }
 

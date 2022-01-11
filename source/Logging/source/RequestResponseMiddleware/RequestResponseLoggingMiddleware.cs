@@ -14,8 +14,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -24,6 +26,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
     public class RequestResponseLoggingMiddleware : IFunctionsWorkerMiddleware
     {
+        private static readonly JwtSecurityTokenHandler _tokenHandler = new();
         private readonly IRequestResponseLogging _requestResponseLogging;
 
         public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging)
@@ -92,11 +95,21 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
                 var streamToLog = new MemoryStream();
 
-                await responseData.Body.CopyToAsync(streamToLog);
-                var responseStream = new MemoryStream(streamToLog.ToArray());
+                if (responseData.Body.Position > 0)
+                {
+                    if (responseData.Body.CanSeek)
+                    {
+                        responseData.Body.Seek(0, SeekOrigin.Begin);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Can not log response stream because it is not seekable");
+                    }
+                }
 
+                await responseData.Body.CopyToAsync(streamToLog);
+                responseData.Body.Position = 0;
                 streamToLog.Position = 0;
-                responseData.Body = responseStream;
 
                 return new LogInformation(streamToLog, metaData, indexTags);
             }
@@ -110,20 +123,40 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
             var indexTags =
-                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(5));
+                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(4));
 
+            var jwtTokenGln = ReadJwtGln(context);
+
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), jwtTokenGln);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), jwtTokenGln);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
             return (metaData, indexTags);
+        }
+
+        private static string ReadJwtGln(FunctionContext context)
+        {
+            if (context.BindingContext.BindingData.TryGetValue("headers", out var headerParams))
+            {
+                var headerMatch = Regex.Match(headerParams as string ?? string.Empty, "\"[aA]uthorization\"\\s*:\\s*\"Bearer (.*?)\"");
+                if (headerMatch.Success && headerMatch.Groups.Count == 2)
+                {
+                    var token = headerMatch.Groups[1].Value;
+                    var parsed = _tokenHandler.ReadJwtToken(token);
+                    return parsed?.Subject ?? string.Empty;
+                }
+            }
+
+            return string.Empty;
         }
     }
 }
