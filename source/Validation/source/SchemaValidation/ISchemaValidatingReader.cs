@@ -67,6 +67,12 @@ namespace Energinet.DataHub.Core.SchemaValidation
         Task<string> ReadValueAsStringAsync();
 
         /// <summary>
+        /// Reads the current value as a xs:duration type.
+        /// </summary>
+        /// <returns>A string representation of the current node value.</returns>
+        Task<string> ReadValueAsDurationAsync();
+
+        /// <summary>
         /// Reads the current value as an int.
         /// </summary>
         /// <returns>An int representation of the current node value.</returns>
