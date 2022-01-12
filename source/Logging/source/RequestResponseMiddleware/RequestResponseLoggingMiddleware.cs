@@ -14,8 +14,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -24,6 +26,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
     public class RequestResponseLoggingMiddleware : IFunctionsWorkerMiddleware
     {
+        private static readonly JwtSecurityTokenHandler _tokenHandler = new();
         private readonly IRequestResponseLogging _requestResponseLogging;
 
         public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging)
@@ -44,14 +47,16 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private Task LogRequestAsync(LogInformation requestLogInformation)
         {
-            var requestLogName = LogDataBuilder.BuildLogName(requestLogInformation.MetaData) + " request";
-            return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName);
+            var requestLogNameAndFolder = LogDataBuilder.BuildLogName(requestLogInformation.MetaData);
+            var requestLogName = requestLogNameAndFolder.Name + " request";
+            return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName, requestLogNameAndFolder.Folder);
         }
 
         private Task LogResponseAsync(LogInformation responseLogInformation, Dictionary<string, string> requestMetaData)
         {
-            var responseLogName = LogDataBuilder.BuildLogName(requestMetaData) + " response";
-            return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName);
+            var responseLogNameAndFolder = LogDataBuilder.BuildLogName(requestMetaData);
+            var responseLogName = responseLogNameAndFolder.Name + " response";
+            return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName, responseLogNameAndFolder.Folder);
         }
 
         private static async Task<LogInformation> BuildRequestLogInformationAsync(FunctionContext context)
@@ -90,12 +95,24 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
 
+                if (responseData.Body.Position > 0)
+                {
+                    if (responseData.Body.CanSeek)
+                    {
+                        responseData.Body.Seek(0, SeekOrigin.Begin);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Can not log response stream because it is not seekable");
+                    }
+                }
+
                 var streamToLog = new MemoryStream();
-
                 await responseData.Body.CopyToAsync(streamToLog);
-                var responseStream = new MemoryStream(streamToLog.ToArray());
 
-                streamToLog.Position = 0;
+                var responseStream = new MemoryStream(streamToLog.ToArray());
+                streamToLog.Seek(0, SeekOrigin.Begin);
+
                 responseData.Body = responseStream;
 
                 return new LogInformation(streamToLog, metaData, indexTags);
@@ -110,20 +127,48 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
             var indexTags =
-                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(5));
+                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(4));
 
+            var jwtTokenGln = ReadJwtGln(context);
+            var glnToWrite = string.IsNullOrWhiteSpace(jwtTokenGln) ? "nojwtgln" : jwtTokenGln;
+
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), glnToWrite);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
+            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), glnToWrite);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
             return (metaData, indexTags);
+        }
+
+        private static string ReadJwtGln(FunctionContext context)
+        {
+            try
+            {
+                if (context.BindingContext.BindingData.TryGetValue("headers", out var headerParams) && headerParams is string headerParamsString)
+                {
+                    var headerMatch = Regex.Match(headerParamsString, "\"[aA]uthorization\"\\s*:\\s*\"Bearer (.*?)\"");
+                    if (headerMatch.Success && headerMatch.Groups.Count == 2)
+                    {
+                        var token = headerMatch.Groups[1].Value;
+                        var parsed = _tokenHandler.ReadJwtToken(token);
+                        return parsed?.Subject ?? string.Empty;
+                    }
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
+
+            return string.Empty;
         }
     }
 }

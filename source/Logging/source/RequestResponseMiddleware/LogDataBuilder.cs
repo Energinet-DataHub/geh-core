@@ -14,8 +14,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using Microsoft.Azure.Functions.Worker.Http;
 using NodaTime;
 
@@ -36,25 +36,27 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             return metaData;
         }
 
-        public static string BuildLogName(Dictionary<string, string> metaData)
+        public static (string Name, string Folder) BuildLogName(Dictionary<string, string> metaData)
         {
-            var time = SystemClock.Instance.GetCurrentInstant().ToString();
+            var time = SystemClock.Instance.GetCurrentInstant();
+            var subfolder = time.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-            string name = $"{LookUpInDictionary("marketoperator", metaData)}" +
-                          $"{LookUpInDictionary("recipient", metaData)}" +
-                          $"{LookUpInDictionary("gln", metaData)}" +
-                          $"{LookUpInDictionary("glnnumber", metaData)}" +
+            string name = $"{LookUpInDictionary("functionname", metaData)}" +
+                          $"{LookUpInDictionary("jwtgln", metaData)}" +
                           $"{LookUpInDictionary("invocationid", metaData)}" +
                           $"{LookUpInDictionary("traceparent", metaData)}" +
                           $"{LookUpInDictionary("correlationid", metaData)}" +
-                          $"{LookUpInDictionary("functionid", metaData)}" +
-                          $"{time}";
-            return name;
+                          $"{time.ToString()}";
+
+            return (name, subfolder);
         }
 
         internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();
 
         private static Func<string, Dictionary<string, string>, string> LookUpInDictionary
-            => (n, d) => d.TryGetValue(n, out var value) ? $"{value}_" : string.Empty;
+            => (n, d) =>
+                d.TryGetValue(n, out var value)
+                    ? string.IsNullOrWhiteSpace(value) ? string.Empty : $"{value}_"
+                    : string.Empty;
     }
 }
