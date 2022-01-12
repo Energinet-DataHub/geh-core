@@ -36,20 +36,19 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             return metaData;
         }
 
-        public static string BuildLogName(Dictionary<string, string> metaData)
+        public static (string Name, string Folder) BuildLogName(Dictionary<string, string> metaData)
         {
             var time = SystemClock.Instance.GetCurrentInstant();
-            var timeYMD = time.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var subfolder = time.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-            string name = $"{timeYMD}/" +
-                          $"{LookUpInDictionary("functionname", metaData)}" +
+            string name = $"{LookUpInDictionary("functionname", metaData)}" +
                           $"{LookUpInDictionary("jwtgln", metaData)}" +
                           $"{LookUpInDictionary("invocationid", metaData)}" +
                           $"{LookUpInDictionary("traceparent", metaData)}" +
                           $"{LookUpInDictionary("correlationid", metaData)}" +
                           $"{time.ToString()}";
 
-            return name;
+            return (name, subfolder);
         }
 
         internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();

@@ -24,12 +24,12 @@ namespace RequestResponseMiddleware.Tests
     {
         public static readonly List<LocalLog> Logs = new();
 
-        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName)
+        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
         {
             await SaveLogAsync(logStream, metaData);
         }
 
-        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName)
+        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
         {
             await SaveLogAsync(logStream, metaData);
         }

@@ -124,9 +124,9 @@ namespace RequestResponseMiddleware.Tests
 
         private class IFunctionBindingsFeature
         {
-            public HttpResponseData InvocationResult { get; set; }
+            public HttpResponseData InvocationResult { get; set; } = null!;
 
-            public IReadOnlyDictionary<string, object> InputData { get; set; }
+            public IReadOnlyDictionary<string, object> InputData { get; set; } = null!;
         }
     }
 }
