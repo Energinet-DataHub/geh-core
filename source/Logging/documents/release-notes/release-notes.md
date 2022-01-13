@@ -11,4 +11,8 @@
 ## Version 1.0.3
 
 - Better naming with subfolder. 
-- Added jwt token parsing for index tags. 
+- Added jwt token parsing for index tags.
+
+## Version 1.0.4
+
+- Updated jwt token parsing
