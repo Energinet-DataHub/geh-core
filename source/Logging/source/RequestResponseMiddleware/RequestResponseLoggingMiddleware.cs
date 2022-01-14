@@ -14,10 +14,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -26,7 +24,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
     public class RequestResponseLoggingMiddleware : IFunctionsWorkerMiddleware
     {
-        private static readonly JwtSecurityTokenHandler _tokenHandler = new();
         private readonly IRequestResponseLogging _requestResponseLogging;
 
         public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging)
@@ -129,7 +126,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             var indexTags =
                 new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(4));
 
-            var jwtTokenGln = ReadJwtGln(context);
+            var jwtTokenGln = JwtTokenParsing.ReadJwtGln(context);
             var glnToWrite = string.IsNullOrWhiteSpace(jwtTokenGln) ? "nojwtgln" : jwtTokenGln;
 
             metaData.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), glnToWrite);
@@ -146,29 +143,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
             return (metaData, indexTags);
-        }
-
-        private static string ReadJwtGln(FunctionContext context)
-        {
-            try
-            {
-                if (context.BindingContext.BindingData.TryGetValue("headers", out var headerParams) && headerParams is string headerParamsString)
-                {
-                    var headerMatch = Regex.Match(headerParamsString, "\"[aA]uthorization\"\\s*:\\s*\"Bearer (.*?)\"");
-                    if (headerMatch.Success && headerMatch.Groups.Count == 2)
-                    {
-                        var token = headerMatch.Groups[1].Value;
-                        var parsed = _tokenHandler.ReadJwtToken(token);
-                        return parsed?.Subject ?? string.Empty;
-                    }
-                }
-            }
-            catch
-            {
-                return string.Empty;
-            }
-
-            return string.Empty;
         }
     }
 }

@@ -8,4 +8,4 @@ Implementation example:
 
 + builder.UseMiddleware<'RequestResponseLoggingMiddleware>();
 
-+ serviceCollection.AddScoped<IRequestResponseLogging>(_ => new RequestResponseLoggingBlobStorage(string, string));
++ serviceCollection.AddScoped<'IRequestResponseLogging>(_ => new RequestResponseLoggingBlobStorage(connectionString, containerName));
