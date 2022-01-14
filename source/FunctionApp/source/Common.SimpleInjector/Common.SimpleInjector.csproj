@@ -19,17 +19,17 @@ limitations under the License.
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
-    <AssemblyName>Energinet.DataHub.Core.FunctionApp.Common.Abstractions</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.FunctionApp.Common.Abstractions</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Energinet.DataHub.Core.FunctionApp.Common.Abstractions</PackageId>
+    <PackageId>Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector</PackageId>
     <!-- Remember to bump Authorization version. -->
     <PackageVersion>1.0.2$(VersionSuffix)</PackageVersion>
-    <Title>Azure Function Common Abstractions Library</Title>
+    <Title>Azure Function Common Dependency Injection Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
     <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
@@ -49,7 +49,7 @@ limitations under the License.
       [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/FunctionApp/documents/release-notes/release-notes.md)
       [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/FunctionApp/documents/documentation.md)
     </PackageDescription>
-    <Description>Provides abstractions supporting common functionality for Azure Functions in Energinet.DataHub.</Description>
+    <Description>Provides Simple Injector extensions for registration of common functionality for Azure Functions in Energinet.DataHub.</Description>
     <PackageTags>energinet;datahub</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -60,12 +60,11 @@ limitations under the License.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="SimpleInjector" Version="5.3.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Identity\UserIdentityExtensions.cs" />
-    <Compile Remove="Identity\UserIdentity.cs" />
-    <Compile Remove="Identity\IUserContext.cs" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
-  
+
 </Project>

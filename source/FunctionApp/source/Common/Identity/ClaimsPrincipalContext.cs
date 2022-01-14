@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Identity;
+using System.Security.Claims;
 
 namespace Energinet.DataHub.Core.FunctionApp.Common.Identity
 {
-    public class UserContext : IUserContext
+    public sealed class ClaimsPrincipalContext
     {
-        public UserIdentity? CurrentUser { get; set; }
+        public ClaimsPrincipal? ClaimsPrincipal { get; set; }
     }
 }
