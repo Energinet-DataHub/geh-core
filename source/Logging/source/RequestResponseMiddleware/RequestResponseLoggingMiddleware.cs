@@ -25,21 +25,38 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
     public class RequestResponseLoggingMiddleware : IFunctionsWorkerMiddleware
     {
         private readonly IRequestResponseLogging _requestResponseLogging;
+        private readonly FunctionsToLogByName _functionNamesToRunLog;
 
         public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging)
         {
             _requestResponseLogging = requestResponseLogging;
+            _functionNamesToRunLog = new FunctionsToLogByName();
+        }
+
+        public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging, FunctionsToLogByName functionNamesToTriggerLog)
+        {
+            _requestResponseLogging = requestResponseLogging;
+            _functionNamesToRunLog = functionNamesToTriggerLog;
         }
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-            var requestLogInformation = await BuildRequestLogInformationAsync(context);
-            await LogRequestAsync(requestLogInformation).ConfigureAwait(false);
+            var shouldLogRequestAndResponse = ShouldLog(context, _functionNamesToRunLog);
 
-            await next(context).ConfigureAwait(false);
+            if (shouldLogRequestAndResponse)
+            {
+                var requestLogInformation = await BuildRequestLogInformationAsync(context);
+                await LogRequestAsync(requestLogInformation).ConfigureAwait(false);
 
-            var responseLogInformation = await BuildResponseLogInformationAsync(context);
-            await LogResponseAsync(responseLogInformation, requestLogInformation.MetaData).ConfigureAwait(false);
+                await next(context).ConfigureAwait(false);
+
+                var responseLogInformation = await BuildResponseLogInformationAsync(context);
+                await LogResponseAsync(responseLogInformation, requestLogInformation.MetaData).ConfigureAwait(false);
+            }
+            else
+            {
+                await next(context).ConfigureAwait(false);
+            }
         }
 
         private Task LogRequestAsync(LogInformation requestLogInformation)
@@ -143,6 +160,28 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
             return (metaData, indexTags);
+        }
+
+        private static bool ShouldLog(FunctionContext context, IReadOnlySet<string> functionNames)
+        {
+            try
+            {
+                if (functionNames.Any() && functionNames.Contains(context.FunctionDefinition.Name))
+                {
+                    return true;
+                }
+
+                var isHttpTriggerBinding = context
+                    .FunctionDefinition
+                    .InputBindings
+                    .Values.Any(e => e.Type.Equals("httpTrigger", StringComparison.OrdinalIgnoreCase));
+
+                return isHttpTriggerBinding && context.GetHttpRequestData() is { };
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

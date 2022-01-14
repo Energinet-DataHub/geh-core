@@ -16,3 +16,7 @@
 ## Version 1.0.4
 
 - Updated jwt token parsing
+
+## Version 1.0.5
+
+- Added logging condition to only run on httpTriggers. Can be overridden by defining a set of functionNames.
