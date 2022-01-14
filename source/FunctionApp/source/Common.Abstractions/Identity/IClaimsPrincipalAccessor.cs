@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.FunctionApp.Common.Identity
+using System.Security.Claims;
+
+namespace Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Identity
 {
-    public class CustomClaimTypes
+    /// <summary>
+    /// Context for the current user.
+    /// </summary>
+    public interface IClaimsPrincipalAccessor
     {
-        public const string ActorId = "actorId";
-        public const string Roles = "roles";
-        public const string IdentifierType = "identifierType";
-        public const string Identifier = "identifier";
+        /// <summary>
+        /// Access current ClaimsPrincipal
+        /// </summary>
+        public ClaimsPrincipal? GetClaimsPrincipal();
     }
 }

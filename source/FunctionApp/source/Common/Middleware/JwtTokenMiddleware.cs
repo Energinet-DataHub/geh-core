@@ -20,27 +20,28 @@ using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.FunctionApp.Common.Extensions;
 using Energinet.DataHub.Core.FunctionApp.Common.Identity;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
 {
     public sealed class JwtTokenMiddleware : IFunctionsWorkerMiddleware
     {
-        private readonly IUserContext _userContext;
-        private readonly bool _validateToken;
         private readonly JwtSecurityTokenHandler _tokenValidator;
+        private readonly ClaimsPrincipalContext _claimsPrincipalContext;
+        private readonly OpenIdSettings _configuration;
 
-        public JwtTokenMiddleware(IUserContext userContext)
+        public JwtTokenMiddleware(ClaimsPrincipalContext claimsPrincipalContext, OpenIdSettings settings)
         {
-            _userContext = userContext;
-            _validateToken = false; // NOTE: For now we should not perform token validation
             _tokenValidator = new JwtSecurityTokenHandler();
+            _claimsPrincipalContext = claimsPrincipalContext ?? throw new ArgumentNullException(nameof(claimsPrincipalContext));
+            _configuration = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         public async Task Invoke(FunctionContext context, [NotNull] FunctionExecutionDelegate next)
@@ -63,22 +64,26 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
 
             try
             {
-                UserIdentity? userIdentity;
-                if (_validateToken)
-                {
-                    // Validate token
-                    var principal = _tokenValidator.ValidateToken(token, new TokenValidationParameters(), out _);
-                    userIdentity = UserIdentityFactory.FromClaimsPrincipal(principal);
-                }
-                else
-                {
-                    var securityToken = _tokenValidator.ReadJwtToken(token);
-                    userIdentity = UserIdentityFactory.FromJwtSecurityToken(securityToken);
-                }
+                var openIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(_configuration.MetadataAddress, new OpenIdConnectConfigurationRetriever());
+                var openIdConnectConfigData = await openIdConfigurationManager.GetConfigurationAsync();
 
-                _userContext.CurrentUser = userIdentity;
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    RequireSignedTokens = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidAudience = _configuration.Audience,
+                    IssuerSigningKeys = openIdConnectConfigData.SigningKeys,
+                    ValidIssuer = openIdConnectConfigData.Issuer,
+                };
+
+                var principal = _tokenValidator.ValidateToken(token, validationParameters, out _);
+                _claimsPrincipalContext.ClaimsPrincipal = principal;
             }
-            catch (SecurityTokenException)
+            catch (Exception)
             {
                 // Token is not valid (expired etc.)
                 SetErrorResponse(context);
