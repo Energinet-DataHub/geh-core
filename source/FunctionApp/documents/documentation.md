@@ -43,4 +43,4 @@ protected override void ConfigureContainer(Container container)
 }
 ```
 
-`ClaimsPrincipal` can not be accessed through `IClaimsPrincipalAccessor`
+`ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`
