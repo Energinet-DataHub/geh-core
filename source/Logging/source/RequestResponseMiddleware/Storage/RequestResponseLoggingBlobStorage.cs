@@ -40,15 +40,15 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
 
         public Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
         {
-            return UploadBlobAsync(logStream, metaData, indexTags, logName, folder);
+            return UploadBlobAsync(logStream, metaData, indexTags, logName, folder, true);
         }
 
         public Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
         {
-            return UploadBlobAsync(logStream, metaData, indexTags, logName, folder);
+            return UploadBlobAsync(logStream, metaData, indexTags, logName, folder, false);
         }
 
-        private async Task UploadBlobAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
+        private async Task UploadBlobAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder, bool isRequest)
         {
             var nameWithFolder = $"{folder}/{logName}";
             var blobClient = new BlobClient(_storageConnectionString, _storageContainerName, nameWithFolder);
@@ -57,7 +57,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
             var timer = Stopwatch.StartNew();
             await blobClient.UploadAsync(logStream, options);
             timer.Stop();
-            _logger.LogInformation("UploadBlob execution took: {lookupTime}", timer.Elapsed);
+            _logger.LogInformation("UploadBlobAsync execution time took ms: {lookupTime} ({datatype})", timer.ElapsedMilliseconds, isRequest ? "request" : "response");
         }
     }
 }
