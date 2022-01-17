@@ -12,11 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
-    public class FunctionsToLogByName : HashSet<string>
+    internal static class ResponseStreamReader
     {
+        /// <summary>
+        /// Returns copy of input stream. Expect stream to be seekable and position to be at 0;
+        /// </summary>
+        /// <returns>copy of stream</returns>
+        public static async Task<Stream> CopyBodyStreamAsync(Stream fromStream)
+        {
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms, Encoding.UTF8);
+
+            await fromStream.CopyToAsync(ms);
+            await writer.FlushAsync();
+            ms.Position = 0;
+
+            return ms;
+        }
     }
 }

@@ -23,6 +23,8 @@ using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 using Xunit.Categories;
 
@@ -36,7 +38,8 @@ namespace RequestResponseMiddleware.Tests
         {
             // Arrange
             var testStorage = new LocalLogStorage();
-            var middleware = new RequestResponseLoggingMiddleware(testStorage);
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
 
             var responseHeaderData = new List<KeyValuePair<string, string>>() { new("StatusCodeTest", "200") };
@@ -72,53 +75,8 @@ namespace RequestResponseMiddleware.Tests
         {
             // Arrange
             var testStorage = new LocalLogStorage();
-            var middleware = new RequestResponseLoggingMiddleware(testStorage);
-            var functionContext = new MockedFunctionContext();
-
-            var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
-                { "MarketOperator", "232323232" },
-                { "Accept-Type", "232323232" },
-            };
-
-            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
-
-            functionContext.BindingContext
-                .Setup(x => x.BindingData)
-                .Returns(inputData);
-
-            var bindingData = new Dictionary<string, BindingMetadata>();
-            bindingData.Add("request", new FunctionBindingMetaData("httpTrigger", BindingDirection.In));
-            functionContext.SetBindingMetaData(bindingData);
-
-            var expectedStatusCode = HttpStatusCode.Accepted;
-
-            var (request, response) = SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
-
-            var logBody = "BODYTEXT";
-            request.HttpRequestDataMock.SetupGet(e => e.Body).Returns(new MemoryStream(Encoding.UTF8.GetBytes(logBody)));
-            response.Body = new MemoryStream(Encoding.UTF8.GetBytes(logBody));
-
-            // Act
-            await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
-
-            // Assert
-            var savedLogs = testStorage.GetLogs();
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("headers"));
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("marketoperator"));
-            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscodetest", out var value) && value == "200");
-            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscode", out var value) && value == expectedStatusCode.ToString());
-        }
-
-        [Fact]
-        public async Task RequestResponseLoggingMiddleware_AllOk_FunctionNames()
-        {
-            // Arrange
-            var functionNames = new FunctionsToLogByName { "TestFunction" };
-
-            var testStorage = new LocalLogStorage();
-            var middleware = new RequestResponseLoggingMiddleware(testStorage, functionNames);
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
 
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
@@ -162,46 +120,16 @@ namespace RequestResponseMiddleware.Tests
         {
             // Arrange
             var testStorage = new LocalLogStorage();
-            var middleware = new RequestResponseLoggingMiddleware(testStorage);
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
 
             var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
 
-            var bindingData = new Dictionary<string, BindingMetadata>();
-            bindingData.Add("request", new FunctionBindingMetaData("serviceBusTrigger", BindingDirection.In));
-            functionContext.SetBindingMetaData(bindingData);
-
             var expectedStatusCode = HttpStatusCode.Accepted;
 
             SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
-
-            // Act
-            await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
-
-            // Assert
-            var savedLogs = testStorage.GetLogs();
-            Assert.False(savedLogs.Any());
-        }
-
-        [Fact]
-        public async Task RequestResponseLoggingMiddleware_ExpectNoLog_NoInFunctionNames()
-        {
-            // Arrange
-            var functionNames = new FunctionsToLogByName { "TestFails" };
-
-            var testStorage = new LocalLogStorage();
-            var middleware = new RequestResponseLoggingMiddleware(testStorage, functionNames);
-            var functionContext = new MockedFunctionContext();
-
-            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
-
-            var bindingData = new Dictionary<string, BindingMetadata>();
-            bindingData.Add("request", new FunctionBindingMetaData("serviceBusTrigger", BindingDirection.In));
-            functionContext.SetBindingMetaData(bindingData);
-
-            var expectedStatusCode = HttpStatusCode.Accepted;
-
-            SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
+            functionContext.SetInvocationFeatures(new MockedFunctionInvocationFeatures());
 
             // Act
             await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);

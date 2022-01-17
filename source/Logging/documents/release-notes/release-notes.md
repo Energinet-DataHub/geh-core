@@ -19,4 +19,5 @@
 
 ## Version 1.0.5
 
-- Added logging condition to only run on httpTriggers. Can be overridden by defining a set of functionNames.
+- Added logging condition to only run on httpTriggers. 
+- Added timers for debugging execution times.
