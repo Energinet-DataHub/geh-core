@@ -12,12 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-namespace Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Identity
+namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
 {
-    /// <summary>
-    /// User identity
-    /// </summary>
-    public record UserIdentity(Guid ActorId, string Role, string IdentifierType, string Identifier);
+    public sealed class OpenIdSettings
+    {
+        public string MetadataAddress { get; }
+
+        public string Audience { get; }
+
+        public OpenIdSettings(string metadataAddress, string audience)
+        {
+            MetadataAddress = metadataAddress;
+            Audience = audience;
+        }
+    }
 }
