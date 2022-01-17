@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
         private readonly IEnumerable<IXmlSchema> _inputSchemas;
 
         private XmlReader? _xmlReader;
-        private string? _attributeValue;
+        private object? _currentValue;
         private string? _emptyElementTag;
 
         public XmlSourceValidatingReader(Stream stream, IEnumerable<IXmlSchema> xmlSchemas)
@@ -62,34 +62,43 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 
             if (_attributes.TryDequeue(out var attribute))
             {
-                _attributeValue = attribute.Value;
+                _currentValue = attribute.Value;
                 CurrentNodeName = attribute.Name;
                 CurrentNodeType = NodeType.Attribute;
                 CanReadValue = true;
                 return true;
             }
 
-            if (_emptyElementTag != null)
-            {
-                ProcessEmptyElement(_emptyElementTag);
-                _emptyElementTag = null;
-                return true;
-            }
-
             try
             {
+                if (_emptyElementTag != null)
+                {
+                    ProcessEmptyElement(_emptyElementTag);
+                    _emptyElementTag = null;
+                    return true;
+                }
+
                 do
                 {
-                    _attributeValue = null;
+                    _currentValue = null;
+
+                    var finishedProcessingKnownElement = false;
 
                     switch (_xmlReader!.NodeType)
                     {
                         case XmlNodeType.Element:
-                            ProcessElement();
-                            return true;
+                            await ProcessElementAsync().ConfigureAwait(false);
+                            finishedProcessingKnownElement = true;
+                            break;
                         case XmlNodeType.EndElement:
                             ProcessEndElement();
-                            return true;
+                            finishedProcessingKnownElement = true;
+                            break;
+                    }
+
+                    if (finishedProcessingKnownElement && !HasErrors)
+                    {
+                        return true;
                     }
                 }
                 while (await ValidatingReadAsync().ConfigureAwait(false));
@@ -106,66 +115,56 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             return false;
         }
 
-        public async Task<string> ReadValueAsStringAsync()
+        public Task<string> ReadValueAsStringAsync()
         {
-            var value = await ReadValueAsAsync(x => x).ConfigureAwait(false);
-
-            // xs:duration is converted internally through TimeSpan, which gives a lossy conversion.
-            // E.g.: P1M is converted to P30D.
-            if (_xmlReader!.ValueType == typeof(TimeSpan))
-            {
-                throw new InvalidOperationException("Use ReadValueAsDurationAsync() for xs:duration data types.");
-            }
-
-            return value;
+            return ReadValueAsAsync<string>();
         }
 
         public async Task<string> ReadValueAsDurationAsync()
         {
             await EnsureReaderAsync().ConfigureAwait(false);
 
-            string value;
-
-            if (_attributeValue != null)
+            if (_currentValue == null)
             {
-                value = _attributeValue.Trim();
-            }
-            else
-            {
-                value = _xmlReader!.ReadString();
-
-                if (_xmlReader!.ValueType != typeof(TimeSpan))
+                if (CanReadValue)
                 {
-                    throw new InvalidOperationException("Cannot read value as date type is not xs:duration.");
+                    throw new InvalidOperationException("Internal Error: _currentValue must not be null here.");
                 }
+
+                throw new InvalidOperationException("Current element does not have a value.");
             }
 
-            return value.Trim();
+            if (_currentValue is string value)
+            {
+                return value.Trim();
+            }
+
+            throw new InvalidOperationException($"Cannot read value of type xs:duration as type {_currentValue.GetType()}.");
         }
 
         public Task<int> ReadValueAsIntAsync()
         {
-            return ReadValueAsAsync(XmlConvert.ToInt32);
+            return ReadValueAsAsync<int>();
         }
 
         public Task<long> ReadValueAsLongAsync()
         {
-            return ReadValueAsAsync(XmlConvert.ToInt64);
+            return ReadValueAsAsync<long>();
         }
 
         public Task<bool> ReadValueAsBoolAsync()
         {
-            return ReadValueAsAsync(XmlConvert.ToBoolean);
+            return ReadValueAsAsync<bool>();
         }
 
         public Task<decimal> ReadValueAsDecimalAsync()
         {
-            return ReadValueAsAsync(XmlConvert.ToDecimal);
+            return ReadValueAsAsync<decimal>();
         }
 
         public async Task<Instant> ReadValueAsNodaTimeAsync()
         {
-            var dt = await ReadValueAsAsync(XmlConvert.ToDateTimeOffset).ConfigureAwait(false);
+            var dt = await ReadValueAsAsync<DateTime>().ConfigureAwait(false);
             return Instant.FromDateTimeOffset(dt);
         }
 
@@ -195,20 +194,26 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             return _xmlReader!;
         }
 
-        private async Task<T> ReadValueAsAsync<T>(Func<string, T> attributeFunc)
+        private async Task<T> ReadValueAsAsync<T>()
         {
             await EnsureReaderAsync().ConfigureAwait(false);
 
-            if (_attributeValue != null)
+            if (_currentValue == null)
             {
-                return attributeFunc(_attributeValue);
+                if (CanReadValue)
+                {
+                    throw new InvalidOperationException("Internal Error: _currentValue must not be null here.");
+                }
+
+                throw new InvalidOperationException("Current element does not have a value.");
             }
 
-            var content = await _xmlReader!
-                .ReadContentAsAsync(typeof(T), null)
-                .ConfigureAwait(false);
+            if (_currentValue is T value)
+            {
+                return value;
+            }
 
-            return (T)content;
+            throw new InvalidOperationException($"Cannot read value of type {_currentValue.GetType()} as type {typeof(T)}.");
         }
 
         private async Task<bool> ValidatingReadAsync()
@@ -233,7 +238,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             return false;
         }
 
-        private void ProcessElement()
+        private async Task ProcessElementAsync()
         {
             CurrentNodeName = _xmlReader!.LocalName;
             CurrentNodeType = NodeType.StartElement;
@@ -243,7 +248,14 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             {
                 while (_xmlReader.MoveToNextAttribute())
                 {
-                    _attributes.Enqueue(new Attribute { Name = _xmlReader.LocalName, Value = _xmlReader.Value });
+                    var rawString = _xmlReader.Value;
+                    var attrValue = await _xmlReader.ReadContentAsObjectAsync().ConfigureAwait(false);
+                    if (attrValue is TimeSpan)
+                    {
+                        attrValue = rawString;
+                    }
+
+                    _attributes.Enqueue(new Attribute { Name = _xmlReader.LocalName, Value = attrValue });
                 }
 
                 // Once we are out of attributes, read to next element.
@@ -258,6 +270,9 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             if (_xmlReader.NodeType == XmlNodeType.Text)
             {
                 CanReadValue = true;
+                var rawString = _xmlReader.Value;
+                var value = await _xmlReader.ReadContentAsObjectAsync().ConfigureAwait(false);
+                _currentValue = value is TimeSpan ? rawString : value;
             }
         }
 
@@ -327,7 +342,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
         {
             public string Name { get; init; }
 
-            public string Value { get; init; }
+            public object Value { get; init; }
         }
     }
 }

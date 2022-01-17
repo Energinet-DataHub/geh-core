@@ -1,5 +1,10 @@
 # Schema Validation Release notes
 
+## Version 1.0.7
+
+ - AdvanceAsync() now ensures that the content has the correct type.
+   This only applies to the Reader API - extension methods AsXmlReaderAsync and AsXElementAsync are not affected.
+
 ## Version 1.0.6
 
  - Added ReadValueAsDurationAsync() for xs:duration data types.
