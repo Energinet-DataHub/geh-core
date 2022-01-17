@@ -6,18 +6,13 @@ A library containing common functionality for Azure Functions.
 
 ### Introduction
 
-When this middleware is added, it will automatically try to extract a Bearer token from the header of a HTTP request.
+When this middleware is added, it will be required to apply a valid JWT token to the header of the HTTP request. The token will automatically be validated.
 
-If applied, it will be transformed to a `UserIdentity` which is exposed through `IUserContext`.
+If token is not applied or could not be validated, **401** is returned to the client.
 
-If no token are applied or it was not possible to transform **401** are returned to the client.
+Following claim must exist in the applied Bearer token
 
-Following claims must exist in the applied Bearer token
-
-* ActorId
-* Roles
-* IdentifierType (EIC, GLN, etc.)
-* Identifier (Actual value of identifier)
+* azp (Actor ID)
 
 ### Usage
 
@@ -37,14 +32,15 @@ Add Middleware to `ConfigureFunctionsWorkerDefaults` as **the first in line** as
 ```
 
 Register in IoC (in example below SimpleInjector is used)
+Note: The following package must be installed
+* `Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector`
 
 ```c#
 protected override void ConfigureContainer(Container container)
 {
-    container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
-    container.Register<IUserContext, UserContext>(Lifestyle.Scoped);
+    container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
     ...
 }
 ```
 
-An instance of `UserIdentity` is now available through `IUserContext`
+`ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`
