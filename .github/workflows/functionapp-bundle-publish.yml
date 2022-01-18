@@ -93,6 +93,11 @@ jobs:
         env:
           PROJECT_PATH: 'source/FunctionApp/source/Common.Abstractions/Common.Abstractions.csproj'
 
+      - name: Pack Common.SimpleInjector project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/FunctionApp/source/Common.SimpleInjector/Common.SimpleInjector.csproj'
+
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
