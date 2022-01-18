@@ -21,7 +21,7 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
-    public static class JwtTokenParsing
+    internal static class JwtTokenParsing
     {
         private static readonly JwtSecurityTokenHandler _tokenHandler = new();
 

@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using NodaTime;
 
@@ -34,6 +35,33 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 .ToDictionary(e => e.Key, e => string.Join(",", e.Value));
 
             return metaData;
+        }
+
+        public static (Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) GetMetaDataAndIndexTagsDictionaries(FunctionContext context, bool isRequest)
+        {
+            var metaData = context.BindingContext.BindingData
+                .ToDictionary(e => MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+
+            var indexTags =
+                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(4));
+
+            var jwtTokenGln = JwtTokenParsing.ReadJwtGln(context);
+            var glnToWrite = string.IsNullOrWhiteSpace(jwtTokenGln) ? "nojwtgln" : jwtTokenGln;
+
+            metaData.TryAdd(MetaNameFormatter("JwtGln"), glnToWrite);
+            metaData.TryAdd(MetaNameFormatter("FunctionId"), context.FunctionId);
+            metaData.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+            metaData.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
+            metaData.TryAdd(MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            metaData.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
+
+            indexTags.TryAdd(MetaNameFormatter("JwtGln"), glnToWrite);
+            indexTags.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+            indexTags.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
+            indexTags.TryAdd(MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            indexTags.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
+
+            return (metaData, indexTags);
         }
 
         public static (string Name, string Folder) BuildLogName(Dictionary<string, string> metaData)

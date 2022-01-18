@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -68,6 +70,13 @@ namespace RequestResponseMiddleware.Tests
             _functionContextMock
                 .Setup(f => f.Features)
                 .Returns(features);
+        }
+
+        public void SetBindingMetaData(Dictionary<string, BindingMetadata> metaData)
+        {
+            _functionDefinitionMock
+                .Setup(e => e.InputBindings)
+                .Returns(metaData.ToImmutableDictionary);
         }
 
 #pragma warning disable

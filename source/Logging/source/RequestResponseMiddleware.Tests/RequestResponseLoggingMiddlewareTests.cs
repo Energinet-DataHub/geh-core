@@ -16,11 +16,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 using Xunit.Categories;
 
@@ -34,7 +38,8 @@ namespace RequestResponseMiddleware.Tests
         {
             // Arrange
             var testStorage = new LocalLogStorage();
-            var middleware = new RequestResponseLoggingMiddleware(testStorage);
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
 
             var responseHeaderData = new List<KeyValuePair<string, string>>() { new("StatusCodeTest", "200") };
@@ -42,6 +47,10 @@ namespace RequestResponseMiddleware.Tests
             functionContext.BindingContext
                 .Setup(x => x.BindingData)
                 .Returns(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase));
+
+            var bindingData = new Dictionary<string, BindingMetadata>();
+            bindingData.Add("request", new FunctionBindingMetaData("httpTrigger", BindingDirection.In));
+            functionContext.SetBindingMetaData(bindingData);
 
             var expectedStatusCode = HttpStatusCode.Accepted;
 
@@ -66,7 +75,8 @@ namespace RequestResponseMiddleware.Tests
         {
             // Arrange
             var testStorage = new LocalLogStorage();
-            var middleware = new RequestResponseLoggingMiddleware(testStorage);
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
 
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
@@ -81,6 +91,10 @@ namespace RequestResponseMiddleware.Tests
             functionContext.BindingContext
                 .Setup(x => x.BindingData)
                 .Returns(inputData);
+
+            var bindingData = new Dictionary<string, BindingMetadata>();
+            bindingData.Add("request", new FunctionBindingMetaData("httpTrigger", BindingDirection.In));
+            functionContext.SetBindingMetaData(bindingData);
 
             var expectedStatusCode = HttpStatusCode.Accepted;
 
@@ -101,6 +115,30 @@ namespace RequestResponseMiddleware.Tests
             Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscode", out var value) && value == expectedStatusCode.ToString());
         }
 
+        [Fact]
+        public async Task RequestResponseLoggingMiddleware_ExpectNoLog_NotHttpTrigger()
+        {
+            // Arrange
+            var testStorage = new LocalLogStorage();
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
+            var functionContext = new MockedFunctionContext();
+
+            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
+
+            var expectedStatusCode = HttpStatusCode.Accepted;
+
+            SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
+            functionContext.SetInvocationFeatures(new MockedFunctionInvocationFeatures());
+
+            // Act
+            await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+
+            // Assert
+            var savedLogs = testStorage.GetLogs();
+            Assert.False(savedLogs.Any());
+        }
+
         private (MockedHttpRequestData HttpRequestData, HttpResponseData HttpResponseData) SetUpContext(
             MockedFunctionContext functionContext,
             List<KeyValuePair<string, string>> responseHeader,
@@ -118,6 +156,10 @@ namespace RequestResponseMiddleware.Tests
                 InputData = new Dictionary<string, object> { { "request", httpRequest.HttpRequestData } },
             });
             functionContext.SetInvocationFeatures(invocationFeatures);
+
+            functionContext.FunctionDefinitionMock
+                .Setup(e => e.Name)
+                .Returns("TestFunction");
 
             return new(httpRequest, responseData);
         }

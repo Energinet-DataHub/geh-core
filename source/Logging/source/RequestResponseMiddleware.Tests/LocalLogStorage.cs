@@ -14,15 +14,14 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 
 namespace RequestResponseMiddleware.Tests
 {
     public class LocalLogStorage : IRequestResponseLogging
     {
-        public static readonly List<LocalLog> Logs = new();
+        private readonly List<LocalLog> _logs = new();
 
         public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
         {
@@ -36,14 +35,14 @@ namespace RequestResponseMiddleware.Tests
 
         public IEnumerable<LocalLog> GetLogs()
         {
-            return Logs;
+            return _logs;
         }
 
         private async Task SaveLogAsync(Stream logStream, Dictionary<string, string> metaData)
         {
             var reader = new StreamReader(logStream ?? Stream.Null);
             var logMsg = await reader.ReadToEndAsync();
-            Logs.Add(new LocalLog() { Body = logMsg, MetaData = metaData });
+            _logs.Add(new LocalLog() { Body = logMsg, MetaData = metaData });
         }
     }
 }
