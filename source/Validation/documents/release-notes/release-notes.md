@@ -2,7 +2,8 @@
 
 ## Version 1.0.7
 
- - AdvanceAsync() now ensures that the content has the correct type.
+ - AdvanceAsync() now reads content to ensure it is properly validated.
+ - Workaround of a bug in AdvanceAsync(), where XmlReader could throw an InvalidOperationException for invalid XML.
    This only applies to the Reader API - extension methods AsXmlReaderAsync and AsXElementAsync are not affected.
 
 ## Version 1.0.6
