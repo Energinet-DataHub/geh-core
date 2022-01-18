@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
+namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
 {
     /// <summary>
     /// Interface for request and response logging middleware.

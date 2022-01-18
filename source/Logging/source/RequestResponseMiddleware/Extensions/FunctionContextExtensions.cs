@@ -18,7 +18,7 @@ using System.Linq;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
+namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Extensions
 {
     internal static class FunctionContextExtensions
     {
@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 var functionBindingsFeature = functionContext?.Features.SingleOrDefault(f => f.Key.Name == "IFunctionBindingsFeature").Value;
                 if (functionBindingsFeature is null)
                 {
-                    throw new ArgumentException("Cannot get function bindings feature, IFunctionBindingsFeature");
+                    return null;
                 }
 
                 var type = functionBindingsFeature.GetType();
@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
                 var requestData = inputData?.Values.SingleOrDefault(o => o is HttpRequestData) as HttpRequestData;
 
-                return (requestData ?? null) ?? throw new InvalidOperationException();
+                return requestData;
             }
             catch
             {
@@ -49,16 +49,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             try
             {
-                var functionBindingsFeature = functionContext.Features.SingleOrDefault(f => f.Key.Name == "IFunctionBindingsFeature").Value;
-                if (functionBindingsFeature is null)
-                {
-                    throw new ArgumentException("Cannot get function bindings feature, IFunctionBindingsFeature");
-                }
+                var keyValuePair = functionContext.Features.FirstOrDefault(f => f.Key.Name == "IFunctionBindingsFeature");
+                if (keyValuePair.Equals(default(KeyValuePair<Type, object>))) return null;
+                var functionBindingsFeature = keyValuePair.Value;
 
-                var type = functionBindingsFeature.GetType();
-                var invocationResult = type.GetProperties().Single(p => p.Name == "InvocationResult");
+                var propertyInfo = functionBindingsFeature.GetType().GetProperty("InvocationResult");
 
-                if (invocationResult.GetValue(functionBindingsFeature) is HttpResponseData responseData)
+                if (propertyInfo?.GetValue(functionBindingsFeature) is HttpResponseData responseData)
                 {
                     return responseData;
                 }

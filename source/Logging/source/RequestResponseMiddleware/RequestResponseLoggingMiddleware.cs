@@ -14,51 +14,80 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Extensions;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
     public class RequestResponseLoggingMiddleware : IFunctionsWorkerMiddleware
     {
         private readonly IRequestResponseLogging _requestResponseLogging;
+        private readonly ILogger<RequestResponseLoggingMiddleware> _logger;
 
-        public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging)
+        public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging, ILogger<RequestResponseLoggingMiddleware> logger)
         {
             _requestResponseLogging = requestResponseLogging;
+            _logger = logger;
         }
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-            var requestLogInformation = await BuildRequestLogInformationAsync(context);
-            await LogRequestAsync(requestLogInformation).ConfigureAwait(false);
+            var shouldLogRequestAndResponse = ShouldLog(context);
 
-            await next(context).ConfigureAwait(false);
+            if (shouldLogRequestAndResponse)
+            {
+                var totalTimer = Stopwatch.StartNew();
 
-            var responseLogInformation = await BuildResponseLogInformationAsync(context);
-            await LogResponseAsync(responseLogInformation, requestLogInformation.MetaData).ConfigureAwait(false);
+                // Starts gathering information from request and logs to storage
+                var requestLogInformation = await BuildRequestLogInformationAsync(context);
+                await LogRequestAsync(requestLogInformation).ConfigureAwait(false);
+
+                totalTimer.Stop();
+
+                // Calls next middleware
+                await next(context).ConfigureAwait(false);
+
+                totalTimer.Start();
+
+                // Starts gathering information from response and logs to storage
+                var responseLogInformation = await BuildResponseLogInformationAsync(context);
+                await LogResponseAsync(responseLogInformation, requestLogInformation.MetaData).ConfigureAwait(false);
+
+                totalTimer.Stop();
+                _logger.LogInformation("RequestResponse Total execution time ms: {}", totalTimer.ElapsedMilliseconds);
+            }
+            else
+            {
+                await next(context).ConfigureAwait(false);
+            }
         }
 
         private Task LogRequestAsync(LogInformation requestLogInformation)
         {
             var requestLogNameAndFolder = LogDataBuilder.BuildLogName(requestLogInformation.MetaData);
-            var requestLogName = requestLogNameAndFolder.Name + " request";
+            var requestLogName = requestLogNameAndFolder.Name + " request.txt";
             return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName, requestLogNameAndFolder.Folder);
         }
 
         private Task LogResponseAsync(LogInformation responseLogInformation, Dictionary<string, string> requestMetaData)
         {
             var responseLogNameAndFolder = LogDataBuilder.BuildLogName(requestMetaData);
-            var responseLogName = responseLogNameAndFolder.Name + " response";
+            var responseLogName = responseLogNameAndFolder.Name + " response.txt";
             return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName, responseLogNameAndFolder.Folder);
         }
 
         private static async Task<LogInformation> BuildRequestLogInformationAsync(FunctionContext context)
         {
-            var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, true);
+            var (metaData, indexTags) = LogDataBuilder.GetMetaDataAndIndexTagsDictionaries(context, true);
 
             if (context.GetHttpRequestData() is { } requestData)
             {
@@ -80,7 +109,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static async Task<LogInformation> BuildResponseLogInformationAsync(FunctionContext context)
         {
-            var (metaData, indexTags) = GetMetaDataAndIndexTagsDictionaries(context, false);
+            var (metaData, indexTags) = LogDataBuilder.GetMetaDataAndIndexTagsDictionaries(context, false);
 
             if (context.GetHttpResponseData() is { } responseData)
             {
@@ -92,25 +121,11 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
                 indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
 
-                if (responseData.Body.Position > 0)
-                {
-                    if (responseData.Body.CanSeek)
-                    {
-                        responseData.Body.Seek(0, SeekOrigin.Begin);
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Can not log response stream because it is not seekable");
-                    }
-                }
+                await PrepareResponseStreamForLoggingAsync(responseData);
 
-                var streamToLog = new MemoryStream();
-                await responseData.Body.CopyToAsync(streamToLog);
+                var streamToLog = await ResponseStreamReader.CopyBodyStreamAsync(responseData.Body);
 
-                var responseStream = new MemoryStream(streamToLog.ToArray());
-                streamToLog.Seek(0, SeekOrigin.Begin);
-
-                responseData.Body = responseStream;
+                await PrepareResponseStreamToReturnAsync(responseData, streamToLog);
 
                 return new LogInformation(streamToLog, metaData, indexTags);
             }
@@ -118,31 +133,51 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             return new LogInformation(Stream.Null, metaData, indexTags);
         }
 
-        private static (Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) GetMetaDataAndIndexTagsDictionaries(FunctionContext context, bool isRequest)
+        private static async Task PrepareResponseStreamToReturnAsync(HttpResponseData responseData, Stream streamToLog)
         {
-            var metaData = context.BindingContext.BindingData
-                .ToDictionary(e => LogDataBuilder.MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+            if (responseData.Body.CanSeek)
+            {
+                responseData.Body.Seek(0, SeekOrigin.Begin);
+            }
+            else
+            {
+                await responseData.Body.DisposeAsync();
+                var responseStream = await ResponseStreamReader.CopyBodyStreamAsync(streamToLog);
+                streamToLog.Seek(0, SeekOrigin.Begin);
+                responseData.Body = responseStream;
+            }
+        }
 
-            var indexTags =
-                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(4));
+        private static async Task PrepareResponseStreamForLoggingAsync(HttpResponseData responseData)
+        {
+            if (responseData.Body.Position > 0)
+            {
+                if (responseData.Body.CanSeek)
+                {
+                    responseData.Body.Seek(0, SeekOrigin.Begin);
+                }
+                else
+                {
+                    await responseData.Body.DisposeAsync();
+                    throw new InvalidOperationException("Can not log response stream because it is not seekable");
+                }
+            }
+        }
 
-            var jwtTokenGln = JwtTokenParsing.ReadJwtGln(context);
-            var glnToWrite = string.IsNullOrWhiteSpace(jwtTokenGln) ? "nojwtgln" : jwtTokenGln;
-
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), glnToWrite);
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionId"), context.FunctionId);
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
-
-            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("JwtGln"), glnToWrite);
-            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("InvocationId"), context.InvocationId);
-            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
-            indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
-
-            return (metaData, indexTags);
+        private bool ShouldLog(FunctionContext context)
+        {
+            try
+            {
+                var sw = Stopwatch.StartNew();
+                var request = context.GetHttpRequestData();
+                sw.Stop();
+                _logger.LogInformation("ShouldLog execution took: {lookupTime}", sw.Elapsed);
+                return request is { };
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
