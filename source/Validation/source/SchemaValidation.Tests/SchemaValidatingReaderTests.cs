@@ -81,6 +81,27 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         }
 
         [Fact]
+        public async Task AdvanceAsync_NotXmlMultipleAdvanceAsync_ReturnsAsError()
+        {
+            // Arrange
+            var xmlStream = LoadStringIntoStream("<root <>> ></root>");
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+
+            // Act
+            for (var i = 0; i < 5; i++)
+            {
+                // This test ensures that an exception internally is handled.
+                // System.Xml.Schema.XmlSchemaValidator.CheckStateTransition(..)
+                // System.InvalidOperationException
+                // The transition from the 'EndValidation' method to the 'EndValidation' method is not allowed.
+                await target.AdvanceAsync();
+            }
+
+            // Assert
+            Assert.True(target.HasErrors);
+        }
+
+        [Fact]
         public async Task AdvanceAsync_InvalidSchema_ThrowsException()
         {
             // Arrange
@@ -336,10 +357,30 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         [Theory]
         [InlineData("true")]
         [InlineData("false")]
+        public async Task ReadValueAsBoolAsync_ContentUntyped_ReturnsValue(string expected)
+        {
+            // Arrange
+            var xml = @$"<root><targetElement>{expected}</targetElement></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act
+            var actual = await target.ReadValueAsBoolAsync();
+
+            // Assert
+            Assert.Equal(expected == "true", actual);
+        }
+
+        [Theory]
+        [InlineData("true")]
+        [InlineData("false")]
         public async Task ReadValueAsBoolAsync_Attribute_ReturnsValue(string expected)
         {
             // Arrange
-            var xml = @$"<root attribute=""{expected}""></root>";
+            var xml = $"<root attribute=\"{expected}\"> </root>";
             var xmlStream = LoadStringIntoStream(xml);
 
             var target = new SchemaValidatingReader(xmlStream, new AttributeTypeXmlSchema("xs:boolean"));
@@ -365,7 +406,30 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             var xml = @$"<root><targetElement>{expected}</targetElement></root>";
             var xmlStream = LoadStringIntoStream(xml);
 
-            var target = new SchemaValidatingReader(xmlStream, new ElementTypeXmlSchema("xs:int"));
+            var target = new SchemaValidatingReader(xmlStream, new ElementTypeXmlSchema("xs:integer"));
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act
+            var actual = await target.ReadValueAsIntAsync();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(int.MinValue)]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(int.MaxValue)]
+        public async Task ReadValueAsIntAsync_ContentUntyped_ReturnsValue(int expected)
+        {
+            // Arrange
+            var xml = @$"<root><targetElement>{expected}</targetElement></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
             await target.AdvanceAsync();
             await target.AdvanceAsync();
 
@@ -385,10 +449,10 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         public async Task ReadValueAsIntAsync_Attribute_ReturnsValue(int expected)
         {
             // Arrange
-            var xml = @$"<root attribute=""{expected}""></root>";
+            var xml = @$"<root attribute=""{expected}""> </root>";
             var xmlStream = LoadStringIntoStream(xml);
 
-            var target = new SchemaValidatingReader(xmlStream, new AttributeTypeXmlSchema("xs:int"));
+            var target = new SchemaValidatingReader(xmlStream, new AttributeTypeXmlSchema("xs:integer"));
             await target.AdvanceAsync();
             await target.AdvanceAsync();
 
@@ -423,6 +487,29 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         }
 
         [Theory]
+        [InlineData(int.MinValue)]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(int.MaxValue)]
+        public async Task ReadValueAsLongAsync_ContentUntyped_ReturnsValue(int expected)
+        {
+            // Arrange
+            var xml = @$"<root><targetElement>{expected}</targetElement></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act
+            var actual = await target.ReadValueAsLongAsync();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [InlineData(long.MinValue)]
         [InlineData(int.MinValue)]
         [InlineData(-1)]
@@ -433,7 +520,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         public async Task ReadValueAsLongAsync_Attribute_ReturnsValue(long expected)
         {
             // Arrange
-            var xml = @$"<root attribute=""{expected}""></root>";
+            var xml = @$"<root attribute=""{expected}""> </root>";
             var xmlStream = LoadStringIntoStream(xml);
 
             var target = new SchemaValidatingReader(xmlStream, new AttributeTypeXmlSchema("xs:long"));
@@ -490,6 +577,41 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
         [InlineData(1)]
         [InlineData(int.MaxValue)]
         [InlineData(1111)]
+        public async Task ReadValueAsDecimalAsync_ContentUntyped_ReturnsValue(decimal expected)
+        {
+            if (expected == 1111)
+            {
+                expected = decimal.MaxValue;
+            }
+
+            if (expected == -1111)
+            {
+                expected = decimal.MinValue;
+            }
+
+            // Arrange
+            var xml = @$"<root><targetElement>{expected}</targetElement></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act
+            var actual = await target.ReadValueAsDecimalAsync();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(-1111)]
+        [InlineData(int.MinValue)]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(int.MaxValue)]
+        [InlineData(1111)]
         public async Task ReadValueAsDecimalAsync_Attribute_ReturnsValue(decimal expected)
         {
             if (expected == 1111)
@@ -503,7 +625,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             }
 
             // Arrange
-            var xml = @$"<root attribute=""{expected}""></root>";
+            var xml = @$"<root attribute=""{expected}""> </root>";
             var xmlStream = LoadStringIntoStream(xml);
 
             var target = new SchemaValidatingReader(xmlStream, new AttributeTypeXmlSchema("xs:decimal"));
@@ -519,6 +641,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
 
         [Theory]
         [InlineData("2011-11-11T15:05:00+01:00")]
+        [InlineData("2011-11-11T15:05:00-08:00")]
         [InlineData("2022-01-17T10:19:24Z")]
         public async Task ReadValueAsNodaTimeAsync_Content_ReturnsValue(string inputTime)
         {
@@ -541,13 +664,37 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
 
         [Theory]
         [InlineData("2011-11-11T15:05:00+01:00")]
+        [InlineData("2011-11-11T15:05:00-08:00")]
+        [InlineData("2022-01-17T10:19:24Z")]
+        public async Task ReadValueAsNodaTimeAsync_ContentUntyped_ReturnsValue(string inputTime)
+        {
+            var expected = Instant.FromDateTimeOffset(DateTimeOffset.Parse(inputTime, CultureInfo.InvariantCulture));
+
+            // Arrange
+            var xml = @$"<root><targetElement>{expected}</targetElement></root>";
+            var xmlStream = LoadStringIntoStream(xml);
+
+            var target = new SchemaValidatingReader(xmlStream, new RootXmlSchema());
+            await target.AdvanceAsync();
+            await target.AdvanceAsync();
+
+            // Act
+            var actual = await target.ReadValueAsNodaTimeAsync();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("2011-11-11T15:05:00+01:00")]
+        [InlineData("2011-11-11T15:05:00-08:00")]
         [InlineData("2022-01-17T10:19:24Z")]
         public async Task ReadValueAsNodaTimeAsync_Attribute_ReturnsValue(string inputTime)
         {
             var expected = Instant.FromDateTimeOffset(DateTimeOffset.Parse(inputTime, CultureInfo.InvariantCulture));
 
             // Arrange
-            var xml = @$"<root attribute=""{inputTime}""></root>";
+            var xml = @$"<root attribute=""{inputTime}""> </root>";
             var xmlStream = LoadStringIntoStream(xml);
 
             var target = new SchemaValidatingReader(xmlStream, new AttributeTypeXmlSchema("xs:dateTime"));

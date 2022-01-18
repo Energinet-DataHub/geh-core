@@ -28,6 +28,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
     [UnitTest]
     public sealed class SchemaValidatingReaderAsObjectTests
     {
+        [Fact]
         public async Task Reconstruction_ValidXml_RebuildsObject()
         {
             // Arrange

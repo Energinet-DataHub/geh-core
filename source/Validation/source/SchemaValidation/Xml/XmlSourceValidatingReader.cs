@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +59,11 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 
         public async Task<bool> AdvanceAsync()
         {
+            if (HasErrors)
+            {
+                return true;
+            }
+
             await EnsureReaderAsync().ConfigureAwait(false);
 
             if (_attributes.TryDequeue(out var attribute))
@@ -120,26 +126,9 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             return ReadValueAsAsync<string>();
         }
 
-        public async Task<string> ReadValueAsDurationAsync()
+        public Task<string> ReadValueAsDurationAsync()
         {
-            await EnsureReaderAsync().ConfigureAwait(false);
-
-            if (_currentValue == null)
-            {
-                if (CanReadValue)
-                {
-                    throw new InvalidOperationException("Internal Error: _currentValue must not be null here.");
-                }
-
-                throw new InvalidOperationException("Current element does not have a value.");
-            }
-
-            if (_currentValue is string value)
-            {
-                return value.Trim();
-            }
-
-            throw new InvalidOperationException($"Cannot read value of type xs:duration as type {_currentValue.GetType()}.");
+            return ReadValueAsAsync<string>();
         }
 
         public Task<int> ReadValueAsIntAsync()
@@ -164,7 +153,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
 
         public async Task<Instant> ReadValueAsNodaTimeAsync()
         {
-            var dt = await ReadValueAsAsync<DateTime>().ConfigureAwait(false);
+            var dt = await ReadValueAsAsync<DateTimeOffset>().ConfigureAwait(false);
             return Instant.FromDateTimeOffset(dt);
         }
 
@@ -202,18 +191,32 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             {
                 if (CanReadValue)
                 {
-                    throw new InvalidOperationException("Internal Error: _currentValue must not be null here.");
+                    throw new InvalidOperationException("Internal Error: CanReadValue is true, but there is no value.");
                 }
 
-                throw new InvalidOperationException("Current element does not have a value.");
+                throw new InvalidOperationException("Cannot ReadValueAs when there is no value (CanReadValue is false).");
             }
 
-            if (_currentValue is T value)
+            if (_currentValue is T typed)
             {
-                return value;
+                return typed;
             }
 
-            throw new InvalidOperationException($"Cannot read value of type {_currentValue.GetType()} as type {typeof(T)}.");
+            var targetType = typeof(T);
+
+            // xs:integer is returned as decimal from ReadContentAsObjectAsync.
+            if (targetType == typeof(int) && _currentValue is decimal d)
+            {
+                return (dynamic)(int)d;
+            }
+
+            // Parse xs:dateTime manually to preserve time zone information.
+            if (targetType == typeof(DateTimeOffset))
+            {
+                return (dynamic)XmlConvert.ToDateTimeOffset((string)_currentValue);
+            }
+
+            return (dynamic)Convert.ChangeType(_currentValue, targetType, CultureInfo.InvariantCulture);
         }
 
         private async Task<bool> ValidatingReadAsync()
@@ -248,13 +251,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             {
                 while (_xmlReader.MoveToNextAttribute())
                 {
-                    var rawString = _xmlReader.Value;
-                    var attrValue = await _xmlReader.ReadContentAsObjectAsync().ConfigureAwait(false);
-                    if (attrValue is TimeSpan)
-                    {
-                        attrValue = rawString;
-                    }
-
+                    var attrValue = await ReadTypedContentAsync().ConfigureAwait(false);
                     _attributes.Enqueue(new Attribute { Name = _xmlReader.LocalName, Value = attrValue });
                 }
 
@@ -270,10 +267,25 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
             if (_xmlReader.NodeType == XmlNodeType.Text)
             {
                 CanReadValue = true;
-                var rawString = _xmlReader.Value;
-                var value = await _xmlReader.ReadContentAsObjectAsync().ConfigureAwait(false);
-                _currentValue = value is TimeSpan ? rawString : value;
+                _currentValue = await ReadTypedContentAsync().ConfigureAwait(false);
             }
+        }
+
+        private async Task<object> ReadTypedContentAsync()
+        {
+            var rawString = _xmlReader!.Value;
+            var typedValue = await _xmlReader.ReadContentAsObjectAsync().ConfigureAwait(false);
+
+            // Internal XmlReader implementation does not handle xs:duration and xs:dateTime correctly.
+            // xs:duration converts P1M to P30D.
+            // xs:dateTime does not preserve time zone information.
+            // Therefore, the raw value is kept instead for conversion later.
+            if (typedValue is DateTime or TimeSpan)
+            {
+                return rawString.Trim();
+            }
+
+            return typedValue;
         }
 
         private void ProcessEmptyElement(string closedTag)
