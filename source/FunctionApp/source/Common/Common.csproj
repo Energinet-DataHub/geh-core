@@ -28,7 +28,7 @@ limitations under the License.
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.FunctionApp.Common</PackageId>
     <!-- Remember to bump Authorization.Abstractions version. -->
-    <PackageVersion>1.0.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.3$(VersionSuffix)</PackageVersion>
     <Title>Azure Function Common Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>

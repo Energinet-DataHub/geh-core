@@ -44,3 +44,35 @@ protected override void ConfigureContainer(Container container)
 ```
 
 `ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`
+
+## Actor Middleware
+
+### Introduction
+
+This middleware extends functionality from **JWT Token Middleware**.
+
+### Usage
+
+Add Middleware to `ConfigureFunctionsWorkerDefaults` as **the first in line** as below:
+
+```c#
+.ConfigureFunctionsWorkerDefaults(options => options
+{
+    options.UseMiddleware<ActorMiddleware>();
+    ...
+})
+```
+
+Register in IoC (in example below SimpleInjector is used)
+Note: The following package must be installed
+* `Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector`
+
+```c#
+protected override void ConfigureContainer(Container container)
+{
+    container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
+    ...
+}
+```
+
+`ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`

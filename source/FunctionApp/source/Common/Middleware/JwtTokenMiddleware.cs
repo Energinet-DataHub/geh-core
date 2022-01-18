@@ -17,13 +17,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.FunctionApp.Common.Extensions;
 using Energinet.DataHub.Core.FunctionApp.Common.Identity;
+using Energinet.DataHub.Core.FunctionApp.Common.Middleware.Helpers;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -51,14 +49,14 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
             if (!TryGetTokenFromHeaders(context, out var token))
             {
                 // Unable to get token from headers
-                SetErrorResponse(context);
+                FunctionContextHelper.SetErrorResponse(context);
                 return;
             }
 
             if (!_tokenValidator.CanReadToken(token))
             {
                 // Token is malformed
-                SetErrorResponse(context);
+                FunctionContextHelper.SetErrorResponse(context);
                 return;
             }
 
@@ -86,19 +84,11 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
             catch (Exception)
             {
                 // Token is not valid (expired etc.)
-                SetErrorResponse(context);
+                FunctionContextHelper.SetErrorResponse(context);
                 return;
             }
 
             await next(context).ConfigureAwait(false);
-        }
-
-        private static void SetErrorResponse(FunctionContext context)
-        {
-            var httpRequestData = context.GetHttpRequestData() ?? throw new InvalidOperationException();
-            var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
-
-            context.SetHttpResponseData(httpResponseData);
         }
 
         private static bool TryGetTokenFromHeaders(FunctionContext context, out string? token)
