@@ -1,6 +1,6 @@
 # Messaging Release notes
 
-## Version 1.1.1-1.1.2
+## Version 1.1.1-1.1.3
 
 - Updated SchemaValidation package.
 

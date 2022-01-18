@@ -28,7 +28,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging.Protobuf</PackageId>
-    <PackageVersion>1.1.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.1.3$(VersionSuffix)</PackageVersion>
     <Title>Messaging Protobuf library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
