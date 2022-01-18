@@ -94,7 +94,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
                 // System.Xml.Schema.XmlSchemaValidator.CheckStateTransition(..)
                 // System.InvalidOperationException
                 // The transition from the 'EndValidation' method to the 'EndValidation' method is not allowed.
-                await target.AdvanceAsync();
+                Assert.False(await target.AdvanceAsync());
             }
 
             // Assert

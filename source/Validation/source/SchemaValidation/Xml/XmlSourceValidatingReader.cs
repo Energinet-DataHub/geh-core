@@ -61,7 +61,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Xml
         {
             if (HasErrors)
             {
-                return true;
+                return false;
             }
 
             await EnsureReaderAsync().ConfigureAwait(false);
