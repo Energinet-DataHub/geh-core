@@ -49,15 +49,18 @@ protected override void ConfigureContainer(Container container)
 
 ### Introduction
 
-This middleware extends functionality from **JWT Token Middleware**.
+This middleware extends functionality from [JWT Token Middleware](#jwt-token-middleware).
+
+When this middleware is added, it will be possible to get the current actor via IActorContext. The context will be populated based on the id from the token and the IActorProvider. You must provide an implementation of IActorProvider.
 
 ### Usage
 
-Add Middleware to `ConfigureFunctionsWorkerDefaults` as **the first in line** as below:
+Add Middleware to `ConfigureFunctionsWorkerDefaults` right after `JwtTokenMiddleware` as below:
 
 ```c#
 .ConfigureFunctionsWorkerDefaults(options => options
 {
+    options.UseMiddleware<JwtTokenMiddleware>();
     options.UseMiddleware<ActorMiddleware>();
     ...
 })
@@ -70,9 +73,9 @@ Note: The following package must be installed
 ```c#
 protected override void ConfigureContainer(Container container)
 {
-    container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
+    container.AddActorContext<MyActorProviderImplementation>()
     ...
 }
 ```
 
-`ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`
+`CurrentActor` can now be accessed through `IActorContext`
