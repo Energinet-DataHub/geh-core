@@ -20,26 +20,28 @@ using System.Xml.Schema;
 namespace Energinet.DataHub.Core.SchemaValidation.Tests
 {
     /// <summary>
-    /// XML schema that specifies types under a <root></root> element.
+    /// .
     /// </summary>
-    public sealed class TypedXmlSchema : IXmlSchema
+    public sealed class AttributeTypeXmlSchema : IXmlSchema
     {
         private readonly XmlSchemaSet _anyRootAllowedSchemaSet;
 
-        public TypedXmlSchema()
+        public AttributeTypeXmlSchema(string schemaType)
         {
-            var typedSchema = @"<?xml version=""1.0"" encoding=""utf-8""?>
+            var anyRootSchema = @$"<?xml version=""1.0"" encoding=""utf-8""?>
 <xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
- <xs:element name=""root"">
-  <xs:complexType>
-   <xs:sequence>
-    <xs:element minOccurs=""0"" name=""typedAsDuration"" type=""xs:duration"" />
-   </xs:sequence>
-  </xs:complexType>
- </xs:element>
+  <xs:element name=""root"">
+    <xs:complexType>
+        <xs:simpleContent>
+            <xs:extension base=""{schemaType}"">
+                <xs:attribute name=""attribute"" type=""{schemaType}"" use=""required""/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>";
 
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(typedSchema));
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(anyRootSchema));
             var xmlSchema = XmlSchema.Read(stream, null);
             var xmlSchemaSet = new XmlSchemaSet();
             xmlSchemaSet.Add(xmlSchema!);
