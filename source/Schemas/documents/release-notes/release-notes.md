@@ -1,6 +1,6 @@
 # Schemas Release notes
 
-## Version 1.0.4-1.0.7
+## Version 1.0.4-1.0.8
 
 - Updated RSM-021 schemas.
 

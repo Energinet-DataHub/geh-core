@@ -29,7 +29,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Schemas</PackageId>
-    <PackageVersion>1.0.7$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.8$(VersionSuffix)</PackageVersion>
     <Title>Schema Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -74,6 +74,7 @@ limitations under the License.
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-general-acknowledgementdokument-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyaggregatedtimeseries-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyvalidatedmeasuredata-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifywholesaleservices-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-rejectrequestaggregatedmeasuredata-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-rejectrequestforreminders-0-1.xsd" />
