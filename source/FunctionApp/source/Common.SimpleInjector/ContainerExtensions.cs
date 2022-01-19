@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.FunctionApp.Common.Identity;
 using Energinet.DataHub.Core.FunctionApp.Common.Middleware;
@@ -33,6 +34,18 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector
             container.Register<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>(Lifestyle.Scoped);
             container.Register<ClaimsPrincipalContext>(Lifestyle.Scoped);
             container.Register(() => new OpenIdSettings(metadataAddress, audience));
+        }
+
+        /// <summary>
+        /// Adds registration of ActorMiddleware, ActorContext and ActorProvider.
+        /// </summary>
+        /// <param name="container">Simple Injector Container</param>
+        public static void AddActorContext<TActorProvider>(this Container container)
+            where TActorProvider : IActorProvider
+        {
+            container.Register<ActorMiddleware>(Lifestyle.Scoped);
+            container.Register<IActorContext, ActorContext>(Lifestyle.Scoped);
+            container.Register(typeof(IActorProvider), typeof(TActorProvider), Lifestyle.Scoped);
         }
     }
 }

@@ -2,81 +2,81 @@
 <xs:schema xmlns:cim="urn:ediel.org:structure:requestservice:0:1" xmlns:ecl="urn:entsoe.eu:wgedi:codelists" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" xmlns:cimp="http://www.iec.ch/cimprofile" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:ediel.org:structure:requestservice:0:1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="urn-ediel-org-codelists.xsd" namespace="urn:entsoe.eu:wgedi:codelists" />
   <xs:element name="RequestService_MarketDocument" type="cim:RequestService_MarketDocument" />
-  <xs:simpleType name="MeasurementPointID_String-base" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:simpleType name="MeasurementPointID_String-base" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="xs:string">
       <xs:maxLength value="35" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:complexType name="MeasurementPointID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:complexType name="MeasurementPointID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:simpleContent>
       <xs:extension base="cim:MeasurementPointID_String-base">
         <xs:attribute name="codingScheme" type="ecl:CodingSchemeTypeList" use="required" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-  <xs:simpleType name="PartyID_String-base" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:simpleType name="PartyID_String-base" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="xs:string">
       <xs:maxLength value="16" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:complexType name="PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:complexType name="PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:simpleContent>
       <xs:extension base="cim:PartyID_String-base">
         <xs:attribute name="codingScheme" type="ecl:CodingSchemeTypeList" use="required" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-  <xs:complexType name="MktActivityRecord" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MktActivityRecord">
+  <xs:complexType name="MktActivityRecord" sawsdl:modelReference="http://iec.ch/TC57/CIM101#MktActivityRecord">
     <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="1" name="mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="1" maxOccurs="1" name="mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="businessProcessReference_MktActivityRecord.mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="0" maxOccurs="1" name="businessProcessReference_MktActivityRecord.mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="start_DateAndOrTime.dateTime" type="xs:dateTime" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#DateAndOrTime.dateTime">
+      <xs:element minOccurs="1" maxOccurs="1" name="start_DateAndOrTime.dateTime" type="xs:dateTime" sawsdl:modelReference="http://iec.ch/TC57/CIM101#DateAndOrTime.dateTime">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="marketEvaluationPoint.mRID" type="cim:MeasurementPointID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="1" maxOccurs="1" name="marketEvaluationPoint.mRID" type="cim:MeasurementPointID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="marketEvaluationPoint.energySupplier_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="0" maxOccurs="1" name="marketEvaluationPoint.energySupplier_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="marketEvaluationPoint.request_ServiceCategory.ElectricalHeating" type="xs:boolean" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Ext_Customer.ElectricalHeating">
+      <xs:element minOccurs="1" maxOccurs="1" name="marketEvaluationPoint.request_ServiceCategory.ElectricalHeating" type="xs:boolean" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Ext_Customer.ElectricalHeating">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.description">
+      <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.description">
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:simpleType name="MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:simpleType name="MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="ecl:MessageTypeList" />
   </xs:simpleType>
-  <xs:simpleType name="ProcessKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:simpleType name="ProcessKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="ecl:ProcessTypeList" />
   </xs:simpleType>
-  <xs:simpleType name="BusinessSectorKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:simpleType name="BusinessSectorKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="ecl:BusinessSectorTypeList" />
   </xs:simpleType>
-  <xs:simpleType name="MarketRoleKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#String">
+  <xs:simpleType name="MarketRoleKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="ecl:RoleTypeList" />
   </xs:simpleType>
-  <xs:complexType name="RequestService_MarketDocument" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketDocument">
+  <xs:complexType name="RequestService_MarketDocument" sawsdl:modelReference="http://iec.ch/TC57/CIM101#MarketDocument">
     <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="1" name="mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="1" maxOccurs="1" name="mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="type" type="cim:MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Document.type">
+      <xs:element minOccurs="1" maxOccurs="1" default="D03" name="type" type="cim:MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Document.type">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="process.processType" type="cim:ProcessKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Process.processType">
+      <xs:element minOccurs="1" maxOccurs="1" name="process.processType" type="cim:ProcessKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Process.processType">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="businessSector.type" type="cim:BusinessSectorKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#BusinessSector.type">
+      <xs:element minOccurs="0" maxOccurs="1" name="businessSector.type" type="cim:BusinessSectorKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#BusinessSector.type">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="sender_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="1" maxOccurs="1" name="sender_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="sender_MarketParticipant.marketRole.type" type="cim:MarketRoleKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketRole.type">
+      <xs:element minOccurs="1" maxOccurs="1" name="sender_MarketParticipant.marketRole.type" type="cim:MarketRoleKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#MarketRole.type">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="receiver_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#IdentifiedObject.mRID">
+      <xs:element minOccurs="1" maxOccurs="1" name="receiver_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="receiver_MarketParticipant.marketRole.type" type="cim:MarketRoleKind_String" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketRole.type">
+      <xs:element minOccurs="1" maxOccurs="1" name="receiver_MarketParticipant.marketRole.type" type="cim:MarketRoleKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#MarketRole.type">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="createdDateTime" type="xs:dateTime" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#Document.createdDateTime">
+      <xs:element minOccurs="1" maxOccurs="1" name="createdDateTime" type="xs:dateTime" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Document.createdDateTime">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="unbounded" name="MktActivityRecord" type="cim:MktActivityRecord" sawsdl:modelReference="http://iec.ch/TC57/2010/CIM-schema-cim15#MarketDocument.MktActivityRecord">
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="MktActivityRecord" type="cim:MktActivityRecord" sawsdl:modelReference="http://iec.ch/TC57/CIM101#MarketDocument.MktActivityRecord">
       </xs:element>
     </xs:sequence>
   </xs:complexType>

@@ -37,6 +37,9 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
         public IXmlSchema MeasureNotifyValidatedMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-notifyvalidatedmeasuredata-0-1.xsd");
 
+        public IXmlSchema MeasureNotifyAggregatedMeasureData { get; }
+            = new CimXmlSchemaContainer("urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd");
+
         public IXmlSchema MeasureNotifyWholesaleServices { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-notifywholesaleservices-0-1.xsd");
 
