@@ -88,7 +88,7 @@
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="type" type="cim:MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Document.type">
+      <xs:element minOccurs="1" maxOccurs="1" default="D12" name="type" type="cim:MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Document.type">
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="process.processType" type="cim:ProcessKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Process.processType">
       </xs:element>
