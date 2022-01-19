@@ -44,3 +44,38 @@ protected override void ConfigureContainer(Container container)
 ```
 
 `ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`
+
+## Actor Middleware
+
+### Introduction
+
+This middleware extends functionality from [JWT Token Middleware](#jwt-token-middleware).
+
+When this middleware is added, it will be possible to get the current actor via IActorContext. The context will be populated based on the id from the token and the IActorProvider. You must provide an implementation of IActorProvider.
+
+### Usage
+
+Add Middleware to `ConfigureFunctionsWorkerDefaults` right after `JwtTokenMiddleware` as below:
+
+```c#
+.ConfigureFunctionsWorkerDefaults(options => options
+{
+    options.UseMiddleware<JwtTokenMiddleware>();
+    options.UseMiddleware<ActorMiddleware>();
+    ...
+})
+```
+
+Register in IoC (in example below SimpleInjector is used)
+Note: The following package must be installed
+* `Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector`
+
+```c#
+protected override void ConfigureContainer(Container container)
+{
+    container.AddActorContext<MyActorProviderImplementation>()
+    ...
+}
+```
+
+`CurrentActor` can now be accessed through `IActorContext`
