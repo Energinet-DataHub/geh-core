@@ -15,9 +15,14 @@
 
 ## Version 1.0.4
 
-- Updated jwt token parsing
+- Updated jwt token parsing.
 
 ## Version 1.0.5
 
 - Added logging condition to only run on httpTriggers. 
 - Added timers for debugging execution times.
+
+## Version 1.0.6
+
+- Added TraceId to metadata and index tags for better lookup with application insight logs.
+- Limited query params saved in index tags to 3.

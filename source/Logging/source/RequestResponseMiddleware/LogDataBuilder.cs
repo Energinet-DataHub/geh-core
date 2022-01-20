@@ -43,23 +43,28 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 .ToDictionary(e => MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
             var indexTags =
-                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(4));
+                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(3));
 
             var jwtTokenGln = JwtTokenParsing.ReadJwtGln(context);
             var glnToWrite = string.IsNullOrWhiteSpace(jwtTokenGln) ? "nojwtgln" : jwtTokenGln;
+
+            var traceParentParts = TraceParentSplit(context.TraceContext?.TraceParent ?? string.Empty);
+            var traceId = traceParentParts?.Traceid;
 
             metaData.TryAdd(MetaNameFormatter("JwtGln"), glnToWrite);
             metaData.TryAdd(MetaNameFormatter("FunctionId"), context.FunctionId);
             metaData.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             metaData.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
-            metaData.TryAdd(MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            metaData.TryAdd(MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
+            metaData.TryAdd(MetaNameFormatter("TraceId"), traceId ?? string.Empty);
             metaData.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
             indexTags.TryAdd(MetaNameFormatter("JwtGln"), glnToWrite);
             indexTags.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             indexTags.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
-            indexTags.TryAdd(MetaNameFormatter("TraceContext"), context.TraceContext?.TraceParent ?? string.Empty);
+            indexTags.TryAdd(MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
             indexTags.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
+            indexTags.TryAdd(MetaNameFormatter("TraceId"), traceId ?? string.Empty);
 
             return (metaData, indexTags);
         }
@@ -77,6 +82,21 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                           $"{time.ToString()}";
 
             return (name, subfolder);
+        }
+
+        /// <summary>
+        /// https://w3c.github.io/trace-context/#trace-context-http-request-headers-format
+        /// </summary>
+        /// <returns>TraceParent parts or null on parse error</returns>
+        public static (string Version, string Traceid, string Spanid, string Traceflags)? TraceParentSplit(string traceParent)
+        {
+            var traceSpilt = traceParent.Split('-', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (traceSpilt.Length == 4)
+            {
+                return (traceSpilt[0], traceSpilt[1], traceSpilt[2], traceSpilt[3]);
+            }
+
+            return null;
         }
 
         internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();

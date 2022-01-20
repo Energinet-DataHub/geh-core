@@ -16,9 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Extensions;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 using Microsoft.Azure.Functions.Worker;
@@ -33,7 +31,9 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         private readonly IRequestResponseLogging _requestResponseLogging;
         private readonly ILogger<RequestResponseLoggingMiddleware> _logger;
 
-        public RequestResponseLoggingMiddleware(IRequestResponseLogging requestResponseLogging, ILogger<RequestResponseLoggingMiddleware> logger)
+        public RequestResponseLoggingMiddleware(
+            IRequestResponseLogging requestResponseLogging,
+            ILogger<RequestResponseLoggingMiddleware> logger)
         {
             _requestResponseLogging = requestResponseLogging;
             _logger = logger;
@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-            var shouldLogRequestAndResponse = ShouldLog(context);
+            var shouldLogRequestAndResponse = ShouldLogRequestResponse(context);
 
             if (shouldLogRequestAndResponse)
             {
@@ -164,14 +164,14 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             }
         }
 
-        private bool ShouldLog(FunctionContext context)
+        private bool ShouldLogRequestResponse(FunctionContext context)
         {
             try
             {
                 var sw = Stopwatch.StartNew();
                 var request = context.GetHttpRequestData();
                 sw.Stop();
-                _logger.LogInformation("ShouldLog execution took: {lookupTime}", sw.Elapsed);
+                _logger.LogInformation("ShouldLogRequestResponse execution took ms: {lookupTime}", sw.ElapsedMilliseconds);
                 return request is { };
             }
             catch
