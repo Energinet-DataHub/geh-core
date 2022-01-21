@@ -13,5 +13,8 @@ Implementation example:
     Container.Register<RequestResponseLoggingMiddleware>(Lifestyle.Scoped);
 ---
 
-    serviceCollection.AddScoped<IRequestResponseLogging>(_ => new RequestResponseLoggingBlobStorage(connectionString, containerName));
+    serviceCollection.AddScoped<IRequestResponseLogging>(
+    _ => new RequestResponseLoggingBlobStorage(connectionString, 
+                                                containerName, 
+                                                ILogger<RequestResponseLoggingBlobStorage>));
 
