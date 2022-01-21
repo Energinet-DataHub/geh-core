@@ -6,5 +6,5 @@
 
 ## Version 1.0.5
 
-- `JwtTokenMiddleware.Invoke()` now returns if context is not a `HTTPContext`
+- `JwtTokenMiddleware.Invoke()` now returns if context is not a `HTTPContext`.
 
