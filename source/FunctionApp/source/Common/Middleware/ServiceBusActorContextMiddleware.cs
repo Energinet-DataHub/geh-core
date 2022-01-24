@@ -17,6 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.FunctionApp.Common.Abstractions.ServiceBus;
+using Energinet.DataHub.Core.FunctionApp.Common.Extensions;
 using Energinet.DataHub.Core.FunctionApp.Common.Middleware.Helpers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -40,6 +41,12 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
         public async Task Invoke(FunctionContext context, [NotNull] FunctionExecutionDelegate next)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
+
+            var httpRequestData = context.GetHttpRequestData();
+            if (httpRequestData != null)
+            {
+                return;
+            }
 
             if (context.BindingContext.BindingData.TryGetValue("UserProperties", out var userPropertiesObject) && userPropertiesObject != null)
             {
