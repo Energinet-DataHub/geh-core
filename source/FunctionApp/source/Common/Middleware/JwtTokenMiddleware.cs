@@ -50,6 +50,7 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
             var httpRequestData = context.GetHttpRequestData();
             if (httpRequestData == null)
             {
+                await next(context).ConfigureAwait(false);
                 return;
             }
 
