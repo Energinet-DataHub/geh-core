@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.SimpleInjector
             container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
             container.Register<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>(Lifestyle.Scoped);
             container.Register<ClaimsPrincipalContext>(Lifestyle.Scoped);
-            container.Register(() => new OpenIdSettings(metadataAddress, audience), Lifestyle.Scoped);
+            container.Register(() => new OpenIdSettings(metadataAddress, audience));
         }
 
         /// <summary>

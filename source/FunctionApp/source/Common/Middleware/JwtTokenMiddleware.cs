@@ -19,6 +19,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.FunctionApp.Common.Extensions;
 using Energinet.DataHub.Core.FunctionApp.Common.Identity;
 using Energinet.DataHub.Core.FunctionApp.Common.Middleware.Helpers;
 using Microsoft.Azure.Functions.Worker;
@@ -45,6 +46,12 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware
         public async Task Invoke(FunctionContext context, [NotNull] FunctionExecutionDelegate next)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
+
+            var httpRequestData = context.GetHttpRequestData();
+            if (httpRequestData == null)
+            {
+                return;
+            }
 
             if (!TryGetTokenFromHeaders(context, out var token))
             {
