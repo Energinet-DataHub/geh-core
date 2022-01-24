@@ -21,13 +21,7 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware.Helpers
 {
     public static class ServiceBusActorParser
     {
-        public static Actor FromString(string userIdentity)
-        {
-            if (string.IsNullOrWhiteSpace(userIdentity)) throw new ArgumentNullException(nameof(userIdentity));
-            return JsonSerializer.Deserialize<Actor>(userIdentity) ?? throw new JsonException(nameof(userIdentity));
-        }
-
-        public static Actor FromDictionaryString(string inputText, string propertyKey)
+        public static Actor? FromDictionaryString(string inputText, string propertyKey)
         {
             if (string.IsNullOrWhiteSpace(inputText)) throw new ArgumentNullException(nameof(inputText));
             if (string.IsNullOrWhiteSpace(propertyKey)) throw new ArgumentNullException(nameof(propertyKey));
@@ -37,12 +31,15 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Middleware.Helpers
                 .EnumerateObject()
                 .FirstOrDefault(e => e.Name.Equals(propertyKey, StringComparison.Ordinal));
 
-            if (resultJsonProperty.Value.ValueKind == JsonValueKind.Undefined)
-            {
-                throw new InvalidOperationException("Current actor should not be null");
-            }
+            return resultJsonProperty.Value.ValueKind == JsonValueKind.Undefined
+                ? null
+                : FromString(resultJsonProperty.Value.ToString() ?? string.Empty);
+        }
 
-            return FromString(resultJsonProperty.Value.ToString() ?? string.Empty);
+        private static Actor? FromString(string userIdentity)
+        {
+            if (string.IsNullOrWhiteSpace(userIdentity)) throw new ArgumentNullException(nameof(userIdentity));
+            return JsonSerializer.Deserialize<Actor>(userIdentity) ?? throw new JsonException(nameof(userIdentity));
         }
     }
 }

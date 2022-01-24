@@ -19,13 +19,7 @@ namespace Energinet.DataHub.Core.FunctionApp.Common
 {
     public class ActorContext : IActorContext
     {
-        private Actor? _currentActor;
-
-        public Actor CurrentActor
-        {
-            get => _currentActor ?? throw new InvalidOperationException("Current actor should not be null");
-            set => _currentActor = value ?? throw new InvalidOperationException("Current actor should not be null");
-        }
+        public Actor? CurrentActor { get; set; }
 
         public Actor DataHub => new(Guid.Empty, "GLN", "5790001330552", "MeteringPointAdministrator");
     }

@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Core.FunctionApp.Common.Abstractions.Actor
         /// <summary>
         /// Get current actor
         /// </summary>
-        public Actor CurrentActor { get; set; }
+        public Actor? CurrentActor { get; set; }
 
         /// <summary>
         /// Get DataHub as an actor
