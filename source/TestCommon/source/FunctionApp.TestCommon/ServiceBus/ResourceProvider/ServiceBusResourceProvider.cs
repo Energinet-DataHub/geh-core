@@ -36,7 +36,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <summary>
         /// If created topics/queues are not deleted explicit, they will automatically be deleted after this idle timeout.
         /// </summary>
-        private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(15);
 
         public ServiceBusResourceProvider(string connectionString, ITestDiagnosticsLogger testLogger)
         {
