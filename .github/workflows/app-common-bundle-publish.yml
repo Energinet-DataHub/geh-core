@@ -19,7 +19,7 @@ on:
   # Only executed if (*.)FunctionApp packages content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
-      - main
+      - cmgrd/function-app
     paths:
       - source/App/source/Common/**
       - source/App/source/Common.Abstractions/**
@@ -29,7 +29,7 @@ on:
   # Executed if FunctionApp folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
-      - main
+      - cmgrd/function-app
     paths:
       - source/App/**
       - .github/workflows/app-common-bundle-publish.yml
