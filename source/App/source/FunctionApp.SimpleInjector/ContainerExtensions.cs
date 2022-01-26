@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
+using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
+using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using SimpleInjector;
 
-namespace Energinet.DataHub.Core.App.Common.SimpleInjector
+namespace Energinet.DataHub.Core.App.AppFunction.SimpleInjector
 {
     public static class ContainerExtensions
     {
@@ -31,6 +34,7 @@ namespace Energinet.DataHub.Core.App.Common.SimpleInjector
         public static void AddJwtTokenSecurity(this Container container, string metadataAddress, string audience)
         {
             container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
+            container.Register<IJwtTokenValidator, JwtTokenValidator>(Lifestyle.Scoped);
             container.Register<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>(Lifestyle.Scoped);
             container.Register<ClaimsPrincipalContext>(Lifestyle.Scoped);
             container.Register(() => new OpenIdSettings(metadataAddress, audience));

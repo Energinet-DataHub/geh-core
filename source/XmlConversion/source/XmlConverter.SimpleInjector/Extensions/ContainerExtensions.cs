@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions;
 using Energinet.DataHub.Core.XmlConversion.XmlConverter.Configuration;
 using SimpleInjector;
 
-namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.SimpleInjector.Extensions
+namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Extensions
 {
     public static class ContainerExtensions
     {

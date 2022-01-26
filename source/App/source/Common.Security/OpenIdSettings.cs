@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.Common.Identity
+namespace Energinet.DataHub.Core.App.Common.Security
 {
     public sealed class OpenIdSettings
     {

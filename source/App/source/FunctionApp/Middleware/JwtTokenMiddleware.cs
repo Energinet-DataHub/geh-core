@@ -15,32 +15,27 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.Helpers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
 {
     public sealed class JwtTokenMiddleware : IFunctionsWorkerMiddleware
     {
-        private readonly JwtSecurityTokenHandler _tokenValidator;
         private readonly ClaimsPrincipalContext _claimsPrincipalContext;
-        private readonly OpenIdSettings _configuration;
+        private readonly IJwtTokenValidator _jwtTokenValidator;
 
-        public JwtTokenMiddleware(ClaimsPrincipalContext claimsPrincipalContext, OpenIdSettings settings)
+        public JwtTokenMiddleware(ClaimsPrincipalContext claimsPrincipalContext, IJwtTokenValidator jwtTokenValidator)
         {
-            _tokenValidator = new JwtSecurityTokenHandler();
             _claimsPrincipalContext = claimsPrincipalContext ?? throw new ArgumentNullException(nameof(claimsPrincipalContext));
-            _configuration = settings ?? throw new ArgumentNullException(nameof(settings));
+            _jwtTokenValidator = jwtTokenValidator;
         }
 
         public async Task Invoke(FunctionContext context, [NotNull] FunctionExecutionDelegate next)
@@ -61,40 +56,15 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
                 return;
             }
 
-            if (!_tokenValidator.CanReadToken(token))
+            var (isValid, claimsPrincipal) = await _jwtTokenValidator.ValidateTokenAsync(token).ConfigureAwait(false);
+
+            if (!isValid)
             {
-                // Token is malformed
                 FunctionContextHelper.SetErrorResponse(context);
                 return;
             }
 
-            try
-            {
-                var openIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(_configuration.MetadataAddress, new OpenIdConnectConfigurationRetriever());
-                var openIdConnectConfigData = await openIdConfigurationManager.GetConfigurationAsync();
-
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    RequireSignedTokens = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidAudience = _configuration.Audience,
-                    IssuerSigningKeys = openIdConnectConfigData.SigningKeys,
-                    ValidIssuer = openIdConnectConfigData.Issuer,
-                };
-
-                var principal = _tokenValidator.ValidateToken(token, validationParameters, out _);
-                _claimsPrincipalContext.ClaimsPrincipal = principal;
-            }
-            catch (Exception)
-            {
-                // Token is not valid (expired etc.)
-                FunctionContextHelper.SetErrorResponse(context);
-                return;
-            }
+            _claimsPrincipalContext.ClaimsPrincipal = claimsPrincipal;
 
             await next(context).ConfigureAwait(false);
         }

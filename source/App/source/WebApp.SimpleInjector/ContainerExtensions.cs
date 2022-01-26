@@ -15,7 +15,9 @@
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
+using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
+using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using SimpleInjector;
 
@@ -32,6 +34,7 @@ namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector
         public static void AddJwtTokenSecurity(this Container container, string metadataAddress, string audience)
         {
             container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
+            container.Register<IJwtTokenValidator, JwtTokenValidator>(Lifestyle.Scoped);
             container.Register<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>(Lifestyle.Scoped);
             container.Register<ClaimsPrincipalContext>(Lifestyle.Scoped);
             container.Register(() => new OpenIdSettings(metadataAddress, audience));

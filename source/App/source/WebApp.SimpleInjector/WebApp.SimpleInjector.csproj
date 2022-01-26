@@ -28,7 +28,7 @@ limitations under the License.
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.WebApp.SimpleInjector</PackageId>
     <!-- Remember to bump Authorization version. -->
-    <PackageVersion>3.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.1$(VersionSuffix)</PackageVersion>
     <Title>Azure WebApp Dependency Injection Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -64,6 +64,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common.Security\Common.Security.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\WebApp\WebApp.csproj" />
   </ItemGroup>

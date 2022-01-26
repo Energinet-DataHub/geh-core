@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Publish FunctionApp bundle
+name: Publish App Common bundle
 
 on:
   # Build, test, pack and publish release packages
@@ -21,23 +21,24 @@ on:
     branches:
       - main
     paths:
-      - source/FunctionApp/source/Common/**
-      - source/FunctionApp/source/Common.Abstractions/**
-      - .github/workflows/functionapp-bundle-publish.yml
+      - source/App/source/Common/**
+      - source/App/source/Common.Abstractions/**
+      - source/App/source/Common.Security/**
+      - .github/workflows/app-common-bundle-publish.yml
   # Build, test, pack
   # Executed if FunctionApp folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
     paths:
-      - source/FunctionApp/**
-      - .github/workflows/functionapp-bundle-publish.yml
+      - source/App/**
+      - .github/workflows/app-common-bundle-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
 
 env:
-  SOLUTION_FILE_PATH: source/FunctionApp/FunctionApp.sln
+  SOLUTION_FILE_PATH: source/App/App.sln
   BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
@@ -86,27 +87,47 @@ jobs:
       - name: Pack Common project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/FunctionApp/source/Common/Common.csproj'
+          PROJECT_PATH: 'source/App/source/Common/Common.csproj'
 
       - name: Pack Common.Abstractions project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/FunctionApp/source/Common.Abstractions/Common.Abstractions.csproj'
+          PROJECT_PATH: 'source/App/source/Common.Abstractions/Common.Abstractions.csproj'
 
-      - name: Pack Common.SimpleInjector project
+      - name: Pack Common.Security project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/FunctionApp/source/Common.SimpleInjector/Common.SimpleInjector.csproj'
+          PROJECT_PATH: 'source/App/source/Common.Security/Common.Security.csproj'
+
+      - name: Pack FunctionApp project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/App/source/FunctionApp/FunctionApp.csproj'
+
+      - name: Pack WebApp project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/App/source/WebApp/WebApp.csproj'
+
+      - name: Pack FunctionApp.SimpleInjector project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/App/source/FunctionApp.SimpleInjector/FunctionApp.SimpleInjector.csproj'
+
+      - name: Pack WebApp.SimpleInjector project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/App/source/WebApp.SimpleInjector/WebApp.SimpleInjector.csproj'
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
         with:
-          NUPKG_RECURSE_PATH: 'source/FunctionApp/source'
+          NUPKG_RECURSE_PATH: 'source/App/source'
       
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
         env:
-          NUPKG_FILTER_PATTERN: 'source/FunctionApp/source/**/*.nupkg'
+          NUPKG_FILTER_PATTERN: 'source/App/source/**/*.nupkg'
           NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
