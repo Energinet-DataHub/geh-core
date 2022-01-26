@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlConverter.Tests", "sourc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlConverter.Abstractions", "source\XmlConverter.Abstractions\XmlConverter.Abstractions.csproj", "{2DD4E9AA-F084-4083-BE7B-838C5E156781}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlConverter.SimpleInjector", "source\XmlConverter.SimpleInjector\XmlConverter.csproj", "{3971DE20-AE60-4B88-BCCD-05DE834B4EB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlConverter.SimpleInjector", "source\XmlConverter.SimpleInjector\XmlConverter.SimpleInjector.csproj", "{3971DE20-AE60-4B88-BCCD-05DE834B4EB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
