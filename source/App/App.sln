@@ -18,13 +18,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "source\Comm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Abstractions", "source\Common.Abstractions\Common.Abstractions.csproj", "{0847DC2D-8E38-4972-A733-AFDE6DC932C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp.SimpleInjector", "source\FunctionApp.SimpleInjector\FunctionApp.csproj", "{9264F591-04B6-47F6-AD83-084BF5E226AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp.SimpleInjector", "source\FunctionApp.SimpleInjector\FunctionApp.SimpleInjector.csproj", "{9264F591-04B6-47F6-AD83-084BF5E226AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp", "source\FunctionApp\FunctionApp.csproj", "{CD47138E-5C6D-4E9C-8A44-F1A080C8BE93}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "source\WebApp\WebApp.csproj", "{D4591159-57DE-410C-BF62-81E4E14BD192}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.SimpleInjector", "source\WebApp.SimpleInjector\WebApp.csproj", "{9F457836-6420-49AD-8EB3-EEF300E35F8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.SimpleInjector", "source\WebApp.SimpleInjector\WebApp.SimpleInjector.csproj", "{9F457836-6420-49AD-8EB3-EEF300E35F8E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Security", "source\Common.Security\Common.Security.csproj", "{0C3952A7-BF54-4467-A70F-41EC5F3C3A0D}"
 EndProject
