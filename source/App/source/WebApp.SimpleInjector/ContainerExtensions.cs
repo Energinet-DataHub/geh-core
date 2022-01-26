@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Identity;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware;
+using Energinet.DataHub.Core.App.WebApp.Middleware;
 using SimpleInjector;
 
 namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector

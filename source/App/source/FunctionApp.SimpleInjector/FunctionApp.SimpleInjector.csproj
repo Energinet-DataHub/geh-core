@@ -38,16 +38,16 @@ limitations under the License.
       Is shown in Azure DevOps artifacts Release Notes section.
     -->
     <PackageReleaseNotes>
-      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/FunctionApp/documents/release-notes/release-notes.md)
-      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/FunctionApp/documents/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/App/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/App/documents/documentation.md)
     </PackageReleaseNotes>
     <!-- PackageDescription:
       Is shown in GitHub packages "About this package" section,
       and in Visual Studio package manager view.
     -->
     <PackageDescription>
-      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/FunctionApp/documents/release-notes/release-notes.md)
-      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/FunctionApp/documents/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/App/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/App/documents/documentation.md)
     </PackageDescription>
     <Description>Provides Simple Injector extensions for registration of common functionality for Azure Functions in Energinet.DataHub.</Description>
     <PackageTags>energinet;datahub</PackageTags>
