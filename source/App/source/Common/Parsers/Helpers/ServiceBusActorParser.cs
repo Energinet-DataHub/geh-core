@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text.Json;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 
-namespace Energinet.DataHub.Core.App.Common.Middleware.Helpers
+namespace Energinet.DataHub.Core.App.Common.Parsers.Helpers
 {
     public static class ServiceBusActorParser
     {

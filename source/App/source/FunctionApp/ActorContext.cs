@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.Common.Middleware
+using System;
+using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
+
+namespace Energinet.DataHub.Core.App.FunctionApp
 {
-    public sealed class OpenIdSettings
+    public class ActorContext : IActorContext
     {
-        public string MetadataAddress { get; }
+        public Actor? CurrentActor { get; set; }
 
-        public string Audience { get; }
-
-        public OpenIdSettings(string metadataAddress, string audience)
-        {
-            MetadataAddress = metadataAddress;
-            Audience = audience;
-        }
+        public Actor DataHub => new(Guid.Empty, "GLN", "5790001330552", "MeteringPointAdministrator");
     }
 }

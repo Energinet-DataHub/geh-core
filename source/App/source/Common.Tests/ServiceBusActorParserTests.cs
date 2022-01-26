@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.Core.App.Common.Middleware.Helpers;
+using Energinet.DataHub.Core.App.Common.Parsers.Helpers;
 using Xunit;
 
 namespace Energinet.DataHub.Core.SchemaValidation.Tests

@@ -14,11 +14,11 @@
 
 using System;
 using System.Net;
-using Energinet.DataHub.Core.App.Common.Extensions;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace Energinet.DataHub.Core.App.Common.Middleware.Helpers
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.Helpers
 {
     public static class FunctionContextHelper
     {

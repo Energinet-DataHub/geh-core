@@ -18,7 +18,7 @@ using System.Linq;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace Energinet.DataHub.Core.App.Common.Extensions
+namespace Energinet.DataHub.Core.App.FunctionApp.Extensions
 {
     /// <summary>
     /// https://github.com/Azure/azure-functions-dotnet-worker/issues/414

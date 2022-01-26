@@ -19,16 +19,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.App.Common.Extensions;
 using Energinet.DataHub.Core.App.Common.Identity;
-using Energinet.DataHub.Core.App.Common.Middleware.Helpers;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.Helpers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Energinet.DataHub.Core.App.Common.Middleware
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
 {
     public sealed class JwtTokenMiddleware : IFunctionsWorkerMiddleware
     {

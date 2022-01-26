@@ -20,12 +20,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
-using Energinet.DataHub.Core.App.Common.Extensions;
-using Energinet.DataHub.Core.App.Common.Middleware.Helpers;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.Helpers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
-namespace Energinet.DataHub.Core.App.Common.Middleware
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
 {
     public class ActorMiddleware : IFunctionsWorkerMiddleware
     {
