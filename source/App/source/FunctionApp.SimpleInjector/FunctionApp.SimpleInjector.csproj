@@ -19,17 +19,17 @@ limitations under the License.
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
-    <AssemblyName>Energinet.DataHub.Core.App.Common.SimpleInjector</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.App.Common.SimpleInjector</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.App.AppFunction.SimpleInjector</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.App.AppFunction.SimpleInjector</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Energinet.DataHub.Core.App.Common.SimpleInjector</PackageId>
+    <PackageId>Energinet.DataHub.Core.App.AppFunction.SimpleInjector</PackageId>
     <!-- Remember to bump Authorization version. -->
     <PackageVersion>2.0.1$(VersionSuffix)</PackageVersion>
-    <Title>Azure Function Common Dependency Injection Library</Title>
+    <Title>Azure Function Dependency Injection Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
     <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
