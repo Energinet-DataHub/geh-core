@@ -21,7 +21,7 @@ using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using SimpleInjector;
 
-namespace Energinet.DataHub.Core.App.AppFunction.SimpleInjector
+namespace Energinet.DataHub.Core.App.FunctionApp.SimpleInjector
 {
     public static class ContainerExtensions
     {
