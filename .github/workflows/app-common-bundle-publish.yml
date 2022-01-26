@@ -24,12 +24,16 @@ on:
       - source/App/source/Common/**
       - source/App/source/Common.Abstractions/**
       - source/App/source/Common.Security/**
+      - source/App/source/FunctionApp/**
+      - source/App/source/FunctionApp.SimpleInjector/**
+      - source/App/source/WebApp/**
+      - source/App/source/WebApp.SimpleInjector/**
       - .github/workflows/app-common-bundle-publish.yml
   # Build, test, pack
   # Executed if FunctionApp folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
-      - cmgrd/function-app
+      - main
     paths:
       - source/App/**
       - .github/workflows/app-common-bundle-publish.yml
