@@ -74,14 +74,14 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         private Task LogRequestAsync(LogInformation requestLogInformation)
         {
             var requestLogNameAndFolder = LogDataBuilder.BuildLogName(requestLogInformation.MetaData);
-            var requestLogName = requestLogNameAndFolder.Name + " request.txt";
+            var requestLogName = requestLogNameAndFolder.Name + "_request.txt";
             return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName, requestLogNameAndFolder.Folder);
         }
 
         private Task LogResponseAsync(LogInformation responseLogInformation, Dictionary<string, string> requestMetaData)
         {
             var responseLogNameAndFolder = LogDataBuilder.BuildLogName(requestMetaData);
-            var responseLogName = responseLogNameAndFolder.Name + " response.txt";
+            var responseLogName = responseLogNameAndFolder.Name + "_response.txt";
             return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName, responseLogNameAndFolder.Folder);
         }
 
@@ -168,10 +168,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         {
             try
             {
-                var sw = Stopwatch.StartNew();
                 var request = context.GetHttpRequestData();
-                sw.Stop();
-                _logger.LogInformation("ShouldLogRequestResponse execution took ms: {lookupTime}", sw.ElapsedMilliseconds);
                 return request is { };
             }
             catch

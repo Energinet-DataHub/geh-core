@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text.RegularExpressions;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Xunit;
 using Xunit.Categories;
@@ -21,6 +24,8 @@ namespace RequestResponseMiddleware.Tests
     [UnitTest]
     public class LogDataBuilderTests
     {
+        private static readonly JwtSecurityTokenHandler _tokenHandler = new();
+
         [Theory]
         [InlineData("00-11f7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01", true)]
         [InlineData("00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01", true)]
@@ -42,6 +47,16 @@ namespace RequestResponseMiddleware.Tests
             var result = LogDataBuilder.TraceParentSplit(traceParent);
             Assert.NotNull(result);
             Assert.Equal(expectedTraceId, result.Value.Traceid);
+        }
+
+        [Theory]
+        [InlineData("11f7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01")]
+        [InlineData(null)]
+        [InlineData("")]
+        public void TraceParentSplit_InValidTraceId(string? traceParent)
+        {
+            var result = LogDataBuilder.TraceParentSplit(traceParent ?? string.Empty);
+            Assert.Null(result);
         }
     }
 }
