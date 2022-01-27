@@ -1,4 +1,4 @@
-# Azure Function Common Documentation
+# Azure App Common Documentation
 
 A library containing common functionality for Azure Functions.
 
@@ -20,30 +20,69 @@ Install following packages
 
 * `Energinet.DataHub.Core.App.Common`
 * `Energinet.DataHub.Core.App.Common.Abstractions`
-  
+
+And follow the instructions for either Functions or WebApis below. After those steps `ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`.
+
+#### Functions
+
+Install `Energinet.DataHub.Core.App.FunctionApp`.
+
 Add Middleware to `ConfigureFunctionsWorkerDefaults` as **the first in line** as below:
 
 ```c#
 .ConfigureFunctionsWorkerDefaults(options => options
 {
     options.UseMiddleware<JwtTokenMiddleware>();
-    ...
+    …
 })
 ```
 
 Register in IoC (in example below SimpleInjector is used)
 Note: The following package must be installed
-* `Energinet.DataHub.Core.App.Common.SimpleInjector`
+
+* `Energinet.DataHub.Core.App.FunctionApp.SimpleInjector`
 
 ```c#
 protected override void ConfigureContainer(Container container)
 {
+    …
     container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
-    ...
+    …
 }
 ```
 
-`ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`
+#### WebApi
+
+Install the following
+
+* `Energinet.DataHub.Core.App.WebApp`.
+* `Energinet.DataHub.Core.App.WebApp.SimpleInjector`
+
+Replace the default middleware factory with the SimpleInjectorMiddlewareFactory:
+
+```c#
+services.AddTransient<IMiddlewareFactory>(_ =>
+{
+    return new SimpleInjectorMiddlewareFactory(_container);
+});
+```
+
+If SimpleInjector is not already in use, do remember to wrap ASP.NET Core requests in a SimpleInjector execution context:
+
+```c#
+services.UseSimpleInjectorAspNetRequestScoping(_container);
+```
+
+Register in container:
+
+```c#
+public void ConfigureServices(IServiceCollection services)
+{
+    …
+    container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
+    …
+}
+```
 
 ## Actor Middleware
 
@@ -55,27 +94,22 @@ When this middleware is added, it will be possible to get the current actor via 
 
 ### Usage
 
-Add Middleware to `ConfigureFunctionsWorkerDefaults` right after `JwtTokenMiddleware` as below:
+Setup following the same steps as for `JwtTokenMiddleware`, using the same packages as before.
+
+Add `ActorMiddleware` after `JwtTokenMiddleware` as below:
 
 ```c#
-.ConfigureFunctionsWorkerDefaults(options => options
-{
-    options.UseMiddleware<JwtTokenMiddleware>();
-    options.UseMiddleware<ActorMiddleware>();
-    ...
-})
+options.UseMiddleware<JwtTokenMiddleware>();
+options.UseMiddleware<ActorMiddleware>();
+…
 ```
 
-Register in IoC (in example below SimpleInjector is used)
-Note: The following package must be installed
-* `Energinet.DataHub.Core.App.Common.SimpleInjector`
+Register in container:
 
 ```c#
-protected override void ConfigureContainer(Container container)
-{
-    container.AddActorContext<MyActorProviderImplementation>()
-    ...
-}
+…
+container.AddActorContext<MyActorProviderImplementation>()
+…
 ```
 
-`CurrentActor` can now be accessed through `IActorContext`
+`CurrentActor` can now be accessed through `IActorContext`.
