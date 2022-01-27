@@ -19,7 +19,7 @@ on:
   # Only executed if (*.)FunctionApp packages content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
-      - cmgrd/function-app
+      - main
     paths:
       - source/App/source/Common/**
       - source/App/source/Common.Abstractions/**
