@@ -24,8 +24,6 @@ namespace RequestResponseMiddleware.Tests
     [UnitTest]
     public class LogDataBuilderTests
     {
-        private static readonly JwtSecurityTokenHandler _tokenHandler = new();
-
         [Theory]
         [InlineData("00-11f7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01", true)]
         [InlineData("00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01", true)]
