@@ -26,3 +26,9 @@
 
 - Added TraceId to metadata and index tags for better lookup with application insight logs.
 - Limited query params saved in index tags to 3.
+
+## Version 1.0.7
+
+- Better file naming for cleaner blob urls
+- Added actorid jwt token parsing
+- Removed gln jwt token parsing

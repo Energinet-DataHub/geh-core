@@ -45,13 +45,13 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             var indexTags =
                 new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(3));
 
-            var jwtTokenGln = JwtTokenParsing.ReadJwtGln(context);
-            var glnToWrite = string.IsNullOrWhiteSpace(jwtTokenGln) ? "nojwtgln" : jwtTokenGln;
+            var jwtTokenActorId = JwtTokenParsing.ReadJwtActorId(context);
+            var actorIdToWrite = string.IsNullOrWhiteSpace(jwtTokenActorId) ? "noactoridfound" : jwtTokenActorId;
 
             var traceParentParts = TraceParentSplit(context.TraceContext?.TraceParent ?? string.Empty);
             var traceId = traceParentParts?.Traceid;
 
-            metaData.TryAdd(MetaNameFormatter("JwtGln"), glnToWrite);
+            metaData.TryAdd(MetaNameFormatter("JwtActorId"), actorIdToWrite);
             metaData.TryAdd(MetaNameFormatter("FunctionId"), context.FunctionId);
             metaData.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             metaData.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
@@ -59,7 +59,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             metaData.TryAdd(MetaNameFormatter("TraceId"), traceId ?? string.Empty);
             metaData.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
 
-            indexTags.TryAdd(MetaNameFormatter("JwtGln"), glnToWrite);
+            indexTags.TryAdd(MetaNameFormatter("JwtActorId"), actorIdToWrite);
             indexTags.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
             indexTags.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
             indexTags.TryAdd(MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
@@ -75,11 +75,11 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             var subfolder = time.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
             string name = $"{LookUpInDictionary("functionname", metaData)}" +
-                          $"{LookUpInDictionary("jwtgln", metaData)}" +
+                          $"{LookUpInDictionary("jwtactorid", metaData)}" +
                           $"{LookUpInDictionary("invocationid", metaData)}" +
                           $"{LookUpInDictionary("traceparent", metaData)}" +
                           $"{LookUpInDictionary("correlationid", metaData)}" +
-                          $"{time.ToString()}";
+                          $"{time.ToString("yyyy-MM-ddTHH-mm-ss'Z'", CultureInfo.InvariantCulture)}";
 
             return (name, subfolder);
         }

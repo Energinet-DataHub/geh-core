@@ -43,5 +43,15 @@ namespace RequestResponseMiddleware.Tests
             Assert.NotNull(result);
             Assert.Equal(expectedTraceId, result.Value.Traceid);
         }
+
+        [Theory]
+        [InlineData("11f7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01")]
+        [InlineData(null)]
+        [InlineData("")]
+        public void TraceParentSplit_InValidTraceId(string? traceParent)
+        {
+            var result = LogDataBuilder.TraceParentSplit(traceParent ?? string.Empty);
+            Assert.Null(result);
+        }
     }
 }

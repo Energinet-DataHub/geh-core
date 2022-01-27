@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
     {
         private static readonly JwtSecurityTokenHandler _tokenHandler = new();
 
-        public static string ReadJwtGln(FunctionContext context)
+        public static string ReadJwtActorId(FunctionContext context)
         {
             try
             {
@@ -42,28 +42,16 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                             return string.Empty;
                         }
 
-                        var identifierType = GetClaim(parsed.Claims, "identifierType");
-                        var identifier = GetClaim(parsed.Claims, "identifier");
-                        if (identifierType is not null && identifier is not null)
-                        {
-                            return identifier.Value;
-                        }
-
-                        return parsed.Subject ?? string.Empty;
+                        return parsed.Payload.Azp ?? string.Empty;
                     }
                 }
             }
             catch
             {
-                return string.Empty;
+                // ignored
             }
 
             return string.Empty;
-        }
-
-        private static Claim? GetClaim(IEnumerable<Claim> claims, string claimType)
-        {
-            return claims.SingleOrDefault(x => x.Type == claimType);
         }
     }
 }
