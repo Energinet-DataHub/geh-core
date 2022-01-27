@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text.RegularExpressions;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Xunit;
 using Xunit.Categories;
