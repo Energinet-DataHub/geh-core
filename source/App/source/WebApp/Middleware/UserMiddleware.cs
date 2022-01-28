@@ -51,7 +51,7 @@ namespace Energinet.DataHub.Core.App.WebApp.Middleware
                 return;
             }
 
-            var userIdClaim = GetClaim(claimsPrincipal.Claims, "sub");
+            var userIdClaim = GetClaim(claimsPrincipal.Claims, ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userIdClaim?.Value, out var userId))
             {
                 HttpContextHelper.SetErrorResponse(context);
