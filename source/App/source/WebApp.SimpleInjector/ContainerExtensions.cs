@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
@@ -41,15 +42,15 @@ namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector
         }
 
         /// <summary>
-        /// Adds registration of ActorMiddleware, ActorContext and ActorProvider.
+        /// Adds registration of UserMiddleware, UserContext and UserProvider.
         /// </summary>
         /// <param name="container">Simple Injector Container</param>
-        public static void AddActorContext<TActorProvider>(this Container container)
-            where TActorProvider : IActorProvider
+        public static void AddUserContext<TUserProvider>(this Container container)
+            where TUserProvider : IUserProvider
         {
-            container.Register<ActorMiddleware>(Lifestyle.Scoped);
-            container.Register<IActorContext, ActorContext>(Lifestyle.Scoped);
-            container.Register(typeof(IActorProvider), typeof(TActorProvider), Lifestyle.Scoped);
+            container.Register<UserMiddleware>(Lifestyle.Scoped);
+            container.Register<IUserContext, UserContext>(Lifestyle.Scoped);
+            container.Register(typeof(IUserProvider), typeof(TUserProvider), Lifestyle.Scoped);
         }
     }
 }

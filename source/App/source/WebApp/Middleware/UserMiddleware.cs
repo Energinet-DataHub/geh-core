@@ -14,31 +14,30 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.WebApp.Middleware.Helpers;
 using Microsoft.AspNetCore.Http;
 
 namespace Energinet.DataHub.Core.App.WebApp.Middleware
 {
-    public class ActorMiddleware : IMiddleware
+    public class UserMiddleware : IMiddleware
     {
         private readonly IClaimsPrincipalAccessor _claimsPrincipalAccessor;
-        private readonly IActorProvider _actorProvider;
-        private readonly IActorContext _actorContext;
+        private readonly IUserProvider _userProvider;
+        private readonly IUserContext _userContext;
 
-        public ActorMiddleware(
+        public UserMiddleware(
             IClaimsPrincipalAccessor claimsPrincipalAccessor,
-            IActorProvider actorProvider,
-            IActorContext actorContext)
+            IUserProvider userProvider,
+            IUserContext userContext)
         {
             _claimsPrincipalAccessor = claimsPrincipalAccessor;
-            _actorProvider = actorProvider;
-            _actorContext = actorContext;
+            _userProvider = userProvider;
+            _userContext = userContext;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -52,15 +51,14 @@ namespace Energinet.DataHub.Core.App.WebApp.Middleware
                 return;
             }
 
-            var actorIdClaim = GetClaim(claimsPrincipal.Claims, "azp");
-            if (!Guid.TryParse(actorIdClaim?.Value, out var actorId))
+            var userIdClaim = GetClaim(claimsPrincipal.Claims, "sub");
+            if (!Guid.TryParse(userIdClaim?.Value, out var userId))
             {
                 HttpContextHelper.SetErrorResponse(context);
                 return;
             }
 
-            var actor = await _actorProvider.GetActorAsync(actorId).ConfigureAwait(false);
-            _actorContext.CurrentActor = actor;
+            _userContext.CurrentUser = await _userProvider.GetUserAsync(userId).ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
         }
