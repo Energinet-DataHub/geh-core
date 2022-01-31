@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.WebApp.Middleware.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -36,6 +37,13 @@ namespace Energinet.DataHub.Core.App.WebApp.Middleware
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
+
+            var endpoint = context.GetEndpoint();
+            if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
+            {
+                await next(context);
+                return;
+            }
 
             if (!TryGetTokenFromHeaders(context, out var token))
             {
