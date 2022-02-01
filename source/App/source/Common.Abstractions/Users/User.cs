@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
 namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
 {
-    public record User(Guid UserId, Guid ActorId);
+    public record User(Guid UserId, List<Guid> ActorIds);
 }
