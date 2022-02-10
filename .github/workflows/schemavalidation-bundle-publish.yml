@@ -12,32 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Publish Validation bundle
+name: Publish Schema Validation bundle
 
 on:
   # Build, test, pack and publish release packages
-  # Only executed if (*.)Validation packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  # Only executed if SchemaValidation package content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
       - main
     paths:
-      - source/Validation/source/Validation/**
-      - source/Validation/source/SchemaValidation/**
-      - .github/workflows/validation-bundle-publish.yml
+      - source/SchemaValidation/source/SchemaValidation/**
+      - .github/workflows/schemavalidation-bundle-publish.yml
   # Build, test, pack
-  # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
+  # Executed if SchemaValidation folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
     paths:
-      - source/Validation/**
-      - .github/workflows/validation-bundle-publish.yml
+      - source/SchemaValidation/**
+      - .github/workflows/schemavalidation-bundle-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
 
 env:
-  SOLUTION_FILE_PATH: source/Validation/Validation.sln
+  SOLUTION_FILE_PATH: source/SchemaValidation/SchemaValidation.sln
   BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
