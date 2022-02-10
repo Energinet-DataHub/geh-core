@@ -85,17 +85,17 @@ jobs:
       - name: Pack SchemaValidation project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/Validation/source/SchemaValidation/SchemaValidation.csproj'
+          PROJECT_PATH: 'source/SchemaValidation/source/SchemaValidation/SchemaValidation.csproj'
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
         with:
-          NUPKG_RECURSE_PATH: 'source/Validation/source'
+          NUPKG_RECURSE_PATH: 'source/SchemaValidation/source'
       
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
         env:
-          NUPKG_FILTER_PATTERN: 'source/Validation/source/**/*.nupkg'
+          NUPKG_FILTER_PATTERN: 'source/SchemaValidation/source/**/*.nupkg'
           NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
