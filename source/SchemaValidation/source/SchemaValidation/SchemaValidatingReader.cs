@@ -93,6 +93,27 @@ namespace Energinet.DataHub.Core.SchemaValidation
             return _sourceReader.ReadValueAsNodaTimeAsync();
         }
 
+        public bool Is(string localName, NodeType nodeType = NodeType.StartElement)
+        {
+            return CurrentNodeName.Equals(localName) && CurrentNodeType == nodeType;
+        }
+
+        public bool IsElement()
+        {
+            return CurrentNodeType == NodeType.StartElement;
+        }
+
+        public async Task ReadUntilEoFOrNextElementNameAsync(string localName, NodeType xmlNodeType = NodeType.StartElement)
+        {
+            while (await AdvanceAsync().ConfigureAwait(false))
+            {
+                if (Is(localName))
+                {
+                    break;
+                }
+            }
+        }
+
         internal XmlSourceValidatingReader GetXmlValidatingReader()
         {
             if (_sourceReader is XmlSourceValidatingReader xmlReader)
