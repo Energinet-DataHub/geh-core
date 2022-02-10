@@ -29,7 +29,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.SchemaValidation</PackageId>
-    <PackageVersion>1.0.7$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.8$(VersionSuffix)</PackageVersion>
     <Title>Schema Validation Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
