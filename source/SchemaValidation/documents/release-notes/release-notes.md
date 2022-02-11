@@ -1,5 +1,9 @@
 # Schema Validation Release notes
 
+## Version 1.0.8
+
+Rename source folder and solution name for easier developer discovery in GitHub repo.
+
 ## Version 1.0.7
 
  - AdvanceAsync() now reads content to ensure it is properly validated.
