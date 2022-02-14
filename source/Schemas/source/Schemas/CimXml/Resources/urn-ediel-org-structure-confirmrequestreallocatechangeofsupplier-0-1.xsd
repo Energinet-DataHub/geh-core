@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:cim="urn:ediel.org:structure:confirmrequestreallocatechangeofsupplier:0:1" xmlns:ecl="urn:entsoe.eu:wgedi:codelists" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" xmlns:cimp="http://www.iec.ch/cimprofile" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:ediel.org:structure:confirmrequestreallocatechangeofsupplier:0:1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="urn-ediel-org-codelists.xsd" namespace="urn:entsoe.eu:wgedi:codelists" />
+  <xs:import schemaLocation="urn-entsoe-eu-wgedi-codelists.xsd" namespace="urn:entsoe.eu:wgedi:codelists" />
   <xs:element name="ConfirmRequestReallocateChangeOfSupplier_MarketDocument" type="cim:ConfirmRequestReallocateChangeOfSupplier_MarketDocument" />
   <xs:simpleType name="MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="ecl:MessageTypeList" />
@@ -73,7 +73,7 @@
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="businessProcessReference_MktActivityRecord.mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="0" maxOccurs="1" name="originalTransactionReference_MktActivityRecord.mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
+      <xs:element minOccurs="0" maxOccurs="1" name="originalTransactionIDReference_MktActivityRecord.mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
       <xs:element minOccurs="1" maxOccurs="1" name="marketEvaluationPoint.mRID" type="cim:MeasurementPointID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>

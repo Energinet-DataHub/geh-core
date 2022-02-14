@@ -22,17 +22,8 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
         {
         }
 
-        public IXmlSchema Codelists { get; }
-            = new CimXmlSchemaContainer("urn-ediel-org-codelists.xsd");
-
         public IXmlSchema GeneralAcknowledgement { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-general-acknowledgement-0-1.xsd");
-
-        public IXmlSchema GeneralAcknowledgementDokument { get; }
-            = new CimXmlSchemaContainer("urn-ediel-org-general-acknowledgementdokument-0-1.xsd");
-
-        public IXmlSchema MeasureNotifyAggregatedTimeseries { get; }
-            = new CimXmlSchemaContainer("urn-ediel-org-measure-notifyaggregatedtimeseries-0-1.xsd");
 
         public IXmlSchema MeasureNotifyValidatedMeasureData { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-measure-notifyvalidatedmeasuredata-0-1.xsd");
@@ -85,9 +76,9 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
         public IXmlSchema StructureConfirmRequestChangeCustomerCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestchangecustomercharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureConfirmRequestChangeOfAccountingPointCharacteristics { get; }
+        public IXmlSchema StructureConfirmRequestChangeAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer(
-                "urn-ediel-org-structure-confirmrequestchangeofaccountingpointcharacteristics-0-1.xsd");
+                "urn-ediel-org-structure-confirmrequestchangeaccountingpointcharacteristics-0-1.xsd");
 
         public IXmlSchema StructureConfirmRequestChangeOfPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-confirmrequestchangeofpricelist-0-1.xsd");
@@ -131,9 +122,9 @@ namespace Energinet.DataHub.Core.Schemas.CimXml
         public IXmlSchema StructureRejectRequestChangeCustomerCharacteristics { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestchangecustomercharacteristics-0-1.xsd");
 
-        public IXmlSchema StructureRejectRequestChangeOfAccountingPointCharacteristics { get; }
+        public IXmlSchema StructureRejectRequestChangeAccountingPointCharacteristics { get; }
             = new CimXmlSchemaContainer(
-                "urn-ediel-org-structure-rejectrequestchangeofaccountingpointcharacteristics-0-1.xsd");
+                "urn-ediel-org-structure-rejectrequestchangeaccountingpointcharacteristics-0-1.xsd");
 
         public IXmlSchema StructureRejectRequestChangeOfPriceList { get; }
             = new CimXmlSchemaContainer("urn-ediel-org-structure-rejectrequestchangeofpricelist-0-1.xsd");

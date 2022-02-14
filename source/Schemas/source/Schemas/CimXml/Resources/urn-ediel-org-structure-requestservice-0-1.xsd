@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:cim="urn:ediel.org:structure:requestservice:0:1" xmlns:ecl="urn:entsoe.eu:wgedi:codelists" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" xmlns:cimp="http://www.iec.ch/cimprofile" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:ediel.org:structure:requestservice:0:1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="urn-ediel-org-codelists.xsd" namespace="urn:entsoe.eu:wgedi:codelists" />
+  <xs:import schemaLocation="urn-entsoe-eu-wgedi-codelists.xsd" namespace="urn:entsoe.eu:wgedi:codelists" />
   <xs:element name="RequestService_MarketDocument" type="cim:RequestService_MarketDocument" />
   <xs:simpleType name="MeasurementPointID_String-base" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="xs:string">
@@ -26,6 +26,9 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:simpleType name="ServiceRequest_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
+    <xs:restriction base="ecl:ServiceRequestTypeList" />
+  </xs:simpleType>
   <xs:complexType name="MktActivityRecord" sawsdl:modelReference="http://iec.ch/TC57/CIM101#MktActivityRecord">
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="mRID" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
@@ -38,7 +41,7 @@
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="marketEvaluationPoint.energySupplier_MarketParticipant.mRID" type="cim:PartyID_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.mRID">
       </xs:element>
-      <xs:element minOccurs="1" maxOccurs="1" name="marketEvaluationPoint.request_ServiceCategory.ElectricalHeating" type="xs:boolean" sawsdl:modelReference="http://iec.ch/TC57/CIM101#Ext_Customer.ElectricalHeating">
+      <xs:element minOccurs="1" maxOccurs="1" name="marketEvaluationPoint.request_ServiceCategory.kind" type="cim:ServiceRequest_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#ServiceCategory.kind">
       </xs:element>
       <xs:element minOccurs="0" maxOccurs="1" name="description" type="xs:string" sawsdl:modelReference="http://iec.ch/TC57/CIM101#IdentifiedObject.description">
       </xs:element>

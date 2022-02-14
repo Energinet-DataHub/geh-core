@@ -29,7 +29,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Schemas</PackageId>
-    <PackageVersion>1.0.8$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.9$(VersionSuffix)</PackageVersion>
     <Title>Schema Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -69,10 +69,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-codelists.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-general-acknowledgement-0-1.xsd" />
-    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-general-acknowledgementdokument-0-1.xsd" />
-    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyaggregatedtimeseries-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyvalidatedmeasuredata-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-measure-notifywholesaleservices-0-1.xsd" />
@@ -88,9 +85,9 @@ limitations under the License.
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-accountingpointcharacteristics-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-characteristicsofacustomeratanap-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestcancellation-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangeaccountingpointcharacteristics-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangebillingmasterdata-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangecustomercharacteristics-0-1.xsd" />
-    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangeofaccountingpointcharacteristics-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangeofpricelist-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-confirmrequestendofsupply-0-1.xsd" />
@@ -103,9 +100,9 @@ limitations under the License.
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestaccountingpointcharacteristics-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestbillingmasterdata-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestcancellation-0-1.xsd" />
+    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangeaccountingpointcharacteristics-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangebillingmasterdata-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangecustomercharacteristics-0-1.xsd" />
-    <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangeofaccountingpointcharacteristics-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangeofpricelist-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestchangeofsupplier-0-1.xsd" />
     <EmbeddedResource Include="CimXml\Resources\urn-ediel-org-structure-rejectrequestendofsupply-0-1.xsd" />

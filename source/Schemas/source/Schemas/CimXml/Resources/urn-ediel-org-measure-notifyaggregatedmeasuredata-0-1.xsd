@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:cim="urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1" xmlns:ecl="urn:entsoe.eu:wgedi:codelists" xmlns:sawsdl="http://www.w3.org/ns/sawsdl" xmlns:cimp="http://www.iec.ch/cimprofile" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="urn-ediel-org-codelists.xsd" namespace="urn:entsoe.eu:wgedi:codelists" />
+  <xs:import schemaLocation="urn-entsoe-eu-wgedi-codelists.xsd" namespace="urn:entsoe.eu:wgedi:codelists" />
   <xs:element name="NotifyAggregatedMeasureData_MarketDocument" type="cim:NotifyAggregatedMeasureData_MarketDocument" />
   <xs:simpleType name="MessageKind_String" sawsdl:modelReference="http://iec.ch/TC57/CIM101#String">
     <xs:restriction base="ecl:MessageTypeList" />
