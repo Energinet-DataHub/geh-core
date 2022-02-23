@@ -47,8 +47,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var httpRequestData = context.GetHttpRequestData();
-            if (httpRequestData == null)
+            if (!context.Is(TriggerType.HttpTrigger))
             {
                 await next(context).ConfigureAwait(false);
                 return;
