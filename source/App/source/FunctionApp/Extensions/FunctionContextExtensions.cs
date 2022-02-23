@@ -25,6 +25,14 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Extensions
     /// </summary>
     public static class FunctionContextExtensions
     {
+        /// <summary>
+        /// Returns whether or not the <paramref name="triggerType"></paramref> is a input binding on the current context.
+        /// </summary>
+        public static bool Is(this FunctionContext context, TriggerType triggerType)
+        {
+            return context.FunctionDefinition.InputBindings.Any(input => input.Value.Type == triggerType.ToString());
+        }
+
         internal static HttpRequestData? GetHttpRequestData(this FunctionContext functionContext)
         {
             if (functionContext == null) throw new ArgumentNullException(nameof(functionContext));
