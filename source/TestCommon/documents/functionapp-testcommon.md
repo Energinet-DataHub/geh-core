@@ -103,7 +103,8 @@ Some developer machines have SQL local DB installed already. We only need to do 
 
 #### Running integration tests in JetBrains Rider
 
-In order to be able to run integration tests in Rider you must have the 'Azure Toolkit for Rider' plugin installed. When logging in through 'Tools > Azure > Azure Log In' you get the option of using Azure CLI. This way Rider looks for the accessTokens.json file containing authentication tokens to access the resources in you subscription. As of version 2.30.0 of the Azure CLI the 'az login' command no longer creates the accessTokens.json file needed for Rider to access your subscription. Hence version 2.29.2 or earlier must be isntalled to get access to your subscriptions through Rider.
+In order to be able to run integration tests in Rider you must have the "Azure Toolkit for Rider" plugin installed. When logging in through `Tools > Azure > Azure Log In` you get the option of using Azure CLI. This way Rider looks for the accessTokens.json file containing authentication tokens to access the resources in you subscription.
+As of version 2.30.0 of the Azure CLI the `az login` command no longer creates the accessTokens.json file needed for Rider to access your subscription. Hence version 2.29.2 or earlier must be installed to get access to your subscriptions through Rider.
 
 ## Concept
 
