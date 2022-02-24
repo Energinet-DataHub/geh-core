@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{A54672A6-C896-4322-B0CA-14599A8C52DE}"
 	ProjectSection(SolutionItems) = preProject
-		documentation.md = documentation.md
+		documents\documentation.md = documents\documentation.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}"
@@ -15,9 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-no
 		release-notes.md = release-notes.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonSerialization", "JsonSerialization\JsonSerialization.csproj", "{28212133-2877-48D9-9DDD-D8A0AFA829CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonSerialization", "source\JsonSerialization\JsonSerialization.csproj", "{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonSerialization.Tests", "JsonSerialization.Tests\JsonSerialization.Tests.csproj", "{C59F78C9-8C37-4039-BC57-EAF3A6085C6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonSerialization.Tests", "source\JsonSerialization.Tests\JsonSerialization.Tests.csproj", "{CFA908F1-A9E9-465F-8EF2-393D456E1209}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,22 +25,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{28212133-2877-48D9-9DDD-D8A0AFA829CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28212133-2877-48D9-9DDD-D8A0AFA829CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28212133-2877-48D9-9DDD-D8A0AFA829CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28212133-2877-48D9-9DDD-D8A0AFA829CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C59F78C9-8C37-4039-BC57-EAF3A6085C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C59F78C9-8C37-4039-BC57-EAF3A6085C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C59F78C9-8C37-4039-BC57-EAF3A6085C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C59F78C9-8C37-4039-BC57-EAF3A6085C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFA908F1-A9E9-465F-8EF2-393D456E1209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFA908F1-A9E9-465F-8EF2-393D456E1209}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFA908F1-A9E9-465F-8EF2-393D456E1209}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFA908F1-A9E9-465F-8EF2-393D456E1209}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0CDBBBD4-D9D9-45C8-9F35-4C7E278466B7} = {A54672A6-C896-4322-B0CA-14599A8C52DE}
-		{28212133-2877-48D9-9DDD-D8A0AFA829CE} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
-		{C59F78C9-8C37-4039-BC57-EAF3A6085C6D} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
+		{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
+		{CFA908F1-A9E9-465F-8EF2-393D456E1209} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A1ABFD1-64AE-4D13-816A-222340ACF4F5}
