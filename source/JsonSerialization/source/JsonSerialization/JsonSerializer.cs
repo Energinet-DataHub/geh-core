@@ -39,9 +39,14 @@ namespace Energinet.DataHub.Core.JsonSerialization
                 throw new ArgumentNullException(nameof(utf8Json));
             }
 
-#pragma warning disable CS8603 // Possible null reference return.
-            return await System.Text.Json.JsonSerializer.DeserializeAsync(utf8Json, returnType, _options).ConfigureAwait(false);
-#pragma warning restore CS8603 // Possible null reference return.
+            var result = await System.Text.Json.JsonSerializer.DeserializeAsync(utf8Json, returnType, _options).ConfigureAwait(false);
+
+            if (result == null)
+            {
+                throw new NullReferenceException($"Could not deserialize the stream to {nameof(returnType)}");
+            }
+
+            return result;
         }
 
         public TValue Deserialize<TValue>(string json)
@@ -51,9 +56,14 @@ namespace Energinet.DataHub.Core.JsonSerialization
                 throw new ArgumentNullException(nameof(json));
             }
 
-#pragma warning disable CS8603 // Possible null reference return.
-            return System.Text.Json.JsonSerializer.Deserialize<TValue>(json, _options);
-#pragma warning restore CS8603 // Possible null reference return.
+            var result = System.Text.Json.JsonSerializer.Deserialize<TValue>(json, _options);
+
+            if (result == null)
+            {
+                throw new NullReferenceException("Could not deserialize the string");
+            }
+
+            return result;
         }
 
         public object Deserialize(string json, Type returnType)
@@ -63,9 +73,14 @@ namespace Energinet.DataHub.Core.JsonSerialization
                 throw new ArgumentNullException(nameof(json));
             }
 
-#pragma warning disable CS8603 // Possible null reference return.
-            return System.Text.Json.JsonSerializer.Deserialize(json, returnType, _options);
-#pragma warning restore CS8603 // Possible null reference return.
+            var result = System.Text.Json.JsonSerializer.Deserialize(json, returnType, _options);
+
+            if (result == null)
+            {
+                throw new NullReferenceException($"Could not deserialize the string to {nameof(returnType)}");
+            }
+
+            return result;
         }
 
         public string Serialize<TValue>(TValue value)
