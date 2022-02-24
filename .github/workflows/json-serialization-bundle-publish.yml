@@ -41,7 +41,7 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Tool versions
-  DOTNET_VERSION: "5.0.202"
+  DOTNET_VERSION: "5.0.405"
 
 jobs:
   build_and_publish:
