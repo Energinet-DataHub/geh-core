@@ -33,7 +33,7 @@ services.AddSingleton<IJsonSerializer>(x =>
                     options.Converters.Add(new ProductConverter());
                     options.Converters.Add(new UnitConverter());
                     options.Converters.Add(new SettlementMethodConverter());
-                    options.PropertyNamingPolicy = new ConsumptionMeteringPointCreatedEventNamingPolicy();
+                    options.PropertyNamingPolicy = new CustomJsonNamingPolicy();
 
                     return new JsonSerializer(options);
                 });
