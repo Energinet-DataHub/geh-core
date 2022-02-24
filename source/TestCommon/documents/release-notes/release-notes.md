@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 1.4.0
+
+- Add `AutoMoqDataAttribute` which enables auto mocking of test parameters.
+- Add `InlineAutoMoqDataAttribute` which enables the possibility to inject dependencies in tests as parameters.
+
 ## Version 1.3.0
 
 - Implemented `FunctionAppHostManager.RestartHostIfChanges(IEnumerable<KeyValuePair<string, string>> environmentVariables)` that only restarts the function app if process environment variables has changed.
