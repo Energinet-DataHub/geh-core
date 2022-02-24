@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Publish Logging bundle
+name: Publish Json Serialization bundle
 
 on:
   # Build, test, pack and publish release packages
@@ -21,27 +21,27 @@ on:
     branches:
       - main
     paths:
-      - source/Logging/source/RequestResponseMiddleware/**
-      - .github/workflows/logging-bundle-publish.yml
+      - source/JsonSerialization/source/JsonSerialization/**
+      - .github/workflows/json-serialization-bundle-publish.yml
   # Build, test, pack
   # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
     paths:
-      - source/Logging/**
-      - .github/workflows/validation-bundle-publish.yml
+      - source/JsonSerialization/**
+      - .github/workflows/json-serialization-bundle-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
 
 env:
-  SOLUTION_FILE_PATH: source/Logging/Logging.sln
+  SOLUTION_FILE_PATH: source/JsonSerialization/JsonSerialization.sln
   BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Tool versions
-  DOTNET_VERSION: '5.0.202'
+  DOTNET_VERSION: "5.0.202"
 
 jobs:
   build_and_publish:
@@ -59,7 +59,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
+
       - name: Cache NuGet packages
         uses: actions/cache@v2
         id: cache-nuget
@@ -68,7 +68,7 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
           restore-keys: |
             ${{ runner.os }}-nuget-
-      
+
       - name: Restore NuGet packages
         run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
 
@@ -79,23 +79,23 @@ jobs:
         run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
       - name: Get version suffix property value
-        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@2.3.0
+        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@5.0.2
         id: get_version_suffix
-      
-      - name: Pack RequestResponseMiddleware project
+
+      - name: Pack JsonSerialization project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
-          PROJECT_PATH: 'source/Logging/source/RequestResponseMiddleware/RequestResponseMiddleware.csproj'
+          PROJECT_PATH: "source/JsonSerialization/source/JsonSerialization/JsonSerialization.csproj"
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' }}
-        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@5.0.2
         with:
-          NUPKG_RECURSE_PATH: 'source/Logging/source'
-      
+          NUPKG_RECURSE_PATH: "source/JsonSerialization/source"
+
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
         env:
-          NUPKG_FILTER_PATTERN: 'source/Logging/source/**/*.nupkg'
-          NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
+          NUPKG_FILTER_PATTERN: "source/JsonSerialization/source/**/*.nupkg"
+          NUGET_FEED_PATH: "https://api.nuget.org/v3/index.json"
