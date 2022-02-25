@@ -10,7 +10,7 @@ The package contains a `JsonSerializer`.
 
 `JsonSerializer` has an optional `JsonSerializerOptions` parameter, that can be injected through dependency injection if needed.
 
-By default the `JsonSerializer` includes needed converters added to `JsonSerializer` for `NodaTime.Instant` serialization and deserialization.
+By default the `JsonSerializer` includes a converter for `NodaTime.Instant` serialization and deserialization.
 
 # Registration
 
