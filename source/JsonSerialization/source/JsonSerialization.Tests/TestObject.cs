@@ -19,7 +19,7 @@ namespace JsonSerialization.Tests
 {
     public class TestObject
     {
-        public string String { get; set; }
+        public string String { get; set; } = string.Empty;
 
         public int Int { get; set; }
 
