@@ -4,6 +4,8 @@ Notes regarding usage of the NuGet package bundle `JsonSerialization`.
 
 This package exists to make it easy for developers of Energinet DataHub 3.0 to handle serialization and deserialization of objects without the need to extend `System.Text.Json` with converters for `NodaTime.Instant` on their own.
 
+If a deserialization returns null a `NullReferenceException` will be thrown.
+
 # Getting started
 
 The package contains a `JsonSerializer`.
