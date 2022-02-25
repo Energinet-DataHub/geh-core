@@ -43,7 +43,7 @@ namespace Energinet.DataHub.Core.JsonSerialization
 
             if (result == null)
             {
-                throw new NullReferenceException($"Could not deserialize the stream to {nameof(returnType)}");
+                throw new NullReferenceException($"Deserialization the stream of type {nameof(returnType)} returned null");
             }
 
             return result;
@@ -60,7 +60,7 @@ namespace Energinet.DataHub.Core.JsonSerialization
 
             if (result == null)
             {
-                throw new NullReferenceException("Could not deserialize the string");
+                throw new NullReferenceException("Deserialization of the string returned null");
             }
 
             return result;
@@ -77,7 +77,7 @@ namespace Energinet.DataHub.Core.JsonSerialization
 
             if (result == null)
             {
-                throw new NullReferenceException($"Could not deserialize the string to {nameof(returnType)}");
+                throw new NullReferenceException($"Deserialization the string of type {nameof(returnType)} returned null");
             }
 
             return result;
