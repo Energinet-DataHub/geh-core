@@ -39,6 +39,9 @@ namespace Energinet.DataHub.Core.JsonSerialization
         /// the <paramref name="returnType"/> is not compatible with the JSON,
         /// or when there is remaining data in the Stream.
         /// </exception>
+        /// <exception cref="NullReferenceException">
+        /// Thrown when the deserialized string returns null object.
+        /// </exception>
         ValueTask<object> DeserializeAsync(Stream utf8Json, Type returnType);
 
         /// <summary>
@@ -53,6 +56,9 @@ namespace Energinet.DataHub.Core.JsonSerialization
         /// Thrown when the JSON is invalid,
         /// <typeparamref name="TValue"/> is not compatible with the JSON,
         /// or when there is remaining data in the Stream.
+        /// </exception>
+        /// <exception cref="NullReferenceException">
+        /// Thrown when the deserialized string returns null object.
         /// </exception>
         /// <remarks>Using a <see cref="string"/> is not as efficient as using the
         /// UTF-8 methods since the implementation natively uses UTF-8.
@@ -70,6 +76,9 @@ namespace Energinet.DataHub.Core.JsonSerialization
         /// </exception>
         /// <exception cref="JsonException">
         /// Thrown when the JSON is invalid,
+        /// </exception>
+        /// <exception cref="NullReferenceException">
+        /// Thrown when the deserialized string returns null object.
         /// </exception>
         /// <remarks>Using a <see cref="string"/> is not as efficient as using the
         /// UTF-8 methods since the implementation natively uses UTF-8.
