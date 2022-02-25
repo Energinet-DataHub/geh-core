@@ -16,15 +16,13 @@ name: Publish Json Serialization bundle
 
 on:
   # Build, test, pack and publish release packages
-  # Only executed if (*.)Logging packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  # Only executed if (*.)JsonSerialization packages content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
       - main
     paths:
       - source/JsonSerialization/source/JsonSerialization/**
       - .github/workflows/json-serialization-bundle-publish.yml
-  # Build, test, pack
-  # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
