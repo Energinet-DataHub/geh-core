@@ -21,6 +21,8 @@ namespace Energinet.DataHub.Core.JsonSerialization
 {
     /// <summary>
     /// Contract serialization and deserialization of JSON.
+    /// Uses System.Text.Json to serialize and deserialize.
+    /// Converter for NodaTime.Instant is registered by default.
     /// </summary>
     public interface IJsonSerializer
     {
