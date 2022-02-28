@@ -1,0 +1,119 @@
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
+using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using FluentAssertions;
+using NodaTime;
+using Xunit;
+using JsonSerializer = Energinet.DataHub.Core.JsonSerialization.JsonSerializer;
+
+namespace JsonSerialization.Tests
+{
+    public class JsonSerializerTests
+    {
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithInstant_Then_DeserializedString_ReturnsEqualInstant(JsonSerializer sut, [Frozen] TestObject message)
+        {
+            // Act
+            var actual = sut.Serialize(message);
+            var deserializedObject = sut.Deserialize<TestObject>(actual);
+
+            // Assert
+            deserializedObject.Should().NotBeNull();
+            deserializedObject.Instant.Should().BeEquivalentTo(message.Instant);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithString_Then_DeserializedString_ReturnsEqualString(JsonSerializer sut, [Frozen] TestObject message)
+        {
+            // Act
+            var actual = sut.Serialize(message);
+            var deserializedObject = sut.Deserialize<TestObject>(actual);
+
+            // Assert
+            deserializedObject.Should().NotBeNull();
+            deserializedObject.String.Should().Be(message.String);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithDateTime_Then_DeserializedString_ReturnsEqualDateTime(JsonSerializer sut, [Frozen] TestObject message)
+        {
+            // Act
+            var actual = sut.Serialize(message);
+            var deserializedObject = sut.Deserialize<TestObject>(actual);
+
+            // Assert
+            deserializedObject.Should().NotBeNull();
+            deserializedObject.DateTime.Should().BeSameDateAs(message.DateTime);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithDecimal_Then_DeserializedString_ReturnsEqualDecimal(JsonSerializer sut, [Frozen] TestObject message)
+        {
+            // Act
+            var actual = sut.Serialize(message);
+            var deserializedObject = sut.Deserialize<TestObject>(actual);
+
+            // Assert
+            deserializedObject.Should().NotBeNull();
+            deserializedObject.Decimal.Should().Be(message.Decimal);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithDouble_Then_DeserializedString_ReturnsEqualDouble(JsonSerializer sut, [Frozen] TestObject message)
+        {
+            // Act
+            var actual = sut.Serialize(message);
+            var deserializedObject = sut.Deserialize<TestObject>(actual);
+
+            // Assert
+            deserializedObject.Should().NotBeNull();
+            deserializedObject.Double.Should().Be(message.Double);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithInt_Then_DeserializedString_ReturnsEqualInt(JsonSerializer sut, [Frozen] TestObject message)
+        {
+            // Act
+            var actual = sut.Serialize(message);
+            var deserializedObject = sut.Deserialize<TestObject>(actual);
+
+            // Assert
+            deserializedObject.Should().NotBeNull();
+            deserializedObject.Int.Should().Be(message.Int);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void SerializeString_StringIsNull_ThrowsException(JsonSerializer sut)
+        {
+            Assert.Throws<ArgumentNullException>(() => sut.Serialize((string)null));
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void Deserialize_JsonStringIsNull_ThrowsException(JsonSerializer sut)
+        {
+            Assert.Throws<ArgumentNullException>(() => sut.Deserialize<TestObject>(null!));
+        }
+    }
+}
