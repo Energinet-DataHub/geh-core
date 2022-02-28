@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using System;
-using System.Text.Json;
+using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
@@ -23,16 +24,10 @@ namespace JsonSerialization.Tests
 {
     public class JsonSerializerTests
     {
-        [Fact]
-        public void When_SerializeObjectWithInstant_Then_DeserializedString_ReturnsEqualInstant()
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithInstant_Then_DeserializedString_ReturnsEqualInstant(JsonSerializer sut, [Frozen] TestObject message)
         {
-            // Arrange
-            var sut = new JsonSerializer();
-            var message = new TestObject
-            {
-                Instant = Instant.FromUnixTimeSeconds(1000),
-            };
-
             // Act
             var actual = sut.Serialize(message);
             var deserializedObject = sut.Deserialize<TestObject>(actual);
@@ -42,16 +37,10 @@ namespace JsonSerialization.Tests
             deserializedObject.Instant.Should().BeEquivalentTo(message.Instant);
         }
 
-        [Fact]
-        public void When_SerializeObjectWithString_Then_DeserializedString_ReturnsEqualString()
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithString_Then_DeserializedString_ReturnsEqualString(JsonSerializer sut, [Frozen] TestObject message)
         {
-            // Arrange
-            var sut = new JsonSerializer();
-            var message = new TestObject
-            {
-                String = "string",
-            };
-
             // Act
             var actual = sut.Serialize(message);
             var deserializedObject = sut.Deserialize<TestObject>(actual);
@@ -61,16 +50,10 @@ namespace JsonSerialization.Tests
             deserializedObject.String.Should().Be(message.String);
         }
 
-        [Fact]
-        public void When_SerializeObjectWithDateTime_Then_DeserializedString_ReturnsEqualDateTime()
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithDateTime_Then_DeserializedString_ReturnsEqualDateTime(JsonSerializer sut, [Frozen] TestObject message)
         {
-            // Arrange
-            var sut = new JsonSerializer();
-            var message = new TestObject
-            {
-                DateTime = new DateTime(2020, 1, 1),
-            };
-
             // Act
             var actual = sut.Serialize(message);
             var deserializedObject = sut.Deserialize<TestObject>(actual);
@@ -80,16 +63,10 @@ namespace JsonSerialization.Tests
             deserializedObject.DateTime.Should().BeSameDateAs(message.DateTime);
         }
 
-        [Fact]
-        public void When_SerializeObjectWithDecimal_Then_DeserializedString_ReturnsEqualDecimal()
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithDecimal_Then_DeserializedString_ReturnsEqualDecimal(JsonSerializer sut, [Frozen] TestObject message)
         {
-            // Arrange
-            var sut = new JsonSerializer();
-            var message = new TestObject
-            {
-                Decimal = 1.12m,
-            };
-
             // Act
             var actual = sut.Serialize(message);
             var deserializedObject = sut.Deserialize<TestObject>(actual);
@@ -99,16 +76,10 @@ namespace JsonSerialization.Tests
             deserializedObject.Decimal.Should().Be(message.Decimal);
         }
 
-        [Fact]
-        public void When_SerializeObjectWithDouble_Then_DeserializedString_ReturnsEqualDouble()
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithDouble_Then_DeserializedString_ReturnsEqualDouble(JsonSerializer sut, [Frozen] TestObject message)
         {
-            // Arrange
-            var sut = new JsonSerializer();
-            var message = new TestObject
-            {
-                Double = 3.45,
-            };
-
             // Act
             var actual = sut.Serialize(message);
             var deserializedObject = sut.Deserialize<TestObject>(actual);
@@ -118,16 +89,10 @@ namespace JsonSerialization.Tests
             deserializedObject.Double.Should().Be(message.Double);
         }
 
-        [Fact]
-        public void When_SerializeObjectWithInt_Then_DeserializedString_ReturnsEqualInt()
+        [Theory]
+        [InlineAutoMoqData]
+        public void When_SerializeObjectWithInt_Then_DeserializedString_ReturnsEqualInt(JsonSerializer sut, [Frozen] TestObject message)
         {
-            // Arrange
-            var sut = new JsonSerializer();
-            var message = new TestObject
-            {
-                Int = 6,
-            };
-
             // Act
             var actual = sut.Serialize(message);
             var deserializedObject = sut.Deserialize<TestObject>(actual);
@@ -137,17 +102,17 @@ namespace JsonSerialization.Tests
             deserializedObject.Int.Should().Be(message.Int);
         }
 
-        [Fact]
-        public void SerializeString_StringIsNull_ThrowsException()
+        [Theory]
+        [InlineAutoMoqData]
+        public void SerializeString_StringIsNull_ThrowsException(JsonSerializer sut)
         {
-            var sut = new JsonSerializer();
             Assert.Throws<ArgumentNullException>(() => sut.Serialize((string)null));
         }
 
-        [Fact]
-        public void Deserialize_JsonStringIsNull_ThrowsException()
+        [Theory]
+        [InlineAutoMoqData]
+        public void Deserialize_JsonStringIsNull_ThrowsException(JsonSerializer sut)
         {
-            var sut = new JsonSerializer();
             Assert.Throws<ArgumentNullException>(() => sut.Deserialize<TestObject>(null!));
         }
     }
