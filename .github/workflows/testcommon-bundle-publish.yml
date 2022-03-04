@@ -68,95 +68,70 @@ jobs:
       - name: Checkout repository (feature branch)
         if: ${{ github.ref_name != 'main' }}
         uses: actions/checkout@master
-        # with:
-        #   fetch-depth: 0
 
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v17.2
-
-      - name: List all changed files
-        shell: bash
-        run: |
-          echo "Changes:"
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo " - $file"
-          done
-
-      - name: Package content or build has changed
+      - name: Package content has changed
         id: changed-content
         uses: tj-actions/changed-files@v17.2
         with:
           files: |
             source/TestCommon/source/FunctionApp.TestCommon/**/*.*
             source/TestCommon/source/TestCommon/**/*.*
-            .github/workflows/testcommon-bundle-publish.yml
 
-      - name: Run step if any of the listed files above change
-        if: steps.changed-content.outputs.any_changed == 'true'
+      - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Azurite v${{ env.AZURITE_VERSION }}
+        run: npm install -g azurite@${{ env.AZURITE_VERSION }}
+
+      - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+        run: npm install -g azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v2
+        id: cache-nuget
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore NuGet packages
+        run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
+
+      - name: Build solution
+        run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
+
+      - name: Run tests
         run: |
-          echo "One or more files listed above has changed."
+          az login --service-principal --username "${{ secrets.AZURE_SPN_ID }}" --password "${{ secrets.AZURE_SPN_SECRET }}" --tenant "${{ secrets.AZURE_TENANT_ID }}"
+          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
-      - name: Run step if none of the listed files above change
-        if: steps.changed-content.outputs.any_changed == 'false'
-        run: |
-          echo "None of the files listed above has changed."
+      - name: Get version suffix property value
+        uses: ./.github/actions/get-version-suffix
+        id: get_version_suffix
 
-      # - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
-      #   uses: actions/setup-dotnet@v1
-      #   with:
-      #     dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Pack TestCommon project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/TestCommon/source/TestCommon/TestCommon.csproj'
 
-      # - name: Install Azurite v${{ env.AZURITE_VERSION }}
-      #   run: npm install -g azurite@${{ env.AZURITE_VERSION }}
+      - name: Pack FunctionApp.TestCommon project
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
+        env:
+          PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
-      # - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-      #   run: npm install -g azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+      - name: Check each NuGet package version does not exists (not looking at prereleases)
+        if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
+        uses: ./.github/actions/nuget-assert-release-version
+        with:
+          NUPKG_RECURSE_PATH: 'source/TestCommon/source'
 
-      # - name: Cache NuGet packages
-      #   uses: actions/cache@v2
-      #   id: cache-nuget
-      #   with:
-      #     path: ~/.nuget/packages
-      #     key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
-      #     restore-keys: |
-      #       ${{ runner.os }}-nuget-
-
-      # - name: Restore NuGet packages
-      #   run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
-
-      # - name: Build solution
-      #   run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
-
-      # - name: Run tests
-      #   run: |
-      #     az login --service-principal --username "${{ secrets.AZURE_SPN_ID }}" --password "${{ secrets.AZURE_SPN_SECRET }}" --tenant "${{ secrets.AZURE_TENANT_ID }}"
-      #     az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-      #     dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
-
-      # - name: Get version suffix property value
-      #   uses: ./.github/actions/get-version-suffix
-      #   id: get_version_suffix
-
-      # - name: Pack TestCommon project
-      #   run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-      #   env:
-      #     PROJECT_PATH: 'source/TestCommon/source/TestCommon/TestCommon.csproj'
-
-      # - name: Pack FunctionApp.TestCommon project
-      #   run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-      #   env:
-      #     PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
-
-      # - name: Check each NuGet package version does not exists (not looking at prereleases)
-      #   if: ${{ env.PUSH_PACKAGES == 'true' }}
-      #   uses: ./.github/actions/nuget-assert-release-version
-      #   with:
-      #     NUPKG_RECURSE_PATH: 'source/TestCommon/source'
-
-      # - name: Push to NuGet.org
-      #   if: ${{ env.PUSH_PACKAGES == 'true' }}
-      #   run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
-      #   env:
-      #     NUPKG_FILTER_PATTERN: 'source/TestCommon/source/**/*.nupkg'
-      #     NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
+      - name: Push to NuGet.org
+        if: ${{ env.PUSH_PACKAGES == 'true' }}
+        run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
+        env:
+          NUPKG_FILTER_PATTERN: 'source/TestCommon/source/**/*.nupkg'
+          NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
