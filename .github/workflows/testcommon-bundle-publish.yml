@@ -88,8 +88,8 @@ jobs:
         uses: tj-actions/changed-files@v17.2
         with:
           files: |
-            source/TestCommon/source/FunctionApp.TestCommon/*.*
-            source/TestCommon/source/TestCommon/*.*
+            source/TestCommon/source/FunctionApp.TestCommon/**/*.*
+            source/TestCommon/source/TestCommon/**/*.*
             .github/workflows/testcommon-bundle-publish.yml
 
       - name: Run step if any of the listed files above change
