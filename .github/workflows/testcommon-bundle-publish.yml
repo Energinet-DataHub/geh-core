@@ -48,6 +48,10 @@ env:
   AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
   # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
   AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  # Set value used by 'AzuriteManager'
+  AzuriteBlobFolderPath: '${{ github.workspace }}\node_modules\.bin\'
+  # Overrides settings in 'functionhost.settings.json'
+  FunctionAppHostPath: '${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll'
 
 jobs:
   build_and_publish:
@@ -133,13 +137,14 @@ jobs:
         env:
           PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
-      - name: Package content has changed
+      - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v17.2
         with:
           files: |
             source/TestCommon/source/FunctionApp.TestCommon/**/*.*
             source/TestCommon/source/TestCommon/**/*.*
+            .github/workflows/testcommon-bundle-publish.yml
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
