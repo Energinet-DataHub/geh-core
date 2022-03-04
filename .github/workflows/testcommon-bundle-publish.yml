@@ -59,14 +59,14 @@ jobs:
     environment: CI
 
     steps:
-      - name: Checkout repository (push)
-        if: ${{ github.event_name == 'push' }}
+      - name: Checkout repository (main branch)
+        if: ${{ github.ref_name == 'main' }}
         uses: actions/checkout@master
         with:
           fetch-depth: 2 # To retrieve the preceding commit on 'main'
 
-      - name: Checkout repository (PR)
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Checkout repository (feature branch)
+        if: ${{ github.ref_name != 'main' }}
         uses: actions/checkout@master
 
       - name: Get changed files
