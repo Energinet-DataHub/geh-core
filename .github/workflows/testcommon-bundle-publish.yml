@@ -78,8 +78,9 @@ jobs:
       - name: List all changed files
         shell: bash
         run: |
+          echo "Changes:"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
+            echo " - $file"
           done
 
       # - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
