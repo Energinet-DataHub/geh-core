@@ -83,6 +83,23 @@ jobs:
             echo " - $file"
           done
 
+      - name: Get specific changed files
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v17.2
+        with:
+          files: |
+            **/source/TestCommon/source/*.*
+
+      - name: Run step if any of the listed files above change
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        run: |
+          echo "One or more files listed above has changed."
+
+      - name: Run step if none of the listed files above change
+        if: steps.changed-files-specific.outputs.any_changed == 'false'
+        run: |
+          echo "None of the files listed above has changed."
+
       # - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
       #   uses: actions/setup-dotnet@v1
       #   with:
