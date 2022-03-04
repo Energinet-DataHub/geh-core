@@ -83,20 +83,22 @@ jobs:
             echo " - $file"
           done
 
-      - name: Get specific changed files
-        id: changed-files-specific
+      - name: Package content or build has changed
+        id: changed-content
         uses: tj-actions/changed-files@v17.2
         with:
           files: |
-            **/source/TestCommon/source/*.*
+            **/source/TestCommon/source/FunctionApp.TestCommon/*.*
+            **/source/TestCommon/source/TestCommon/*.*
+            .github/workflows/testcommon-bundle-publish.yml
 
       - name: Run step if any of the listed files above change
-        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        if: steps.changed-content.outputs.any_changed == 'true'
         run: |
           echo "One or more files listed above has changed."
 
       - name: Run step if none of the listed files above change
-        if: steps.changed-files-specific.outputs.any_changed == 'false'
+        if: steps.changed-content.outputs.any_changed == 'false'
         run: |
           echo "None of the files listed above has changed."
 
