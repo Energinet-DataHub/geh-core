@@ -51,9 +51,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         }
 
         /// <inheritdoc/>
-        public TopicSubscriptionBuilder AddSubscription(string subscriptionName, int maxDeliveryCount = 1, TimeSpan? lockDuration = null)
+        public TopicSubscriptionBuilder AddSubscription(
+            string subscriptionName,
+            int maxDeliveryCount = 1,
+            TimeSpan? lockDuration = null,
+            bool requiresSession = false)
         {
-            return TopicResourceBuilder.AddSubscription(subscriptionName, maxDeliveryCount, lockDuration);
+            return TopicResourceBuilder.AddSubscription(
+                subscriptionName, maxDeliveryCount, lockDuration, requiresSession);
         }
 
         /// <inheritdoc/>

@@ -54,13 +54,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         }
 
         /// <inheritdoc/>
-        public TopicSubscriptionBuilder AddSubscription(string subscriptionName, int maxDeliveryCount = 1, TimeSpan? lockDuration = null)
+        public TopicSubscriptionBuilder AddSubscription(
+            string subscriptionName,
+            int maxDeliveryCount = 1,
+            TimeSpan? lockDuration = null,
+            bool requiresSession = false)
         {
             var createSubscriptionOptions = new CreateSubscriptionOptions(CreateTopicOptions.Name, subscriptionName)
             {
                 AutoDeleteOnIdle = CreateTopicOptions.AutoDeleteOnIdle,
                 MaxDeliveryCount = maxDeliveryCount,
                 LockDuration = lockDuration ?? TimeSpan.FromMinutes(1),
+                RequiresSession = requiresSession,
             };
 
             var subscriptionBuilder = new TopicSubscriptionBuilder(this, createSubscriptionOptions);

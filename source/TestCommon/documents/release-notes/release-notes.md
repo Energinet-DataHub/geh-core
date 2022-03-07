@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 1.4.2
+
+- `ITopicResourceBuilder.AddSubscription()` is extended with the possibility to set the `requiresSession` parameter for `CreateSubscriptionOptions`.
+
 ## Version 1.4.1
 
 - Update build pipeline, which forced republishing the same package content.
