@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 1.4.1
+
+- Update build pipeline, which forced republishing the same package content.
+
 ## Version 1.4.0
 
 - Add `AutoMoqDataAttribute` which enables auto mocking of test parameters.

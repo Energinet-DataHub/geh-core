@@ -42,15 +42,20 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Tool versions
-  DOTNET_VERSION: '5.0.202'
-  AZURITE_VERSION: '3.14.0'
-  AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '3.0.3568'
+  DOTNET_VERSION: '5.0.405'
+  NODE_VERSION: '16'
+  AZURITE_VERSION: '3.15.0'
+  AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
   # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
   AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  # Set value used by 'AzuriteManager'
+  AzuriteBlobFolderPath: '${{ github.workspace }}\node_modules\.bin\'
+  # Overrides settings in 'functionhost.settings.json'
+  FunctionAppHostPath: '${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll'
 
 jobs:
   build_and_publish:
-    runs-on: windows-latest
+    runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
     permissions:
@@ -59,19 +64,43 @@ jobs:
     environment: CI
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (main branch)
+        if: ${{ github.ref_name == 'main' }}
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 2 # To retrieve the preceding commit on 'main'
+
+      - name: Checkout repository (feature branch)
+        if: ${{ github.ref_name != 'main' }}
         uses: actions/checkout@master
 
       - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+        env:
+          DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
+
+      - name: Use Node v${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-azurite-${{ env.AZURITE_VERSION }}-func-${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+          path: ${{ github.workspace }}\node_modules
 
       - name: Install Azurite v${{ env.AZURITE_VERSION }}
-        run: npm install -g azurite@${{ env.AZURITE_VERSION }}
+        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+        run: |
+          npm install azurite@${{ env.AZURITE_VERSION }}
 
       - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-        run: npm install -g azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+        run: npm install azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
 
       - name: Cache NuGet packages
         uses: actions/cache@v2
@@ -108,8 +137,17 @@ jobs:
         env:
           PROJECT_PATH: 'source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
+      - name: Package content or build has changed
+        id: changed-content
+        uses: tj-actions/changed-files@v17.2
+        with:
+          files: |
+            source/TestCommon/source/FunctionApp.TestCommon/**/*.*
+            source/TestCommon/source/TestCommon/**/*.*
+            .github/workflows/testcommon-bundle-publish.yml
+
       - name: Check each NuGet package version does not exists (not looking at prereleases)
-        if: ${{ env.PUSH_PACKAGES == 'true' }}
+        if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
         uses: ./.github/actions/nuget-assert-release-version
         with:
           NUPKG_RECURSE_PATH: 'source/TestCommon/source'
