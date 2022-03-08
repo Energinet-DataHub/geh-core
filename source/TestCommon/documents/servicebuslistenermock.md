@@ -20,7 +20,7 @@ Add a listener to start receiving messages from either a queue and/or a topic/su
 
 ### `When()` and `DoAsync()`
 
-At the lowest level we can use `When()` to setup a filter based on any service bus message property. If an incomming message matches the filter, the action registered with `DoAsync()` is executed.
+At the lowest level we can use `When()` to setup a filter based on any service bus message property. If an incoming message matches the filter, the action registered with `DoAsync()` is executed.
 
 ```csharp
 await serviceBusListenerMock

@@ -45,7 +45,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// Add an action that will be called after the topic has been created.
         /// </summary>
         /// <param name="postAction">Action to call with topic properties when topic has been created.</param>
-        /// <returns>Topic resouce builder.</returns>
+        /// <returns>Topic resource builder.</returns>
         public TopicResourceBuilder Do(Action<TopicProperties> postAction)
         {
             PostActions.Add(postAction);
