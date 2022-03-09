@@ -294,7 +294,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var subscriptionEnvironmentVariable01 = "ENV_SUBSCRIPTION_NAME_01";
                 var subscriptionEnvironmentVariable02 = "ENV_SUBSCRIPTION_NAME_02";
 
-                 // Act
+                // Act
                 var actualResource = await Sut
                     .BuildTopic(NamePrefix).SetEnvironmentVariableToTopicName(topicEnvironmentVariable)
                     .AddSubscription(SubscriptionName01).SetEnvironmentVariableToSubscriptionName(subscriptionEnvironmentVariable01)
