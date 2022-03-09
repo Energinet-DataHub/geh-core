@@ -40,7 +40,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter
         {
             if (rootElement == null) throw new ArgumentNullException(nameof(rootElement));
 
-            XNamespace ns = rootElement.Attributes().FirstOrDefault(attr => attr.Name.LocalName == "cim")?.Value ?? throw new ArgumentException("Found no namespace for XML Document");
+            var ns = rootElement.Name.Namespace;
 
             var headerData = MapHeaderData(rootElement, ns);
 
