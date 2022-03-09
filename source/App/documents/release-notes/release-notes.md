@@ -7,3 +7,7 @@
 ## Version 2.0.0
 
 - Update User to include multiple actor ids.
+
+## Version 2.0.2
+
+- Update `FunctionContextExtensions.Is` to compare trigger type name in a case insensitive way.
