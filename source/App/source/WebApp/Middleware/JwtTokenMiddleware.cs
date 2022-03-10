@@ -36,7 +36,10 @@ namespace Energinet.DataHub.Core.App.WebApp.Middleware
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             var endpoint = context.GetEndpoint();
             if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
