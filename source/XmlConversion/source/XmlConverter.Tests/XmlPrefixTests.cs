@@ -27,8 +27,8 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
             var mapper = new XmlMapper(_ => new HeroMapper(), _ => "Superhero");
             var document = XmlContent.GetXDocumentWithRandomPrefix();
 
-            if (document.Root == null) throw new NullReferenceException("No root element found");
-            _ = mapper.Map(document.Root); // This method throws an ArgumentException if it can not handle the prefix
+            Assert.NotNull(document.Root);
+            Assert.NotNull(mapper.Map(document.Root!));
         }
 
         internal record Hero(string Name);
