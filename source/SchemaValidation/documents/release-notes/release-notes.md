@@ -1,5 +1,9 @@
 # Schema Validation Release notes
 
+## Version 1.0.9
+
+Add support for custom namespace prefixes
+
 ## Version 1.0.8
 
 Rename source folder and solution name for easier developer discovery in GitHub repo.
