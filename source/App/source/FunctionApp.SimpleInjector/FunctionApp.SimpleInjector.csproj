@@ -28,7 +28,7 @@ limitations under the License.
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.FunctionApp.SimpleInjector</PackageId>
     <!-- Remember to bump Authorization version. -->
-    <PackageVersion>2.0.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.0.2$(VersionSuffix)</PackageVersion>
     <Title>Azure Function Dependency Injection Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>

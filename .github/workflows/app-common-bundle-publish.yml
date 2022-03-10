@@ -47,25 +47,34 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Tool versions
-  DOTNET_VERSION: '5.0.202'
+  DOTNET_VERSION: '5.0.405'
 
 jobs:
   build_and_publish:
-    runs-on: windows-latest
+    runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
     permissions:
       contents: read
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (main branch)
+        if: ${{ github.ref_name == 'main' }}
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 2 # To retrieve the preceding commit on 'main'
+
+      - name: Checkout repository (feature branch)
+        if: ${{ github.ref_name != 'main' }}
         uses: actions/checkout@master
 
       - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
+        env:
+          DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
+
       - name: Cache NuGet packages
         uses: actions/cache@v2
         id: cache-nuget
@@ -74,7 +83,7 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
           restore-keys: |
             ${{ runner.os }}-nuget-
-      
+
       - name: Restore NuGet packages
         run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
 
@@ -87,7 +96,7 @@ jobs:
       - name: Get version suffix property value
         uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@2.3.0
         id: get_version_suffix
-      
+
       - name: Pack Common project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
@@ -123,12 +132,26 @@ jobs:
         env:
           PROJECT_PATH: 'source/App/source/WebApp.SimpleInjector/WebApp.SimpleInjector.csproj'
 
+      - name: Package content or build has changed
+        id: changed-content
+        uses: tj-actions/changed-files@v17.2
+        with:
+          files: |
+            source/App/source/Common/**/*.*
+            source/App/source/Common.Abstractions/**/*.*
+            source/App/source/Common.Security/**/*.*
+            source/App/source/FunctionApp/**/*.*
+            source/App/source/FunctionApp.SimpleInjector/**/*.*
+            source/App/source/WebApp/**/*.*
+            source/App/source/WebApp.SimpleInjector/**/*.*
+            .github/workflows/app-common-bundle-publish.yml
+
       - name: Check each NuGet package version does not exists (not looking at prereleases)
-        if: ${{ env.PUSH_PACKAGES == 'true' }}
+        if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
         uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
         with:
           NUPKG_RECURSE_PATH: 'source/App/source'
-      
+
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
