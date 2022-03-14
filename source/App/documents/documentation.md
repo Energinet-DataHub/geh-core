@@ -2,6 +2,11 @@
 
 A library containing common functionality for Azure Functions.
 
+Content
+
+- [JWT Token Middleware](#jwt-token-middleware)
+- [Actor Middleware](#actor-middleware)
+
 ## JWT Token Middleware
 
 ### Introduction
