@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 
-namespace Energinet.DataHub.Core.App.WebApp.HealthChecks
+namespace Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks
 {
     /// <summary>
     /// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to add DataHub relevant health checks endpoints.

@@ -15,7 +15,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Core.App.Common.HealthChecks
+namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
 {
     /// <summary>
     /// Provides extension methods for registering DataHub relevant health checks with the <see cref="IHealthChecksBuilder"/>.
