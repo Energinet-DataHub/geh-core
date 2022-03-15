@@ -66,8 +66,9 @@ namespace RequestResponseMiddleware.Tests
             await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
 
             // Assert
-            var savedLogs = testStorage.GetLogs();
-            Assert.Contains(savedLogs, e => e.Body.Equals(expectedLogBody));
+            var savedLogs = testStorage.GetLogs().ToList();
+            Assert.Equal(expectedLogBody, savedLogs[0].Body);
+            Assert.Equal(expectedLogBody, savedLogs[1].Body);
         }
 
         [Fact]
