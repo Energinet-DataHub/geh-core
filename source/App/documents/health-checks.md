@@ -17,6 +17,11 @@ Guidelines on implementing health checks for Function App's and ASP.NET Core Web
 
 ## Azure Functions App
 
+After following the guidelines below, the health checks endpoints will be:
+
+- _liveness_: `api/monitor/live`
+- _readyness_: `api/monitor/ready`
+
 ### Preparing an Azure Function App project
 
 1) Install this NuGet package:
@@ -73,6 +78,11 @@ See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.
    ```
 
 ## ASP.NET Core Web API
+
+After following the guidelines below, the health checks endpoints will be:
+
+- _liveness_: `monitor/live`
+- _readyness_: `monitor/ready`
 
 ### Preparing a Web App project
 
