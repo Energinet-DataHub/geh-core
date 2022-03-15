@@ -2,11 +2,20 @@
 
 Guidelines on implementing health checks for Function App's and ASP.NET Core Web API's.
 
-TODO: Describe "liveness" and "readyness" endpoints.
-
 > For a full implementation, see [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
 
-## Functions
+## Overview
+
+- [Introduction](#introduction)
+- Implementation
+  - [Azure Functions App](#azure-functions-app)
+  - [ASP.NET Core Web API](#aspnet-core-web-api)
+
+## Introduction
+
+
+
+## Azure Functions App
 
 ### Preparing an Azure Function App project
 
@@ -22,7 +31,7 @@ TODO: Describe "liveness" and "readyness" endpoints.
         .AddLiveCheck();
    ```
 
-1) Create a new class file as `System\HealthCheckEndpoint.cs` with the following content:
+1) Create a new class file as `Monitor\HealthCheckEndpoint.cs` with the following content:
 
    ```cs
     public class HealthCheckEndpoint
@@ -49,11 +58,58 @@ TODO: Describe "liveness" and "readyness" endpoints.
 
     > In the `Charges` domain this is handled using the `JwtTokenWrapperMiddleware`.
 
-### Add health checks for dependencies
+### Add health checks for Azure Function App dependencies
 
-Even though the following are implemented for ASP.NET Core, it also works for Azure Functions.
+See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages. Even though they are implemented for ASP.NET Core, they also work for Azure Functions.
 
-[AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks)
+1) Add additional health checks after the call to `AddLiveCheck()`. See an example below.
+
+   ```cs
+    services.AddHealthChecks()
+        .AddLiveCheck()
+        .AddSqlServer(
+            name: "ChargeDb",
+            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString));
+   ```
 
 ## ASP.NET Core Web API
 
+### Preparing a Web App project
+
+1) Install this NuGet package:
+   `Energinet.DataHub.Core.App.WebApp`
+
+1) Add the following to a *ConfigureServices()* method in Program.cs:
+
+   ```cs
+    // Health check
+    services.AddHealthChecks()
+        .AddLiveCheck();
+   ```
+
+1) Add the following to a *Configure()* method in Program.cs:
+
+   ```cs
+    app.UseEndpoints(endpoints =>
+    {
+        ...
+
+        // Health check
+        endpoints.MapLiveHealthChecks();
+        endpoints.MapReadyHealthChecks();
+    });
+   ```
+
+### Add health checks for Web App dependencies
+
+See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages.
+
+1) Add additional health checks after the call to `AddLiveCheck()`. See an example below.
+
+   ```cs
+    services.AddHealthChecks()
+        .AddLiveCheck()
+        .AddSqlServer(
+            name: "ChargeDb",
+            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString));
+   ```
