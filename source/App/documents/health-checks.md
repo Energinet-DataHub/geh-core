@@ -13,7 +13,26 @@ Guidelines on implementing health checks for Function App's and ASP.NET Core Web
 
 ## Introduction
 
+Each hosted service should expose two health checks endpoints:
 
+- **liveness**: for determining if a service is live (like a _ping_).
+- **readyness**: for determining if a service is ready to serve requests.
+
+The **readyness** check should validate that the hosted service can reach all resource dependencies, e.g. a SQL Server database or a Service Bus queue.
+
+If a Service A depends on Service B, then Service A should check its dependency with Service B by calling the **liveness** endpoint of Service B. This is to avoid the risk of having an endless loop.
+
+### Future improvements
+
+#### Verify deployment
+
+To verify a hosted service is working and configured correctly in a given environment, the Continuous Deployment pipeline should call the readyness endpoint just after deployment of the service.
+
+#### Monitor
+
+To continuously monitor the health of a hosted services, we should enable App Services health check to call the readyness endpoint.
+
+See [Monitor App Service instances using Health check](https://docs.microsoft.com/en-us/azure/app-service/monitor-instances-health-check).
 
 ## Azure Functions App
 
