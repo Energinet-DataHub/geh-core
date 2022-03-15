@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Extensions
         /// </summary>
         public static bool Is(this FunctionContext context, TriggerType triggerType)
         {
-            return context.FunctionDefinition.InputBindings.Any(input => input.Value.Type == triggerType.ToString());
+            return context.FunctionDefinition.InputBindings.Any(input => string.Compare(input.Value.Type, triggerType.ToString(), ignoreCase: true) == 0);
         }
 
         internal static HttpRequestData? GetHttpRequestData(this FunctionContext functionContext)
