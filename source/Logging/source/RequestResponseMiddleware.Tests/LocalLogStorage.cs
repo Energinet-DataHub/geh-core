@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 
@@ -40,7 +41,8 @@ namespace RequestResponseMiddleware.Tests
 
         private async Task SaveLogAsync(Stream logStream, Dictionary<string, string> metaData)
         {
-            var reader = new StreamReader(logStream ?? Stream.Null);
+            // We use ASCII to detect odd encoding conversions in UTs.
+            var reader = new StreamReader(logStream, Encoding.ASCII, false);
             var logMsg = await reader.ReadToEndAsync();
             _logs.Add(new LocalLog() { Body = logMsg, MetaData = metaData });
         }
