@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
     public static class HealthChecksBuilderExtensions
     {
         /// <summary>
-        /// Adds the health check to be used by the the "live" endpoint.
+        /// Adds the health check to be used by the "live" endpoint.
         /// </summary>
         /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
         /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
