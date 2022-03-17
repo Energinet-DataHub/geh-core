@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 2.0.0
+
+- `ITopicResourceBuilder.AddSubscription()` is extended with the possibility to set the `requiresSession` parameter for `CreateSubscriptionOptions`.
+- `ServiceBusResourceProvider.BuildQueue()` parameter `requireSession` is renamed to `requiresSession` to comply with the underlying method. This is a breaking change
+
 ## Version 1.4.1
 
 - Update build pipeline, which forced republishing the same package content.

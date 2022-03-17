@@ -45,7 +45,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// Add an action that will be called after the topic has been created.
         /// </summary>
         /// <param name="postAction">Action to call with topic properties when topic has been created.</param>
-        /// <returns>Topic resouce builder.</returns>
+        /// <returns>Topic resource builder.</returns>
         public TopicResourceBuilder Do(Action<TopicProperties> postAction)
         {
             PostActions.Add(postAction);
@@ -54,13 +54,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         }
 
         /// <inheritdoc/>
-        public TopicSubscriptionBuilder AddSubscription(string subscriptionName, int maxDeliveryCount = 1, TimeSpan? lockDuration = null)
+        public TopicSubscriptionBuilder AddSubscription(
+            string subscriptionName,
+            int maxDeliveryCount = 1,
+            TimeSpan? lockDuration = null,
+            bool requiresSession = false)
         {
             var createSubscriptionOptions = new CreateSubscriptionOptions(CreateTopicOptions.Name, subscriptionName)
             {
                 AutoDeleteOnIdle = CreateTopicOptions.AutoDeleteOnIdle,
                 MaxDeliveryCount = maxDeliveryCount,
                 LockDuration = lockDuration ?? TimeSpan.FromMinutes(1),
+                RequiresSession = requiresSession,
             };
 
             var subscriptionBuilder = new TopicSubscriptionBuilder(this, createSubscriptionOptions);

@@ -90,9 +90,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <param name="queueNamePrefix">The queue name will start with this name.</param>
         /// <param name="maxDeliveryCount"></param>
         /// <param name="lockDuration"></param>
-        /// <param name="requireSession"></param>
+        /// <param name="requiresSession"></param>
         /// <returns>Queue resource builder.</returns>
-        public QueueResourceBuilder BuildQueue(string queueNamePrefix, int maxDeliveryCount = 1, TimeSpan? lockDuration = null, bool requireSession = false)
+        public QueueResourceBuilder BuildQueue(
+            string queueNamePrefix,
+            int maxDeliveryCount = 1,
+            TimeSpan? lockDuration = null,
+            bool requiresSession = false)
         {
             var queueName = BuildResourceName(queueNamePrefix);
             var createQueueOptions = new CreateQueueOptions(queueName)
@@ -100,7 +104,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                 AutoDeleteOnIdle = AutoDeleteOnIdleTimeout,
                 MaxDeliveryCount = maxDeliveryCount,
                 LockDuration = lockDuration ?? TimeSpan.FromMinutes(1),
-                RequiresSession = requireSession,
+                RequiresSession = requiresSession,
             };
 
             return new QueueResourceBuilder(this, createQueueOptions);

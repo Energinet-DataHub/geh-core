@@ -157,6 +157,21 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             }
 
             [Fact]
+            public async Task When_BuildQueue_requiresSession_QueueIsCreated()
+            {
+                // Arrange
+
+                // Act
+                var actualResource = await Sut
+                    .BuildQueue(NamePrefix, requiresSession: true)
+                    .CreateAsync();
+
+                // Assert
+                var response = await ResourceProviderFixture.AdministrationClient.QueueExistsAsync(actualResource.Name);
+                response.Value.Should().BeTrue();
+            }
+
+            [Fact]
             public async Task When_SetEnvironmentVariable_Then_EnvironmentVariableContainsActualName()
             {
                 // Arrange
@@ -227,6 +242,23 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var topicName = actualResource.Name;
 
                 var response = await ResourceProviderFixture.AdministrationClient.SubscriptionExistsAsync(topicName, SubscriptionName01);
+                response.Value.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_AddSubscriptionName_requiresSession_ThenTopicAndSubscriptionIsCreated()
+            {
+                // Arrange
+
+                // Act
+                var actualResource = await Sut
+                    .BuildTopic(NamePrefix)
+                    .AddSubscription(SubscriptionName01, requiresSession: true)
+                    .CreateAsync();
+
+                // Assert
+                var response = await ResourceProviderFixture.AdministrationClient
+                    .SubscriptionExistsAsync(actualResource.Name, SubscriptionName01);
                 response.Value.Should().BeTrue();
             }
 
