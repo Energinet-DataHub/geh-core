@@ -18,4 +18,4 @@
 
 ## Version 2.1.0
 
-- Working on Health Check support for Web API and Function App.
+- Implemented Health Check support for Azure Function App's and ASP.NET Core Web API's. See [Health Checks](../health-checks.md).
