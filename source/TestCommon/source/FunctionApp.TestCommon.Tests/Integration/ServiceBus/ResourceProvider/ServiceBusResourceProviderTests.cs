@@ -118,7 +118,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             private ServiceBusResourceProvider CreateSut()
             {
                 return new ServiceBusResourceProvider(
-                    "Server=tcp:mssql-data-.database.windows.net,1433;Initial Catalog=mssqldb-registry-markpart;Persist Security Info=False;User ID=gehadmin;Password=z6cSayj6VWI6JIcaJoPZdaSDPL5o;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+                    ResourceProviderFixture.ConnectionString,
                     ResourceProviderFixture.TestLogger);
             }
         }
