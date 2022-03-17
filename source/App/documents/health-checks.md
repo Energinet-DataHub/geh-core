@@ -1,6 +1,6 @@
 # Health Checks Documentation
 
-Guidelines on implementing health checks for Function App's and ASP.NET Core Web API's.
+Guidelines on implementing health checks for Azure Function App's and ASP.NET Core Web API's.
 
 > For a full implementation, see [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
 
