@@ -15,3 +15,7 @@
 ## Version 2.0.2
 
 - Update `FunctionContextExtensions.Is` to compare trigger type name in a case insensitive way.
+
+## Version 2.1.0
+
+- Implemented Health Check support for Azure Function App's and ASP.NET Core Web API's. See [Health Checks](../health-checks.md).
