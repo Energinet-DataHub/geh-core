@@ -118,7 +118,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             private ServiceBusResourceProvider CreateSut()
             {
                 return new ServiceBusResourceProvider(
-                    ResourceProviderFixture.ConnectionString,
+                    "Endpoint=sb://sb-this-is-a-test.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=TestMe/LfU5+xyxyxyxyxyxyxyyxyxy=",
                     ResourceProviderFixture.TestLogger);
             }
         }
