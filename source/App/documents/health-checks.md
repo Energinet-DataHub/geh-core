@@ -13,26 +13,18 @@ Guidelines on implementing health checks for Azure Function App's and ASP.NET Co
 
 ## Introduction
 
-Each hosted service should expose two health checks endpoints:
+Health checks should be used to check critical components of our applications.
 
-- **liveness**: for determining if a service is live (like a _ping_).
-- **readyness**: for determining if a service is ready to serve requests.
+In DataHub, any application implemented as an Azure Function App or an ASP.NET Core Web API should implement health checks.
 
-The **readyness** check should validate that the hosted service can reach all resource dependencies, e.g. a SQL Server database or a Service Bus queue.
+Each application should expose two health checks endpoints:
 
-If a Service A depends on Service B, then Service A should check its dependency with Service B by calling the **liveness** endpoint of Service B. This is to avoid the risk of having an endless loop.
+- **liveness**: for determining if the application is live (like a _ping_).
+- **readyness**: for determining if the application is ready to serve requests.
 
-### Future improvements
+The **readyness** check should validate that the application can reach critical dependencies, e.g. a SQL Server database or a Service Bus queue.
 
-#### Verify deployment
-
-To verify a hosted service is working and configured correctly in a given environment, the Continuous Deployment pipeline should call the readyness endpoint just after deployment of the service.
-
-#### Monitor
-
-To continuously monitor the health of a hosted services, we should enable App Services health check to call the readyness endpoint.
-
-See [Monitor App Service instances using Health check](https://docs.microsoft.com/en-us/azure/app-service/monitor-instances-health-check).
+The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readyness_ check as this could cause an endless loop.
 
 ## Azure Functions App
 
