@@ -46,7 +46,7 @@ After following the guidelines below, the health checks endpoints will be:
 1) Install this NuGet package:
    `Energinet.DataHub.Core.App.FunctionApp`
 
-1) Add the following to a *ConfigureServices()* method in Program.cs:
+1) Add the following to a _ConfigureServices()_ method in Program.cs:
 
    ```cs
     // Health check
@@ -108,7 +108,7 @@ After following the guidelines below, the health checks endpoints will be:
 1) Install this NuGet package:
    `Energinet.DataHub.Core.App.WebApp`
 
-1) Add the following to a *ConfigureServices()* method in Program.cs:
+1) Add the following to a _ConfigureServices()_ method in Program.cs:
 
    ```cs
     // Health check
@@ -116,7 +116,7 @@ After following the guidelines below, the health checks endpoints will be:
         .AddLiveCheck();
    ```
 
-1) Add the following to a *Configure()* method in Program.cs:
+1) Add the following to a _Configure()_ method in Program.cs:
 
    ```cs
     app.UseEndpoints(endpoints =>
