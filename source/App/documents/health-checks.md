@@ -20,18 +20,18 @@ In DataHub, any application implemented as an Azure Function App or an ASP.NET C
 Each application should expose two health checks endpoints:
 
 - **liveness**: for determining if the application is live (like a _ping_).
-- **readyness**: for determining if the application is ready to serve requests.
+- **readiness**: for determining if the application is ready to serve requests.
 
-The **readyness** check should validate that the application can reach critical dependencies, e.g. a SQL Server database or a Service Bus queue.
+The **readiness** check should validate that the application can reach critical dependencies, e.g. a SQL Server database or a Service Bus queue.
 
-The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readyness_ check as this could cause an endless loop.
+The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readiness_ check as this could cause an endless loop.
 
 ## Azure Functions App
 
 After following the guidelines below, the health checks endpoints will be:
 
 - _liveness_: `api/monitor/live`
-- _readyness_: `api/monitor/ready`
+- _readiness_: `api/monitor/ready`
 
 ### Preparing an Azure Function App project
 
@@ -93,7 +93,7 @@ See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.
 After following the guidelines below, the health checks endpoints will be:
 
 - _liveness_: `monitor/live`
-- _readyness_: `monitor/ready`
+- _readiness_: `monitor/ready`
 
 ### Preparing a Web App project
 
