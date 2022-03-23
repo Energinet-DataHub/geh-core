@@ -87,7 +87,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static async Task<LogInformation> BuildRequestLogInformationAsync(FunctionContext context)
         {
-            var (metaData, indexTags) = LogDataBuilder.GetMetaDataAndIndexTagsDictionaries(context, true);
+            var (metaData, indexTags) = LogDataBuilder.BuildMetaDataAndIndexTagsDictionariesFromContext(context, true);
 
             if (context.GetHttpRequestData() is { } requestData)
             {
@@ -109,17 +109,18 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private static async Task<LogInformation> BuildResponseLogInformationAsync(FunctionContext context)
         {
-            var (metaData, indexTags) = LogDataBuilder.GetMetaDataAndIndexTagsDictionaries(context, false);
+            var (metaData, indexTags) = LogDataBuilder.BuildMetaDataAndIndexTagsDictionariesFromContext(context, false);
 
             if (context.GetHttpResponseData() is { } responseData)
             {
+                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
+                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
+
                 foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
                 {
                     metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
+                    indexTags.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
                 }
-
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
 
                 await PrepareResponseStreamForLoggingAsync(responseData);
 

@@ -31,40 +31,37 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 return new Dictionary<string, string>();
             }
 
-            var metaData = headersCollection
+            var headerDataToSelect = headersCollection
+                .Where(m =>
+                    !string.IsNullOrWhiteSpace(m.Key) &&
+                    !m.Key.Equals("authorization", StringComparison.InvariantCultureIgnoreCase) &&
+                    !m.Key.Equals("headers", StringComparison.InvariantCultureIgnoreCase))
                 .ToDictionary(e => e.Key, e => string.Join(",", e.Value));
 
-            return metaData;
+            if (headersCollection.Any(e => e.Key.Equals("authorization", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                headerDataToSelect.Add("Authorization", "Bearer ****");
+            }
+
+            return headerDataToSelect;
         }
 
-        public static (Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) GetMetaDataAndIndexTagsDictionaries(FunctionContext context, bool isRequest)
+        public static (Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) BuildMetaDataAndIndexTagsDictionariesFromContext(
+            FunctionContext context,
+            bool isRequest)
         {
             var metaData = context.BindingContext.BindingData
+                .Where(m =>
+                    !string.IsNullOrWhiteSpace(m.Key) &&
+                    !m.Key.Equals("headers", StringComparison.InvariantCultureIgnoreCase) &&
+                    !m.Key.Equals("query", StringComparison.InvariantCultureIgnoreCase))
                 .ToDictionary(e => MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
-            var indexTags =
-                new Dictionary<string, string>(metaData.Where(e => e.Key != "headers" && e.Key != "query").Take(3));
+            // Add Query params to index tags, take 3 because max 10 index tags
+            var indexTags = new Dictionary<string, string>(metaData.Take(3));
 
-            var jwtTokenActorId = JwtTokenParsing.ReadJwtActorId(context);
-            var actorIdToWrite = string.IsNullOrWhiteSpace(jwtTokenActorId) ? "noactoridfound" : jwtTokenActorId;
-
-            var traceParentParts = TraceParentSplit(context.TraceContext?.TraceParent ?? string.Empty);
-            var traceId = traceParentParts?.Traceid;
-
-            metaData.TryAdd(MetaNameFormatter("JwtActorId"), actorIdToWrite);
-            metaData.TryAdd(MetaNameFormatter("FunctionId"), context.FunctionId);
-            metaData.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-            metaData.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
-            metaData.TryAdd(MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
-            metaData.TryAdd(MetaNameFormatter("TraceId"), traceId ?? string.Empty);
-            metaData.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
-
-            indexTags.TryAdd(MetaNameFormatter("JwtActorId"), actorIdToWrite);
-            indexTags.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-            indexTags.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
-            indexTags.TryAdd(MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
-            indexTags.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
-            indexTags.TryAdd(MetaNameFormatter("TraceId"), traceId ?? string.Empty);
+            AddBaseInfoFromContextToDictionary(context, isRequest, metaData);
+            AddBaseInfoFromContextToDictionary(context, isRequest, indexTags);
 
             return (metaData, indexTags);
         }
@@ -106,5 +103,29 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 d.TryGetValue(n, out var value)
                     ? string.IsNullOrWhiteSpace(value) ? string.Empty : $"{value}_"
                     : string.Empty;
+
+        private static void AddBaseInfoFromContextToDictionary(
+            FunctionContext context,
+            bool isRequest,
+            Dictionary<string, string> dictionary)
+        {
+            var jwtTokenActorId = JwtTokenParsing.ReadJwtActorId(context);
+            var actorIdToWrite = string.IsNullOrWhiteSpace(jwtTokenActorId) ? "noactoridfound" : jwtTokenActorId;
+
+            var traceParentParts = TraceParentSplit(context.TraceContext?.TraceParent ?? string.Empty);
+            var traceId = traceParentParts?.Traceid;
+
+            if (isRequest && !string.IsNullOrWhiteSpace(jwtTokenActorId))
+            {
+                dictionary.TryAdd(MetaNameFormatter("JwtActorId"), actorIdToWrite);
+            }
+
+            dictionary.TryAdd(MetaNameFormatter("FunctionId"), context.FunctionId);
+            dictionary.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
+            dictionary.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
+            dictionary.TryAdd(MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
+            dictionary.TryAdd(MetaNameFormatter("TraceId"), traceId ?? string.Empty);
+            dictionary.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace RequestResponseMiddleware.Tests
             response.Body = new MemoryStream(Encoding.UTF8.GetBytes(expectedLogBody));
 
             // Act
-            await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+            await middleware.Invoke(functionContext.FunctionContext, _ => Task.CompletedTask).ConfigureAwait(false);
 
             // Assert
             var savedLogs = testStorage.GetLogs().ToList();
@@ -83,11 +83,16 @@ namespace RequestResponseMiddleware.Tests
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
-                { "MarketOperator", "232323232" },
-                { "Accept-Type", "232323232" },
+                { "Query", "{ BundleId: 123 }" },
+                { "BundleId", "132" },
             };
 
-            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
+            var responseHeaderData = new List<KeyValuePair<string, string>>()
+            {
+                new("Statuscodetest", "200"),
+                new("Accept-Type", "232323232"),
+                new("Authorization", "Bearer ****"),
+            };
 
             functionContext.BindingContext
                 .Setup(x => x.BindingData)
@@ -106,14 +111,15 @@ namespace RequestResponseMiddleware.Tests
             response.Body = new MemoryStream(Encoding.UTF8.GetBytes(logBody));
 
             // Act
-            await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+            await middleware.Invoke(functionContext.FunctionContext, _ => Task.CompletedTask).ConfigureAwait(false);
 
             // Assert
             var savedLogs = testStorage.GetLogs();
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("headers"));
-            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("marketoperator"));
+            Assert.DoesNotContain(savedLogs, e => e.MetaData.ContainsKey("headers"));
+            Assert.Contains(savedLogs, e => e.MetaData.ContainsKey("bundleid"));
             Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscodetest", out var value) && value == "200");
             Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscode", out var value) && value == expectedStatusCode.ToString());
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("authorization", out var value) && value == "Bearer ****");
         }
 
         [Fact]
@@ -133,7 +139,7 @@ namespace RequestResponseMiddleware.Tests
             functionContext.SetInvocationFeatures(new MockedFunctionInvocationFeatures());
 
             // Act
-            await middleware.Invoke(functionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+            await middleware.Invoke(functionContext.FunctionContext, _ => Task.CompletedTask).ConfigureAwait(false);
 
             // Assert
             var savedLogs = testStorage.GetLogs();
@@ -145,7 +151,7 @@ namespace RequestResponseMiddleware.Tests
             List<KeyValuePair<string, string>> responseHeader,
             HttpStatusCode statusCode)
         {
-            var httpRequest = new MockedHttpRequestData(functionContext);
+            var httpRequest = new MockedHttpRequestData(functionContext.FunctionContext);
             var responseData = httpRequest.HttpResponseData;
             responseData.StatusCode = statusCode;
             httpRequest.SetResponseHeaderCollection(new HttpHeadersCollection(responseHeader));
