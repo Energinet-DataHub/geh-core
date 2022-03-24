@@ -193,7 +193,7 @@ namespace RequestResponseMiddleware.Tests
 
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
-                { "Headers", "{\"Authorization\":\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCJ9.eyJhdWQiOiJjN2U1ZGM1Yy0yZWUwLTQyMGMtYjVkMi01ODZlNzUyNzMwMmMiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwL3YyLjAiLCJpYXQiOjE2NDQyNjQ5MTAsIm5iZiI6MTY0NDI2NDkxMCwiZXhwIjoxNjQ0MjY4ODEwLCJhaW8iOiJFMlpnWUJCc1hpbXV1YjJncW5yR29qOVRxdVN2QVFBPSIsImF6cCI6ImUwMDliOWIyLWVkY2UtNGY3NC1iNDY2LTk4ZDBiYmIwYTk0YSIsImF6cGFjciI6IjEiLCJvaWQiOiI0OWUzMGFmNy0xNDJjLTQ2MjEtOTlkOS03Mzk2MmViYjgyY2MiLCJyaCI6IjAuQVNJQTZoRjBTbkdzWTB1V1I3aTlURm9nNEZ6YzVjZmdMZ3hDdGRKWWJuVW5NQ3drQUFBLiIsInJvbGVzIjpbImJhbGFuY2VyZXNwb25zaWJsZXBhcnR5IiwiZWxlY3RyaWNhbHN1cHBsaWVyIiwiZ3JpZG9wZXJhdG9yIiwibWV0ZXJkYXRhcmVzcG9uc2libGUiXSwic3ViIjoiNDllMzBhZjctMTQyYy00NjIxLTk5ZDktNzM5NjJlYmI4MmNjIiwidGlkIjoiNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwIiwidXRpIjoiZEZMOGVXYm80RUM3TGxQUEFuUUhBUSIsInZlciI6IjIuMCJ9.psdF4r-m8pG79KvAA75b5-daOp_NxMcfX1azfWXxK09DIZoWPiabzlUJUYGtNzqcA6Zz9QgSGZqrcKJgZuCPLl5RMXnDjfKkV9qESJsVO9VUSQI5l9Nepq9mtjy4gFs2xzGW6nfchONlZo-463z5jxBsqjs0HiCrq1pV5iialq6rZ4VC1Hm-pJvcqVw6vJmKYopZcnnCiEsH2DzGv2DpE0MjVXUKBhhjkbu8HXFE5XCqvkfPu_icZvGZ40QxXa_eJ8aUf2JL22Ue1pjpC3rWLC-nq-FfjiRuBx7oNkwWOR6ytHk_uuR8NXYZTlRB7ZD79XQR7HB31rwhbTEmPdjzQg\"}" },
+                { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNDQ0MjY4ODEwLCJhenAiOiIxMTE5YjliMi1lZGNlLTRmNzQtYjQ2Ni05OGQwYmJiMGE5NGEiLCJpYXQiOjE1MTYyMzkwMjJ9.Kia6V3YOtfwjauBRZbOswXq4beyeNLHPAKJ0aqZhqDg\"}" },
                 { "Query", "{ BundleId: 123 }" },
                 { "BundleId", "132" },
                 { string.Empty, "error skipped" },
@@ -256,7 +256,7 @@ namespace RequestResponseMiddleware.Tests
             Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("uniquelogname", out var value) && Guid.TryParse(value, out var t));
             Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("authorization", out var value) && value == "Bearer ****");
             Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("correlationid", out var value) && value == "2aaa720a-a7b9-4fe4-a004-f222ad932c7a");
-            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("jwtactorid", out var value) && value == "e009b9b2-edce-4f74-b466-98d0bbb0a94a");
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("jwtactorid", out var value) && value == "1119b9b2-edce-4f74-b466-98d0bbb0a94a");
             Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("httpdatatype", out var value) && value == "request");
 
             Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("functionname", out var value) && value.Equals(functionName));
