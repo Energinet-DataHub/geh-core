@@ -18,6 +18,8 @@ namespace RequestResponseMiddleware.Tests
 {
     public class LocalLog
     {
+        public string LogName { get; set; }
+
         public string Body { get; set; }
 
         public Dictionary<string, string> MetaData { get; set; }

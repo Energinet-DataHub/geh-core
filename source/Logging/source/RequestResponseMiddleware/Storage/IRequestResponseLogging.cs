@@ -30,9 +30,8 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
         /// <param name="metaData">log metaData</param>
         /// <param name="indexTags">index tags</param>
         /// <param name="logName"></param>
-        /// <param name="logFolder"></param>
         /// <returns>work task</returns>
-        Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string logFolder);
+        Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName);
 
         /// <summary>
         /// Logs response
@@ -41,8 +40,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
         /// <param name="metaData">log metaData</param>
         /// <param name="indexTags">index tags</param>
         /// <param name="logName"></param>
-        /// <param name="logFolder"></param>
         /// <returns>Work task</returns>
-        Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string logFolder);
+        Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName);
     }
 }

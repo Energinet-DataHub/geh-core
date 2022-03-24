@@ -118,18 +118,18 @@ namespace RequestResponseMiddleware.Tests
                 .Returns(inputData);
 
             // Act
-            var (metaData, indexTags) =
-                LogDataBuilder.BuildMetaDataAndIndexTagsDictionariesFromContext(
+            var logData =
+                LogDataBuilder.BuildDictionaryFromContext(
                     functionContext.FunctionContext,
                     true);
 
             // Assert
-            Assert.DoesNotContain("query", metaData.Keys);
-            Assert.DoesNotContain("headers", metaData.Keys);
-            Assert.Contains("functionname", metaData.Keys);
-            Assert.Contains("TestName", metaData.Values);
-            Assert.Contains("invocationid", metaData.Keys);
-            Assert.Contains(metaData, e => e.Key.Equals("httpdatatype") && e.Value.Equals("request"));
+            Assert.DoesNotContain("query", logData.GetAllTags().Keys);
+            Assert.DoesNotContain("headers", logData.GetAllTags().Keys);
+            Assert.Contains("functionname", logData.GetAllTags().Keys);
+            Assert.Contains("TestName", logData.GetAllTags().Values);
+            Assert.Contains("invocationid", logData.GetAllTags().Keys);
+            Assert.Contains(logData.GetAllTags(), e => e.Key.Equals("httpdatatype") && e.Value.Equals("request"));
         }
     }
 }

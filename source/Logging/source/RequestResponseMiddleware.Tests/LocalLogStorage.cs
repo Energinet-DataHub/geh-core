@@ -24,14 +24,14 @@ namespace RequestResponseMiddleware.Tests
     {
         private readonly List<LocalLog> _logs = new();
 
-        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
+        public async Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName)
         {
-            await SaveLogAsync(logStream, metaData);
+            await SaveLogAsync(logStream, metaData, logName);
         }
 
-        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
+        public async Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName)
         {
-            await SaveLogAsync(logStream, metaData);
+            await SaveLogAsync(logStream, metaData, logName);
         }
 
         public IEnumerable<LocalLog> GetLogs()
@@ -39,12 +39,12 @@ namespace RequestResponseMiddleware.Tests
             return _logs;
         }
 
-        private async Task SaveLogAsync(Stream logStream, Dictionary<string, string> metaData)
+        private async Task SaveLogAsync(Stream logStream, Dictionary<string, string> metaData, string logName)
         {
             // We use ASCII to detect odd encoding conversions in UTs.
             var reader = new StreamReader(logStream, Encoding.ASCII, false);
             var logMsg = await reader.ReadToEndAsync();
-            _logs.Add(new LocalLog() { Body = logMsg, MetaData = metaData });
+            _logs.Add(new LocalLog() { Body = logMsg, MetaData = metaData, LogName = logName });
         }
     }
 }

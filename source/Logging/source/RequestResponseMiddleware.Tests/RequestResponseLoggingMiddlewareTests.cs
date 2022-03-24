@@ -21,6 +21,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -85,6 +86,8 @@ namespace RequestResponseMiddleware.Tests
                 { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
                 { "Query", "{ BundleId: 123 }" },
                 { "BundleId", "132" },
+                { string.Empty, "error skipped" },
+                { "Correlationid", "2aaa720a-a7b9-4fe4-a004-f222ad932c7a" },
             };
 
             var responseHeaderData = new List<KeyValuePair<string, string>>()
@@ -92,6 +95,8 @@ namespace RequestResponseMiddleware.Tests
                 new("Statuscodetest", "200"),
                 new("Accept-Type", "232323232"),
                 new("Authorization", "Bearer ****"),
+                new(string.Empty, "error skipped"),
+                new("CorrelationidRes", "1aaa720a-a7b9-4fe4-a004-f222ad932c7a"),
             };
 
             functionContext.BindingContext
@@ -120,6 +125,10 @@ namespace RequestResponseMiddleware.Tests
             Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscodetest", out var value) && value == "200");
             Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("statuscode", out var value) && value == expectedStatusCode.ToString());
             Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("authorization", out var value) && value == "Bearer ****");
+            Assert.DoesNotContain(savedLogs, t => t.MetaData.ContainsKey(string.Empty));
+            Assert.DoesNotContain(savedLogs, t => t.MetaData.ContainsValue("error skipped"));
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("correlationid", out var value) && value == "2aaa720a-a7b9-4fe4-a004-f222ad932c7a");
+            Assert.Contains(savedLogs, l => l.MetaData.TryGetValue("correlationidres", out var value) && value == "1aaa720a-a7b9-4fe4-a004-f222ad932c7a");
         }
 
         [Fact]
@@ -130,6 +139,10 @@ namespace RequestResponseMiddleware.Tests
             var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
             var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
+
+            var bindingData = new Dictionary<string, BindingMetadata>();
+            bindingData.Add("request", new FunctionBindingMetaData("httpTrigger", BindingDirection.In));
+            functionContext.SetBindingMetaData(bindingData);
 
             var responseHeaderData = new List<KeyValuePair<string, string>>() { new("Statuscodetest", "200") };
 
@@ -144,6 +157,124 @@ namespace RequestResponseMiddleware.Tests
             // Assert
             var savedLogs = testStorage.GetLogs();
             Assert.False(savedLogs.Any());
+        }
+
+        [Fact]
+        public async Task RequestResponseLoggingMiddleware_ExpectNoLog_MonitorPath()
+        {
+            // Arrange
+            var testStorage = new LocalLogStorage();
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
+            var functionContext = new MockedFunctionContext();
+
+            var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase) { { "ok", "{\"ok\":\"ok\"}" }, };
+            functionContext.BindingContext.Setup(x => x.BindingData).Returns(inputData);
+
+            var (httpRequestData, httpResponseData) = SetUpContext(functionContext, new List<KeyValuePair<string, string>>(), HttpStatusCode.Accepted);
+            httpRequestData.HttpRequestDataMock.SetupGet(e => e.Url).Returns(new Uri("https://localhost/monitor/"));
+
+            // Act
+            await middleware.Invoke(functionContext.FunctionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+
+            // Assert
+            var savedLogs = testStorage.GetLogs();
+            Assert.False(savedLogs.Any());
+        }
+
+        [Fact]
+        public async Task RequestResponseLoggingMiddleware_SelectedTagsOk()
+        {
+            // Arrange
+            var testStorage = new LocalLogStorage();
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
+            var functionContext = new MockedFunctionContext();
+
+            var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Headers", "{\"Authorization\":\"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCJ9.eyJhdWQiOiJjN2U1ZGM1Yy0yZWUwLTQyMGMtYjVkMi01ODZlNzUyNzMwMmMiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwL3YyLjAiLCJpYXQiOjE2NDQ3NTAxNTIsIm5iZiI6MTY0NDc1MDE1MiwiZXhwIjoxNjQ0NzU0MDUyLCJhaW8iOiJFMlpnWUdCNjJSaGlzWFdkVWxLaXBOWDNtdjlMQVE9PSIsImF6cCI6ImUwMDliOWIyLWVkY2UtNGY3NC1iNDY2LTk4ZDBiYmIwYTk0YSIsImF6cGFjciI6IjEiLCJvaWQiOiI0OWUzMGFmNy0xNDJjLTQ2MjEtOTlkOS03Mzk2MmViYjgyY2MiLCJyaCI6IjAuQVNJQTZoRjBTbkdzWTB1V1I3aTlURm9nNEZ6YzVjZmdMZ3hDdGRKWWJuVW5NQ3drQUFBLiIsInJvbGVzIjpbImJhbGFuY2VyZXNwb25zaWJsZXBhcnR5IiwiZWxlY3RyaWNhbHN1cHBsaWVyIiwiZ3JpZG9wZXJhdG9yIiwibWV0ZXJkYXRhcmVzcG9uc2libGUiXSwic3ViIjoiNDllMzBhZjctMTQyYy00NjIxLTk5ZDktNzM5NjJlYmI4MmNjIiwidGlkIjoiNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwIiwidXRpIjoiTGtSQWNKeTUwMFNzOVdPbllqaGlBQSIsInZlciI6IjIuMCJ9.GqFeP1hZRVi_73ARws3qTGNm7jeTcF6LfRWJvmLM7EphLnzwKp8Z7UNGlq_PKFZs2meM0TEd2cDPwTTZ23N8GBVUi0aRIqV14wL69ak5-8jh-HxpHAfE2G0ymNfyXXtnAmrP0dUcWg8S7HFsSXZZA-aZBySRyY-mvuZV7g7w-hxE8m1soO-7d0HiDGLfY37-ljBti93G42RhEGIZm2H7GTnjdSztD2Nn74Wargz8UnHUTZk-7ZjjQu-7c1R-F8U5meq_emI4lBCGun6ejGocc2413df0ToQV7g5wwG--dTUjsknZ35hz_xgYv3nJ6-x4Py8VGC_N6I4T34ApieDzOg\"}" },
+                { "Query", "{ BundleId: 123 }" },
+                { "BundleId", "132" },
+                { string.Empty, "error skipped" },
+            };
+
+            var responseHeaderData = new List<KeyValuePair<string, string>>
+            {
+                new(IndexTagsKeys.StatusCode, "200"),
+                new(string.Empty, "error skipped"),
+                new(IndexTagsKeys.CorrelationId, "1aaa720a-a7b9-4fe4-a004-f222ad932c7a"),
+            };
+
+            functionContext.BindingContext
+                .Setup(x => x.BindingData)
+                .Returns(inputData);
+
+            var bindingData = new Dictionary<string, BindingMetadata>();
+            bindingData.Add("request", new FunctionBindingMetaData("httpTrigger", BindingDirection.In));
+            functionContext.SetBindingMetaData(bindingData);
+
+            var (request, response) = SetUpContext(functionContext, responseHeaderData, HttpStatusCode.Accepted);
+            request.SetRequestHeaderCollection(new HttpHeadersCollection(new[]
+            {
+                new KeyValuePair<string, string>("Authorization", "Bearer onlyTestString"),
+                new KeyValuePair<string, string>("Accept-Type", "*/*"),
+                new KeyValuePair<string, string>(IndexTagsKeys.CorrelationId, "2aaa720a-a7b9-4fe4-a004-f222ad932c7a"),
+            }));
+
+            var logBody = "BODYTEXT";
+            request.HttpRequestDataMock.SetupGet(e => e.Body).Returns(new MemoryStream(Encoding.UTF8.GetBytes(logBody)));
+            response.Body = new MemoryStream(Encoding.UTF8.GetBytes(logBody));
+
+            var functionName = "TestFunctionName";
+            var functionId = Guid.NewGuid().ToString();
+            var invocationId = Guid.NewGuid().ToString();
+            var traceParent = "00-d3ff2b9ea8e4b3488ef1b0cd785851b5-4aeeadc281bd0940-00";
+            var traceId = "d3ff2b9ea8e4b3488ef1b0cd785851b5";
+
+            var traceContext = new Mock<TraceContext>();
+            traceContext.Setup(e => e.TraceParent).Returns(traceParent);
+
+            functionContext.FunctionDefinitionMock.Setup(e => e.Name).Returns(functionName);
+            functionContext.FunctionContextMock.Setup(e => e.FunctionId).Returns(functionId);
+            functionContext.FunctionContextMock.Setup(e => e.InvocationId).Returns(invocationId);
+            functionContext.FunctionContextMock.Setup(e => e.TraceContext).Returns(traceContext.Object);
+
+            // Act
+            await middleware.Invoke(functionContext.FunctionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+
+            // Assert
+            var savedRequestLogs = testStorage.GetLogs().Where(e => e.MetaData.ContainsValue("request")).ToList();
+            var savedResponseLogs = testStorage.GetLogs().Where(e => e.MetaData.ContainsValue("response")).ToList();
+
+            Assert.DoesNotContain(savedRequestLogs, l => l.MetaData.ContainsKey("headers"));
+            Assert.DoesNotContain(savedRequestLogs, t => t.MetaData.ContainsKey(string.Empty));
+            Assert.DoesNotContain(savedRequestLogs, t => t.MetaData.ContainsValue("error skipped"));
+
+            Assert.Contains(savedRequestLogs, l => l.MetaData.ContainsKey("bundleid"));
+            Assert.Contains(savedRequestLogs, l => l.MetaData.ContainsKey("accepttype"));
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("uniquelogname", out var value) && Guid.TryParse(value, out var t));
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("authorization", out var value) && value == "Bearer ****");
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("correlationid", out var value) && value == "2aaa720a-a7b9-4fe4-a004-f222ad932c7a");
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("jwtactorid", out var value) && value == "e009b9b2-edce-4f74-b466-98d0bbb0a94a");
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("httpdatatype", out var value) && value == "request");
+
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("functionname", out var value) && value.Equals(functionName));
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("functionid", out var value) && value.Equals(functionId));
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("invocationid", out var value) && value.Equals(invocationId));
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("traceparent", out var value) && value.Equals(traceParent));
+            Assert.Contains(savedRequestLogs, l => l.MetaData.TryGetValue("traceid", out var value) && value.Equals(traceId));
+
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("uniquelogname", out var value) && Guid.TryParse(value, out var t));
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("statuscode", out var value) && value == HttpStatusCode.Accepted.ToString());
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("correlationid", out var value) && value == "1aaa720a-a7b9-4fe4-a004-f222ad932c7a");
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("httpdatatype", out var value) && value == "response");
+
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("functionname", out var value) && value.Equals(functionName));
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("functionid", out var value) && value.Equals(functionId));
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("invocationid", out var value) && value.Equals(invocationId));
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("traceparent", out var value) && value.Equals(traceParent));
+            Assert.Contains(savedResponseLogs, l => l.MetaData.TryGetValue("traceid", out var value) && value.Equals(traceId));
         }
 
         private (MockedHttpRequestData HttpRequestData, HttpResponseData HttpResponseData) SetUpContext(
@@ -167,6 +298,8 @@ namespace RequestResponseMiddleware.Tests
             functionContext.FunctionDefinitionMock
                 .Setup(e => e.Name)
                 .Returns("TestFunction");
+
+            httpRequest.HttpRequestDataMock.SetupGet(e => e.Url).Returns(new Uri("https://localhost/testpath/"));
 
             return new(httpRequest, responseData);
         }

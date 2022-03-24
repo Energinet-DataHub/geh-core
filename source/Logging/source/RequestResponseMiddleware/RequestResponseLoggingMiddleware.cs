@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Extensions;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -60,7 +60,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
                 // Starts gathering information from response and logs to storage
                 var responseLogInformation = await BuildResponseLogInformationAsync(context);
-                await LogResponseAsync(responseLogInformation, requestLogInformation.MetaData).ConfigureAwait(false);
+                await LogResponseAsync(responseLogInformation).ConfigureAwait(false);
 
                 totalTimer.Stop();
                 _logger.LogInformation("RequestResponse Total execution time ms: {}", totalTimer.ElapsedMilliseconds);
@@ -73,54 +73,47 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private Task LogRequestAsync(LogInformation requestLogInformation)
         {
-            var requestLogNameAndFolder = LogDataBuilder.BuildLogName(requestLogInformation.MetaData);
-            var requestLogName = requestLogNameAndFolder.Name + "_request.txt";
-            return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName, requestLogNameAndFolder.Folder);
+            var requestLogName = LogDataBuilder.BuildLogName();
+            return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName);
         }
 
-        private Task LogResponseAsync(LogInformation responseLogInformation, Dictionary<string, string> requestMetaData)
+        private Task LogResponseAsync(LogInformation responseLogInformation)
         {
-            var responseLogNameAndFolder = LogDataBuilder.BuildLogName(requestMetaData);
-            var responseLogName = responseLogNameAndFolder.Name + "_response.txt";
-            return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName, responseLogNameAndFolder.Folder);
+            var responseLogName = LogDataBuilder.BuildLogName();
+            return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName);
         }
 
         private static async Task<LogInformation> BuildRequestLogInformationAsync(FunctionContext context)
         {
-            var (metaData, indexTags) = LogDataBuilder.BuildMetaDataAndIndexTagsDictionariesFromContext(context, true);
+            var uniqueLogName = LogDataBuilder.BuildLogName();
+            var logTags = LogDataBuilder.BuildDictionaryFromContext(context, true);
+            logTags.AddToHeaderCollection(IndexTagsKeys.UniqueLogName, uniqueLogName);
 
             if (context.GetHttpRequestData() is { } requestData)
             {
-                foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers))
-                {
-                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
-                }
+                logTags.AddHeaderCollectionTags(LogDataBuilder.ReadHeaderDataFromCollection(requestData.Headers));
 
                 var streamToLog = new MemoryStream();
                 await requestData.Body.CopyToAsync(streamToLog);
                 requestData.Body.Position = 0;
                 streamToLog.Position = 0;
 
-                return new LogInformation(streamToLog, metaData, indexTags);
+                return new LogInformation(streamToLog, logTags.BuildMetaDataForLog(), logTags.GetIndexTagsWithMax10Items(), uniqueLogName);
             }
 
-            return new LogInformation(Stream.Null, metaData, indexTags);
+            return new LogInformation(Stream.Null, logTags.BuildMetaDataForLog(), logTags.GetIndexTagsWithMax10Items(), uniqueLogName);
         }
 
         private static async Task<LogInformation> BuildResponseLogInformationAsync(FunctionContext context)
         {
-            var (metaData, indexTags) = LogDataBuilder.BuildMetaDataAndIndexTagsDictionariesFromContext(context, false);
+            var uniqueLogName = LogDataBuilder.BuildLogName();
+            var logTags = LogDataBuilder.BuildDictionaryFromContext(context, false);
+            logTags.AddToHeaderCollection(IndexTagsKeys.UniqueLogName, uniqueLogName);
 
             if (context.GetHttpResponseData() is { } responseData)
             {
-                metaData.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
-                indexTags.TryAdd(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
-
-                foreach (var (key, value) in LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers))
-                {
-                    metaData.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
-                    indexTags.TryAdd(LogDataBuilder.MetaNameFormatter(key), value);
-                }
+                logTags.AddToHeaderCollection(LogDataBuilder.MetaNameFormatter("StatusCode"), responseData.StatusCode.ToString());
+                logTags.AddHeaderCollectionTags(LogDataBuilder.ReadHeaderDataFromCollection(responseData.Headers));
 
                 await PrepareResponseStreamForLoggingAsync(responseData);
 
@@ -128,10 +121,10 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
                 await PrepareResponseStreamToReturnAsync(responseData, streamToLog);
 
-                return new LogInformation(streamToLog, metaData, indexTags);
+                return new LogInformation(streamToLog, logTags.BuildMetaDataForLog(), logTags.GetIndexTagsWithMax10Items(), uniqueLogName);
             }
 
-            return new LogInformation(Stream.Null, metaData, indexTags);
+            return new LogInformation(Stream.Null, logTags.BuildMetaDataForLog(), logTags.GetIndexTagsWithMax10Items(), uniqueLogName);
         }
 
         private static async Task PrepareResponseStreamToReturnAsync(HttpResponseData responseData, Stream streamToLog)
@@ -170,7 +163,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             try
             {
                 var request = context.GetHttpRequestData();
-                return request is { };
+                return request is { } req && !req.Url.AbsoluteUri.Contains("/monitor/");
             }
             catch
             {

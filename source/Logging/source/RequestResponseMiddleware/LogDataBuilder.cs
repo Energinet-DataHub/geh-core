@@ -14,11 +14,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
@@ -40,45 +39,38 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
             if (headersCollection.Any(e => e.Key.Equals("authorization", StringComparison.InvariantCultureIgnoreCase)))
             {
-                headerDataToSelect.Add("Authorization", "Bearer ****");
+                headerDataToSelect.TryAdd("Authorization", "Bearer ****");
+            }
+
+            if (!headersCollection.Any(e => e.Key.Equals(IndexTagsKeys.CorrelationId, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                headerDataToSelect.TryAdd(IndexTagsKeys.CorrelationId, "no correlation id found");
             }
 
             return headerDataToSelect;
         }
 
-        public static (Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags) BuildMetaDataAndIndexTagsDictionariesFromContext(
+        public static LogTags BuildDictionaryFromContext(
             FunctionContext context,
             bool isRequest)
         {
-            var metaData = context.BindingContext.BindingData
+            var bindingdata = context.BindingContext.BindingData
                 .Where(m =>
                     !string.IsNullOrWhiteSpace(m.Key) &&
                     !m.Key.Equals("headers", StringComparison.InvariantCultureIgnoreCase) &&
                     !m.Key.Equals("query", StringComparison.InvariantCultureIgnoreCase))
                 .ToDictionary(e => MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
 
-            // Add Query params to index tags, take 3 because max 10 index tags
-            var indexTags = new Dictionary<string, string>(metaData.Take(3));
+            var logTags = new LogTags();
+            logTags.AddContextTagsCollection(AddBaseInfoFromContextToDictionary(context, isRequest));
+            logTags.AddQueryTagsCollection(bindingdata);
 
-            AddBaseInfoFromContextToDictionary(context, isRequest, metaData);
-            AddBaseInfoFromContextToDictionary(context, isRequest, indexTags);
-
-            return (metaData, indexTags);
+            return logTags;
         }
 
-        public static (string Name, string Folder) BuildLogName(Dictionary<string, string> metaData)
+        public static string BuildLogName()
         {
-            var time = SystemClock.Instance.GetCurrentInstant();
-            var subfolder = time.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-            string name = $"{LookUpInDictionary("functionname", metaData)}" +
-                          $"{LookUpInDictionary("jwtactorid", metaData)}" +
-                          $"{LookUpInDictionary("invocationid", metaData)}" +
-                          $"{LookUpInDictionary("traceparent", metaData)}" +
-                          $"{LookUpInDictionary("correlationid", metaData)}" +
-                          $"{time.ToString("yyyy-MM-ddTHH-mm-ss'Z'", CultureInfo.InvariantCulture)}";
-
-            return (name, subfolder);
+            return Guid.NewGuid().ToString();
         }
 
         /// <summary>
@@ -104,10 +96,9 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                     ? string.IsNullOrWhiteSpace(value) ? string.Empty : $"{value}_"
                     : string.Empty;
 
-        private static void AddBaseInfoFromContextToDictionary(
+        private static Dictionary<string, string> AddBaseInfoFromContextToDictionary(
             FunctionContext context,
-            bool isRequest,
-            Dictionary<string, string> dictionary)
+            bool isRequest)
         {
             var jwtTokenActorId = JwtTokenParsing.ReadJwtActorId(context);
             var actorIdToWrite = string.IsNullOrWhiteSpace(jwtTokenActorId) ? "noactoridfound" : jwtTokenActorId;
@@ -115,17 +106,15 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             var traceParentParts = TraceParentSplit(context.TraceContext?.TraceParent ?? string.Empty);
             var traceId = traceParentParts?.Traceid;
 
-            if (isRequest && !string.IsNullOrWhiteSpace(jwtTokenActorId))
-            {
-                dictionary.TryAdd(MetaNameFormatter("JwtActorId"), actorIdToWrite);
-            }
-
-            dictionary.TryAdd(MetaNameFormatter("FunctionId"), context.FunctionId);
-            dictionary.TryAdd(MetaNameFormatter("FunctionName"), context.FunctionDefinition.Name);
-            dictionary.TryAdd(MetaNameFormatter("InvocationId"), context.InvocationId);
-            dictionary.TryAdd(MetaNameFormatter("TraceParent"), context.TraceContext?.TraceParent ?? string.Empty);
-            dictionary.TryAdd(MetaNameFormatter("TraceId"), traceId ?? string.Empty);
-            dictionary.TryAdd(MetaNameFormatter("HttpDataType"), isRequest ? "request" : "response");
+            var dictionary = new Dictionary<string, string>();
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.JwtActorId), actorIdToWrite);
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.FunctionId), context.FunctionId);
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.FunctionName), context.FunctionDefinition.Name);
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.InvocationId), context.InvocationId);
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceParent), context.TraceContext?.TraceParent ?? string.Empty);
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceId), traceId ?? string.Empty);
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.HttpDataType), isRequest ? "request" : "response");
+            return dictionary;
         }
     }
 }
