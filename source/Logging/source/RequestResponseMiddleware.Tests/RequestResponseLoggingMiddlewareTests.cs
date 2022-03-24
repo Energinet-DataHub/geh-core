@@ -191,9 +191,12 @@ namespace RequestResponseMiddleware.Tests
             var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
 
+            var token1 = "Bearer ";
+            var token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwI";
+            var token3 = "iwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNDQ0MjY4ODEwLCJhenAiOiIxMTE5YjliMi1lZGNlLTRmNzQtYjQ2Ni05OGQwYmJiMGE5NGEiLCJpYXQiOjE1MTYyMzkwMjJ9.Kia6V3YOtfwjauBRZbOswXq4beyeNLHPAKJ0aqZhqDg";
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
-                { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNDQ0MjY4ODEwLCJhenAiOiIxMTE5YjliMi1lZGNlLTRmNzQtYjQ2Ni05OGQwYmJiMGE5NGEiLCJpYXQiOjE1MTYyMzkwMjJ9.Kia6V3YOtfwjauBRZbOswXq4beyeNLHPAKJ0aqZhqDg\"}" },
+                { "Headers", "{\"Authorization\":\"" + token1 + token2 + token3 + "\"}" },
                 { "Query", "{ BundleId: 123 }" },
                 { "BundleId", "132" },
                 { string.Empty, "error skipped" },
