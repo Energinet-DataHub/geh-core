@@ -15,9 +15,11 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
@@ -25,6 +27,7 @@ using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
 using Xunit.Categories;
@@ -191,9 +194,11 @@ namespace RequestResponseMiddleware.Tests
             var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
             var functionContext = new MockedFunctionContext();
 
+            var token = MockJwtTokens.GenerateJwtToken(new[] { new Claim("azp", "1119b9b2-edce-4f74-b466-98d0bbb0a94a") });
+
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
-                { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNDQ0MjY4ODEwLCJhenAiOiIxMTE5YjliMi1lZGNlLTRmNzQtYjQ2Ni05OGQwYmJiMGE5NGEifQ.X9q7J8LPeH-yUvmKg717rXQQf39_CxlWMqoFmmF73Xg\"}" },
+                { "Headers", "{\"Authorization\":\"Bearer " + token + "\"}" },
                 { "Query", "{ BundleId: 123 }" },
                 { "BundleId", "132" },
                 { string.Empty, "error skipped" },
