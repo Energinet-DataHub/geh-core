@@ -52,5 +52,12 @@ namespace RequestResponseMiddleware.Tests
                 .Setup(h => h.Headers)
                 .Returns(headers);
         }
+
+        public void SetRequestHeaderCollection(HttpHeadersCollection headers)
+        {
+            HttpRequestDataMock
+                .Setup(h => h.Headers)
+                .Returns(headers);
+        }
     }
 }
