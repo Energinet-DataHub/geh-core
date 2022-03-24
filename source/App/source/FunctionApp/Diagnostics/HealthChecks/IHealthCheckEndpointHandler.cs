@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
         /// Handle health checks based on <paramref name="endpoint"/>.
         /// </summary>
         /// <param name="httpRequest">Incoming health check request.</param>
-        /// <param name="endpoint">Incoming health check endpoint. Can be "live" for liveness check, or "ready" for readyness check.</param>
+        /// <param name="endpoint">Incoming health check endpoint. Can be "live" for liveness check, or "ready" for readiness check.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         Task<HttpResponseData> HandleAsync(HttpRequestData httpRequest, string endpoint);
     }
