@@ -23,7 +23,7 @@ namespace TraceContext
     /// For now, the implementation doesn't handle all validation nor uses version or flags.
     /// Specification can be found here: https://www.w3.org/TR/trace-context/#trace-id
     /// </remarks>
-    public class TraceContext
+    public sealed class TraceContext
     {
         private TraceContext(string traceId, string parentId, bool isValid)
         {

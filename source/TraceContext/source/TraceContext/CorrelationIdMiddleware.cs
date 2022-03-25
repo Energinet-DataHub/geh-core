@@ -19,7 +19,7 @@ using Microsoft.Azure.Functions.Worker.Middleware;
 
 namespace TraceContext
 {
-    public class CorrelationIdMiddleware : IFunctionsWorkerMiddleware
+    public sealed class CorrelationIdMiddleware : IFunctionsWorkerMiddleware
     {
         private readonly ICorrelationContext _correlationContext;
 
