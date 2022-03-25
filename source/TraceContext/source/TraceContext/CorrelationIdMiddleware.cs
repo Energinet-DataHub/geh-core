@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
-namespace TraceContext
+namespace Energinet.DataHub.Core.TraceContext
 {
     public sealed class CorrelationIdMiddleware : IFunctionsWorkerMiddleware
     {
@@ -33,7 +33,7 @@ namespace TraceContext
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var traceContext = TraceContext.Parse(context.TraceContext.TraceParent);
+            var traceContext = global::Energinet.DataHub.Core.TraceContext.TraceContext.Parse(context.TraceContext.TraceParent);
 
             _correlationContext.SetId(traceContext.TraceId);
             _correlationContext.SetParentId(traceContext.ParentId);

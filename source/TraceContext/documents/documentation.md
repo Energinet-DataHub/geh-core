@@ -1,6 +1,8 @@
 # TraceContext Documentation
 
-Contains a middleware implementation of TraceContext parsing to help with retrieving CorrelationId and ParentId from the TraceContext. 
+Contains a middleware implementation of TraceContext parsing to help with retrieving CorrelationId and ParentId from the TraceContext.
+
+For more information on TraceContext please visit: https://www.w3.org/TR/trace-context/#trace-context-http-headers-format
 
 ## Usage
 

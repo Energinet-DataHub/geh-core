@@ -14,7 +14,7 @@
 
 using System;
 
-namespace TraceContext
+namespace Energinet.DataHub.Core.TraceContext
 {
     public class CorrelationContext : ICorrelationContext
     {

@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace TraceContext
+namespace Energinet.DataHub.Core.TraceContext
 {
     /// <summary>
     /// Implementation of w3c trace context
