@@ -103,7 +103,8 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             var jwtTokenActorId = JwtTokenParsing.ReadJwtActorId(context);
             var actorIdToWrite = string.IsNullOrWhiteSpace(jwtTokenActorId) ? "noactoridfound" : jwtTokenActorId;
 
-            var traceParentParts = TraceParentSplit(context.TraceContext?.TraceParent ?? string.Empty);
+            var traceParentString = string.IsNullOrWhiteSpace(context.TraceContext?.TraceParent) ? "notraceparent" : context.TraceContext.TraceParent;
+            var traceParentParts = TraceParentSplit(traceParentString);
             var traceId = traceParentParts.Traceid;
 
             var dictionary = new Dictionary<string, string>();
@@ -111,7 +112,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.FunctionId), context.FunctionId);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.FunctionName), context.FunctionDefinition.Name);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.InvocationId), context.InvocationId);
-            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceParent), context.TraceContext?.TraceParent ?? "notraceparent");
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceParent), traceParentString);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceId), traceId);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.HttpDataType), isRequest ? "request" : "response");
             return dictionary;
