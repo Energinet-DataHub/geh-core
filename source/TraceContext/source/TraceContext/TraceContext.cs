@@ -43,6 +43,7 @@ namespace Energinet.DataHub.Core.TraceContext
             if (string.IsNullOrWhiteSpace(traceContext)) return Invalid();
 
             // 55 is the valid length of trace context.
+            // An example looks like this: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
             if (traceContext.Length != 55) return Invalid();
 
             var parts = traceContext.Split('-');

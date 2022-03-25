@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Core.TraceContext
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var traceContext = global::Energinet.DataHub.Core.TraceContext.TraceContext.Parse(context.TraceContext.TraceParent);
+            var traceContext = TraceContext.Parse(context.TraceContext.TraceParent);
 
             _correlationContext.SetId(traceContext.TraceId);
             _correlationContext.SetParentId(traceContext.ParentId);

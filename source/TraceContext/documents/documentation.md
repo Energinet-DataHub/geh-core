@@ -25,7 +25,7 @@ public string CorrelationId()
 
 public string ParentId()
 {
- return _correlationContext.Parent;
+ return _correlationContext.ParentId;
 }
 ```
 
