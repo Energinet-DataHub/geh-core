@@ -59,11 +59,19 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models
             return _tags;
         }
 
+        public Dictionary<string, string> GetQueryTags()
+        {
+            return _queryTags;
+        }
+
         public Dictionary<string, string> BuildMetaDataForLog()
         {
-            var json = JsonSerializer.Serialize(GetAllIndexTags());
+            var jsonAll = JsonSerializer.Serialize(GetAllIndexTags());
+            var jsonQuery = JsonSerializer.Serialize(GetQueryTags());
+
             var metaData = new Dictionary<string, string>(_tags);
-            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("indextags"), json);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("indextags"), jsonAll);
+            metaData.TryAdd(LogDataBuilder.MetaNameFormatter("querytags"), jsonQuery);
             return metaData;
         }
 

@@ -77,6 +77,7 @@ namespace RequestResponseMiddleware.Tests
 
             // Act
             var allTags = logTags.GetAllTags();
+            var queryLogTags = logTags.GetQueryTags();
             var metaDataJsonString = logTags.BuildMetaDataForLog();
             var allIndexTags = logTags.GetAllIndexTags();
             var max10IndexTags = logTags.GetIndexTagsWithMax10Items();
@@ -86,8 +87,35 @@ namespace RequestResponseMiddleware.Tests
             Assert.Equal(10, max10IndexTags.Count);
             Assert.Equal(totalTags, allTags.Count);
             Assert.Equal(7, allIndexTags.Count);
+            Assert.Equal(queryTags.Count, queryLogTags.Count);
+
             Assert.True(metaDataJsonString["indextags"].Length > 50);
+            Assert.True(metaDataJsonString["querytags"].Length > 30);
             Assert.True(metaDataJsonString.Count > allTags.Count);
+        }
+
+        [Fact]
+        public void LogTags_TagsIsEmpty()
+        {
+            // Arrange
+            var logTags = new LogTags();
+
+            // Act
+            var allTags = logTags.GetAllTags();
+            var queryLogTags = logTags.GetQueryTags();
+            var metaDataJsonString = logTags.BuildMetaDataForLog();
+            var allIndexTags = logTags.GetAllIndexTags();
+            var max10IndexTags = logTags.GetIndexTagsWithMax10Items();
+
+            // Assert
+            var totalTags = 0;
+            Assert.Empty(max10IndexTags);
+            Assert.Equal(totalTags, allTags.Count);
+            Assert.Empty(allIndexTags);
+            Assert.Empty(queryLogTags);
+
+            Assert.True(metaDataJsonString["indextags"].Equals("{}"));
+            Assert.True(metaDataJsonString["querytags"].Equals("{}"));
         }
     }
 }
