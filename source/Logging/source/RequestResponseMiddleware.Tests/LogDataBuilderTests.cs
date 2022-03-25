@@ -34,7 +34,7 @@ namespace RequestResponseMiddleware.Tests
         public void TraceParentSplit_ValidTraceParent(string traceParent, bool parseOk)
         {
             var result = LogDataBuilder.TraceParentSplit(traceParent);
-            Assert.True(result is { } == parseOk);
+            Assert.True(result.Traceid != "notraceid" == parseOk);
         }
 
         [Theory]
@@ -43,8 +43,8 @@ namespace RequestResponseMiddleware.Tests
         public void TraceParentSplit_ValidTraceId(string traceParent, string expectedTraceId)
         {
             var result = LogDataBuilder.TraceParentSplit(traceParent);
-            Assert.NotNull(result);
-            Assert.Equal(expectedTraceId, result.Value.Traceid);
+            Assert.NotEqual("notraceid", result.Traceid);
+            Assert.Equal(expectedTraceId, result.Traceid);
         }
 
         [Theory]
@@ -54,7 +54,7 @@ namespace RequestResponseMiddleware.Tests
         public void TraceParentSplit_InValidTraceId(string? traceParent)
         {
             var result = LogDataBuilder.TraceParentSplit(traceParent ?? string.Empty);
-            Assert.Null(result);
+            Assert.Equal("notraceid", result.Traceid);
         }
 
         [Fact]

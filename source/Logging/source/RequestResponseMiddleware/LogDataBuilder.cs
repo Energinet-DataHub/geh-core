@@ -77,7 +77,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         /// https://w3c.github.io/trace-context/#trace-context-http-request-headers-format
         /// </summary>
         /// <returns>TraceParent parts or null on parse error</returns>
-        public static (string Version, string Traceid, string Spanid, string Traceflags)? TraceParentSplit(string traceParent)
+        public static (string Version, string Traceid, string Spanid, string Traceflags) TraceParentSplit(string traceParent)
         {
             var traceSpilt = traceParent.Split('-', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             if (traceSpilt.Length == 4)
@@ -85,7 +85,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 return (traceSpilt[0], traceSpilt[1], traceSpilt[2], traceSpilt[3]);
             }
 
-            return null;
+            return (string.Empty, "notraceid", string.Empty, string.Empty);
         }
 
         internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();
@@ -104,15 +104,15 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             var actorIdToWrite = string.IsNullOrWhiteSpace(jwtTokenActorId) ? "noactoridfound" : jwtTokenActorId;
 
             var traceParentParts = TraceParentSplit(context.TraceContext?.TraceParent ?? string.Empty);
-            var traceId = traceParentParts?.Traceid;
+            var traceId = traceParentParts.Traceid;
 
             var dictionary = new Dictionary<string, string>();
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.JwtActorId), actorIdToWrite);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.FunctionId), context.FunctionId);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.FunctionName), context.FunctionDefinition.Name);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.InvocationId), context.InvocationId);
-            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceParent), context.TraceContext?.TraceParent ?? string.Empty);
-            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceId), traceId ?? string.Empty);
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceParent), context.TraceContext?.TraceParent ?? "notraceparent");
+            dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.TraceId), traceId);
             dictionary.TryAdd(MetaNameFormatter(IndexTagsKeys.HttpDataType), isRequest ? "request" : "response");
             return dictionary;
         }
