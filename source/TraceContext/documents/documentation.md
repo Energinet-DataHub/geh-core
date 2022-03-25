@@ -1,22 +1,32 @@
 # TraceContext Documentation
 
-Contains a middelware implmentation of TraceContext parsing to help with retrieving CorrelationId and ParentId from the TraceContext. 
+Contains a middleware implementation of TraceContext parsing to help with retrieving CorrelationId and ParentId from the TraceContext. 
 
 ## Usage
-TBA
+
+After the middleware have been called, you can get access to the id or parent trough `ICorrelationContext`
 
 ```c#
-var schemaValidatingReader = new SchemaValidatingReader(
-    stream,
-    Schemas.CimXml.StructureGenericNotification)
+public class MyClass
 
-while (await schemaValidatingReader.AdvanceAsync().ConfigureAwait(false))
+private readonly ICorrelationContext _correlationContext;
+
+public MyClass(ICorrelationContext correlationContext)
 {
-    ...
+  _correlationContext = correlationContext;
 }
 
-if (schemaValidatingReader.HasErrors)
+public string CorrelationId()
 {
-    ...
+ return _correlationContext.Id;
+}
+
+public string ParentId()
+{
+ return _correlationContext.Parent;
 }
 ```
+
+## Registration
+
+`CorrelationIdMiddleware` should be registered as a middleware and its lifetime should be `scoped`.

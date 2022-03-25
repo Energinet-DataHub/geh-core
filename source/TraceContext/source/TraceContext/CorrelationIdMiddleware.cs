@@ -38,7 +38,7 @@ namespace TraceContext
             _correlationContext.SetId(traceContext.TraceId);
             _correlationContext.SetParentId(traceContext.ParentId);
 
-            if (next != null) await next(context).ConfigureAwait(false);
+            await next(context).ConfigureAwait(false);
         }
     }
 }
