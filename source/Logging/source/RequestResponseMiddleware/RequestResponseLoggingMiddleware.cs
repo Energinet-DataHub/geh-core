@@ -163,7 +163,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             try
             {
                 var request = context.GetHttpRequestData();
-                return request is { } req && !req.Url.AbsoluteUri.Contains("/monitor/");
+                return request is { } req && !req.Url.AbsoluteUri.Contains("/monitor/", StringComparison.InvariantCultureIgnoreCase);
             }
             catch
             {
