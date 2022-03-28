@@ -31,4 +31,18 @@ public string ParentId()
 
 ## Registration
 
-`CorrelationIdMiddleware` should be registered as a middleware and its lifetime should be `scoped`.
+`CorrelationIdMiddleware` should be registered as a middleware and its lifetime should be `scoped`
+`CorrelationContext` should be registered with lifetime`scoped`
+
+```c#
+protected virtual void ConfigureFunctionsWorkerDefaults(IFunctionsWorkerApplicationBuilder options)
+{
+    options.UseMiddleware<CorrelationIdMiddleware>();
+}
+
+private void ConfigureServices(IServiceCollection serviceCollection)
+{
+    serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
+    serviceCollection.AddScoped<CorrelationIdMiddleware>();           
+}
+```
