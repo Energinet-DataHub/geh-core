@@ -1,8 +1,8 @@
-# Azure Function Common Release notes
+# App Release notes
 
 ## Version 2.2.0
 
-- CorrelationIdMiddleware was introduced.
+- CorrelationIdMiddleware was introduced for FunctionApp.
 
 ## Version 2.1.0
 
