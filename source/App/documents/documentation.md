@@ -7,4 +7,6 @@ A library containing common functionality for Azure Functions and ASP.Net Core W
 - Middleware
   - [JWT Token Middleware](middleware.md#jwt-token-middleware)
   - [Actor Middleware](middleware.md#actor-middleware)
-- [Health Checks](health-checks.md)
+  - [CorrelationId Middlelware](correlationIdMiddleware.md)
+- Health
+  - [Health Checks](health-checks.md)

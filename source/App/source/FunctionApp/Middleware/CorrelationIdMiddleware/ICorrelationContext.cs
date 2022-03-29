@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.TraceContext
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationIdMiddleware
 {
     /// <summary>
     /// Context for the current scope identified by a correlation id.

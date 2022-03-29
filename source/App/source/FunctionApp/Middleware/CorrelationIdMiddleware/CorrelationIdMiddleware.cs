@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
-namespace Energinet.DataHub.Core.TraceContext
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationIdMiddleware
 {
     public sealed class CorrelationIdMiddleware : IFunctionsWorkerMiddleware
     {
