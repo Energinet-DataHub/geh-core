@@ -36,6 +36,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
 
             ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
+            B2CSettings = CreateB2CSettings(Configuration);
         }
 
         /// <summary>
@@ -63,6 +64,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         /// </summary>
         public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
+        /// <summary>
+        /// Settings necessary for managing the Azure AD B2C.
+        /// </summary>
+        public AzureB2CSettings B2CSettings { get; }
+
         private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
         {
             var integrationtestConfiguration = new ConfigurationBuilder()
@@ -86,6 +92,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
                 ResourceGroup = configuration.GetValue("AZURE-SHARED-RESOURCEGROUP"),
                 ClientId = configuration.GetValue("AZURE-SHARED-SPNID"),
                 ClientSecret = configuration.GetValue("AZURE-SHARED-SPNSECRET"),
+            };
+        }
+
+        private static AzureB2CSettings CreateB2CSettings(IConfigurationRoot configuration)
+        {
+            return new AzureB2CSettings
+            {
+                ServicePrincipalId = configuration.GetValue("AZURE-B2C-SPN-ID"),
+                ServicePrincipalSecret = configuration.GetValue("AZURE-B2C-SPN-SECRET"),
+                BackendAppId = configuration.GetValue("AZURE-B2C-BACKEND-APP-ID"),
             };
         }
     }

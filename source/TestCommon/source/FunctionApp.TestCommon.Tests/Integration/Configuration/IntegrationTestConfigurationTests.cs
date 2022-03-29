@@ -23,6 +23,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
     public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
     {
         [Fact]
+        public void Given_IdentityHasAccess_When_B2CSettings_Then_EachPropertyHasValue()
+        {
+            // Arrange
+
+            // Act
+            var actualValue = Sut.B2CSettings;
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actualValue.Should().NotBeNull();
+            actualValue.ServicePrincipalId.Should().NotBeNullOrEmpty();
+            actualValue.ServicePrincipalSecret.Should().NotBeNullOrEmpty();
+            actualValue.BackendAppId.Should().NotBeNullOrEmpty();
+        }
+
+        [Fact]
         public void Given_IdentityHasAccess_When_ResourceManagementSettings_Then_EachPropertyHasValue()
         {
             // Arrange
