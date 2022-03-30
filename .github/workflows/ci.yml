@@ -1,0 +1,70 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Continuous Integration of domain except for own NuGet packages
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dotnet_solution_ci_app_common:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/App/App.sln'
+      DOTNET_VERSION: '5.0.405'
+      
+  dotnet_solution_ci_json_serialization:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/JsonSerialization/JsonSerialization.sln'
+      DOTNET_VERSION: '5.0.405'
+      
+  dotnet_solution_ci_json_serialization:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/JsonSerialization/JsonSerialization.sln'
+      DOTNET_VERSION: '5.0.202'
+      
+  dotnet_solution_ci_logging:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/Logging/Logging.sln'
+      DOTNET_VERSION: '5.0.202'
+      
+  dotnet_solution_ci_messaging:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/Messaging/Messaging.sln'
+      DOTNET_VERSION: '5.0.202'
+      
+  dotnet_solution_ci_schema:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/Schemas/Schemas.sln'
+      DOTNET_VERSION: '5.0.202'
+      
+  dotnet_solution_ci_testcommon:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/TestCommon/TestCommon.sln'
+      DOTNET_VERSION: '5.0.202'
+      
+  dotnet_solution_ci_xmlconversion:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/XmlConversion/XmlConversion.sln'
+      DOTNET_VERSION: '5.0.202'
