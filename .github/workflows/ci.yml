@@ -21,6 +21,8 @@ on:
       - main
 
 jobs:
+  environment: CI
+  
   dotnet_solution_ci_app_common:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
     with:
@@ -51,7 +53,6 @@ jobs:
     with:
       SOLUTION_FILE_PATH: 'source/Messaging/Messaging.sln'
       DOTNET_VERSION: '5.0.202'
-      USE_AZURE_FUNCTIONS_TOOLS: true
       
   dotnet_solution_ci_schema:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
@@ -72,6 +73,13 @@ jobs:
       DOTNET_VERSION: '5.0.202'
       USE_AZURE_FUNCTIONS_TOOLS: true
       USE_SQLLOCALDB_2019: true
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID }}
+      AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
+      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
       
   dotnet_solution_ci_xmlconversion:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
