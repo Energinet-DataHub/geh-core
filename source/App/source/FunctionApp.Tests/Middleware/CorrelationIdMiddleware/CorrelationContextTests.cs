@@ -16,6 +16,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationIdMiddleware;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using FluentAssertions;
 using Xunit;
 
 namespace FunctionApp.Tests.Middleware.CorrelationIdMiddleware
@@ -34,7 +35,7 @@ namespace FunctionApp.Tests.Middleware.CorrelationIdMiddleware
             var result = sut.Id;
 
             // Assert
-            Assert.Equal(correlationId, result);
+            correlationId.Should().Be(result);
         }
 
         [Theory]
@@ -49,7 +50,7 @@ namespace FunctionApp.Tests.Middleware.CorrelationIdMiddleware
             var result = sut.ParentId;
 
             // Assert
-            Assert.Equal(parentId, result);
+            parentId.Should().Be(result);
         }
 
         [Theory]
@@ -75,7 +76,7 @@ namespace FunctionApp.Tests.Middleware.CorrelationIdMiddleware
             var actual = sut.AsTraceContext();
 
             // Assert
-            Assert.Equal(expected, actual);
+            expected.Should().Be(actual);
         }
     }
 }
