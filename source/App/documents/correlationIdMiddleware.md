@@ -20,7 +20,7 @@ public class MyClass
 
     public string CorrelationId()
     {
-    return _correlationContext.Id;
+        return _correlationContext.Id;
     }
 
     public string ParentId()
