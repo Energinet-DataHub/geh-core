@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using FluentAssertions;
 using Xunit;
 
-namespace FunctionApp.Tests.Middleware.CorrelationId
+namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.CorrelationId
 {
     public class TraceContextTests
     {

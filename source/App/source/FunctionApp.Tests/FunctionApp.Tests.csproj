@@ -23,6 +23,9 @@ limitations under the License.
     <ProjectGuid>{432DA871-1514-423E-B0EB-7F5873CB1E45}</ProjectGuid>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsPackable>false</IsPackable>
+
+    <AssemblyName>Energinet.DataHub.Core.App.FunctionApp.Tests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.App.FunctionApp.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

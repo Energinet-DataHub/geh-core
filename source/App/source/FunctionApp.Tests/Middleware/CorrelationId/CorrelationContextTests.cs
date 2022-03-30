@@ -19,7 +19,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Xunit;
 
-namespace FunctionApp.Tests.Middleware.CorrelationId
+namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.CorrelationId
 {
     public class CorrelationContextTests
     {
