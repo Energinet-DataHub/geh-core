@@ -16,7 +16,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using TraceContext = Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId.TraceContext;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
 {

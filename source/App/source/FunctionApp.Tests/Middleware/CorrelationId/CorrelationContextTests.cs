@@ -68,7 +68,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.CorrelationId
             [NotNull] CorrelationContext sut)
         {
             // Arrange
-            var expected = "00-" + id + "-" + parentId + "-00";
+            var expected = $"00-{id}-{parentId}-00";
             sut.SetId(id);
             sut.SetParentId(parentId);
 
