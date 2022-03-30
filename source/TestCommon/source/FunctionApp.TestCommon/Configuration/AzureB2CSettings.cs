@@ -19,6 +19,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
     /// </summary>
     public record AzureB2CSettings()
     {
+        public string Tenant { get; internal set; }
+            = string.Empty;
+
         public string ServicePrincipalId { get; internal set; }
             = string.Empty;
 

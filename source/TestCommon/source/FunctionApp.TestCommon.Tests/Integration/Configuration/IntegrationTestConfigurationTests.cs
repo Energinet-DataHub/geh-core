@@ -33,6 +33,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
             // Assert
             using var assertionScope = new AssertionScope();
             actualValue.Should().NotBeNull();
+            actualValue.Tenant.Should().NotBeNullOrEmpty();
             actualValue.ServicePrincipalId.Should().NotBeNullOrEmpty();
             actualValue.ServicePrincipalSecret.Should().NotBeNullOrEmpty();
             actualValue.BackendAppId.Should().NotBeNullOrEmpty();
