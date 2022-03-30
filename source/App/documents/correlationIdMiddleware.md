@@ -6,27 +6,30 @@ For more information on TraceContext please visit: https://www.w3.org/TR/trace-c
 
 ## Usage
 
-After the middleware have been called, you can get access to the id or parent trough `ICorrelationContext`
+After the middleware have been called, you can get access to the id or parent through `ICorrelationContext`
 
 ```c#
 public class MyClass
-
-private readonly ICorrelationContext _correlationContext;
-
-public MyClass(ICorrelationContext correlationContext)
 {
-  _correlationContext = correlationContext;
+    private readonly ICorrelationContext _correlationContext;
+
+    public MyClass(ICorrelationContext correlationContext)
+    {
+        _correlationContext = correlationContext;
+    }
+
+    public string CorrelationId()
+    {
+    return _correlationContext.Id;
+    }
+
+    public string ParentId()
+    {
+        return _correlationContext.ParentId;
+    }
 }
 
-public string CorrelationId()
-{
- return _correlationContext.Id;
-}
 
-public string ParentId()
-{
- return _correlationContext.ParentId;
-}
 ```
 
 ## Registration
