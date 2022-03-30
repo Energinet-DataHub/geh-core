@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationIdMiddleware
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
 {
     public class CorrelationContext : ICorrelationContext
     {

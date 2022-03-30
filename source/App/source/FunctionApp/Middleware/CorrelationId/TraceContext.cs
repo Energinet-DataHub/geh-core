@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationIdMiddleware
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
 {
     /// <summary>
     /// Implementation of w3c trace context

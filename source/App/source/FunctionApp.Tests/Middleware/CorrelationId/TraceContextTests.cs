@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationIdMiddleware;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using FluentAssertions;
 using Xunit;
 
-namespace FunctionApp.Tests.Middleware.CorrelationIdMiddleware
+namespace FunctionApp.Tests.Middleware.CorrelationId
 {
     public class TraceContextTests
     {

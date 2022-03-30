@@ -14,12 +14,12 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationIdMiddleware;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Xunit;
 
-namespace FunctionApp.Tests.Middleware.CorrelationIdMiddleware
+namespace FunctionApp.Tests.Middleware.CorrelationId
 {
     public class CorrelationContextTests
     {
