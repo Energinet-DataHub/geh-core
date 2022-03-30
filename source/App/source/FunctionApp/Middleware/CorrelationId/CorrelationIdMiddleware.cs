@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
             _correlationContext = correlationContext;
         }
 
-        public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
+        public Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
             _correlationContext.SetId(traceContext.TraceId);
             _correlationContext.SetParentId(traceContext.ParentId);
 
-            await next(context).ConfigureAwait(false);
+            return next(context);
         }
     }
 }
