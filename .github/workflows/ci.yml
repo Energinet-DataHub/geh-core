@@ -33,12 +33,6 @@ jobs:
       SOLUTION_FILE_PATH: 'source/JsonSerialization/JsonSerialization.sln'
       DOTNET_VERSION: '5.0.405'
       
-  dotnet_solution_ci_json_serialization:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
-    with:
-      SOLUTION_FILE_PATH: 'source/JsonSerialization/JsonSerialization.sln'
-      DOTNET_VERSION: '5.0.202'
-      
   dotnet_solution_ci_logging:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
     with:
@@ -55,6 +49,12 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
     with:
       SOLUTION_FILE_PATH: 'source/Schemas/Schemas.sln'
+      DOTNET_VERSION: '5.0.202'
+      
+  dotnet_solution_ci_schemavalidation:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@6.0.0
+    with:
+      SOLUTION_FILE_PATH: 'source/SchemaValidation/SchemaValidation.sln'
       DOTNET_VERSION: '5.0.202'
       
   dotnet_solution_ci_testcommon:
