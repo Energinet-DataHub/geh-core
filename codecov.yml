@@ -5,9 +5,9 @@ flag_management:
     - name: appcommon
       paths: 
       - source/App
-    - name: jsonserialization
-      paths: 
-      - source/JsonSerialization
+    # - name: jsonserialization
+    #   paths: 
+    #   - source/JsonSerialization
     - name: logging
       paths: 
       - source/Logging
