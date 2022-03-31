@@ -36,4 +36,4 @@
 ## Version 1.2.0
 
 - Changes the way tags are selected and saved with the log. 
-- Requests with /monitor/ in Url er skipped because os HealthCheck.
+- Requests with /monitor/ in Url are skipped because of HealthCheck.
