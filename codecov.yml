@@ -14,9 +14,6 @@ flag_management:
     - name: messaging
       paths: 
       - source/Messaging
-    - name: schemas
-      paths: 
-      - source/Schemas
     - name: schemavalidation
       paths: 
       - source/SchemaValidation
