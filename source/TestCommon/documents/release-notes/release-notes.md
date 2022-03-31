@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 2.1.0
+
+- Extended `IntegrationTestConfiguration` to support using Azure AD B2C.
+
 ## Version 2.0.0
 
 - `ITopicResourceBuilder.AddSubscription()` is extended with the possibility to set the `requiresSession` parameter for `CreateSubscriptionOptions`.
