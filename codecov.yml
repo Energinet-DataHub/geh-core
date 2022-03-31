@@ -7,4 +7,22 @@ flag_management:
       - source/App
     - name: jsonserialization
       paths: 
-      - source/App
+      - source/JsonSerialization
+    - name: logging
+      paths: 
+      - source/Logging
+    - name: messaging
+      paths: 
+      - source/Messaging
+    - name: schemas
+      paths: 
+      - source/Schemas
+    - name: schemavalidation
+      paths: 
+      - source/SchemaValidation
+    - name: testcommon
+      paths: 
+      - source/TestCommon
+    - name: xmlconversion
+      paths: 
+      - source/XmlConversion
