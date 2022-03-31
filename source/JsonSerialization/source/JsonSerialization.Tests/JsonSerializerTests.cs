@@ -16,12 +16,13 @@ using System;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
-using NodaTime;
 using Xunit;
+using Xunit.Categories;
 using JsonSerializer = Energinet.DataHub.Core.JsonSerialization.JsonSerializer;
 
 namespace JsonSerialization.Tests
 {
+    [UnitTest]
     public class JsonSerializerTests
     {
         [Theory]
@@ -106,7 +107,7 @@ namespace JsonSerialization.Tests
         [InlineAutoMoqData]
         public void SerializeString_StringIsNull_ThrowsException(JsonSerializer sut)
         {
-            Assert.Throws<ArgumentNullException>(() => sut.Serialize((string)null));
+            Assert.Throws<ArgumentNullException>(() => sut.Serialize((string)null!));
         }
 
         [Theory]
