@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/Energinet-DataHub/geh-core/branch/main/graph/badge.svg?token=CXGH54CZ85)](https://codecov.io/gh/Energinet-DataHub/geh-core)
+
 # Introduction
 
 This repository is dedicated to code that will be shared between two or more domains. The shared code will be published as reusable components in the form of NuGet packages on [nuget.org](https://www.nuget.org/).
