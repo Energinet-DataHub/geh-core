@@ -45,6 +45,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
             if (shouldLogRequestAndResponse)
             {
+                _logger.LogInformation($"RequestResponse: Starting logging for invocation: {context.InvocationId}");
                 var totalTimer = Stopwatch.StartNew();
 
                 // Starts gathering information from request and logs to storage
@@ -63,7 +64,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
                 await LogResponseAsync(responseLogInformation).ConfigureAwait(false);
 
                 totalTimer.Stop();
-                _logger.LogInformation("RequestResponse Total execution time ms: {}", totalTimer.ElapsedMilliseconds);
+                _logger.LogInformation("RequestResponse: Total execution time ms: {}", totalTimer.ElapsedMilliseconds);
             }
             else
             {
