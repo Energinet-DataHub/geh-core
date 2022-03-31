@@ -73,10 +73,8 @@ jobs:
       - name: Build solution
         run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
 
-      - name: Run tests and publish report
-        run: |
-          dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}\output
+      - name: Run tests
+        run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
 
       - name: Get version suffix property value
         uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@5.0.2
