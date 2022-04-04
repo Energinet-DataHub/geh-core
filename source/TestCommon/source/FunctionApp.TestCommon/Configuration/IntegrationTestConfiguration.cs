@@ -103,6 +103,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
                 ServicePrincipalId = configuration.GetValue("AZURE-B2C-SPN-ID"),
                 ServicePrincipalSecret = configuration.GetValue("AZURE-B2C-SPN-SECRET"),
                 BackendAppId = configuration.GetValue("AZURE-B2C-BACKEND-APP-ID"),
+                BackendServicePrincipalObjectId = configuration.GetValue("AZURE-B2C-BACKEND-SPN-OBJECTID"),
             };
         }
     }
