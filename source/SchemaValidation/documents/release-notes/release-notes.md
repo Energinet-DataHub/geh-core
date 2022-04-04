@@ -1,5 +1,9 @@
 # Schema Validation Release notes
 
+## Version 1.1.10
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 1.0.9
 
 Add support for custom namespace prefixes

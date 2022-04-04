@@ -1,5 +1,13 @@
 # App Release notes
 
+## Version 2.3.1
+
+- Bumped patch version as pipeline file was updated.
+
+## Version 2.3.0
+
+- The version was released, but no info was given here, so this is just to track the version.
+
 ## Version 2.2.0
 
 - CorrelationIdMiddleware was introduced for FunctionApp.
