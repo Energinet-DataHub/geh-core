@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 2.2.0
+
+- Added backend service principal object id to `AzureB2CSettings`.
+
 ## Version 2.1.1
 
 - Bumped patch version as pipeline file was updated.
