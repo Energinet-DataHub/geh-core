@@ -2,7 +2,7 @@
 
 ## Version 2.3.0
 
-- Added backend object id to `AzureB2CSettings`.
+- Added backend app object id to `AzureB2CSettings`.
 
 ## Version 2.2.0
 

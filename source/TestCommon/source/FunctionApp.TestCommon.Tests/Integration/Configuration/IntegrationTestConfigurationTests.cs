@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
             actualValue.ServicePrincipalSecret.Should().NotBeNullOrEmpty();
             actualValue.BackendAppId.Should().NotBeNullOrEmpty();
             actualValue.BackendServicePrincipalObjectId.Should().NotBeNullOrEmpty();
-            actualValue.BackendObjectId.Should().NotBeNullOrEmpty();
+            actualValue.BackendAppObjectId.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
