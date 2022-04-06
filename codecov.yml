@@ -1,0 +1,22 @@
+flag_management:
+  default_rules: # the rules that will be followed for any flag added, generally
+    carryforward: true
+  individual_flags: # exceptions to the default rules above, stated flag by flag
+    - name: appcommon
+      paths: 
+      - source/App
+    - name: logging
+      paths: 
+      - source/Logging
+    - name: messaging
+      paths: 
+      - source/Messaging
+    - name: schemavalidation
+      paths: 
+      - source/SchemaValidation
+    - name: testcommon
+      paths: 
+      - source/TestCommon
+    - name: xmlconversion
+      paths: 
+      - source/XmlConversion

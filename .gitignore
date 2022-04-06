@@ -393,3 +393,6 @@ src/streaming/geh_stream.egg-info/
 .terraform
 .terraform.lock.hcl
 build/terraform/**/*.tfvars
+
+# reportgenerator tool
+temp/**

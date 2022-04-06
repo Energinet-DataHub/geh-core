@@ -186,3 +186,26 @@ To download and use symbols for debugging in Visual Studio, you must enable NuGe
 Unchecking "Enable Just My Code" will cause the download and load of lots of symbols when you run your debugging session, so it can impact your performance. But you can have it checked by default, and only uncheck it in those situations where you need to dig into the libraries.
 
 If you have "Enable Just My Code" checked then, when you step into code, you will get a dialog asking if you want to download the source. It is possible to set breakpoints in the downloaded source as well.
+
+## CodeCov
+
+When a new libray is added to the repository, tracking of code coverage must be enabled. To do so, follow the steps below:
+
+* Add a flag to `codecov.yml` with name and path corresponding to the library.
+
+``` yml
+    - name: <flag-name>
+      paths: 
+      - source/<new-folder-name>
+```
+
+* Ensure that the new library's bundle publish pipeline contains a `Upload code coverage`-step which uses the `codecov/codecov-action@v2`-action. The action's `flags` argument must be set to the flag name given in `codecov.yml`.
+
+``` yml
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v2
+        with:
+          flags: <flag-name>
+          fail_ci_if_error: true
+          verbose: true
+```

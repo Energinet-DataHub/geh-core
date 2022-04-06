@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/Energinet-DataHub/geh-core/branch/main/graph/badge.svg?token=CXGH54CZ85)](https://codecov.io/gh/Energinet-DataHub/geh-core)
+
 # Introduction
 
 This repository is dedicated to code that will be shared between two or more domains. The shared code will be published as reusable components in the form of NuGet packages on [nuget.org](https://www.nuget.org/).
@@ -15,6 +17,7 @@ Artifacts should be organized in the following folder structure:
 │   .editorconfig
 │   .gitignore
 │   .licenserc.json
+|   codecov.yml
 │   LICENSE
 │   README.md
 │
@@ -35,6 +38,7 @@ Contains:
 - `.editorconfig` file for configuration of Formatting, Code Style and Analyzers (including StyleCop).
 - `.gitignore` file that defines which files should be ignored (not checked in) by Git.
 - `.licenserc.json` *TODO: Add a description.*
+- `codecov.yml`file contains the CodeCov configuration outlining the flags/projects where code coverage is tracked.
 - `LICENSE` *TODO: Add a description.*
 - `README.md` file that gives an introduction to this repository.
 
