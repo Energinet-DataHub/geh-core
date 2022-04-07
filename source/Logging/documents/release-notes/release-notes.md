@@ -32,3 +32,8 @@
 - Better file naming for cleaner blob urls
 - Added actorid jwt token parsing
 - Removed gln jwt token parsing
+
+## Version 1.2.0
+
+- Changes the way tags are selected and saved with the log. 
+- Requests with /monitor/ in Url are skipped because of HealthCheck.
