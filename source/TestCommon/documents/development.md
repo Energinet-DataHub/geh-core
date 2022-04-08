@@ -33,6 +33,8 @@ First, we must ensure we have followed any general setup of the developer enviro
 
 Secondly, we must ensure we obey the following [prerequisites](./functionapp-testcommon.md#prerequisites).
 
+NOTE: If you get Status: 403 (Forbidden) when trying to run an integration test in Rider and have both Rider and Visual Studio installed the problem might be that you are not signed in to the correct azure account in visual studio (Tools -> Options -> Azure Service Authentication -> Account Selection)
+
 ### Dependencies to live Azure resources
 
 The `FunctionApp.TestCommon.Tests` depends on live Azure resources like Service Bus end Event Hub. We cannot mock, or install these locally, so we have to use actual instances.
