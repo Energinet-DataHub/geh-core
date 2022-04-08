@@ -107,6 +107,8 @@ In order to be able to run integration tests in Rider you must have the "Azure T
 
 As of version 2.30.0 of the Azure CLI the `az login` command no longer creates the accessTokens.json file needed for Rider to access your subscription. Hence [Azure CLI version 2.29.2](https://github.com/Azure/azure-cli/releases/download/azure-cli-2.29.2/azure-cli-2.29.2.msi) or earlier must be installed to get access to your subscriptions through Rider.
 
+NOTE: If you get Status: 403 (Forbidden) when trying to run an integration test in Rider and have both Rider and Visual Studio installed the problem might be that you are not signed in to the correct azure account in visual studio (Tools -> Options -> Azure Service Authentication -> Account Selection)
+
 ## Concept
 
 The following only introduce the types supporting integration testing an Azure Function at a high level.
