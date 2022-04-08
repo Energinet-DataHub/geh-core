@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 2.3.2
+
+- Introduced ability to create JwtTokenMiddleware with exclusion of specific functions. This is commonly used when implementing HealthCheck in functions.
+
 ## Version 2.3.1
 
 - Bumped patch version as pipeline file was updated.
