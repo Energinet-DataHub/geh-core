@@ -27,7 +27,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.WebApp.SimpleInjector</PackageId>
-    <PackageVersion>2.3.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.3.2$(VersionSuffix)</PackageVersion>
     <Title>Azure WebApp Dependency Injection Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
