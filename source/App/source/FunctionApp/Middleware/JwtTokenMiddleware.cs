@@ -31,18 +31,51 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
     {
         private readonly ClaimsPrincipalContext _claimsPrincipalContext;
         private readonly IJwtTokenValidator _jwtTokenValidator;
+        private readonly List<string> _functionNamesToExclude;
 
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
+        /// <param name="claimsPrincipalContext"></param>
+        /// <param name="jwtTokenValidator"></param>
+        /// <exception cref="ArgumentNullException">if claimsPrincipalContext is null</exception>
         public JwtTokenMiddleware(ClaimsPrincipalContext claimsPrincipalContext, IJwtTokenValidator jwtTokenValidator)
         {
             _claimsPrincipalContext = claimsPrincipalContext ?? throw new ArgumentNullException(nameof(claimsPrincipalContext));
             _jwtTokenValidator = jwtTokenValidator;
+            _functionNamesToExclude = new List<string>(0);
+        }
+
+        /// <summary>
+        /// Constructor with the ability to specify functions to exclude in the JWT token check (allow anonymous access)
+        /// </summary>
+        /// <param name="claimsPrincipalContext"></param>
+        /// <param name="jwtTokenValidator"></param>
+        /// <param name="functionNamesToExclude">A list of function names that will be excluded in the JWT token check</param>
+        /// <exception cref="ArgumentNullException">if claimsPrincipalContext is null</exception>
+        public JwtTokenMiddleware(ClaimsPrincipalContext claimsPrincipalContext, IJwtTokenValidator jwtTokenValidator, IEnumerable<string> functionNamesToExclude)
+        {
+            _claimsPrincipalContext = claimsPrincipalContext ?? throw new ArgumentNullException(nameof(claimsPrincipalContext));
+            _jwtTokenValidator = jwtTokenValidator;
+            _functionNamesToExclude = new List<string>();
+            _functionNamesToExclude.AddRange(functionNamesToExclude);
         }
 
         public async Task Invoke(FunctionContext context, [NotNull] FunctionExecutionDelegate next)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             if (!context.Is(TriggerType.HttpTrigger))
+            {
+                await next(context).ConfigureAwait(false);
+                return;
+            }
+
+            var allowAnonymous = _functionNamesToExclude.Contains(context.FunctionDefinition.Name);
+            if (allowAnonymous)
             {
                 await next(context).ConfigureAwait(false);
                 return;
@@ -87,7 +120,10 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
             // Deserialize headers from JSON
             var headers = JsonSerializer.Deserialize<Dictionary<string, string>>(headersStr);
 
-            if (headers == null) return false;
+            if (headers == null)
+            {
+                return false;
+            }
 
             var normalizedKeyHeaders = headers.ToDictionary(h => h.Key.ToLowerInvariant(), h => h.Value);
             if (!normalizedKeyHeaders.TryGetValue("authorization", out var authHeaderValue))
