@@ -1069,6 +1069,28 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+      <xsd:enumeration value="D08">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Permanent connected electrical energy storage facilities</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D09">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Temporarily connected electrical energy storage facilities</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
       <xsd:enumeration value="D10">
         <xsd:annotation>
           <xsd:documentation>
@@ -1124,11 +1146,44 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+      <xsd:enumeration value="D15">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Mixed production</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D16">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Production with electrical energy storage facilities</Title>
+              <Definition>
+</Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
       <xsd:enumeration value="D17">
         <xsd:annotation>
           <xsd:documentation>
             <CodeDescription>
-              <Title>Dispatch able wind turbines</Title>
+              <Title>Power-to-X</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D18">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Regenerative demand facility</Title>
               <Definition>
               </Definition>
             </CodeDescription>
@@ -1151,6 +1206,17 @@
           <xsd:documentation>
             <CodeDescription>
               <Title>Combustion engine - bio</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D98">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>No technology</Title>
               <Definition>
               </Definition>
             </CodeDescription>
@@ -10909,6 +10975,17 @@ This enumeration is used in the XML instances based on IEC 62325.</Definition>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+      <xsd:enumeration value="D08">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Update Charge Prices</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
       <xsd:enumeration value="D09">
         <xsd:annotation>
           <xsd:documentation>
@@ -11012,7 +11089,7 @@ This enumeration is used in the XML instances based on IEC 62325.</Definition>
         <xsd:annotation>
           <xsd:documentation>
             <CodeDescription>
-              <Title>Update charge information</Title>
+              <Title>Update Charge Masterdata</Title>
               <Definition>
               </Definition>
             </CodeDescription>
@@ -11321,6 +11398,17 @@ This enumeration is used in the XML instances based on IEC 62325.</Definition>
           <xsd:documentation>
             <CodeDescription>
               <Title>Incorrect MeteringGridArea</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D48">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Request Charge Prices</Title>
               <Definition>
               </Definition>
             </CodeDescription>
@@ -11727,7 +11815,7 @@ This enumeration is used in the XML instances based on IEC 62325.</Definition>
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="Z01">
+      <xsd:enumeration value="A06">
         <xsd:annotation>
           <xsd:documentation>
             <CodeDescription>
@@ -13906,6 +13994,105 @@ In the case of a Final Confirmation Report this is informing the recipient that 
           <xsd:documentation>
             <CodeDescription>
               <Title>Actual Address indicator is not correct</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D64">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Mandatory Attibut</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D65">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Incorrrect DisconnetionType</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D66">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Illegal format</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D67">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Inccrrect Transparent Invocing</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D68">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Incorrect Documen type</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D69">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Incorrect Energy business</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D70">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Incorrect Address information</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D71">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Incorrect Address type</Title>
+              <Definition>
+              </Definition>
+            </CodeDescription>
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D72">
+        <xsd:annotation>
+          <xsd:documentation>
+            <CodeDescription>
+              <Title>Incorrect customer information</Title>
               <Definition>
               </Definition>
             </CodeDescription>
