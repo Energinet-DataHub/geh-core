@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 2.3.3
+
+- Introduced ability to create ActorMiddleware with exclusion of specific functions. This is commonly used when implementing HealthCheck in functions.
+
 ## Version 2.3.2
 
 - Introduced ability to create JwtTokenMiddleware with exclusion of specific functions. This is commonly used when implementing HealthCheck in functions.

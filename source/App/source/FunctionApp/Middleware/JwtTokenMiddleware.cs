@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -61,7 +60,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
             _functionNamesToExclude.AddRange(functionNamesToExclude);
         }
 
-        public async Task Invoke(FunctionContext context, [NotNull] FunctionExecutionDelegate next)
+        public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             if (context == null)
             {
