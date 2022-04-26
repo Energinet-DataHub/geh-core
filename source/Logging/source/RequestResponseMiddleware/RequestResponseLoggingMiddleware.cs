@@ -74,14 +74,20 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
         private Task LogRequestAsync(LogInformation requestLogInformation)
         {
-            var requestLogName = LogDataBuilder.BuildLogName();
-            return _requestResponseLogging.LogRequestAsync(requestLogInformation.LogStream, requestLogInformation.MetaData, requestLogInformation.IndexTags, requestLogName);
+            return _requestResponseLogging.LogRequestAsync(
+                requestLogInformation.LogStream,
+                requestLogInformation.MetaData,
+                requestLogInformation.IndexTags,
+                requestLogInformation.UniqueLogName);
         }
 
         private Task LogResponseAsync(LogInformation responseLogInformation)
         {
-            var responseLogName = LogDataBuilder.BuildLogName();
-            return _requestResponseLogging.LogResponseAsync(responseLogInformation.LogStream, responseLogInformation.MetaData, responseLogInformation.IndexTags, responseLogName);
+            return _requestResponseLogging.LogResponseAsync(
+                responseLogInformation.LogStream,
+                responseLogInformation.MetaData,
+                responseLogInformation.IndexTags,
+                responseLogInformation.UniqueLogName);
         }
 
         private static async Task<LogInformation> BuildRequestLogInformationAsync(FunctionContext context)

@@ -37,3 +37,7 @@
 
 - Changes the way tags are selected and saved with the log. 
 - Requests with /monitor/ in Url are skipped because of HealthCheck.
+
+## Version 1.2.1
+
+- Fixing log file naming
