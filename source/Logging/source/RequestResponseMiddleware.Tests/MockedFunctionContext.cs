@@ -59,6 +59,8 @@ namespace RequestResponseMiddleware.Tests
 
         public FunctionContext FunctionContext => _functionContextMock.Object;
 
+        public Mock<FunctionContext> FunctionContextMock => _functionContextMock;
+
         public Mock<IServiceProvider> Services => _serviceProviderMock;
 
         public Mock<BindingContext> BindingContext => _bindingContextMock;
@@ -78,13 +80,6 @@ namespace RequestResponseMiddleware.Tests
                 .Setup(e => e.InputBindings)
                 .Returns(metaData.ToImmutableDictionary);
         }
-
-#pragma warning disable
-        public static implicit operator FunctionContext(MockedFunctionContext mock)
-        {
-            return mock.FunctionContext;
-        }
-#pragma warning restore
 
         private static Mock CreateMockOfType(Type t)
         {

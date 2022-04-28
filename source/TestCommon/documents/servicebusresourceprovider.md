@@ -30,7 +30,7 @@ The `CreateAsync()` operation returns one of the resource types `QueueResource` 
 
 The `TopicResource` also has a readonly collection of subscriptions added.
 
-Depending on the resource type beeing built, additional operations are available.
+Depending on the resource type being built, additional operations are available.
 
 ### `AddSubscription()`
 

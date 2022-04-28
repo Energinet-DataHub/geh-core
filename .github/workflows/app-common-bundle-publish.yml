@@ -60,13 +60,13 @@ jobs:
     steps:
       - name: Checkout repository (main branch)
         if: ${{ github.ref_name == 'main' }}
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
         with:
           fetch-depth: 2 # To retrieve the preceding commit on 'main'
 
       - name: Checkout repository (feature branch)
         if: ${{ github.ref_name != 'main' }}
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
 
       - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
         uses: actions/setup-dotnet@v1
@@ -90,8 +90,17 @@ jobs:
       - name: Build solution
         run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
 
-      - name: Run tests
-        run: dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
+      - name: Run tests and publish report
+        run: |
+          dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
+          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}\output
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v2
+        with:
+          flags: appcommon
+          fail_ci_if_error: true
+          verbose: true
 
       - name: Get version suffix property value
         uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@2.3.0

@@ -89,7 +89,7 @@
   <xs:complexType name="DecimalQuantity" sawsdl:modelReference="http://iec.ch/TC57/CIM101#ActivePower">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute default="MAW" name="unit" type="ecl:UnitOfMeasureTypeList" />
+        <xs:attribute name="unit" type="ecl:UnitOfMeasureTypeList" use="required" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>

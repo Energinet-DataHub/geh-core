@@ -18,3 +18,8 @@ Implementation example:
                                                 containerName, 
                                                 ILogger<RequestResponseLoggingBlobStorage>));
 
+## App Release notes
+
+## Version 1.1.1
+
+- Bumped patch version as pipeline file was updated.

@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 1.1.4
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 1.1.1-1.1.3
 
 - Updated SchemaValidation package.

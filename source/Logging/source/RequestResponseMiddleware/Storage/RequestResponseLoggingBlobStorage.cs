@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
@@ -38,26 +40,53 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
             _logger = logger;
         }
 
-        public Task LogRequestAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
+        public Task LogRequestAsync(
+            Stream logStream,
+            Dictionary<string, string> metaData,
+            Dictionary<string, string> indexTags,
+            string logName)
         {
-            return UploadBlobAsync(logStream, metaData, indexTags, logName, folder, true);
+            return UploadBlobAsync(logStream, metaData, indexTags, logName, true);
         }
 
-        public Task LogResponseAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder)
+        public Task LogResponseAsync(
+            Stream logStream,
+            Dictionary<string, string> metaData,
+            Dictionary<string, string> indexTags,
+            string logName)
         {
-            return UploadBlobAsync(logStream, metaData, indexTags, logName, folder, false);
+            return UploadBlobAsync(logStream, metaData, indexTags, logName, false);
         }
 
-        private async Task UploadBlobAsync(Stream logStream, Dictionary<string, string> metaData, Dictionary<string, string> indexTags, string logName, string folder, bool isRequest)
+        private async Task UploadBlobAsync(
+            Stream logStream,
+            IDictionary<string, string> metaData,
+            IDictionary<string, string> indexTags,
+            string logName,
+            bool isRequest)
         {
-            var nameWithFolder = $"{folder}/{logName}";
-            var blobClient = new BlobClient(_storageConnectionString, _storageContainerName, nameWithFolder);
+            var blobClient = new BlobClient(_storageConnectionString, _storageContainerName, logName);
             var options = new BlobUploadOptions { Tags = indexTags, Metadata = metaData };
+            var actorFound = metaData.TryGetValue(IndexTagsKeys.JwtActorId, out var actor);
 
+            _logger.LogInformation(actorFound ? $"UploadBlobAsync: Starting log upload for: {actor}" : "UploadBlobAsync: Starting log upload");
             var timer = Stopwatch.StartNew();
-            await blobClient.UploadAsync(logStream, options);
-            timer.Stop();
-            _logger.LogInformation("UploadBlobAsync execution time took ms: {lookupTime} ({datatype})", timer.ElapsedMilliseconds, isRequest ? "request" : "response");
+
+            try
+            {
+                await blobClient.UploadAsync(logStream, options);
+                _logger.LogInformation("UploadBlobAsync: Success");
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e, "UploadBlobAsync: Failed");
+                throw;
+            }
+            finally
+            {
+                timer.Stop();
+                _logger.LogInformation("UploadBlobAsync: Execution time took ms: {lookupTime} ({datatype})", timer.ElapsedMilliseconds, isRequest ? "request" : "response");
+            }
         }
     }
 }

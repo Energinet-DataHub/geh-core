@@ -28,11 +28,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <param name="subscriptionName">The subscription name.</param>
         /// <param name="maxDeliveryCount"></param>
         /// <param name="lockDuration"></param>
-        /// <returns>Topic resouce builder.</returns>
-        TopicSubscriptionBuilder AddSubscription(string subscriptionName, int maxDeliveryCount = 1, TimeSpan? lockDuration = null);
+        /// <param name="requiresSession"></param>
+        /// <returns>Subscription resource builder.</returns>
+        TopicSubscriptionBuilder AddSubscription(
+            string subscriptionName,
+            int maxDeliveryCount = 1,
+            TimeSpan? lockDuration = null,
+            bool requiresSession = false);
 
         /// <summary>
-        /// Create Service Bus topic and subsctions according to configured builder.
+        /// Create Service Bus topic and subscription according to configured builder.
         /// </summary>
         /// <returns>Instance with information about the created topic.</returns>
         Task<TopicResource> CreateAsync();

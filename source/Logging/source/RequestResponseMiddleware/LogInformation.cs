@@ -17,5 +17,9 @@ using System.IO;
 
 namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 {
-    internal record LogInformation(Stream LogStream, Dictionary<string, string> MetaData, Dictionary<string, string> IndexTags);
+    internal record LogInformation(
+        Stream LogStream,
+        Dictionary<string, string> MetaData,
+        Dictionary<string, string> IndexTags,
+        string UniqueLogName);
 }

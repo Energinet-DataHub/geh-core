@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -32,6 +31,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
         private readonly IClaimsPrincipalAccessor _claimsPrincipalAccessor;
         private readonly IActorProvider _actorProvider;
         private readonly IActorContext _actorContext;
+        private readonly List<string> _functionNamesToExclude;
 
         public ActorMiddleware(
             IClaimsPrincipalAccessor claimsPrincipalAccessor,
@@ -41,13 +41,34 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
             _claimsPrincipalAccessor = claimsPrincipalAccessor;
             _actorProvider = actorProvider;
             _actorContext = actorContext;
+            _functionNamesToExclude = new List<string>(0);
         }
 
-        public async Task Invoke(FunctionContext context, [NotNull] FunctionExecutionDelegate next)
+        public ActorMiddleware(
+            IClaimsPrincipalAccessor claimsPrincipalAccessor,
+            IActorProvider actorProvider,
+            IActorContext actorContext,
+            IEnumerable<string> functionNamesToExclude)
+        {
+            _claimsPrincipalAccessor = claimsPrincipalAccessor;
+            _actorProvider = actorProvider;
+            _actorContext = actorContext;
+            _functionNamesToExclude = new List<string>();
+            _functionNamesToExclude.AddRange(functionNamesToExclude);
+        }
+
+        public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             if (!context.Is(TriggerType.HttpTrigger))
+            {
+                await next(context).ConfigureAwait(false);
+                return;
+            }
+
+            var allowAnonymous = _functionNamesToExclude.Contains(context.FunctionDefinition.Name);
+            if (allowAnonymous)
             {
                 await next(context).ConfigureAwait(false);
                 return;
