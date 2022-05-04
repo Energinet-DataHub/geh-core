@@ -63,7 +63,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
+
       - name: Cache NuGet packages
         uses: actions/cache@v2
         id: cache-nuget
@@ -72,7 +72,7 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
           restore-keys: |
             ${{ runner.os }}-nuget-
-      
+
       - name: Restore NuGet packages
         run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
 
@@ -92,24 +92,24 @@ jobs:
           verbose: true
 
       - name: Get version suffix property value
-        uses: ./.github/actions/get-version-suffix
+        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@5.1.0
         id: get_version_suffix
-      
+
       - name: Pack Messaging project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
           PROJECT_PATH: 'source/Messaging/source/Messaging/Messaging.csproj'
-      
+
       - name: Pack Messaging Integration project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
           PROJECT_PATH: 'source/Messaging/source/Messaging.Integration.ServiceCollection/Messaging.Integration.ServiceCollection.csproj'
-      
+
       - name: Pack Messaging Protobuf project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
           PROJECT_PATH: 'source/Messaging/source/Messaging.Protobuf/Messaging.Protobuf.csproj'
-      
+
       - name: Pack Messaging Protobuf project
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
         env:
@@ -120,7 +120,7 @@ jobs:
         uses: ./.github/actions/nuget-assert-release-version
         with:
           NUPKG_RECURSE_PATH: 'source/Messaging/source'
-      
+
       - name: Push to NuGet.org
         if: ${{ env.PUSH_PACKAGES == 'true' }}
         run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
