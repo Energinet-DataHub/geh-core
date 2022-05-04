@@ -132,7 +132,7 @@ jobs:
           verbose: true
 
       - name: Get version suffix property value
-        uses: ./.github/actions/get-version-suffix
+        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@5
         id: get_version_suffix
 
       - name: Pack TestCommon project
