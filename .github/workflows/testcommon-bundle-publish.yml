@@ -82,28 +82,27 @@ jobs:
           DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
 
       - name: Use Node v${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache node modules
         id: cache-nodemodules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-azurite-${{ env.AZURITE_VERSION }}-func-${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
           path: ${{ github.workspace }}\node_modules
 
       - name: Install Azurite v${{ env.AZURITE_VERSION }}
         if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
-        run: |
-          npm install azurite@${{ env.AZURITE_VERSION }}
+        run: npm install azurite@${{ env.AZURITE_VERSION }}
 
       - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
         if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
         run: npm install azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
 
       - name: Cache NuGet packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-nuget
         with:
           path: ~/.nuget/packages
@@ -125,14 +124,14 @@ jobs:
           dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}\output
 
       - name: Upload code coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           flags: testcommon
           fail_ci_if_error: true
           verbose: true
 
       - name: Get version suffix property value
-        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@5.1.0
+        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@7.2.1
         id: get_version_suffix
 
       - name: Pack TestCommon project
