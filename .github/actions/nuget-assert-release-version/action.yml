@@ -56,7 +56,7 @@ runs:
             {
                 Write-Host "Check that '$packageId' version '$packageVersion' does not exist."
 
-                $response = Invoke-RestMethod -Uri $url -Method $method
+                $response = Invoke-RestMethod -Uri $url.ToLower() -Method $method
 
                 Write-Host "::error::'$packageId' version '$packageVersion' exists. You need to create a newer version."
                 $hasError = $true
