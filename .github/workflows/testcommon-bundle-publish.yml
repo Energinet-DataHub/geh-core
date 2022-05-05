@@ -156,7 +156,7 @@ jobs:
 
       - name: Check each NuGet package version does not exists (not looking at prereleases)
         if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
-        uses: ./.github/actions/nuget-assert-release-version
+        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@7.2.1
         with:
           NUPKG_RECURSE_PATH: 'source/TestCommon/source'
 
