@@ -28,7 +28,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging.Protobuf.Integration.ServiceCollection</PackageId>
-    <PackageVersion>1.1.3$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.1.5$(VersionSuffix)</PackageVersion>
     <Title>Messaging Protobuf Integration library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -67,7 +67,7 @@ limitations under the License.
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.18.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
