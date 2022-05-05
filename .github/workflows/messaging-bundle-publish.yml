@@ -49,20 +49,29 @@ env:
 
 jobs:
   build_and_publish:
-    runs-on: windows-latest
+    runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
     permissions:
       contents: read
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (main branch)
+        if: ${{ github.ref_name == 'main' }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2 # To retrieve the preceding commit on 'main'
+
+      - name: Checkout repository (feature branch)
+        if: ${{ github.ref_name != 'main' }}
         uses: actions/checkout@v3
 
       - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+        env:
+          DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
 
       - name: Cache NuGet packages
         uses: actions/cache@v2
@@ -115,9 +124,20 @@ jobs:
         env:
           PROJECT_PATH: 'source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/Messaging.Protobuf.Integration.ServiceCollection.csproj'
 
+      - name: Package content or build has changed
+        id: changed-content
+        uses: tj-actions/changed-files@v17.2
+        with:
+          files: |
+            source/Messaging/source/Messaging/**/*.*
+            source/Messaging/source/Messaging.Integration.ServiceCollection/**/*.*
+            source/Messaging/source/Messaging.Protobuf/**/*.*
+            source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/**/*.*
+            .github/workflows/messaging-bundle-publish.yml
+
       - name: Check each NuGet package version does not exists (not looking at prereleases)
-        if: ${{ env.PUSH_PACKAGES == 'true' }}
-        uses: ./.github/actions/nuget-assert-release-version
+        if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
+        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@7.2.1
         with:
           NUPKG_RECURSE_PATH: 'source/Messaging/source'
 
