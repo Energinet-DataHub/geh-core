@@ -81,55 +81,55 @@ jobs:
         env:
           DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
 
-      # - name: Use Node v${{ env.NODE_VERSION }}
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: ${{ env.NODE_VERSION }}
+      - name: Use Node v${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
-      # - name: Cache node modules
-      #   id: cache-nodemodules
-      #   uses: actions/cache@v2
-      #   with:
-      #     key: ${{ runner.os }}-azurite-${{ env.AZURITE_VERSION }}-func-${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-      #     path: ${{ github.workspace }}\node_modules
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-azurite-${{ env.AZURITE_VERSION }}-func-${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+          path: ${{ github.workspace }}\node_modules
 
-      # - name: Install Azurite v${{ env.AZURITE_VERSION }}
-      #   if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
-      #   run: |
-      #     npm install azurite@${{ env.AZURITE_VERSION }}
+      - name: Install Azurite v${{ env.AZURITE_VERSION }}
+        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+        run: |
+          npm install azurite@${{ env.AZURITE_VERSION }}
 
-      # - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-      #   if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
-      #   run: npm install azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+      - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+        run: npm install azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
 
-      # - name: Cache NuGet packages
-      #   uses: actions/cache@v2
-      #   id: cache-nuget
-      #   with:
-      #     path: ~/.nuget/packages
-      #     key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
-      #     restore-keys: |
-      #       ${{ runner.os }}-nuget-
+      - name: Cache NuGet packages
+        uses: actions/cache@v2
+        id: cache-nuget
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
-      # - name: Restore NuGet packages
-      #   run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
+      - name: Restore NuGet packages
+        run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
 
-      # - name: Build solution
-      #   run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
+      - name: Build solution
+        run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
 
-      # - name: Run tests and publish report
-      #   run: |
-      #     dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-      #     az login --service-principal --username "${{ secrets.AZURE_SPN_ID }}" --password "${{ secrets.AZURE_SPN_SECRET }}" --tenant "${{ secrets.AZURE_TENANT_ID }}"
-      #     az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-      #     dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}\output
+      - name: Run tests and publish report
+        run: |
+          dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
+          az login --service-principal --username "${{ secrets.AZURE_SPN_ID }}" --password "${{ secrets.AZURE_SPN_SECRET }}" --tenant "${{ secrets.AZURE_TENANT_ID }}"
+          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}\output
 
-      # - name: Upload code coverage
-      #   uses: codecov/codecov-action@v2
-      #   with:
-      #     flags: testcommon
-      #     fail_ci_if_error: true
-      #     verbose: true
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v2
+        with:
+          flags: testcommon
+          fail_ci_if_error: true
+          verbose: true
 
       - name: Get version suffix property value
         uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@5.1.0
