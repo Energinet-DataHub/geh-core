@@ -41,11 +41,6 @@ env:
   BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
-  # Tool versions
-  DOTNET_VERSION: '5.0.405'
-  NODE_VERSION: '16'
-  AZURITE_VERSION: '3.15.0'
-  AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
   # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
   AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
   # Set value used by 'AzuriteManager'
@@ -74,32 +69,14 @@ jobs:
         if: ${{ github.ref_name != 'main' }}
         uses: actions/checkout@v3
 
-      - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
-        uses: actions/setup-dotnet@v1
+      - name: Setup dotnet and tools
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.3.0
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-        env:
-          DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
-
-      - name: Use Node v${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v3
-        with:
-          key: ${{ runner.os }}-azurite-${{ env.AZURITE_VERSION }}-func-${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-          path: ${{ github.workspace }}\node_modules
-
-      - name: Install Azurite v${{ env.AZURITE_VERSION }}
-        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
-        run: npm install azurite@${{ env.AZURITE_VERSION }}
-
-      - name: Install Azure Functions Core Tools v${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
-        if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
-        run: npm install azure-functions-core-tools@${{ env.AZURE_FUNCTIONS_CORE_TOOLS_VERSION }}
+          DOTNET_VERSION: '5.0.405'
+          USE_AZURE_FUNCTIONS_TOOLS: 'true'
+          NODE_VERSION: '16'
+          AZURITE_VERSION: '3.15.0'
+          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Cache NuGet packages
         uses: actions/cache@v3
