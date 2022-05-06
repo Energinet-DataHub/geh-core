@@ -72,7 +72,7 @@ jobs:
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.3.0
         with:
-          DOTNET_VERSION: '5.0.405'
+          DOTNET_VERSION: '5.0.407'
           USE_AZURE_FUNCTIONS_TOOLS: 'true'
           NODE_VERSION: '16'
           AZURITE_VERSION: '3.15.0'
