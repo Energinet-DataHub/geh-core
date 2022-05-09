@@ -37,8 +37,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
         }
 
         /// <summary>
-        /// Build a connection string for a database name. First an environment variable is considered.
-        /// If not found, it will fallback to use localDb
+        /// Build a connection string for a database name. Uses <see cref="RuntimeEnvironment.TestCommonConnectionString"/>.
+        /// If null or empty, it will fallback to use localDb
         /// </summary>
         /// <param name="databaseName">Name of database</param>
         /// <returns>Connection string to a database</returns>
