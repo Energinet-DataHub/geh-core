@@ -51,8 +51,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
 
         private static string BuildConnectionStringForLocalDb(string databaseName)
         {
-            // If Connection Timeout=3 is not set, tests that connect to a database that don't exists will take about 10 sec.
-            return $"Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=true;Database={databaseName};Connection Timeout=3";
+            return $"Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=true;Database={databaseName};";
         }
 
         private static string? BuildConnectionStringFromEnvironmentVariable(RuntimeEnvironment environment, string databaseName)
