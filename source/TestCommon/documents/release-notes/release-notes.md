@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 2.3.0
+
+- Added feature to override default LocalDB SQL server connection string
+
 ## Version 2.2.1
 
 - Bumped patch version as pipeline file was updated.
