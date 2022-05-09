@@ -89,7 +89,7 @@ jobs:
           AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
 
       - name: Get version suffix property value
-        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@7.2.1
+        uses: Energinet-DataHub/.github/.github/actions/nuget-get-version-suffix@7.3.0
         id: get_version_suffix
 
       - name: Pack TestCommon project
