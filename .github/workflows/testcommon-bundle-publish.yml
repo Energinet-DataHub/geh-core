@@ -103,4 +103,5 @@ jobs:
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
           NUPKG_RECURSE_PATH: 'source/TestCommon/source'
