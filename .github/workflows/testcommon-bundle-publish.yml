@@ -58,15 +58,8 @@ jobs:
     environment: CI
 
     steps:
-      - name: Checkout repository (main branch)
-        if: ${{ github.ref_name == 'main' }}
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2 # To retrieve the preceding commit on 'main'
-
-      - name: Checkout repository (feature branch)
-        if: ${{ github.ref_name != 'main' }}
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.3.0
 
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.3.0
