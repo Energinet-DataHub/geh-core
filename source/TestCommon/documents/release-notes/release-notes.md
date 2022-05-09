@@ -1,9 +1,5 @@
 # TestCommon Release notes
 
-## Version 2.3.1
-
-- Bumped patch version as pipeline file was updated.
-
 ## Version 2.2.1
 
 - Bumped patch version as pipeline file was updated.
