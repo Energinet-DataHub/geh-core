@@ -95,6 +95,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Databa
             builder.InitialCatalog.Should().Be(_databaseName);
         }
 
+        [Fact]
+        public void When_Invalid_ConnectionString_Is_Set_In_Environment_Variable_Then_An_ArgumentException_Is_Thrown()
+        {
+            var runtime = new FlexibleRuntimeEnvironment(CreateEnvironmentDictionary(Guid.Empty.ToString("N")));
+            var sut = new SqlServerConnectionStringProvider(runtime);
+
+            Assert.Throws<ArgumentException>(() => sut.BuildConnectionStringForDatabaseWithPrefix(DatabasePrefix));
+        }
+
         public static IEnumerable<object[]> GetRuntimes()
         {
             yield return new object[] { new FlexibleRuntimeEnvironment(new Dictionary<string, string?>()) }; // no environment variable set
