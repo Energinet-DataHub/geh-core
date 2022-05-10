@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Errors
 {
     public readonly struct Error
     {
-        private const string ValidationCode = "BadArgument";
+        private const string ValidationCode = "B2B-005";
         private const string ValidationMessage = "The specified input does not pass schema validation.";
         private const string ValidationDetailsCode = "SchemaValidationError";
 
