@@ -40,7 +40,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             var actual = target.CreateErrorResponse();
 
             // Assert
-            Assert.Equal("BadArgument", actual.Error.Code);
+            Assert.Equal("B2B-005", actual.Error.Code);
             Assert.Equal("The specified input does not pass schema validation.", actual.Error.Message);
 
             var details = actual.Error.Details!;
@@ -103,7 +103,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             await errorResponse.WriteAsXmlAsync(destination);
 
             // Assert
-            const string expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Error>\r\n  <Code>BadArgument</Code>\r\n  <Message>The specified input does not pass schema validation.</Message>\r\n  <Details>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The 'wrong' element is not declared.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>2</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n  </Details>\r\n</Error>";
+            const string expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Error>\r\n  <Code>B2B-005</Code>\r\n  <Message>The specified input does not pass schema validation.</Message>\r\n  <Details>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The 'wrong' element is not declared.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>2</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n  </Details>\r\n</Error>";
 
             destination.Position = 0;
 
@@ -128,7 +128,7 @@ namespace Energinet.DataHub.Core.SchemaValidation.Tests
             await errorResponse.WriteAsXmlAsync(destination);
 
             // Assert
-            const string expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Error>\r\n  <Code>BadArgument</Code>\r\n  <Message>The specified input does not pass schema validation.</Message>\r\n  <Details>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The required attribute 'genre' is missing.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The required attribute 'publicationdate' is missing.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The required attribute 'ISBN' is missing.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The element 'book' in namespace 'http://www.contoso.com/books' has incomplete content. List of possible elements expected: 'title' in namespace 'http://www.contoso.com/books'.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n  </Details>\r\n</Error>";
+            const string expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Error>\r\n  <Code>B2B-005</Code>\r\n  <Message>The specified input does not pass schema validation.</Message>\r\n  <Details>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The required attribute 'genre' is missing.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The required attribute 'publicationdate' is missing.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The required attribute 'ISBN' is missing.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n    <Error>\r\n      <Code>SchemaValidationError</Code>\r\n      <Message>The element 'book' in namespace 'http://www.contoso.com/books' has incomplete content. List of possible elements expected: 'title' in namespace 'http://www.contoso.com/books'.</Message>\r\n      <InnerError>\r\n        <LineNumber>1</LineNumber>\r\n        <LinePosition>50</LinePosition>\r\n      </InnerError>\r\n    </Error>\r\n  </Details>\r\n</Error>";
 
             destination.Position = 0;
 
