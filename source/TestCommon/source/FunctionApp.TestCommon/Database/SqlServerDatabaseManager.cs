@@ -33,15 +33,23 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
         where TContextImplementation : DbContext
     {
         public const string DefaultCollationName = "SQL_Latin1_General_CP1_CI_AS";
+        private readonly SqlServerConnectionStringProvider _sqlServerConnectionStringProvider;
 
         protected SqlServerDatabaseManager(string prefixForDatabaseName)
+        : this(prefixForDatabaseName, new SqlServerConnectionStringProvider(RuntimeEnvironment.Default))
+        { }
+
+        protected SqlServerDatabaseManager(
+            string prefixForDatabaseName,
+            SqlServerConnectionStringProvider sqlServerConnectionStringProvider)
         {
             if (string.IsNullOrWhiteSpace(prefixForDatabaseName))
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(prefixForDatabaseName));
             }
 
-            ConnectionString = BuildConnectionString(prefixForDatabaseName);
+            _sqlServerConnectionStringProvider = sqlServerConnectionStringProvider;
+            ConnectionString = sqlServerConnectionStringProvider.BuildConnectionStringForDatabaseWithPrefix(prefixForDatabaseName);
         }
 
         public string ConnectionString { get; }
@@ -129,7 +137,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
         ///
         /// Connect to master database and create a database without schema.
         /// </summary>
-        private static void CreateLocalDatabaseWithoutSchema(TContextImplementation context)
+        private void CreateLocalDatabaseWithoutSchema(TContextImplementation context)
         {
             // Overview of all exception numbers: https://docs.microsoft.com/en-us/previous-versions/sql/sql-server-2008-r2/cc645603(v=sql.105)?redirectedfrom=MSDN
             const int dbNameAlreadyExistsExceptionNumber = 1801;
@@ -159,7 +167,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
             retryPolicy.Execute(
                 (ctx, ct) =>
                 {
-                    using var masterDbConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;");
+                    using var masterDbConnection = new SqlConnection(_sqlServerConnectionStringProvider.BuildConnectionStringForDatabaseName("master"));
                     using var command = new SqlCommand(createDatabaseCommandText, masterDbConnection);
                     masterDbConnection.Open();
                     try
@@ -195,17 +203,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
             return
                 $"CREATE DATABASE [{databaseName}] COLLATE {DefaultCollationName};" +
                 $"ALTER DATABASE [{databaseName}] SET READ_COMMITTED_SNAPSHOT ON;";
-        }
-
-        /// <summary>
-        /// We create a unique database name to ensure tests using this fixture has their own database.
-        /// </summary>
-        private static string BuildConnectionString(string prefixForDatabaseName)
-        {
-            var databaseName = $"{prefixForDatabaseName}Database_{Guid.NewGuid()}";
-
-            // If Connection Timeout=3 is not set, tests that connect to a database that don't exists will take about 10 sec.
-            return $"Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=true;Database={databaseName};Connection Timeout=3";
         }
     }
 }

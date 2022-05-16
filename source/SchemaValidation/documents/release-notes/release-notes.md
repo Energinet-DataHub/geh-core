@@ -1,6 +1,10 @@
 # Schema Validation Release notes
 
-## Version 1.1.10
+## Version 1.0.11
+
+- Changed the `code` returned on schema validation error from `BadArgument` to `B2B-005`
+
+## Version 1.0.10
 
 - Bumped patch version as pipeline file was updated.
 

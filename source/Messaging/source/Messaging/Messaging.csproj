@@ -28,7 +28,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
-    <PackageVersion>1.1.4$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.1.5$(VersionSuffix)</PackageVersion>
     <Title>Messaging library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -67,7 +67,7 @@ limitations under the License.
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="[1.0.7,1.1)" />
     <PackageReference Include="FluentValidation" Version="9.5.4" />
