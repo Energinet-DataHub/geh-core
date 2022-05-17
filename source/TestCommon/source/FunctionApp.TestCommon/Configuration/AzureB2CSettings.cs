@@ -33,5 +33,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
 
         public string BackendServicePrincipalObjectId { get; internal set; }
             = string.Empty;
+
+        public string BackendAppObjectId { get; internal set; }
+            = string.Empty;
     }
 }
