@@ -70,7 +70,7 @@ jobs:
           AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.3.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.3.3
         with:
           SOLUTION_FILE_PATH: './source/TestCommon/TestCommon.sln'
           AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
