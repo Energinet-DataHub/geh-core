@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 2.3.4
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 2.3.3
 
 - Added backend app object id to `AzureB2CSettings`.
