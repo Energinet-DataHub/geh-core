@@ -3,20 +3,20 @@ flag_management:
     carryforward: true
   individual_flags: # exceptions to the default rules above, stated flag by flag
     - name: appcommon
-      paths: 
+      paths:
       - source/App
     - name: logging
-      paths: 
+      paths:
       - source/Logging
     - name: messaging
-      paths: 
+      paths:
       - source/Messaging
     - name: schemavalidation
-      paths: 
+      paths:
       - source/SchemaValidation
     - name: testcommon
-      paths: 
+      paths:
       - source/TestCommon
     - name: xmlconversion
-      paths: 
+      paths:
       - source/XmlConversion
