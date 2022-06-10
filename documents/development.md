@@ -199,13 +199,10 @@ When a new libray is added to the repository, tracking of code coverage must be 
       - source/<new-folder-name>
 ```
 
-* Ensure that the new library's bundle publish pipeline contains a `Upload code coverage`-step which uses the `codecov/codecov-action@v2`-action. The action's `flags` argument must be set to the flag name given in `codecov.yml`.
+* Add the folder of any `*.Tests` project to the ignore list in `codecov.yml`.
 
 ``` yml
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v2
-        with:
-          flags: <flag-name>
-          fail_ci_if_error: true
-          verbose: true
+  - "source/<new-folder-name>/source/<test-folder-name>.Tests"
 ```
+
+* In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `CODE_COVERAGE_FLAGS`, and assign it the value given to the flag in `codecov.yml`.

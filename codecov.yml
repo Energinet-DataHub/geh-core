@@ -21,5 +21,17 @@ flag_management:
       paths:
       - source/TestCommon
     - name: xmlconversion
-      paths:
+      paths: 
       - source/XmlConversion
+
+ignore:
+  - "source/App/source/Common.Tests"
+  - "source/App/source/FunctionApp.Tests"
+  - "source/JsonSerialization/source/JsonSerialization.Tests"
+  - "source/Logging/source/RequestResponseMiddleware.Tests"
+  - "source/Messaging/source/Messaging.Protobuf.Tests"
+  - "source/Messaging/source/Messaging.Tests"
+  - "source/SchemaValidation/source/SchemaValidation.Tests"
+  - "source/TestCommon/source/FunctionApp.TestCommon.Tests"
+  - "source/TestCommon/source/TestCommon.Tests"
+  - "source/XmlConversion/source/XmlConverter.Tests"
