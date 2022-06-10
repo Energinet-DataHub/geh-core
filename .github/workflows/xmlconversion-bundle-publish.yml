@@ -78,6 +78,16 @@ jobs:
         with: 
           PROJECT_PATH: './source/XmlConversion/source/XmlConverter.SimpleInjector/XmlConverter.SimpleInjector.csproj'
 
+      - name: Package content or build has changed
+        id: changed-content
+        uses: tj-actions/changed-files@v17.2
+        with:
+          files: |
+            source/XmlConversion/source/XmlConverter/**/*.*
+            source/XmlConversion/source/XmlConversion.Abstractions/**/*.*
+            source/XmlConversion/source/XmlConversion.SimpleInjector/**/*.*
+            .github/workflows/xmlconversion-bundle-publish.yml
+
       - name: Assert versions of NuGet packages and push them to NuGet.org
         uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
         with:
