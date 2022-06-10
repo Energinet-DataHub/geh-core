@@ -61,7 +61,7 @@ jobs:
         with:
           SOLUTION_FILE_PATH: './source/SchemaValidation/SchemaValidation.sln'
           USE_CODE_COVERAGE: 'true'
- #         CODE_COVERAGE_FLAGS: schemavalidation
+          CODE_COVERAGE_FLAGS: schemavalidation
 
       - name: Pack SchemaValidation project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.5.0
