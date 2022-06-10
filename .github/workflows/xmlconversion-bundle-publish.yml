@@ -65,15 +65,18 @@ jobs:
       
       - name: Pack XmlConverter project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
-        with: './source/XmlConversion/source/XmlConverter/XmlConverter.csproj'
+        with: 
+          PROJECT_PATH: './source/XmlConversion/source/XmlConverter/XmlConverter.csproj'
 
       - name: Pack XmlConverter.Abstractions project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
-        with: './source/XmlConversion/source/XmlConverter.Abstractions/XmlConverter.Abstractions.csproj'
+        with: 
+          PROJECT_PATH: './source/XmlConversion/source/XmlConverter.Abstractions/XmlConverter.Abstractions.csproj'
 
       - name: Pack XmlConverter.SimpleInjector project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
-        with: './source/XmlConversion/source/XmlConverter.SimpleInjector/XmlConverter.SimpleInjector.csproj'
+        with: 
+          PROJECT_PATH: './source/XmlConversion/source/XmlConverter.SimpleInjector/XmlConverter.SimpleInjector.csproj'
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
         uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
