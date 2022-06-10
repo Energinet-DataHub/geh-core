@@ -58,10 +58,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.4.0
         with:
           DOTNET_VERSION: '5.0.407'
-          USE_AZURE_FUNCTIONS_TOOLS: 'true'
-          NODE_VERSION: '16'
-          AZURITE_VERSION: '3.15.0'
-          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.4.0
