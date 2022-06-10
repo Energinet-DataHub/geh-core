@@ -1,5 +1,9 @@
 # XML Converter Release notes
 
+## Version 1.0.7
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 1.0.6
 
 - Bumped patch version as pipeline file was updated.
