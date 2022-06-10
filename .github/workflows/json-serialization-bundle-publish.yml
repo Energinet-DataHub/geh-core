@@ -60,7 +60,7 @@ jobs:
           SOLUTION_FILE_PATH: './source/JsonSerialization/JsonSerialization.sln'
           CODE_COVERAGE_FLAGS: jsonserialization
 
-      - name: Pack TestCommon project
+      - name: Pack JsonSerialization project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
         with:
           PROJECT_PATH: './source/JsonSerialization/source/JsonSerialization/JsonSerialization.csproj'
@@ -71,7 +71,7 @@ jobs:
         with:
           files: |
             source/JsonSerialization/source/JsonSerialization/**/*.*
-            .github/workflows/testcommon-bundle-publish.yml
+            .github/workflows/json-serialization-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
         uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
