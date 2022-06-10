@@ -60,7 +60,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.5.0
         with:
           SOLUTION_FILE_PATH: './source/SchemaValidation/SchemaValidation.sln'
-          USE_CODE_COVERAGE: 'true'
           CODE_COVERAGE_FLAGS: schemavalidation
 
       - name: Pack SchemaValidation project
