@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 1.2.2
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 1.2.1
 
 - Fixing log file naming
