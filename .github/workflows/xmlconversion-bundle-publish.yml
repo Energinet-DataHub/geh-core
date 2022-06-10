@@ -23,6 +23,7 @@ on:
     paths:
       - source/XmlConversion/source/XmlConverter/**
       - source/XmlConversion/source/XmlConverter.Abstractions/**
+      - source/XmlConversion/source/XmlConversion.SimpleInjector/**
       - .github/workflows/xmlconversion-bundle-publish.yml
   # Build, test, pack
   # Executed if XmlConversion folder or build scripts has changed; including if documentation or tests has changed
