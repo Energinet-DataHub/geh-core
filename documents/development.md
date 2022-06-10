@@ -199,7 +199,7 @@ When a new libray is added to the repository, tracking of code coverage must be 
       - source/<new-folder-name>
 ```
 
-* Add the test folder of the repository to the ignore list in `codecov.yml`
+* Add the folder of any `*.Tests` project to the ignore list in `codecov.yml`.
 
 ``` yml
   - "source/<new-folder-name>/source/<test-folder-name>.Tests"
