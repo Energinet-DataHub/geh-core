@@ -62,21 +62,23 @@ jobs:
           SOLUTION_FILE_PATH: './source/Logging/Logging.sln'
           CODE_COVERAGE_FLAGS: logging
 
-
       - name: Pack RequestResponseMiddleware project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: "source/Logging/source/RequestResponseMiddleware/RequestResponseMiddleware.csproj"
-
-      - name: Check each NuGet package version does not exists (not looking at prereleases)
-        if: ${{ env.PUSH_PACKAGES == 'true' }}
-        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
         with:
-          NUPKG_RECURSE_PATH: "source/Logging/source"
+          PROJECT_PATH: './source/Logging/source/RequestResponseMiddleware/RequestResponseMiddleware.csproj'
 
-      - name: Push to NuGet.org
-        if: ${{ env.PUSH_PACKAGES == 'true' }}
-        run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
-        env:
-          NUPKG_FILTER_PATTERN: "source/Logging/source/**/*.nupkg"
-          NUGET_FEED_PATH: "https://api.nuget.org/v3/index.json"
+      - name: Package content or build has changed
+        id: changed-content
+        uses: tj-actions/changed-files@v17.2
+        with:
+          files: |
+            source/Logging/source/RequestResponseMiddleware/**/*.*
+            .github/workflows/logging-bundle-publish.yml
+
+      - name: Assert versions of NuGet packages and push them to NuGet.org
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
+        with:
+          PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
+          CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+          NUPKG_RECURSE_PATH: 'source/Logging/source'
