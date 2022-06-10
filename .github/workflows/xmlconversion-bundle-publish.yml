@@ -60,7 +60,7 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.4.0
         with:
-          SOLUTION_FILE_PATH: './source/XmlConversion.sln'
+          SOLUTION_FILE_PATH: './source/XmlConversion/XmlConversion.sln'
           CODE_COVERAGE_FLAGS: xmlconversion
       
       - name: Pack XmlConverter project
