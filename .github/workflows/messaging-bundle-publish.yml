@@ -39,13 +39,8 @@ on:
   workflow_dispatch: {}
 
 env:
-  SOLUTION_FILE_PATH: source/Messaging/Messaging.sln
-  BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
-  # Tool versions
-  DOTNET_VERSION: '5.0.202'
-  AZURITE_VERSION: '3.14.0'
 
 jobs:
   build_and_publish:
@@ -56,73 +51,43 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout repository (main branch)
-        if: ${{ github.ref_name == 'main' }}
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.4.0
+
+      - name: Setup dotnet and tools
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.4.0
         with:
-          fetch-depth: 2 # To retrieve the preceding commit on 'main'
+          DOTNET_VERSION: '5.0.407'
+          USE_AZURE_FUNCTIONS_TOOLS: 'true'
+          NODE_VERSION: '16'
+          AZURITE_VERSION: '3.15.0'
+          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
-      - name: Checkout repository (feature branch)
-        if: ${{ github.ref_name != 'main' }}
-        uses: actions/checkout@v3
-
-      - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
-        uses: actions/setup-dotnet@v2
+      - name: Build and test solution
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.4.0
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-        env:
-          DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v3
-        id: cache-nuget
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore NuGet packages
-        run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
-
-      - name: Build solution
-        run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
-
-      - name: Run tests and publish report
-        run: |
-          dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}\output
-
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v3
-        with:
-          flags: messaging
-          fail_ci_if_error: true
-          verbose: true
-
-      - name: Get version suffix property value
-        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@7.2.1
-        id: get_version_suffix
+          SOLUTION_FILE_PATH: './source/Messaging/Messaging.sln'
+          CODE_COVERAGE_FLAGS: messaging
 
       - name: Pack Messaging project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/Messaging/source/Messaging/Messaging.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/Messaging/source/Messaging/Messaging.csproj'
 
-      - name: Pack Messaging Integration project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/Messaging/source/Messaging.Integration.ServiceCollection/Messaging.Integration.ServiceCollection.csproj'
+      - name: Pack Messaging.Integration.ServiceCollection project
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/Messaging/source/Messaging.Integration.ServiceCollection/Messaging.Integration.ServiceCollection.csproj'
 
-      - name: Pack Messaging Protobuf project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/Messaging/source/Messaging.Protobuf/Messaging.Protobuf.csproj'
+      - name: Pack Messaging.Protobuf project
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/Messaging/source/Messaging.Protobuf/Messaging.Protobuf.csproj'
 
-      - name: Pack Messaging Protobuf project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/Messaging.Protobuf.Integration.ServiceCollection.csproj'
+      - name: Pack Messaging.Protobuf.Integration.ServiceCollection project
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/Messaging.Protobuf.Integration.ServiceCollection.csproj'
 
       - name: Package content or build has changed
         id: changed-content
@@ -135,15 +100,10 @@ jobs:
             source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/**/*.*
             .github/workflows/messaging-bundle-publish.yml
 
-      - name: Check each NuGet package version does not exists (not looking at prereleases)
-        if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
-        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@7.2.1
+      - name: Assert versions of NuGet packages and push them to NuGet.org
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
         with:
+          PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
+          CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
           NUPKG_RECURSE_PATH: 'source/Messaging/source'
-
-      - name: Push to NuGet.org
-        if: ${{ env.PUSH_PACKAGES == 'true' }}
-        run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
-        env:
-          NUPKG_FILTER_PATTERN: 'source/Messaging/source/**/*.nupkg'
-          NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
