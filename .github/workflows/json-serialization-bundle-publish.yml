@@ -37,8 +37,6 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
 
-  SOLUTION_FILE_PATH: source/JsonSerialization/JsonSerialization.sln
-
 jobs:
   build_and_publish:
     runs-on: windows-latest
