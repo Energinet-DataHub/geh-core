@@ -58,10 +58,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.3.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.4.0
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.3.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.4.0
         with:
           DOTNET_VERSION: '5.0.407'
           USE_AZURE_FUNCTIONS_TOOLS: 'true'
@@ -70,9 +70,10 @@ jobs:
           AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.3.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.4.0
         with:
           SOLUTION_FILE_PATH: './source/TestCommon/TestCommon.sln'
+          CODE_COVERAGE_FLAGS: testcommon
           AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -80,12 +81,12 @@ jobs:
           AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
 
       - name: Pack TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.3.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
         with:
           PROJECT_PATH: './source/TestCommon/source/TestCommon/TestCommon.csproj'
 
       - name: Pack FunctionApp.TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.3.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
         with:
           PROJECT_PATH: './source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
@@ -99,7 +100,7 @@ jobs:
             .github/workflows/testcommon-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.3.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
