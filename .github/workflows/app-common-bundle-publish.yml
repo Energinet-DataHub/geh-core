@@ -16,7 +16,7 @@ name: Publish App Common bundle
 
 on:
   # Build, test, pack and publish release packages
-  # Only executed if (*.)FunctionApp packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  # Only executed if (*.)Commonm, (*.)FunctionApp or (*.)WebApp packages content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
       - main
@@ -30,7 +30,7 @@ on:
       - source/App/source/WebApp.SimpleInjector/**
       - .github/workflows/app-common-bundle-publish.yml
   # Build, test, pack
-  # Executed if FunctionApp folder or build scripts has changed; including if documentation or tests has changed
+  # Executed if App folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
@@ -42,12 +42,8 @@ on:
   workflow_dispatch: {}
 
 env:
-  SOLUTION_FILE_PATH: source/App/App.sln
-  BUILD_CONFIGURATION: Release
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
-  # Tool versions
-  DOTNET_VERSION: '5.0.405'
 
 jobs:
   build_and_publish:
@@ -58,88 +54,54 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout repository (main branch)
-        if: ${{ github.ref_name == 'main' }}
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.4.0
+
+      - name: Setup dotnet and tools
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.4.0
         with:
-          fetch-depth: 2 # To retrieve the preceding commit on 'main'
+          DOTNET_VERSION: '5.0.407'
 
-      - name: Checkout repository (feature branch)
-        if: ${{ github.ref_name != 'main' }}
-        uses: actions/checkout@v3
-
-      - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
-        uses: actions/setup-dotnet@v1
+      - name: Build and test solution
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.4.0
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-        env:
-          DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v2
-        id: cache-nuget
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore NuGet packages
-        run: dotnet restore ${{ env.SOLUTION_FILE_PATH }}
-
-      - name: Build solution
-        run: dotnet build ${{ env.SOLUTION_FILE_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
-
-      - name: Run tests and publish report
-        run: |
-          dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-          dotnet test ${{ env.SOLUTION_FILE_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}\output
-
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v2
-        with:
-          flags: appcommon
-          fail_ci_if_error: true
-          verbose: true
-
-      - name: Get version suffix property value
-        uses: Energinet-DataHub/.github/.github/actions/get-version-suffix@2.3.0
-        id: get_version_suffix
+          SOLUTION_FILE_PATH: './source/App/App.sln'
+          CODE_COVERAGE_FLAGS: appcommon
 
       - name: Pack Common project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/App/source/Common/Common.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/App/source/Common/Common.csproj'
 
       - name: Pack Common.Abstractions project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/App/source/Common.Abstractions/Common.Abstractions.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/App/source/Common.Abstractions/Common.Abstractions.csproj'
 
       - name: Pack Common.Security project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/App/source/Common.Security/Common.Security.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/App/source/Common.Security/Common.Security.csproj'
 
       - name: Pack FunctionApp project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/App/source/FunctionApp/FunctionApp.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/App/source/FunctionApp/FunctionApp.csproj'
 
       - name: Pack WebApp project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/App/source/WebApp/WebApp.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/App/source/WebApp/WebApp.csproj'
 
       - name: Pack FunctionApp.SimpleInjector project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/App/source/FunctionApp.SimpleInjector/FunctionApp.SimpleInjector.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/App/source/FunctionApp.SimpleInjector/FunctionApp.SimpleInjector.csproj'
 
       - name: Pack WebApp.SimpleInjector project
-        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIGURATION }} --include-symbols -p:SymbolPackageFormat=snupkg -p:RepositoryCommit=${{ github.sha }} ${{ steps.get_version_suffix.outputs.version_suffix_property }}
-        env:
-          PROJECT_PATH: 'source/App/source/WebApp.SimpleInjector/WebApp.SimpleInjector.csproj'
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        with:
+          PROJECT_PATH: './source/App/source/WebApp.SimpleInjector/WebApp.SimpleInjector.csproj'
 
       - name: Package content or build has changed
         id: changed-content
@@ -155,15 +117,10 @@ jobs:
             source/App/source/WebApp.SimpleInjector/**/*.*
             .github/workflows/app-common-bundle-publish.yml
 
-      - name: Check each NuGet package version does not exists (not looking at prereleases)
-        if: ${{ env.PUSH_PACKAGES == 'true' || steps.changed-content.outputs.any_changed == 'true'}}
-        uses: Energinet-DataHub/.github/.github/actions/nuget-assert-release-version@2.5.0
+      - name: Assert versions of NuGet packages and push them to NuGet.org
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
         with:
+          PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
+          CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
           NUPKG_RECURSE_PATH: 'source/App/source'
-
-      - name: Push to NuGet.org
-        if: ${{ env.PUSH_PACKAGES == 'true' }}
-        run: dotnet nuget push ${{ env.NUPKG_FILTER_PATTERN }} --api-key ${{ secrets.NUGET_TOKEN }} --source ${{ env.NUGET_FEED_PATH }}
-        env:
-          NUPKG_FILTER_PATTERN: 'source/App/source/**/*.nupkg'
-          NUGET_FEED_PATH: 'https://api.nuget.org/v3/index.json'
