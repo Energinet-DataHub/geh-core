@@ -23,10 +23,10 @@ limitations under the License.
         <RootNamespace>Energinet.DataHub.Core.Logging.RequestResponseMiddleware</RootNamespace>
         <AssemblyName>Energinet.DataHub.Core.Logging.RequestResponseMiddleware</AssemblyName>
     </PropertyGroup>
-	
+
 	<PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Logging</PackageId>
-    <PackageVersion>1.2.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.2.2$(VersionSuffix)</PackageVersion>
     <Title>Logging Middleware For Requests and Responses</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
