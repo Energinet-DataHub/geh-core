@@ -83,4 +83,8 @@ limitations under the License.
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middleware\IntegrationEventContext" />
+  </ItemGroup>
+
 </Project>
