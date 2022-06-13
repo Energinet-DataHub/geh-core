@@ -14,25 +14,29 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
+using Energinet.DataHub.Core.JsonSerialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
 {
     public sealed class IntegrationEventMetadataMiddleware : IFunctionsWorkerMiddleware
     {
         private readonly ILogger _logger;
+        private readonly IJsonSerializer _jsonSerializer;
         private readonly IIntegrationEventContext _integrationEventContext;
 
         public IntegrationEventMetadataMiddleware(
             ILogger logger,
+            IJsonSerializer jsonSerializer,
             IIntegrationEventContext integrationEventContext)
         {
             _logger = logger;
+            _jsonSerializer = jsonSerializer;
             _integrationEventContext = integrationEventContext;
         }
 
@@ -65,7 +69,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
             return next(context);
         }
 
-        private static bool TryGetUserProperties(
+        private bool TryGetUserProperties(
             FunctionContext functionContext,
             [NotNullWhen(true)]
             out IntegrationEventJsonMetadata? userProperties)
@@ -77,12 +81,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
             {
                 if (userPropertiesObject is string userProps)
                 {
-                    var userPropertiesDict = JsonSerializer.Deserialize<IntegrationEventJsonMetadata>(userProps);
-                    if (userPropertiesDict != null)
-                    {
-                        userProperties = userPropertiesDict;
-                        return true;
-                    }
+                    userProperties = _jsonSerializer.Deserialize<IntegrationEventJsonMetadata>(userProps);
+                    return true;
                 }
             }
 
