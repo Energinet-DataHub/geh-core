@@ -20,14 +20,14 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
     {
         public IntegrationEventJsonMetadata(
             string messageType,
-            Instant operationTimeStamp)
+            Instant operationTimestamp)
         {
             MessageType = messageType;
-            OperationTimeStamp = operationTimeStamp;
+            OperationTimestamp = operationTimestamp;
         }
 
         public string MessageType { get; }
 
-        public Instant OperationTimeStamp { get; }
+        public Instant OperationTimestamp { get; }
     }
 }

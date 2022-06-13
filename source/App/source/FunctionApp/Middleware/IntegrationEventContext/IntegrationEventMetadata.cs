@@ -23,10 +23,10 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
     {
         public IntegrationEventMetadata(
             string messageType,
-            Instant operationTimeStamp)
+            Instant operationTimestamp)
         {
             MessageType = messageType;
-            OperationTimeStamp = operationTimeStamp;
+            OperationTimestamp = operationTimestamp;
         }
 
         /// <summary>
@@ -39,6 +39,6 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
         /// Represents the point in time, when the sending application created the event.
         /// See: https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md#timestamp
         /// </summary>
-        public Instant OperationTimeStamp { get; }
+        public Instant OperationTimestamp { get; }
     }
 }

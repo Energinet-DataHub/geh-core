@@ -56,7 +56,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
             {
                 _integrationEventContext.SetMetadata(
                     userProperties.MessageType,
-                    userProperties.OperationTimeStamp);
+                    userProperties.OperationTimestamp);
             }
             else
             {
