@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
         private readonly IIntegrationEventContext _integrationEventContext;
 
         public IntegrationEventMetadataMiddleware(
-            ILogger logger,
+            ILogger<IntegrationEventMetadataMiddleware> logger,
             IJsonSerializer jsonSerializer,
             IIntegrationEventContext integrationEventContext)
         {
