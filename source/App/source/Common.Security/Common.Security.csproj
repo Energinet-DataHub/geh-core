@@ -27,7 +27,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.Common.Security</PackageId>
-    <PackageVersion>2.3.4$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.4.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Function Common Security Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
