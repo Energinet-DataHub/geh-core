@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext
 {
@@ -47,22 +48,45 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
                 return next(context);
             }
 
-            var bindingData = context.BindingContext.BindingData;
-
-            if (bindingData.TryGetValue("UserProperties", out var userProperties)
-                && userProperties != null)
+            if (TryGetUserProperties(context, out var userProperties))
             {
-                // userProperties, what are you?
-                _integrationEventContext.SetMetadata("todo", Instant.MinValue);
+                _integrationEventContext.SetMetadata(
+                    userProperties.MessageType,
+                    userProperties.OperationTimeStamp);
             }
             else
             {
-                var errorMessage = $"Integration event context could not be set up for invocation: {context.InvocationId}";
+                var errorMessage =
+                    $"Integration event context could not be set up for invocation: {context.InvocationId}";
                 _logger.LogError(errorMessage);
                 throw new InvalidOperationException(errorMessage);
             }
 
             return next(context);
+        }
+
+        private static bool TryGetUserProperties(
+            FunctionContext functionContext,
+            [NotNullWhen(true)]
+            out IntegrationEventJsonMetadata? userProperties)
+        {
+            userProperties = null;
+
+            var bindingData = functionContext.BindingContext.BindingData;
+            if (bindingData.TryGetValue("UserProperties", out var userPropertiesObject))
+            {
+                if (userPropertiesObject is string userProps)
+                {
+                    var userPropertiesDict = JsonSerializer.Deserialize<IntegrationEventJsonMetadata>(userProps);
+                    if (userPropertiesDict != null)
+                    {
+                        userProperties = userPropertiesDict;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
