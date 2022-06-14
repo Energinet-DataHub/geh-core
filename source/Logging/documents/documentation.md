@@ -26,4 +26,4 @@ Request and response logs are created and saved to storage for later processing.
 
 ## App Release notes
 
-[Release notes](/release-notes/release-notes.md)
+[Release notes](release-notes/release-notes.md)
