@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext
@@ -21,8 +22,16 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
     {
         private IntegrationEventMetadata? _eventMetadata;
 
-        public IntegrationEventMetadata EventMetadata =>
-            _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
+        public IntegrationEventMetadata ReadMetadata()
+        {
+            return _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
+        }
+
+        public bool TryReadMetadata([NotNullWhen(true)] out IntegrationEventMetadata? metadata)
+        {
+            metadata = _eventMetadata;
+            return _eventMetadata != null;
+        }
 
         public void SetMetadata(string messageType, Instant operationTimeStamp)
         {

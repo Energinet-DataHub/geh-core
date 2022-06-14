@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext
@@ -22,9 +23,16 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
     public interface IIntegrationEventContext
     {
         /// <summary>
-        /// The metadata that travels along with the message when it is sent as an integration event.
+        /// Reads the metadata that travels along with the message when it is sent as an integration event. Throws an InvalidOperationException if the metadata is missing.
         /// </summary>
-        public IntegrationEventMetadata EventMetadata { get; }
+        IntegrationEventMetadata ReadMetadata();
+
+        /// <summary>
+        /// Tries to read the metadata that travels along with the message when it is sent as an integration event. Throws an InvalidOperationException if the metadata is missing.
+        /// </summary>
+        /// <param name="metadata">The metadata for the integration event.</param>
+        /// <returns>Returns true if the metadata was read; otherwise, false.</returns>
+        bool TryReadMetadata([NotNullWhen(true)] out IntegrationEventMetadata? metadata);
 
         /// <summary>
         /// Sets the metadata properties of the received event.

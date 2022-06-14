@@ -21,7 +21,6 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Tests.Common;
 using Energinet.DataHub.Core.JsonSerialization;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -34,12 +33,10 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
         public async Task Invoke_NotServiceBusTrigger_DoesNothing()
         {
             // Arrange
-            var logger = new Mock<ILogger<IntegrationEventMetadataMiddleware>>();
             var serializer = new JsonSerializer();
             var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
             var target = new IntegrationEventMetadataMiddleware(
-                logger.Object,
                 serializer,
                 integrationEventContext);
 
@@ -52,19 +49,17 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
             await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
 
             // Assert
-            Assert.Throws<InvalidOperationException>(() => integrationEventContext.EventMetadata);
+            Assert.Throws<InvalidOperationException>(() => integrationEventContext.ReadMetadata());
         }
 
         [Fact]
-        public async Task Invoke_NoUserProperties_ThrowsException()
+        public async Task Invoke_NoUserProperties_DoesNothing()
         {
             // Arrange
-            var logger = new Mock<ILogger<IntegrationEventMetadataMiddleware>>();
             var serializer = new JsonSerializer();
             var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
             var target = new IntegrationEventMetadataMiddleware(
-                logger.Object,
                 serializer,
                 integrationEventContext);
 
@@ -77,21 +72,21 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
                 .Setup(bindingContext => bindingContext.BindingData)
                 .Returns(new Dictionary<string, object?>());
 
-            // Act + Assert
-            await Assert
-                .ThrowsAsync<InvalidOperationException>(() => target.Invoke(context.FunctionContext, _ => Task.CompletedTask));
+            // Act
+            await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(() => integrationEventContext.ReadMetadata());
         }
 
         [Fact]
-        public async Task Invoke_WrongUserPropertiesType_ThrowsException()
+        public async Task Invoke_WrongUserPropertiesType_DoesNothing()
         {
             // Arrange
-            var logger = new Mock<ILogger<IntegrationEventMetadataMiddleware>>();
             var serializer = new JsonSerializer();
             var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
             var target = new IntegrationEventMetadataMiddleware(
-                logger.Object,
                 serializer,
                 integrationEventContext);
 
@@ -104,16 +99,17 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
                 .Setup(bindingContext => bindingContext.BindingData)
                 .Returns(new Dictionary<string, object?> { { "UserProperties", new object() } });
 
-            // Act + Assert
-            await Assert
-                .ThrowsAsync<InvalidOperationException>(() => target.Invoke(context.FunctionContext, _ => Task.CompletedTask));
+            // Act
+            await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(() => integrationEventContext.ReadMetadata());
         }
 
         [Fact]
         public async Task Invoke_WithUserProperties_ReturnsMetadata()
         {
             // Arrange
-            var logger = new Mock<ILogger<IntegrationEventMetadataMiddleware>>();
             var serializer = new JsonSerializer();
             var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
@@ -122,7 +118,6 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
                 SystemClock.Instance.GetCurrentInstant());
 
             var target = new IntegrationEventMetadataMiddleware(
-                logger.Object,
                 serializer,
                 integrationEventContext);
 
@@ -139,8 +134,9 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
             await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
 
             // Assert
-            Assert.Equal(expected.MessageType, integrationEventContext.EventMetadata.MessageType);
-            Assert.Equal(expected.OperationTimestamp, integrationEventContext.EventMetadata.OperationTimestamp);
+            var actual = integrationEventContext.ReadMetadata();
+            Assert.Equal(expected.MessageType, actual.MessageType);
+            Assert.Equal(expected.OperationTimestamp, actual.OperationTimestamp);
         }
 
         private static IReadOnlyDictionary<string, BindingMetadata> SetupInputBindings(string bindingType)

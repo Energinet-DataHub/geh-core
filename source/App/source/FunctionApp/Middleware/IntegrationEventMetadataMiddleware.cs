@@ -20,22 +20,18 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.JsonSerialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
 {
     public sealed class IntegrationEventMetadataMiddleware : IFunctionsWorkerMiddleware
     {
-        private readonly ILogger _logger;
         private readonly IJsonSerializer _jsonSerializer;
         private readonly IIntegrationEventContext _integrationEventContext;
 
         public IntegrationEventMetadataMiddleware(
-            ILogger<IntegrationEventMetadataMiddleware> logger,
             IJsonSerializer jsonSerializer,
             IIntegrationEventContext integrationEventContext)
         {
-            _logger = logger;
             _jsonSerializer = jsonSerializer;
             _integrationEventContext = integrationEventContext;
         }
@@ -57,13 +53,6 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
                 _integrationEventContext.SetMetadata(
                     userProperties.MessageType,
                     userProperties.OperationTimestamp);
-            }
-            else
-            {
-                var errorMessage =
-                    $"Integration event context could not be set up for invocation: {context.InvocationId}";
-                _logger.LogError(errorMessage);
-                throw new InvalidOperationException(errorMessage);
             }
 
             return next(context);

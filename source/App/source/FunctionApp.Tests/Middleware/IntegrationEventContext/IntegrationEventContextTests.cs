@@ -33,18 +33,54 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             target.SetMetadata(messageType, operationTimestamp);
 
             // Assert
-            Assert.Equal(messageType, target.EventMetadata.MessageType);
-            Assert.Equal(operationTimestamp, target.EventMetadata.OperationTimestamp);
+            var actual = target.ReadMetadata();
+            Assert.Equal(messageType, actual.MessageType);
+            Assert.Equal(operationTimestamp, actual.OperationTimestamp);
         }
 
         [Fact]
-        public void EventMetadata_WhenNotSet_ThrowsException()
+        public void TryReadMetadata_WhenSet_CanBeRetrieved()
+        {
+            const string messageType = "fake_value";
+            var operationTimestamp = SystemClock.Instance.GetCurrentInstant();
+
+            // Arrange
+            var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            target.SetMetadata(messageType, operationTimestamp);
+
+            // Act
+            var result = target.TryReadMetadata(out var actual);
+
+            // Assert
+            Assert.True(result);
+            Assert.Equal(messageType, actual!.MessageType);
+            Assert.Equal(operationTimestamp, actual.OperationTimestamp);
+        }
+
+        [Fact]
+        public void TryReadMetadata_WhenNotSet_ReturnsFalse()
+        {
+            var operationTimestamp = SystemClock.Instance.GetCurrentInstant();
+
+            // Arrange
+            var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+
+            // Act
+            var result = target.TryReadMetadata(out var actual);
+
+            // Assert
+            Assert.False(result);
+            Assert.Null(actual);
+        }
+
+        [Fact]
+        public void ReadMetadata_WhenNotSet_ThrowsException()
         {
             // Arrange
             var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
             // Act + Assert
-            Assert.Throws<InvalidOperationException>(() => target.EventMetadata);
+            Assert.Throws<InvalidOperationException>(() => target.ReadMetadata());
         }
     }
 }
