@@ -6,6 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{7E2287D0-6CEF-416D-8108-A72F6870B5E4}"
 ProjectSection(SolutionItems) = preProject
 	documents\documentation.md = documents\documentation.md
+	documents\ARCHITECTURE.drawio = documents\ARCHITECTURE.drawio
+	documents\ARCHITECTURE.png = documents\ARCHITECTURE.png
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{1025F137-D850-4219-8324-BCB752F05F4F}"

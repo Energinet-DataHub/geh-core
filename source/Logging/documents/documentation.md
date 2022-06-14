@@ -18,8 +18,12 @@ Implementation example:
                                                 containerName, 
                                                 ILogger<RequestResponseLoggingBlobStorage>));
 
+## Architechture
+
+Request and response logs are created and saved to storage for later processing.
+
+![Architecture](ARCHITECTURE.png)
+
 ## App Release notes
 
-## Version 1.1.1
-
-- Bumped patch version as pipeline file was updated.
+[Release notes](/release-notes/release-notes.md)
