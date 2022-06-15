@@ -20,6 +20,8 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Tests.Common;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using FluentAssertions;
 using Microsoft.Azure.Functions.Worker;
 using Moq;
 using NodaTime;
@@ -29,8 +31,9 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
 {
     public sealed class IntegrationEventMetadataMiddlewareTests
     {
-        [Fact]
-        public async Task Invoke_NotServiceBusTrigger_DoesNothing()
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task Invoke_NotServiceBusTrigger_DoesNothing(string bindingType)
         {
             // Arrange
             var serializer = new JsonSerializer();
@@ -43,13 +46,16 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
             var context = new MockedFunctionContext();
             context.FunctionDefinitionMock
                 .Setup(functionDefinition => functionDefinition.InputBindings)
-                .Returns(SetupInputBindings("fake_value").ToImmutableDictionary());
+                .Returns(SetupInputBindings(bindingType).ToImmutableDictionary());
 
             // Act
             await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
 
             // Assert
-            Assert.Throws<InvalidOperationException>(() => integrationEventContext.ReadMetadata());
+            integrationEventContext
+                .Invoking(c => c.ReadMetadata())
+                .Should()
+                .Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -76,7 +82,10 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
             await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
 
             // Assert
-            Assert.Throws<InvalidOperationException>(() => integrationEventContext.ReadMetadata());
+            integrationEventContext
+                .Invoking(c => c.ReadMetadata())
+                .Should()
+                .Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -103,19 +112,25 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
             await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
 
             // Assert
-            Assert.Throws<InvalidOperationException>(() => integrationEventContext.ReadMetadata());
+            integrationEventContext
+                .Invoking(c => c.ReadMetadata())
+                .Should()
+                .Throw<InvalidOperationException>();
         }
 
-        [Fact]
-        public async Task Invoke_WithUserProperties_ReturnsMetadata()
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task Invoke_WithUserProperties_ReturnsMetadata(
+            string messageType,
+            Instant operationTimestamp)
         {
             // Arrange
             var serializer = new JsonSerializer();
             var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
             var expected = new IntegrationEventJsonMetadata(
-                "fake_value",
-                SystemClock.Instance.GetCurrentInstant());
+                messageType,
+                operationTimestamp);
 
             var target = new IntegrationEventMetadataMiddleware(
                 serializer,
@@ -135,8 +150,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
 
             // Assert
             var actual = integrationEventContext.ReadMetadata();
-            Assert.Equal(expected.MessageType, actual.MessageType);
-            Assert.Equal(expected.OperationTimestamp, actual.OperationTimestamp);
+            actual.MessageType.Should().Be(messageType);
+            actual.OperationTimestamp.Should().Be(operationTimestamp);
         }
 
         private static IReadOnlyDictionary<string, BindingMetadata> SetupInputBindings(string bindingType)

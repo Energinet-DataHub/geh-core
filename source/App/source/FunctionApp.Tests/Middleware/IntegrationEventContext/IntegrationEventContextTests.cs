@@ -14,6 +14,7 @@
 
 using System;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using FluentAssertions;
 using NodaTime;
 using Xunit;
 
@@ -35,8 +36,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
 
             // Assert
             var actual = target.ReadMetadata();
-            Assert.Equal(messageType, actual.MessageType);
-            Assert.Equal(operationTimestamp, actual.OperationTimestamp);
+            actual.MessageType.Should().Be(messageType);
+            actual.OperationTimestamp.Should().Be(operationTimestamp);
         }
 
         [Theory]
@@ -53,9 +54,9 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             var result = target.TryReadMetadata(out var actual);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(messageType, actual!.MessageType);
-            Assert.Equal(operationTimestamp, actual.OperationTimestamp);
+            result.Should().BeTrue();
+            actual!.MessageType.Should().Be(messageType);
+            actual.OperationTimestamp.Should().Be(operationTimestamp);
         }
 
         [Fact]
@@ -68,8 +69,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             var result = target.TryReadMetadata(out var actual);
 
             // Assert
-            Assert.False(result);
-            Assert.Null(actual);
+            result.Should().BeFalse();
+            actual.Should().BeNull();
         }
 
         [Fact]
@@ -79,7 +80,10 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
             // Act + Assert
-            Assert.Throws<InvalidOperationException>(() => target.ReadMetadata());
+            target
+                .Invoking(t => t.ReadMetadata())
+                .Should()
+                .Throw<InvalidOperationException>();
         }
     }
 }
