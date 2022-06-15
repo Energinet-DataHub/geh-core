@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using NodaTime;
 using Xunit;
 
@@ -20,12 +21,12 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
 {
     public sealed class IntegrationEventContextTests
     {
-        [Fact]
-        public void SetMetadata_WhenSet_CanBeRetrieved()
+        [Theory]
+        [InlineAutoMoqData]
+        public void SetMetadata_WhenSet_CanBeRetrieved(
+            string messageType,
+            Instant operationTimestamp)
         {
-            const string messageType = "fake_value";
-            var operationTimestamp = SystemClock.Instance.GetCurrentInstant();
-
             // Arrange
             var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 
@@ -38,12 +39,12 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             Assert.Equal(operationTimestamp, actual.OperationTimestamp);
         }
 
-        [Fact]
-        public void TryReadMetadata_WhenSet_CanBeRetrieved()
+        [Theory]
+        [InlineAutoMoqData]
+        public void TryReadMetadata_WhenSet_CanBeRetrieved(
+            string messageType,
+            Instant operationTimestamp)
         {
-            const string messageType = "fake_value";
-            var operationTimestamp = SystemClock.Instance.GetCurrentInstant();
-
             // Arrange
             var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
             target.SetMetadata(messageType, operationTimestamp);
@@ -60,8 +61,6 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
         [Fact]
         public void TryReadMetadata_WhenNotSet_ReturnsFalse()
         {
-            var operationTimestamp = SystemClock.Instance.GetCurrentInstant();
-
             // Arrange
             var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
 

@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
         IntegrationEventMetadata ReadMetadata();
 
         /// <summary>
-        /// Tries to read the metadata that travels along with the message when it is sent as an integration event. Throws an InvalidOperationException if the metadata is missing.
+        /// Tries to read the metadata that travels along with the message when it is sent as an integration event.
         /// </summary>
         /// <param name="metadata">The metadata for the integration event.</param>
         /// <returns>Returns true if the metadata was read; otherwise, false.</returns>
