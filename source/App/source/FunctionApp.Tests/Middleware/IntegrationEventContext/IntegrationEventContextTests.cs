@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             Instant operationTimestamp)
         {
             // Arrange
-            var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             // Act
             target.SetMetadata(messageType, operationTimestamp);
@@ -47,7 +47,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             Instant operationTimestamp)
         {
             // Arrange
-            var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
             target.SetMetadata(messageType, operationTimestamp);
 
             // Act
@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
         public void TryReadMetadata_WhenNotSet_ReturnsFalse()
         {
             // Arrange
-            var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             // Act
             var result = target.TryReadMetadata(out var actual);
@@ -77,7 +77,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
         public void ReadMetadata_WhenNotSet_ThrowsException()
         {
             // Arrange
-            var target = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             // Act + Assert
             target

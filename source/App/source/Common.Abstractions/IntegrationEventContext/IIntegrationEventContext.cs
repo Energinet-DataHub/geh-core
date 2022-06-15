@@ -15,7 +15,7 @@
 using System.Diagnostics.CodeAnalysis;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext
+namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
 {
     /// <summary>
     /// Describes an integration event.

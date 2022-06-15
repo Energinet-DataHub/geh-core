@@ -14,7 +14,7 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext
+namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
 {
     /// <summary>
     /// The metadata that travels along with the message when it is sent as an integration event.

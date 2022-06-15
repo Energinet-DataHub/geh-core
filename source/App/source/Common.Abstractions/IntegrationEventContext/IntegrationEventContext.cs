@@ -16,7 +16,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext
+namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
 {
     public sealed class IntegrationEventContext : IIntegrationEventContext
     {

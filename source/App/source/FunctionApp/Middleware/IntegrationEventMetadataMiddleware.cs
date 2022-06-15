@@ -15,6 +15,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.JsonSerialization;

@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
         {
             // Arrange
             var serializer = new JsonSerializer();
-            var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var integrationEventContext = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             var target = new IntegrationEventMetadataMiddleware(
                 serializer,
@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
         {
             // Arrange
             var serializer = new JsonSerializer();
-            var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var integrationEventContext = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             var target = new IntegrationEventMetadataMiddleware(
                 serializer,
@@ -93,7 +93,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
         {
             // Arrange
             var serializer = new JsonSerializer();
-            var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var integrationEventContext = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             var target = new IntegrationEventMetadataMiddleware(
                 serializer,
@@ -126,7 +126,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
         {
             // Arrange
             var serializer = new JsonSerializer();
-            var integrationEventContext = new FunctionApp.Middleware.IntegrationEventContext.IntegrationEventContext();
+            var integrationEventContext = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             var expected = new IntegrationEventJsonMetadata(
                 messageType,
