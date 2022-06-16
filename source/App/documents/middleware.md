@@ -76,12 +76,9 @@ services.UseSimpleInjectorAspNetRequestScoping(_container);
 Register in container:
 
 ```c#
-public void ConfigureServices(IServiceCollection services)
-{
-    …
-    container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
-    …
-}
+…
+container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
+…
 ```
 
 ## Actor Middleware
@@ -113,3 +110,29 @@ container.AddActorContext<MyActorProviderImplementation>()
 ```
 
 `CurrentActor` can now be accessed through `IActorContext`.
+
+## Integration Event Metadata Middleware
+
+### Introduction
+
+This middleware provides functionality for reading intergration event metadata for ServiceBus events. When this middleware is added, it will be possible to get the integration event metadata via IIntegrationEventContext.
+
+### Usage
+
+Add `IntegrationEventMetadataMiddleware` as below:
+
+```c#
+options.UseMiddleware<IntegrationEventMetadataMiddleware>();
+…
+```
+
+Register in container:
+
+```c#
+…
+container.Register<IIntegrationEventContext, IntegrationEventContext>(Lifestyle.Scoped);
+container.Register<IntegrationEventMetadataMiddleware>(Lifestyle.Scoped);
+…
+```
+
+Integration event metadata can now be accessed through `IIntegrationEventContext`.

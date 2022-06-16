@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 2.4.0
+
+- Added IntegrationEventContext that provides access to integration event metadata using IntegrationEventMetadataMiddleware.
+
 ## Version 2.3.4
 
 - Bumped patch version as pipeline file was updated.
