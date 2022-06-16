@@ -27,7 +27,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.Common.Abstractions</PackageId>
-    <PackageVersion>2.3.4$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.4.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Function Common Abstractions Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -59,6 +59,7 @@ limitations under the License.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NodaTime" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
