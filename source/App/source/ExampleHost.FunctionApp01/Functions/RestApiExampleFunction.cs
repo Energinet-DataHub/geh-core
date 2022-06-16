@@ -53,7 +53,7 @@ namespace ExampleHost.FunctionApp01.Functions
 
         private static HttpResponseData CreateResponse(HttpRequestData httpRequest)
         {
-            return httpRequest.CreateResponse(HttpStatusCode.OK);
+            return httpRequest.CreateResponse(HttpStatusCode.Accepted);
         }
     }
 }
