@@ -46,6 +46,10 @@ namespace ExampleHost.Tests.Integration
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// TODO: Add to documentation
+        /// - "Configure categories" lists different logging categories that can be useful to understand [https://docs.microsoft.com/en-us/azure/azure-functions/configure-monitoring?tabs=v2#configure-categories].
+        /// </summary>
         [Fact]
         public async Task CreatePet_flow_should_succeed()
         {
