@@ -67,6 +67,7 @@ namespace ExampleHost.Tests.Fixtures
             app01HostSettings.Port = ++port;
 
             app01HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            // Conclusion: We can see Trace and Request events in App Insights as soon as we just configure the instrumentation key.
             app01HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
 
             App01HostManager = new FunctionAppHostManager(app01HostSettings, TestLogger);
