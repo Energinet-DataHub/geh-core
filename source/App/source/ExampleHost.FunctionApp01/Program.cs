@@ -12,10 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using ExampleHost.FunctionApp01.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+// TODO: Investigate if any of this is relevant for us:
+//  - https://github.com/Azure/azure-functions-dotnet-worker/issues/760
+//  - https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
+    .ConfigureServices(services =>
+    {
+        services.AddApplicationInsightsTelemetryWorkerService(
+            Environment.GetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+    })
     .Build();
 
 host.Run();
