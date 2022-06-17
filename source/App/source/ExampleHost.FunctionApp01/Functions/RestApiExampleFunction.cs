@@ -33,7 +33,7 @@ namespace ExampleHost.FunctionApp01.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/pet")]
             HttpRequestData httpRequest)
         {
-            _logger.LogInformation("We should be able to find this log message by following the trace of the request.");
+            _logger.LogInformation($"{nameof(CreatePetAsync)}: We should be able to find this log message by following the trace of the request.");
 
             await SendServiceBusMessageAsync(nameof(CreatePetAsync));
 
