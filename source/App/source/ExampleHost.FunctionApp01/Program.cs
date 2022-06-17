@@ -23,8 +23,9 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        services.AddApplicationInsightsTelemetryWorkerService(
-            Environment.GetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+        // CONCLUSION: We can see Trace and Request entries in App Insights even without calling this:
+        ////services.AddApplicationInsightsTelemetryWorkerService(
+        ////    Environment.GetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
     })
     .Build();
 
