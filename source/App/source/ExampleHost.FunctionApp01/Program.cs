@@ -25,8 +25,6 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService(
             Environment.GetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
-
-        services.AddLogging();
     })
     .Build();
 
