@@ -92,5 +92,15 @@ namespace Energinet.DataHub.Core.JsonSerialization
 
             return System.Text.Json.JsonSerializer.Serialize<object>(value, _options);
         }
+
+        public Task SerializeAsync<TValue>(Stream stream, TValue value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            return System.Text.Json.JsonSerializer.SerializeAsync<TValue>(stream, value, _options);
+        }
     }
 }
