@@ -18,14 +18,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureFunctionsWorkerDefaults(builder =>
+    {
+        builder.UseMiddleware<CorrelationIdMiddleware>();
+        builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
+    })
     .ConfigureServices(services =>
     {
         // CONCLUSION: This will ensure some dependencies are traced (but not correlated) [https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705]
         ////services.AddApplicationInsightsTelemetryWorkerService(options =>
         ////    options.DependencyCollectionOptions.EnableLegacyCorrelationHeadersInjection = true);
 
-        services.AddApplicationInsightsTelemetryWorkerService(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY"));
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<CorrelationIdMiddleware>();
         services.AddScoped<FunctionTelemetryScopeMiddleware>();
     })

@@ -20,7 +20,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureFunctionsWorkerDefaults(builder =>
+    {
+        builder.UseMiddleware<CorrelationIdMiddleware>();
+        builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
+    })
     .ConfigureServices(services =>
     {
         // CONCLUSION:
@@ -37,7 +41,8 @@ var host = new HostBuilder()
         ////services.AddApplicationInsightsTelemetryWorkerService(options =>
         ////    options.DependencyCollectionOptions.EnableLegacyCorrelationHeadersInjection = true);
 
-        services.AddApplicationInsightsTelemetryWorkerService(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY"));
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<CorrelationIdMiddleware>();
         services.AddScoped<FunctionTelemetryScopeMiddleware>();
 
