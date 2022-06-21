@@ -48,9 +48,6 @@ namespace ExampleHost.Tests.Fixtures
         [NotNull]
         public FunctionAppHostManager? App02HostManager { get; private set; }
 
-        [NotNull]
-        public TopicResource? IntegrationEventTopic { get; private set; }
-
         private AzuriteManager AzuriteManager { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
