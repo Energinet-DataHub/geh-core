@@ -57,8 +57,7 @@ namespace ExampleHost.Tests.Integration
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
 
             // Act
-            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request)
-                .ConfigureAwait(false);
+            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
             //// TODO: Fix!
             ////var correlationId = ingestionResponse.Headers.TryGetValues("CorrelationId", out var values)
             ////    ? values.FirstOrDefault()
@@ -69,7 +68,7 @@ namespace ExampleHost.Tests.Integration
             ////Fixture.TestLogger.WriteLine(correlationId ?? string.Empty);
             ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-            await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync").ConfigureAwait(false);
+            await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
 
             AssertNoExceptionsThrown();
 
@@ -85,8 +84,7 @@ namespace ExampleHost.Tests.Integration
                 .TryWaitUntilConditionAsync(
                     () => hostManager.CheckIfFunctionWasExecuted(
                         $"Functions.{functionName}"),
-                    waitTimespan)
-                .ConfigureAwait(false);
+                    waitTimespan);
             functionExecuted.Should().BeTrue($"{functionName} was expected to run.");
         }
 
