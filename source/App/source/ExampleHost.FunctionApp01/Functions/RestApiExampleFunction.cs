@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -22,10 +23,12 @@ namespace ExampleHost.FunctionApp01.Functions
     public class RestApiExampleFunction
     {
         private readonly ILogger _logger;
+        private readonly ServiceBusSender _serviceBusSender;
 
-        public RestApiExampleFunction(ILoggerFactory loggerFactory)
+        public RestApiExampleFunction(ILoggerFactory loggerFactory, ServiceBusSender serviceBusSender)
         {
             _logger = loggerFactory.CreateLogger<RestApiExampleFunction>();
+            _serviceBusSender = serviceBusSender;
         }
 
         [Function(nameof(CreatePetAsync))]
@@ -51,7 +54,7 @@ namespace ExampleHost.FunctionApp01.Functions
         /// </summary>
         private Task SendServiceBusMessageAsync(string messageContent)
         {
-            return Task.CompletedTask;
+            return _serviceBusSender.SendMessageAsync(new ServiceBusMessage(messageContent));
         }
 
         private static HttpResponseData CreateResponse(HttpRequestData httpRequest)

@@ -85,9 +85,11 @@ namespace ExampleHost.Tests.Fixtures
             app02HostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
             // Conclusion: We can see Trace and Request events in App Insights as soon as we just configure the instrumentation key.
             app02HostSettings.ProcessEnvironmentVariables.Add("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-            app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
 
             // => Integration events
+            app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
+            app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
+
             await ServiceBusResourceProvider
                 .BuildTopic("integrationevent-topic")
                     .Do(topicProperties =>
@@ -96,7 +98,8 @@ namespace ExampleHost.Tests.Fixtures
                         app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_TOPIC_NAME", topicProperties.Name);
                     })
                 .AddSubscription("integrationevent-app02-subscription")
-                    .Do(subscriptionProperties => app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_SUBSCRIPTION_NAME", subscriptionProperties.SubscriptionName))
+                    .Do(subscriptionProperties =>
+                        app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_SUBSCRIPTION_NAME", subscriptionProperties.SubscriptionName))
                 .CreateAsync();
 
             // => Create and start host's

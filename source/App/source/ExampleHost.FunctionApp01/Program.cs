@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using ExampleHost.FunctionApp01.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +27,18 @@ var host = new HostBuilder()
         // CONCLUSION: We can see Trace and Request entries in App Insights even without calling this:
         ////services.AddApplicationInsightsTelemetryWorkerService(
         ////    Environment.GetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+
+        services.AddSingleton<ServiceBusClient>(_ =>
+        {
+            var connectionString = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionString);
+            return new ServiceBusClient(connectionString);
+        });
+        services.AddSingleton<ServiceBusSender>(sp =>
+        {
+            var serviceBusClient = sp.GetRequiredService<ServiceBusClient>();
+            var topicName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventTopicName);
+            return serviceBusClient.CreateSender(topicName);
+        });
     })
     .Build();
 

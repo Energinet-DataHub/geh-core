@@ -30,8 +30,8 @@ namespace ExampleHost.FunctionApp02.Functions
         [Function(nameof(ReceiveMessage))]
         public void ReceiveMessage(
             [ServiceBusTrigger(
-                EnvironmentSettingNames.IntegrationEventTopicName,
-                EnvironmentSettingNames.IntegrationEventSubscriptionName,
+                $"%{EnvironmentSettingNames.IntegrationEventTopicName}%",
+                $"%{EnvironmentSettingNames.IntegrationEventSubscriptionName}%",
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionString)]
             string serviceBusMessage)
         {

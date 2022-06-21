@@ -69,6 +69,7 @@ namespace ExampleHost.Tests.Integration
             ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+            await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
             AssertNoExceptionsThrown();
 
@@ -78,7 +79,7 @@ namespace ExampleHost.Tests.Integration
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
         {
-            var waitTimespan = TimeSpan.FromSeconds(1000);
+            var waitTimespan = TimeSpan.FromSeconds(30);
 
             var functionExecuted = await Awaiter
                 .TryWaitUntilConditionAsync(
