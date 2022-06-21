@@ -17,8 +17,8 @@ using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using ExampleHost.FunctionApp01.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,6 +35,7 @@ namespace ExampleHost.Tests.Fixtures
 
             AzuriteManager = new AzuriteManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
 
             HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         }
@@ -47,13 +48,18 @@ namespace ExampleHost.Tests.Fixtures
         [NotNull]
         public FunctionAppHostManager? App02HostManager { get; private set; }
 
+        [NotNull]
+        public TopicResource? IntegrationEventTopic { get; private set; }
+
         private AzuriteManager AzuriteManager { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+
         private FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             // => Storage emulator
             AzuriteManager.StartAzurite();
@@ -68,34 +74,48 @@ namespace ExampleHost.Tests.Fixtures
             app01HostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ExampleHost.FunctionApp01\\bin\\{buildConfiguration}\\net6.0";
             app01HostSettings.Port = ++port;
 
-            app01HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            app01HostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
             // Conclusion: We can see Trace and Request events in App Insights as soon as we just configure the instrumentation key.
-            app01HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-
-            App01HostManager = new FunctionAppHostManager(app01HostSettings, TestLogger);
-            StartHost(App01HostManager);
+            app01HostSettings.ProcessEnvironmentVariables.Add("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
 
             var app02HostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
             app02HostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ExampleHost.FunctionApp02\\bin\\{buildConfiguration}\\net6.0";
             app02HostSettings.Port = ++port;
 
-            app02HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            app02HostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
             // Conclusion: We can see Trace and Request events in App Insights as soon as we just configure the instrumentation key.
-            app02HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            app02HostSettings.ProcessEnvironmentVariables.Add("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
 
+            // => Integration events
+            await ServiceBusResourceProvider
+                .BuildTopic("integrationevent-topic")
+                    .Do(topicProperties =>
+                    {
+                        app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_TOPIC_NAME", topicProperties.Name);
+                        app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_TOPIC_NAME", topicProperties.Name);
+                    })
+                .AddSubscription("integrationevent-app02-subscription")
+                    .Do(subscriptionProperties => app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_SUBSCRIPTION_NAME", subscriptionProperties.SubscriptionName))
+                .CreateAsync();
+
+            // => Create and start host's
+            App01HostManager = new FunctionAppHostManager(app01HostSettings, TestLogger);
             App02HostManager = new FunctionAppHostManager(app02HostSettings, TestLogger);
-            StartHost(App02HostManager);
 
-            return Task.CompletedTask;
+            StartHost(App01HostManager);
+            StartHost(App02HostManager);
         }
 
-        public Task DisposeAsync()
+        public async Task DisposeAsync()
         {
             App01HostManager.Dispose();
+            App02HostManager.Dispose();
 
             AzuriteManager.Dispose();
 
-            return Task.CompletedTask;
+            // => Service Bus
+            await ServiceBusResourceProvider.DisposeAsync();
         }
 
         /// <summary>
