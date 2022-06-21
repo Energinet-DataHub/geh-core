@@ -44,6 +44,9 @@ namespace ExampleHost.Tests.Fixtures
         [NotNull]
         public FunctionAppHostManager? App01HostManager { get; private set; }
 
+        [NotNull]
+        public FunctionAppHostManager? App02HostManager { get; private set; }
+
         private AzuriteManager AzuriteManager { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
@@ -63,7 +66,6 @@ namespace ExampleHost.Tests.Fixtures
 
             var app01HostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
             app01HostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ExampleHost.FunctionApp01\\bin\\{buildConfiguration}\\net6.0";
-            app01HostSettings.Functions = "CreatePetAsync";
             app01HostSettings.Port = ++port;
 
             app01HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
@@ -73,17 +75,28 @@ namespace ExampleHost.Tests.Fixtures
             App01HostManager = new FunctionAppHostManager(app01HostSettings, TestLogger);
             StartHost(App01HostManager);
 
+            ////var app02HostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
+            ////app02HostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ExampleHost.FunctionApp02\\bin\\{buildConfiguration}\\net6.0";
+            ////app02HostSettings.Port = ++port;
+
+            ////app02HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            ////// Conclusion: We can see Trace and Request events in App Insights as soon as we just configure the instrumentation key.
+            ////app02HostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+
+            ////App02HostManager = new FunctionAppHostManager(app02HostSettings, TestLogger);
+            ////StartHost(App02HostManager);
+
             return Task.CompletedTask;
         }
 
-        public Task DisposeAsync()
+        public async Task DisposeAsync()
         {
+            // Wait so tracing is sent to Application Insights before we close host's.
+            await Task.Delay(TimeSpan.FromSeconds(30));
+
             App01HostManager.Dispose();
 
             AzuriteManager.Dispose();
-
-            // Wait so tracing is sent to Application Insights.
-            return Task.Delay(TimeSpan.FromSeconds(30));
         }
 
         /// <summary>
