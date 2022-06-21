@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.FluentAssertionsExtensions
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.FluentAssertionsExtensions
 {
     public class RecursiveTestListHelper
     {

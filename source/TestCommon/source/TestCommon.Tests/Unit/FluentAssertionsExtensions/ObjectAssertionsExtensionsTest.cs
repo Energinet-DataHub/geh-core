@@ -18,7 +18,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.FluentAssertionsExtensions
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.FluentAssertionsExtensions
 {
     public class ObjectAssertionsExtensionsTest
     {

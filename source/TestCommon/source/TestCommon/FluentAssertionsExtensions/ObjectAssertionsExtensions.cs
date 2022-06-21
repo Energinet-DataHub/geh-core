@@ -47,7 +47,7 @@ namespace Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions
             foreach (var property in properties)
             {
                 var inspectedObjectsValue = property.GetValue(obj);
-                if (inspectedObjectsValue is IList inspectedListObject)
+                if (inspectedObjectsValue is ICollection inspectedListObject)
                 {
                     if (inspectedListObject.Count < 1)
                     {

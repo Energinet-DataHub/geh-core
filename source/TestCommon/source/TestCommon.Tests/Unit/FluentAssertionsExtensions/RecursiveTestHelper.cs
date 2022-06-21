@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.FluentAssertionsExtensions
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.FluentAssertionsExtensions
 {
     public class RecursiveTestHelper
     {
