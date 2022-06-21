@@ -122,7 +122,7 @@ namespace JsonSerialization.Tests
 
         [Theory]
         [InlineAutoMoqData]
-        public async Task SerializeTestObjectToStream_DeserializeStreamToTestObject_ReturnsEqualOnAllProperties(JsonSerializer sut, TestObject message)
+        public async Task SerializeTestObjectToStream_ReturnsEqualOnAllProperties(JsonSerializer sut, TestObject message)
         {
             // Arrange
             var stream = new MemoryStream();
