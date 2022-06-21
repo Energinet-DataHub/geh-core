@@ -28,6 +28,9 @@ var host = new HostBuilder()
         ////services.AddApplicationInsightsTelemetryWorkerService(
         ////    Environment.GetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
 
+        // CONCLUSION: Dependency tracing is not support (out-of-box) in isolated-process
+        //// https://docs.microsoft.com/en-us/azure/azure-functions/functions-monitoring#dependencies
+
         services.AddSingleton<ServiceBusClient>(_ =>
         {
             var connectionString = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionString);
