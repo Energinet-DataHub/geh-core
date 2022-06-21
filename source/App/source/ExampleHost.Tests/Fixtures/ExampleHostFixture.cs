@@ -92,7 +92,7 @@ namespace ExampleHost.Tests.Fixtures
         public async Task DisposeAsync()
         {
             // Wait so tracing is sent to Application Insights before we close host's.
-            await Task.Delay(TimeSpan.FromSeconds(30));
+            await Task.Delay(TimeSpan.FromSeconds(40));
 
             App01HostManager.Dispose();
 
