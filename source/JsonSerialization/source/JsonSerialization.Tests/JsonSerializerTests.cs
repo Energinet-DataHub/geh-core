@@ -122,15 +122,18 @@ namespace JsonSerialization.Tests
 
         [Theory]
         [InlineAutoMoqData]
-        public async Task SerializeToStream(JsonSerializer sut, [Frozen] TestObject message)
+        public async Task SerializeTestObjectToStream_DeserializeStreamToTestObject_ReturnsEqualOnAllProperties(JsonSerializer sut, TestObject message)
         {
-            // Act
+            // Arrange
             var stream = new MemoryStream();
+
+            // Act
             await sut.SerializeAsync(stream, message);
+
+            // Assert
             var jsonFromStream = Encoding.UTF8.GetString(stream.ToArray());
             var deserializedObject = sut.Deserialize<TestObject>(jsonFromStream);
 
-            // Assert
             deserializedObject.Should().NotBeNull();
             deserializedObject.Int.Should().Be(message.Int);
             deserializedObject.String.Should().Be(message.String);
