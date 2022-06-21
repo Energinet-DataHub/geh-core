@@ -17,19 +17,21 @@ using ExampleHost.FunctionApp01.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-// TODO: Investigate if any of this is relevant for us:
-//  - https://github.com/Azure/azure-functions-dotnet-worker/issues/760
-//  - https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        // CONCLUSION: We can see Trace and Request entries in App Insights even without calling this:
-        ////services.AddApplicationInsightsTelemetryWorkerService(
-        ////    Environment.GetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+        // CONCLUSION:
+        //  * We can see Trace and Request entries in App Insights out-of-box.
+        //  * Dependency tracing is not support (out-of-box) in isolated-process [https://docs.microsoft.com/en-us/azure/azure-functions/functions-monitoring#dependencies]
 
-        // CONCLUSION: Dependency tracing is not support (out-of-box) in isolated-process
-        //// https://docs.microsoft.com/en-us/azure/azure-functions/functions-monitoring#dependencies
+        // TODO: Investigate if any of this is relevant for us:
+        //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/760
+        //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705
+
+        // CONCLUSION: This will ensure some dependencies are traced (but not correlated) [https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705]
+        services.AddApplicationInsightsTelemetryWorkerService(options =>
+            options.DependencyCollectionOptions.EnableLegacyCorrelationHeadersInjection = true);
 
         services.AddSingleton<ServiceBusClient>(_ =>
         {
