@@ -31,3 +31,7 @@ This namespace contains the extension method `ForConstructorOn<TTypeToConstruct>
 ## LocalDB SQL Server
 
 It is possible to replace the default connection string to LocalDB by setting an environment variable. If a variable is present with the name `TestCommonConnectionString`, then it's used for connecting to SQL Server. If the value is not a valid SQL Server connection string, then an `System.ArgumentException` is thrown.
+
+## FluentAssertionsExtensions.ObjectAssertionsExtensions
+
+This namespace contains the extension method `NotContainNullsOrEmptyEnumerables` which recursively checks all properties on a collection if any are null or empty.
