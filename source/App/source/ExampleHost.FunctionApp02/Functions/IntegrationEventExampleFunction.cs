@@ -35,7 +35,7 @@ namespace ExampleHost.FunctionApp02.Functions
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionString)]
             string serviceBusMessage)
         {
-            _logger.LogInformation($"{nameof(ReceiveMessage)}: We should be able to find this log message by following the trace of the request.");
+            _logger.LogInformation($"ExampleHost {nameof(ReceiveMessage)}: We should be able to find this log message by following the trace of the request.");
         }
     }
 }

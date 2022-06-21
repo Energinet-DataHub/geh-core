@@ -36,7 +36,7 @@ namespace ExampleHost.FunctionApp01.Functions
                 Route = "v1/pet")]
             HttpRequestData httpRequest)
         {
-            _logger.LogInformation($"{nameof(CreatePetAsync)}: We should be able to find this log message by following the trace of the request.");
+            _logger.LogInformation($"ExampleHost {nameof(CreatePetAsync)}: We should be able to find this log message by following the trace of the request.");
 
             await SendServiceBusMessageAsync(nameof(CreatePetAsync));
 
