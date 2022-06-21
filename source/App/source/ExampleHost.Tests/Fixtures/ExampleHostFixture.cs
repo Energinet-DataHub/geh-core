@@ -58,10 +58,10 @@ namespace ExampleHost.Tests.Fixtures
             // => Prepare host settings
             var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
 
-            var app01HostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-
             var buildConfiguration = GetBuildConfiguration();
             var port = 8000;
+
+            var app01HostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
             app01HostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ExampleHost.FunctionApp01\\bin\\{buildConfiguration}\\net6.0";
             app01HostSettings.Functions = "CreatePetAsync";
             app01HostSettings.Port = ++port;
@@ -82,7 +82,8 @@ namespace ExampleHost.Tests.Fixtures
 
             AzuriteManager.Dispose();
 
-            return Task.CompletedTask;
+            // Wait so tracing is sent to Application Insights.
+            return Task.Delay(TimeSpan.FromSeconds(30));
         }
 
         /// <summary>

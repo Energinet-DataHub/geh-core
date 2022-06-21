@@ -31,7 +31,7 @@ namespace ExampleHost.FunctionApp02.Functions
         public void ReceiveMessage(
             [ServiceBusTrigger(
                 EnvironmentSettingNames.IntegrationEventTopicName,
-                "ExampleSubscription",
+                EnvironmentSettingNames.IntegrationEventSubscriptionName,
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionString)]
             string serviceBusMessage)
         {

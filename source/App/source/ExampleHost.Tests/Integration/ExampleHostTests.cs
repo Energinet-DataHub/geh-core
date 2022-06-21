@@ -72,9 +72,6 @@ namespace ExampleHost.Tests.Integration
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync").ConfigureAwait(false);
 
             AssertNoExceptionsThrown();
-
-            // Wait so tracing is sent to Application Insights.
-            await Task.Delay(TimeSpan.FromSeconds(30));
         }
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
