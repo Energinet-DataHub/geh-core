@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 2.3.5
+
+- Added `ObjectAssertionsExtensions` with extension `NotContainNullsOrEmptyEnumerables` which Recursively checks all properties if any are null.
+
 ## Version 2.3.4
 
 - Bumped patch version as pipeline file was updated.
