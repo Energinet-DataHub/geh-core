@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
@@ -115,6 +118,29 @@ namespace JsonSerialization.Tests
         public void Deserialize_JsonStringIsNull_ThrowsException(JsonSerializer sut)
         {
             Assert.Throws<ArgumentNullException>(() => sut.Deserialize<TestObject>(null!));
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task SerializeTestObjectToStream_ReturnsEqualOnAllProperties(JsonSerializer sut, TestObject message)
+        {
+            // Arrange
+            var stream = new MemoryStream();
+
+            // Act
+            await sut.SerializeAsync(stream, message);
+
+            // Assert
+            var jsonFromStream = Encoding.UTF8.GetString(stream.ToArray());
+            var deserializedObject = sut.Deserialize<TestObject>(jsonFromStream);
+
+            deserializedObject.Should().NotBeNull();
+            deserializedObject.Int.Should().Be(message.Int);
+            deserializedObject.String.Should().Be(message.String);
+            deserializedObject.Decimal.Should().Be(message.Decimal);
+            deserializedObject.Double.Should().Be(message.Double);
+            deserializedObject.Instant.Should().Be(message.Instant);
+            deserializedObject.DateTime.Should().Be(message.DateTime);
         }
     }
 }

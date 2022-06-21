@@ -96,5 +96,12 @@ namespace Energinet.DataHub.Core.JsonSerialization
         /// encoding since the implementation internally uses UTF-8.
         /// </remarks>
         string Serialize<TValue>(TValue value);
+
+        /// <summary>
+        /// Convert the provided value into the input stream.
+        /// </summary>
+        /// <param name="stream">The stream to convert to.</param>
+        /// <param name="value">The value to convert.</param>
+        Task SerializeAsync<TValue>(Stream stream, TValue value);
     }
 }
