@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.FunctionApp01.Common
+namespace ExampleHost.FunctionApp02.Common
 {
     /// <summary>
     /// Contains names of settings used by functions.

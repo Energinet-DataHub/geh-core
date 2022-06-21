@@ -12,17 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.FunctionApp01.Common
-{
-    /// <summary>
-    /// Contains names of settings used by functions.
-    /// </summary>
-    public static class EnvironmentSettingNames
-    {
-        public const string AzureWebJobsStorage = "AzureWebJobsStorage";
-        public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+using Microsoft.Extensions.Hosting;
 
-        public const string IntegrationEventConnectionString = "INTEGRATIONEVENT_CONNECTION_STRING";
-        public const string IntegrationEventTopicName = "INTEGRATIONEVENT_TOPIC_NAME";
-    }
-}
+var host = new HostBuilder()
+    .ConfigureFunctionsWorkerDefaults()
+    .Build();
+
+host.Run();

@@ -30,7 +30,10 @@ namespace ExampleHost.FunctionApp01.Functions
 
         [Function(nameof(CreatePetAsync))]
         public async Task<HttpResponseData> CreatePetAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/pet")]
+            [HttpTrigger(
+                AuthorizationLevel.Anonymous,
+                "post",
+                Route = "v1/pet")]
             HttpRequestData httpRequest)
         {
             _logger.LogInformation($"{nameof(CreatePetAsync)}: We should be able to find this log message by following the trace of the request.");

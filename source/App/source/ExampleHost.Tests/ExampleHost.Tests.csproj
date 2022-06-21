@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ExampleHost.FunctionApp01\ExampleHost.FunctionApp01.csproj" />
+    <ProjectReference Include="..\ExampleHost.FunctionApp02\ExampleHost.FunctionApp02.csproj" />
   </ItemGroup>
 
   <ItemGroup>
