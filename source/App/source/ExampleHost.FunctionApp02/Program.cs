@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.FunctionApp.Middleware;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -20,8 +22,12 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         // CONCLUSION: This will ensure some dependencies are traced (but not correlated) [https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705]
-        services.AddApplicationInsightsTelemetryWorkerService(options =>
-            options.DependencyCollectionOptions.EnableLegacyCorrelationHeadersInjection = true);
+        ////services.AddApplicationInsightsTelemetryWorkerService(options =>
+        ////    options.DependencyCollectionOptions.EnableLegacyCorrelationHeadersInjection = true);
+
+        services.AddApplicationInsightsTelemetryWorkerService(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY"));
+        services.AddScoped<CorrelationIdMiddleware>();
+        services.AddScoped<FunctionTelemetryScopeMiddleware>();
     })
     .Build();
 

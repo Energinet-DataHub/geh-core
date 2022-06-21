@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using ExampleHost.FunctionApp01.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,8 +34,12 @@ var host = new HostBuilder()
         // UNDONE: Track custom operations with App Insights SDK's [https://docs.microsoft.com/en-us/azure/azure-monitor/app/custom-operations-tracking]
 
         // CONCLUSION: This will ensure some dependencies are traced (but not correlated) [https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705]
-        services.AddApplicationInsightsTelemetryWorkerService(options =>
-            options.DependencyCollectionOptions.EnableLegacyCorrelationHeadersInjection = true);
+        ////services.AddApplicationInsightsTelemetryWorkerService(options =>
+        ////    options.DependencyCollectionOptions.EnableLegacyCorrelationHeadersInjection = true);
+
+        services.AddApplicationInsightsTelemetryWorkerService(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY"));
+        services.AddScoped<CorrelationIdMiddleware>();
+        services.AddScoped<FunctionTelemetryScopeMiddleware>();
 
         services.AddSingleton<ServiceBusClient>(_ =>
         {
