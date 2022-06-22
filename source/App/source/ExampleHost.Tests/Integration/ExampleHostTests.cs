@@ -47,6 +47,19 @@ namespace ExampleHost.Tests.Integration
         }
 
         [Fact]
+        public async Task SingleCreatePet_flow_should_succeed()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
+
+            await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+            await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
+
+            AssertNoExceptionsThrown();
+        }
+
+        [Fact]
         public async Task CreatePet_flow_should_succeed()
         {
             for (var i = 0; i < 30; i++)

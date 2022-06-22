@@ -25,6 +25,8 @@ var host = new HostBuilder()
     })
     .ConfigureServices(services =>
     {
+        ////services.AddLogging();
+
         services.AddApplicationInsightsTelemetryWorkerService();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<CorrelationIdMiddleware>();

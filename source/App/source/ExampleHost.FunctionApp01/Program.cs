@@ -37,6 +37,9 @@ var host = new HostBuilder()
 
         //// UNDONE: Track custom operations with App Insights SDK's [https://docs.microsoft.com/en-us/azure/azure-monitor/app/custom-operations-tracking]
 
+        // CONCLUSION: We can use ILogger<> without calling the following:
+        ////services.AddLogging();
+
         services.AddApplicationInsightsTelemetryWorkerService();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<CorrelationIdMiddleware>();

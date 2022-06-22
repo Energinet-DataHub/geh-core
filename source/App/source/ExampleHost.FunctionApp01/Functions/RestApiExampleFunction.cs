@@ -25,9 +25,9 @@ namespace ExampleHost.FunctionApp01.Functions
         private readonly ILogger _logger;
         private readonly ServiceBusSender _serviceBusSender;
 
-        public RestApiExampleFunction(ILoggerFactory loggerFactory, ServiceBusSender serviceBusSender)
+        public RestApiExampleFunction(ILogger<RestApiExampleFunction> logger, ServiceBusSender serviceBusSender)
         {
-            _logger = loggerFactory.CreateLogger<RestApiExampleFunction>();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceBusSender = serviceBusSender;
         }
 
