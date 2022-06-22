@@ -49,25 +49,25 @@ namespace ExampleHost.Tests.Integration
         [Fact]
         public async Task CreatePet_flow_should_succeed()
         {
-            // Arrange
-            using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+            for (var i = 0; i < 30; i++)
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+                var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+                //// TODO: Fix!
+                ////var correlationId = ingestionResponse.Headers.TryGetValues("CorrelationId", out var values)
+                ////    ? values.FirstOrDefault()
+                ////    : null;
 
-            // Act
-            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-            //// TODO: Fix!
-            ////var correlationId = ingestionResponse.Headers.TryGetValues("CorrelationId", out var values)
-            ////    ? values.FirstOrDefault()
-            ////    : null;
+                // Assert
+                //// TODO: Fix!
+                ////Fixture.TestLogger.WriteLine(correlationId ?? string.Empty);
+                ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-            // Assert
-            //// TODO: Fix!
-            ////Fixture.TestLogger.WriteLine(correlationId ?? string.Empty);
-            ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
+                await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+                await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
-            await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
-            await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
-
-            AssertNoExceptionsThrown();
+                AssertNoExceptionsThrown();
+            }
 
             // Wait so tracing is sent to Application Insights before we close host's.
             await Task.Delay(TimeSpan.FromSeconds(30));
