@@ -67,10 +67,12 @@ namespace ExampleHost.Tests.Integration
                 await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
                 AssertNoExceptionsThrown();
+
+                await Task.Delay(TimeSpan.FromSeconds(3));
             }
 
             // Wait so tracing is sent to Application Insights before we close host's.
-            await Task.Delay(TimeSpan.FromSeconds(30));
+            await Task.Delay(TimeSpan.FromSeconds(120));
         }
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
