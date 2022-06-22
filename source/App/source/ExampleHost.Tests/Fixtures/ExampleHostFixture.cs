@@ -64,24 +64,10 @@ namespace ExampleHost.Tests.Fixtures
             // => Prepare host settings
             var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
 
-            var buildConfiguration = GetBuildConfiguration();
             var port = 8000;
 
-            var app01HostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-            app01HostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ExampleHost.FunctionApp01\\bin\\{buildConfiguration}\\net6.0";
-            app01HostSettings.Port = ++port;
-
-            app01HostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
-            // Conclusion: We can see Trace and Request events in App Insights as soon as we just configure the instrumentation key.
-            app01HostSettings.ProcessEnvironmentVariables.Add("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-
-            var app02HostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-            app02HostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ExampleHost.FunctionApp02\\bin\\{buildConfiguration}\\net6.0";
-            app02HostSettings.Port = ++port;
-
-            app02HostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
-            // Conclusion: We can see Trace and Request events in App Insights as soon as we just configure the instrumentation key.
-            app02HostSettings.ProcessEnvironmentVariables.Add("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            var app01HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp01", ref port);
+            var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
 
             // => Integration events
             app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
@@ -128,6 +114,20 @@ namespace ExampleHost.Tests.Fixtures
         public void SetTestOutputHelper(ITestOutputHelper testOutputHelper)
         {
             TestLogger.TestOutputHelper = testOutputHelper;
+        }
+
+        private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)
+        {
+            var buildConfiguration = GetBuildConfiguration();
+
+            var appHostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
+            appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net6.0";
+            appHostSettings.Port = ++port;
+
+            appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
+            appHostSettings.ProcessEnvironmentVariables.Add("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+
+            return appHostSettings;
         }
 
         private static void StartHost(FunctionAppHostManager hostManager)
