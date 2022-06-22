@@ -65,7 +65,6 @@ namespace ExampleHost.Tests.Fixtures
             var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
 
             var port = 8000;
-
             var app01HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp01", ref port);
             var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
 
