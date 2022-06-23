@@ -15,9 +15,12 @@
 using System.Net;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
+using ExampleHost.FunctionApp01.Functions;
+using ExampleHost.FunctionApp02.Functions;
 using ExampleHost.Tests.Extensions;
 using ExampleHost.Tests.Fixtures;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -46,9 +49,16 @@ namespace ExampleHost.Tests.Integration
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Requirements for this test:
+        ///  * <see cref="RestApiExampleFunction"/> must use <see cref="ILogger{RestApiExampleFunction}"/>.
+        ///  * <see cref="IntegrationEventExampleFunction"/> must use <see cref="ILoggerFactory"/>.
+        /// </summary>
         [Fact]
-        public async Task SingleCreatePet_flow_should_succeed()
+        public async Task IloggerAndILoggerFactory_Should_BeRegisteredByDefault()
         {
+            const string ExpectedLogMessage = "We should be able to find this log message by following the trace of the request.";
+
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
             var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
             ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
@@ -57,12 +67,34 @@ namespace ExampleHost.Tests.Integration
             await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
             AssertNoExceptionsThrown();
+
+            Fixture.App01HostManager.GetHostLogSnapshot()
+                .First(log => log.Contains(ExpectedLogMessage, StringComparison.OrdinalIgnoreCase));
+            Fixture.App02HostManager.GetHostLogSnapshot()
+                .First(log => log.Contains(ExpectedLogMessage, StringComparison.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// Requirements for this test:
+        ///
+        /// 1: Both hosts must call "ConfigureFunctionsWorkerDefaults" with the following:
+        /// <code>
+        ///     builder.UseMiddleware{CorrelationIdMiddleware}();
+        ///     builder.UseMiddleware{FunctionTelemetryScopeMiddleware}();
+        /// </code>
+        ///
+        /// 2: Both hosts must call "ConfigureServices" with the following:
+        /// <code>
+        ///     services.AddApplicationInsightsTelemetryWorkerService();
+        ///     services.AddScoped{ICorrelationContext, CorrelationContext}();
+        ///     services.AddScoped{CorrelationIdMiddleware}();
+        ///     services.AddScoped{FunctionTelemetryScopeMiddleware}();
+        /// </code>
+        /// </summary>
         [Fact]
-        public async Task CreatePet_flow_should_succeed()
+        public async Task CallingCreatePetAsync_Should_CallReceiveMessage()
         {
-            for (var i = 0; i < 30; i++)
+            for (var i = 0; i < 10; i++)
             {
                 using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
                 var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
@@ -85,7 +117,7 @@ namespace ExampleHost.Tests.Integration
             }
 
             // Wait so tracing is sent to Application Insights before we close host's.
-            await Task.Delay(TimeSpan.FromSeconds(120));
+            await Task.Delay(TimeSpan.FromSeconds(60));
         }
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)

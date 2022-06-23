@@ -26,7 +26,7 @@ namespace ExampleHost.Tests.Extensions
             }
 
             return hostManager.GetHostLogSnapshot()
-                .Any(log => log.Contains($"Exception", StringComparison.OrdinalIgnoreCase));
+                .Any(log => log.Contains("Exception", StringComparison.OrdinalIgnoreCase));
         }
     }
 }
