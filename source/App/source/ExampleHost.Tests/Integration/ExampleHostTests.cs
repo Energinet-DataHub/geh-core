@@ -116,6 +116,8 @@ namespace ExampleHost.Tests.Integration
                 await Task.Delay(TimeSpan.FromSeconds(3));
             }
 
+            // TODO: Use library to query Log Analytics: https://docs.microsoft.com/en-us/dotnet/api/overview/azure/monitor.query-readme
+
             // Wait so tracing is sent to Application Insights before we close host's.
             await Task.Delay(TimeSpan.FromSeconds(60));
         }
