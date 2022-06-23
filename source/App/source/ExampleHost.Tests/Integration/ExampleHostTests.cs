@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
 using ExampleHost.FunctionApp01.Functions;
@@ -54,6 +55,22 @@ namespace ExampleHost.Tests.Integration
         }
 
         /// <summary>
+        /// Verify sunshine scenario.
+        /// </summary>
+        [Fact]
+        public async Task CallingCreatePetAsync_Should_CallReceiveMessage()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
+
+            await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+            await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
+
+            AssertNoExceptionsThrown();
+        }
+
+        /// <summary>
         /// Requirements for this test:
         ///  * <see cref="RestApiExampleFunction"/> must use <see cref="ILogger{RestApiExampleFunction}"/>.
         ///  * <see cref="IntegrationEventExampleFunction"/> must use <see cref="ILoggerFactory"/>.
@@ -65,12 +82,9 @@ namespace ExampleHost.Tests.Integration
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
             var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-            ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
             await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
-
-            AssertNoExceptionsThrown();
 
             Fixture.App01HostManager.GetHostLogSnapshot()
                 .First(log => log.Contains(ExpectedLogMessage, StringComparison.OrdinalIgnoreCase));
@@ -96,27 +110,34 @@ namespace ExampleHost.Tests.Integration
         /// </code>
         /// </summary>
         [Fact]
-        public async Task CallingCreatePetAsync_Should_CallReceiveMessage()
+        public async Task Middleware_Should_CauseAppTracesAppDependenciesAndAppRequestsToBeLogged()
         {
-            for (var i = 0; i < 10; i++)
-            {
-                using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
-                var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
-                ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
+            ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-                await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
-                await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
+            await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+            await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
-                AssertNoExceptionsThrown();
+            var createPetInvocationId = GetFunctionsInvocationId(Fixture.App01HostManager, "CreatePetAsync");
+            var receiveMessageInvocationId = GetFunctionsInvocationId(Fixture.App02HostManager, "ReceiveMessage");
 
-                await Task.Delay(TimeSpan.FromSeconds(3));
-            }
+            await Task.Delay(TimeSpan.FromSeconds(30));
 
-            // TODO: Use library to query Log Analytics: https://docs.microsoft.com/en-us/dotnet/api/overview/azure/monitor.query-readme
+            var query =
+                $"union AppTraces, AppRequests, AppDependencies " +
+                $"| where AppRoleInstance == \"{Environment.MachineName}\"" +
+                $"| extend parsedProp = parse_json(Properties)" +
+                $"| where parsedProp.InvocationId == \"{createPetInvocationId}\" or parsedProp.InvocationId == \"{receiveMessageInvocationId}\"";
 
-            // Wait so tracing is sent to Application Insights before we close host's.
-            await Task.Delay(TimeSpan.FromSeconds(60));
+            // TODO: Improve by using https://docs.microsoft.com/en-us/dotnet/api/overview/azure/monitor.query-readme#map-logs-query-results-to-a-model
+            var response = await Fixture.LogsQueryClient.QueryWorkspaceAsync(
+                Fixture.LogAnalyticsWorkspaceId,
+                query,
+                new QueryTimeRange(TimeSpan.FromMinutes(5)));
+
+            var table = response.Value.Table;
         }
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
@@ -129,6 +150,14 @@ namespace ExampleHost.Tests.Integration
                         $"Functions.{functionName}"),
                     waitTimespan);
             functionExecuted.Should().BeTrue($"{functionName} was expected to run.");
+        }
+
+        private static string GetFunctionsInvocationId(FunctionAppHostManager hostManager, string functionName)
+        {
+            var executedStatement = hostManager.GetHostLogSnapshot()
+                .First(log => log.Contains($"Executed 'Functions.{functionName}'", StringComparison.OrdinalIgnoreCase));
+
+            return executedStatement.Substring(executedStatement.IndexOf('=') + 1, 36);
         }
 
         private void AssertNoExceptionsThrown()

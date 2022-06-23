@@ -14,6 +14,9 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Azure.Identity;
+using Azure.Monitor.Query;
+using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
@@ -38,9 +41,17 @@ namespace ExampleHost.Tests.Fixtures
             ServiceBusResourceProvider = new ServiceBusResourceProvider(IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
 
             HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
+            LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+
+            // TODO: Extend "IntegrationTestConfiguration" with property for Log Analytics Workspace Id.
+            LogAnalyticsWorkspaceId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
         }
 
         public ITestDiagnosticsLogger TestLogger { get; }
+
+        public LogsQueryClient LogsQueryClient { get; }
+
+        public string LogAnalyticsWorkspaceId { get; }
 
         [NotNull]
         public FunctionAppHostManager? App01HostManager { get; private set; }
