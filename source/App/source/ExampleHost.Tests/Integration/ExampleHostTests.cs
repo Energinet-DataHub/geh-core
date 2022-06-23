@@ -26,6 +26,10 @@ using Xunit.Abstractions;
 
 namespace ExampleHost.Tests.Integration
 {
+    /// <summary>
+    /// Tests that prooves how we should setup and configure our Azure Function App's (host's)
+    /// so they behave as we expect.
+    /// </summary>
     [Collection(nameof(ExampleHostCollectionFixture))]
     public class ExampleHostTests : IAsyncLifetime
     {
@@ -98,14 +102,7 @@ namespace ExampleHost.Tests.Integration
             {
                 using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
                 var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-                //// TODO: Fix!
-                ////var correlationId = ingestionResponse.Headers.TryGetValues("CorrelationId", out var values)
-                ////    ? values.FirstOrDefault()
-                ////    : null;
 
-                // Assert
-                //// TODO: Fix!
-                ////Fixture.TestLogger.WriteLine(correlationId ?? string.Empty);
                 ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
                 await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
