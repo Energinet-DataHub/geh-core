@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Azure;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
@@ -28,8 +29,8 @@ using Xunit.Abstractions;
 namespace ExampleHost.Tests.Integration
 {
     /// <summary>
-    /// Tests that prooves how we should setup and configure our Azure Function App's (host's)
-    /// so they behave as we expect.
+    /// Tests that documents and prooves how we should setup and configure our
+    /// Azure Function App's (host's) so they behave as we expect.
     /// </summary>
     [Collection(nameof(ExampleHostCollectionFixture))]
     public class ExampleHostTests : IAsyncLifetime
@@ -62,6 +63,7 @@ namespace ExampleHost.Tests.Integration
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
             var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+
             ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
@@ -110,12 +112,12 @@ namespace ExampleHost.Tests.Integration
         /// </code>
         /// </summary>
         [Fact]
-        public async Task Middleware_Should_CauseAppTracesAppDependenciesAndAppRequestsToBeLogged()
+        public async Task Middleware_Should_CauseExpectedEventsToBeLogged()
         {
+            const int ExpectedEventsCount = 13;
+
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
             var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-            ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
             await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
@@ -123,21 +125,58 @@ namespace ExampleHost.Tests.Integration
             var createPetInvocationId = GetFunctionsInvocationId(Fixture.App01HostManager, "CreatePetAsync");
             var receiveMessageInvocationId = GetFunctionsInvocationId(Fixture.App02HostManager, "ReceiveMessage");
 
-            await Task.Delay(TimeSpan.FromSeconds(30));
+            var queryWithParameters = @"
+                let OperationIds = AppRequests
+                  | where AppRoleInstance == '{{$Environment.MachineName}}'
+                  | extend parsedProp = parse_json(Properties)
+                  | where parsedProp.InvocationId == '{{$createPetInvocationId}}' or parsedProp.InvocationId == '{{$receiveMessageInvocationId}}'
+                  | project OperationId;
+                OperationIds
+                  | join(union AppRequests, AppDependencies, AppTraces) on OperationId
+                  | extend parsedProp = parse_json(Properties)
+                  | project TimeGenerated, OperationId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Properties
+                  | order by TimeGenerated asc";
 
-            var query =
-                $"union AppTraces, AppRequests, AppDependencies " +
-                $"| where AppRoleInstance == \"{Environment.MachineName}\"" +
-                $"| extend parsedProp = parse_json(Properties)" +
-                $"| where parsedProp.InvocationId == \"{createPetInvocationId}\" or parsedProp.InvocationId == \"{receiveMessageInvocationId}\"";
+            var query = queryWithParameters
+                .Replace("{{$Environment.MachineName}}", Environment.MachineName)
+                .Replace("{{$createPetInvocationId}}", createPetInvocationId)
+                .Replace("{{$receiveMessageInvocationId}}", receiveMessageInvocationId)
+                .Replace("\n", string.Empty);
 
-            // TODO: Improve by using https://docs.microsoft.com/en-us/dotnet/api/overview/azure/monitor.query-readme#map-logs-query-results-to-a-model
-            var response = await Fixture.LogsQueryClient.QueryWorkspaceAsync(
-                Fixture.LogAnalyticsWorkspaceId,
-                query,
-                new QueryTimeRange(TimeSpan.FromMinutes(5)));
+            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(10));
+            var waitLimit = TimeSpan.FromMinutes(5);
+            var delay = TimeSpan.FromSeconds(30);
 
-            var table = response.Value.Table;
+            await Task.Delay(delay);
+
+            var eventsLogged = await Awaiter
+                .TryWaitUntilConditionAsync(
+                    async () =>
+                    {
+                        var response = await Fixture.LogsQueryClient.QueryWorkspaceAsync<QueryResult>(
+                            Fixture.LogAnalyticsWorkspaceId,
+                            query,
+                            queryTimerange);
+
+                        return ContainsExpectedEvents(ExpectedEventsCount, response.Value);
+                    },
+                    waitLimit,
+                    delay);
+
+            eventsLogged.Should().BeTrue($"Was expected to log {ExpectedEventsCount} number of events.");
+        }
+
+        private bool ContainsExpectedEvents(int expectedEventsCount, IReadOnlyList<QueryResult> queryResults)
+        {
+            if (queryResults.Count != expectedEventsCount)
+            {
+                return false;
+            }
+
+            return
+                queryResults.Count(x => x.Type == "AppRequests") == 2
+                && queryResults.Count(x => x.Type == "AppDependencies") == 4
+                && queryResults.Count(x => x.Type == "AppTraces") == 7;
         }
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
@@ -163,6 +202,36 @@ namespace ExampleHost.Tests.Integration
         private void AssertNoExceptionsThrown()
         {
             Fixture.App01HostManager.CheckIfFunctionThrewException().Should().BeFalse();
+        }
+
+        private class QueryResult
+        {
+            public string TimeGenerated { get; set; }
+                = string.Empty;
+
+            public string OperationId { get; set; }
+                = string.Empty;
+
+            public string Id { get; set; }
+                = string.Empty;
+
+            public string Type { get; set; }
+                = string.Empty;
+
+            public string Name { get; set; }
+                = string.Empty;
+
+            public string DependencyType { get; set; }
+                = string.Empty;
+
+            public string EventName { get; set; }
+                = string.Empty;
+
+            public string Message { get; set; }
+                = string.Empty;
+
+            public string Properties { get; set; }
+                = string.Empty;
         }
     }
 }
