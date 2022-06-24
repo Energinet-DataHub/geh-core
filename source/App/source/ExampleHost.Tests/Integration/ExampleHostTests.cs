@@ -149,7 +149,7 @@ namespace ExampleHost.Tests.Integration
 
             await Task.Delay(delay);
 
-            var eventsLogged = await Awaiter
+            var wasEventsLogged = await Awaiter
                 .TryWaitUntilConditionAsync(
                     async () =>
                     {
@@ -163,7 +163,7 @@ namespace ExampleHost.Tests.Integration
                     waitLimit,
                     delay);
 
-            eventsLogged.Should().BeTrue($"Was expected to log {ExpectedEventsCount} number of events.");
+            wasEventsLogged.Should().BeTrue($"Was expected to log {ExpectedEventsCount} number of events.");
         }
 
         private bool ContainsExpectedEvents(int expectedEventsCount, IReadOnlyList<QueryResult> queryResults)
