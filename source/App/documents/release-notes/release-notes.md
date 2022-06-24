@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 3.0.0
+
+- Upgrade projects from .NET5 to .NET6
+
 ## Version 2.4.0
 
 - Added IntegrationEventContext that provides access to integration event metadata using IntegrationEventMetadataMiddleware.
