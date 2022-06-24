@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Net;
-using Azure;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
