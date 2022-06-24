@@ -60,7 +60,7 @@ jobs:
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.5.0
         with:
-          DOTNET_VERSION: '5.0.407'
+          DOTNET_VERSION: '6.0.301'
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.5.0
