@@ -62,9 +62,9 @@ namespace ExampleHost.Tests.Integration
         public async Task CallingCreatePetAsync_Should_CallReceiveMessage()
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
-            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
-            ingestionResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
+            actualResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
             await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
@@ -83,7 +83,7 @@ namespace ExampleHost.Tests.Integration
             const string ExpectedLogMessage = "We should be able to find this log message by following the trace of the request.";
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
-            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
             await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
@@ -114,10 +114,26 @@ namespace ExampleHost.Tests.Integration
         [Fact]
         public async Task Middleware_Should_CauseExpectedEventsToBeLogged()
         {
-            const int ExpectedEventsCount = 13;
+            var expectedEvents = new List<QueryResult>
+            {
+                new QueryResult { Type = "AppRequests", Name = "CreatePetAsync" },
+                new QueryResult { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.CreatePetAsync'" },
+                new QueryResult { Type = "AppDependencies", Name = "CreatePetAsync", DependencyType = "Function" },
+                new QueryResult { Type = "AppTraces", EventName = "0", Message = "ExampleHost CreatePetAsync: We should be able to find this log message by following the trace of the request." },
+                new QueryResult { Type = "AppDependencies", Name = "Message", DependencyType = "Queue Message | servicebus" },
+                new QueryResult { Type = "AppDependencies", Name = "ServiceBusSender.Send", DependencyType = "servicebus" },
+
+                new QueryResult { Type = "AppRequests", Name = "ReceiveMessage" },
+                new QueryResult { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.CreatePetAsync' (Succeeded" },
+                new QueryResult { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.ReceiveMessage'" },
+                new QueryResult { Type = "AppTraces", EventName = null!, Message = "Trigger Details" },
+                new QueryResult { Type = "AppDependencies", Name = "ReceiveMessage", DependencyType = "Function" },
+                new QueryResult { Type = "AppTraces", EventName = "0", Message = "ExampleHost ReceiveMessage: We should be able to find this log message by following the trace of the request." },
+                new QueryResult { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.ReceiveMessage' (Succeeded" },
+            };
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
-            var ingestionResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
             await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
@@ -144,8 +160,8 @@ namespace ExampleHost.Tests.Integration
                 .Replace("\n", string.Empty);
 
             var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(10));
-            var waitLimit = TimeSpan.FromMinutes(5);
-            var delay = TimeSpan.FromSeconds(30);
+            var waitLimit = TimeSpan.FromMinutes(6);
+            var delay = TimeSpan.FromSeconds(50);
 
             await Task.Delay(delay);
 
@@ -153,30 +169,51 @@ namespace ExampleHost.Tests.Integration
                 .TryWaitUntilConditionAsync(
                     async () =>
                     {
-                        var response = await Fixture.LogsQueryClient.QueryWorkspaceAsync<QueryResult>(
+                        var actualResponse = await Fixture.LogsQueryClient.QueryWorkspaceAsync<QueryResult>(
                             Fixture.LogAnalyticsWorkspaceId,
                             query,
                             queryTimerange);
 
-                        return ContainsExpectedEvents(ExpectedEventsCount, response.Value);
+                        return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
                     },
                     waitLimit,
                     delay);
 
-            wasEventsLogged.Should().BeTrue($"Was expected to log {ExpectedEventsCount} number of events.");
+            wasEventsLogged.Should().BeTrue($"Was expected to log {expectedEvents.Count} number of events.");
         }
 
-        private bool ContainsExpectedEvents(int expectedEventsCount, IReadOnlyList<QueryResult> queryResults)
+        private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
         {
-            if (queryResults.Count != expectedEventsCount)
+            if (actualResults.Count != expectedEvents.Count)
             {
                 return false;
             }
 
-            return
-                queryResults.Count(x => x.Type == "AppRequests") == 2
-                && queryResults.Count(x => x.Type == "AppDependencies") == 4
-                && queryResults.Count(x => x.Type == "AppTraces") == 7;
+            foreach (var expected in expectedEvents)
+            {
+                switch (expected.Type)
+                {
+                    case "AppRequests":
+                        actualResults.First(actual =>
+                            actual.Name == expected.Name);
+                        break;
+
+                    case "AppDependencies":
+                        actualResults.First(actual =>
+                            actual.Name == expected.Name
+                            && actual.DependencyType == expected.DependencyType);
+                        break;
+
+                    // "AppTraces"
+                    default:
+                        actualResults.First(actual =>
+                            actual.EventName == expected.EventName
+                            && actual.Message.StartsWith(expected.Message));
+                        break;
+                }
+            }
+
+            return true;
         }
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
