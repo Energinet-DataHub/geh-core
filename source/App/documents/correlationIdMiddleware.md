@@ -28,13 +28,12 @@ public class MyClass
     }
 }
 
-
 ```
 
 ## Registration
 
 1. `CorrelationIdMiddleware` should be registered as a middleware and its lifetime should be `scoped`.
-1. `CorrelationContext` should be registered with lifetime`scoped`.
+2. `CorrelationContext` should be registered with lifetime`scoped`.
 
 ```c#
 protected virtual void ConfigureFunctionsWorkerDefaults(IFunctionsWorkerApplicationBuilder options)
@@ -45,6 +44,7 @@ protected virtual void ConfigureFunctionsWorkerDefaults(IFunctionsWorkerApplicat
 private void ConfigureServices(IServiceCollection serviceCollection)
 {
     serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
+    serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
     serviceCollection.AddScoped<CorrelationIdMiddleware>();           
 }
 ```
