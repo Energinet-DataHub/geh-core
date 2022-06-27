@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 3.0.1
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 3.0.0
 
 - Upgrade projects from .NET5 to .NET6

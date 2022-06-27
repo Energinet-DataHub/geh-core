@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "<app insights instrumentation key>",
+
+    "INTEGRATIONEVENT_CONNECTION_STRING": "<connection string>",
+    "INTEGRATIONEVENT_TOPIC_NAME": "<topic name>"
+  }
+}
