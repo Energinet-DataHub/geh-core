@@ -40,43 +40,9 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.CorrelationId
 
         [Theory]
         [InlineAutoMoqData]
-        public void ParentId_WhenSet_CanBeRetrieved([NotNull] CorrelationContext sut)
-        {
-            // Arrange
-            var parentId = Guid.NewGuid().ToString();
-            sut.SetParentId(parentId);
-
-            // Act
-            var result = sut.ParentId;
-
-            // Assert
-            parentId.Should().Be(result);
-        }
-
-        [Theory]
-        [InlineAutoMoqData]
         public void Id_WhenNotSet_ThrowsException([NotNull] CorrelationContext sut)
         {
             Assert.Throws<InvalidOperationException>(() => sut.Id);
-        }
-
-        [Theory]
-        [InlineAutoMoqData]
-        public void AsTraceContext_WhenSet_ReturnsCorrectValue(
-            string id,
-            string parentId,
-            [NotNull] CorrelationContext sut)
-        {
-            // Arrange
-            var expected = $"00-{id}-{parentId}-00";
-            sut.SetId(id);
-            sut.SetParentId(parentId);
-
-            // Act
-            var actual = sut.AsTraceContext();
-
-            // Assert
-            expected.Should().Be(actual);
         }
     }
 }
