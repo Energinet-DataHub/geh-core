@@ -36,6 +36,4 @@ jobs:
     with:
       SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
       DOTNET_VERSION: '6.0.301'
-      USE_AZURITE: true
       USE_AZURE_FUNCTIONS_CORE_TOOLS: true
-      USE_AZURE_RESOURCES: false
