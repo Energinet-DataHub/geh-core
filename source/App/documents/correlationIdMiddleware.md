@@ -1,6 +1,6 @@
 # CorrelationContext Documentation
 
-Contains a middleware implementation of exposing the `CorrelationId` from the`FunctionContext` from either a `HttpTrigger` or `ServiceBusTrigger`.
+Contains a middleware implementation of exposing the `CorrelationId` from the `FunctionContext` from either a `HttpTrigger` or `ServiceBusTrigger`.
 
 ### HttpTrigger
 The CorrelationId is parsed from a http-header named `Correlation-ID`
