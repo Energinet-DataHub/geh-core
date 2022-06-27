@@ -88,7 +88,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
             var normalizedKeyHeaders = headers
                 .ToDictionary(h => h.Key.ToLowerInvariant(), h => h.Value);
 
-            return normalizedKeyHeaders.TryGetValue("Correlation-ID", out correlationId);
+            return normalizedKeyHeaders.TryGetValue("correlation-id", out correlationId);
         }
     }
 }
