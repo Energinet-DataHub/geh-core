@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions;
@@ -41,7 +42,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
 
         public Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            ArgumentNullException.ThrowIfNull(context);
+            ArgumentNullException.ThrowIfNull(next);
 
             if (context.Is(TriggerType.ServiceBusTrigger))
             {
@@ -52,32 +54,41 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
             }
             else if (context.Is(TriggerType.HttpTrigger))
             {
-                context.BindingContext.BindingData.TryGetValue("Headers", out var headersObj);
-
-                if (headersObj is not string headersStr)
+                if (TryGetHttpCorrelationId(context, out var correlationId))
                 {
-                    throw new ArgumentException("Headers was not a string");
+                    _correlationContext.SetId(correlationId);
                 }
-
-                // Deserialize headers from JSON
-                var headers = _jsonSerializer.Deserialize<Dictionary<string, string>>(headersStr);
-
-                if (headers == null)
-                {
-                    throw new ArgumentException("Could not parse Headers as Json");
-                }
-
-                var normalizedKeyHeaders = headers.ToDictionary(h => h.Key.ToLowerInvariant(), h => h.Value);
-                if (!normalizedKeyHeaders.TryGetValue("Correlation-ID", out var correlationIdHeaderValue))
-                {
-                    // No Common header present
-                    throw new ArgumentException("Correlation-ID header was not present");
-                }
-
-                _correlationContext.SetId(correlationIdHeaderValue);
             }
 
             return next(context);
+        }
+
+        private bool TryGetHttpCorrelationId(
+            FunctionContext context,
+            [NotNullWhen(true)]
+            out string? correlationId)
+        {
+            correlationId = null;
+
+            context.BindingContext.BindingData.TryGetValue("Headers", out var headersObj);
+
+            if (headersObj is not string headersStr)
+            {
+                return false;
+            }
+
+            // Deserialize headers from JSON
+            var headers = _jsonSerializer.Deserialize<Dictionary<string, string>>(headersStr);
+
+            if (headers == null)
+            {
+                return false;
+            }
+
+            var normalizedKeyHeaders = headers
+                .ToDictionary(h => h.Key.ToLowerInvariant(), h => h.Value);
+
+            return normalizedKeyHeaders.TryGetValue("Correlation-ID", out correlationId);
         }
     }
 }
