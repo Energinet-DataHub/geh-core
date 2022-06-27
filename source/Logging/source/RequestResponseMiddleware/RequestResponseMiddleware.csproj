@@ -17,7 +17,7 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
         <RootNamespace>Energinet.DataHub.Core.Logging.RequestResponseMiddleware</RootNamespace>
@@ -26,7 +26,7 @@ limitations under the License.
 
 	<PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Logging</PackageId>
-    <PackageVersion>1.2.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.0.0$(VersionSuffix)</PackageVersion>
     <Title>Logging Middleware For Requests and Responses</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
