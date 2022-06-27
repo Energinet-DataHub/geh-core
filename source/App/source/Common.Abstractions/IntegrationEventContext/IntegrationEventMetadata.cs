@@ -23,8 +23,10 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
     {
         public IntegrationEventMetadata(
             string messageType,
-            Instant operationTimestamp)
+            Instant operationTimestamp,
+            string operationCorrelationId)
         {
+            OperationCorrelationId = operationCorrelationId;
             MessageType = messageType;
             OperationTimestamp = operationTimestamp;
         }
@@ -40,5 +42,11 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
         /// See: https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md#timestamp
         /// </summary>
         public Instant OperationTimestamp { get; }
+
+        /// <summary>
+        /// Represents the id for the current operation.
+        /// See: https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md#correlationid
+        /// </summary>
+        public string OperationCorrelationId { get; }
     }
 }

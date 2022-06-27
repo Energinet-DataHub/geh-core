@@ -122,7 +122,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
         [InlineAutoMoqData]
         public async Task Invoke_WithUserProperties_ReturnsMetadata(
             string messageType,
-            Instant operationTimestamp)
+            Instant operationTimestamp,
+            string operationCorrelationId)
         {
             // Arrange
             var serializer = new JsonSerializer();
@@ -130,7 +131,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
 
             var expected = new IntegrationEventJsonMetadata(
                 messageType,
-                operationTimestamp);
+                operationTimestamp,
+                operationCorrelationId);
 
             var target = new IntegrationEventMetadataMiddleware(
                 serializer,
@@ -152,6 +154,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
             var actual = integrationEventContext.ReadMetadata();
             actual.MessageType.Should().Be(messageType);
             actual.OperationTimestamp.Should().Be(operationTimestamp);
+            actual.OperationCorrelationId.Should().Be(operationCorrelationId);
         }
 
         private static IReadOnlyDictionary<string, BindingMetadata> SetupInputBindings(string bindingType)

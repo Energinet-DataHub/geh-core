@@ -14,35 +14,33 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
+namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope
 {
     public class FunctionTelemetryScopeMiddleware : IFunctionsWorkerMiddleware
     {
         private readonly TelemetryClient _telemetryClient;
-        private readonly ICorrelationContext _correlationContext;
 
         public FunctionTelemetryScopeMiddleware(
-            TelemetryClient telemetryClient,
-            ICorrelationContext correlationContext)
+            TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient;
-            _correlationContext = correlationContext;
         }
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
+            var traceContext = TraceContext.Parse(context.TraceContext.TraceParent);
+
             var operation = _telemetryClient.StartOperation<DependencyTelemetry>(
                 context.FunctionDefinition.Name,
-                _correlationContext.Id,
-                _correlationContext.ParentId);
+                traceContext.TraceId,
+                traceContext.ParentId);
 
             operation.Telemetry.Type = "Function";
             try

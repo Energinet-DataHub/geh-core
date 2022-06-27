@@ -13,7 +13,12 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.Helpers;
+using Energinet.DataHub.Core.JsonSerialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
@@ -22,21 +27,55 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
     public sealed class CorrelationIdMiddleware : IFunctionsWorkerMiddleware
     {
         private readonly ICorrelationContext _correlationContext;
+        private readonly IntegrationEventMetadataParser _integrationEventMetadataParser;
+        private readonly IJsonSerializer _jsonSerializer;
 
         public CorrelationIdMiddleware(
+            IJsonSerializer jsonSerializer,
             ICorrelationContext correlationContext)
         {
             _correlationContext = correlationContext;
+            _jsonSerializer = jsonSerializer;
+            _integrationEventMetadataParser = new IntegrationEventMetadataParser(_jsonSerializer);
         }
 
         public Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var traceContext = TraceContext.Parse(context.TraceContext.TraceParent);
+            if (context.Is(TriggerType.ServiceBusTrigger))
+            {
+                if (_integrationEventMetadataParser.TryParse(context, out var userProperties))
+                {
+                    _correlationContext.SetId(userProperties.OperationCorrelationId);
+                }
+            }
+            else if (context.Is(TriggerType.HttpTrigger))
+            {
+                context.BindingContext.BindingData.TryGetValue("Headers", out var headersObj);
 
-            _correlationContext.SetId(traceContext.TraceId);
-            _correlationContext.SetParentId(traceContext.ParentId);
+                if (headersObj is not string headersStr)
+                {
+                    throw new ArgumentException("Headers was not a string");
+                }
+
+                // Deserialize headers from JSON
+                var headers = _jsonSerializer.Deserialize<Dictionary<string, string>>(headersStr);
+
+                if (headers == null)
+                {
+                    throw new ArgumentException("Could not parse Headers as Json");
+                }
+
+                var normalizedKeyHeaders = headers.ToDictionary(h => h.Key.ToLowerInvariant(), h => h.Value);
+                if (!normalizedKeyHeaders.TryGetValue("Correlation-ID", out var correlationIdHeaderValue))
+                {
+                    // No Common header present
+                    throw new ArgumentException("Correlation-ID header was not present");
+                }
+
+                _correlationContext.SetId(correlationIdHeaderValue);
+            }
 
             return next(context);
         }
