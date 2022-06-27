@@ -1,8 +1,12 @@
-# TraceContext Documentation
+# CorrelationContext Documentation
 
-Contains a middleware implementation of TraceContext parsing to help with retrieving CorrelationId and ParentId from the TraceContext.
+Contains a middleware implementation of exposing the `CorrelationId` from the`FunctionContext` from either a `HttpTrigger` or `ServiceBusTrigger`.
 
-For more information on TraceContext please visit: https://www.w3.org/TR/trace-context/#trace-context-http-headers-format
+### HttpTrigger
+The CorrelationId is parsed from a http-header named `Correlation-ID`
+
+### ServiceBusTrigger
+The CorrelationId is parsed from a user property named `OperationCorrelationId`
 
 ## Usage
 
@@ -21,11 +25,6 @@ public class MyClass
     public string CorrelationId()
     {
         return _correlationContext.Id;
-    }
-
-    public string ParentId()
-    {
-        return _correlationContext.ParentId;
     }
 }
 
