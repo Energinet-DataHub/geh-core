@@ -22,7 +22,6 @@ using Microsoft.Extensions.Hosting;
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(builder =>
     {
-        builder.UseMiddleware<CorrelationIdMiddleware>();
         builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
     })
     .ConfigureServices(services =>
@@ -41,11 +40,9 @@ var host = new HostBuilder()
         ////services.AddLogging();
 
         services.AddApplicationInsightsTelemetryWorkerService();
-        services.AddScoped<ICorrelationContext, CorrelationContext>();
-        services.AddScoped<CorrelationIdMiddleware>();
         services.AddScoped<FunctionTelemetryScopeMiddleware>();
 
-        services.AddSingleton<ServiceBusClient>(_ =>
+        services.AddSingleton(_ =>
         {
             var connectionString = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionString);
             return new ServiceBusClient(connectionString);
