@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{FC132C56-E963-4AE8-AA5B-4F78C2FCD3DB}"
 	ProjectSection(SolutionItems) = preProject
 		documents\correlationIdMiddleware.md = documents\correlationIdMiddleware.md
+		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
 		documents\functionTelemetryScopeMiddleware.md = documents\functionTelemetryScopeMiddleware.md
 		documents\health-checks.md = documents\health-checks.md
@@ -43,7 +44,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.FunctionApp01",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.Tests", "source\ExampleHost.Tests\ExampleHost.Tests.csproj", "{DFB36594-59B4-4ABB-A43D-BD78A648930F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.FunctionApp02", "source\ExampleHost.FunctionApp02\ExampleHost.FunctionApp02.csproj", "{F1E201ED-4DA7-49A0-A132-F0A48D109D94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.FunctionApp02", "source\ExampleHost.FunctionApp02\ExampleHost.FunctionApp02.csproj", "{F1E201ED-4DA7-49A0-A132-F0A48D109D94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
