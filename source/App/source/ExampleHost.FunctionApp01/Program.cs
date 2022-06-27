@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware;
+using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using ExampleHost.FunctionApp01.Common;
 using Microsoft.Extensions.DependencyInjection;
