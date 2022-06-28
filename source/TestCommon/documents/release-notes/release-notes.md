@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.0.1
+
+- Bump version as part of pipeline change
+
 ## Version 3.0.0
 
 - Upgrade solution projects from .NET 5 to .NET 6

@@ -1,5 +1,9 @@
 # Schemas Release notes
 
+## Version 1.0.12
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 1.0.11
 
 - Bumped patch version as pipeline file was updated.

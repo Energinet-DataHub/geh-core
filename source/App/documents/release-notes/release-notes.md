@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 4.0.1
+
+- Bump version as part of pipeline change
+
 ## Version 4.0.0
 
 - Update to the namespace for the `FunctionTelemetryScope` middleware.
