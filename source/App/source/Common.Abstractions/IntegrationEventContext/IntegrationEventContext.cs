@@ -33,9 +33,9 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
             return _eventMetadata != null;
         }
 
-        public void SetMetadata(string messageType, Instant operationTimeStamp)
+        public void SetMetadata(string messageType, Instant operationTimeStamp, string operationCorrelationId)
         {
-            _eventMetadata = new IntegrationEventMetadata(messageType, operationTimeStamp);
+            _eventMetadata = new IntegrationEventMetadata(messageType, operationTimeStamp, operationCorrelationId);
         }
     }
 }

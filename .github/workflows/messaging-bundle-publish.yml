@@ -43,7 +43,9 @@ env:
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
 
 jobs:
+
   build_and_publish:
+
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
