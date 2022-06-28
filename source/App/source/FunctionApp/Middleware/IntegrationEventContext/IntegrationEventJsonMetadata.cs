@@ -20,8 +20,10 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
     {
         public IntegrationEventJsonMetadata(
             string messageType,
-            Instant operationTimestamp)
+            Instant operationTimestamp,
+            string operationCorrelationId)
         {
+            OperationCorrelationId = operationCorrelationId;
             MessageType = messageType;
             OperationTimestamp = operationTimestamp;
         }
@@ -29,5 +31,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventCont
         public string MessageType { get; }
 
         public Instant OperationTimestamp { get; }
+
+        public string OperationCorrelationId { get; }
     }
 }

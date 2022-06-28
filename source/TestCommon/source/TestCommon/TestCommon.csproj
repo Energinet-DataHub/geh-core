@@ -31,14 +31,14 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.TestCommon</PackageId>
-    <PackageVersion>2.4.4$(VersionSuffix)</PackageVersion>
+    <PackageVersion>3.0.1$(VersionSuffix)</PackageVersion>
     <Title>TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
     <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
     <!-- PackageReleaseNotes:
-      Is shown in Azure DevOps artifacts Release Notes section.
+      Is shown in Azure DevOps artifacts Release Notes section
     -->
     <PackageReleaseNotes>
       [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/TestCommon/documents/release-notes/release-notes.md)

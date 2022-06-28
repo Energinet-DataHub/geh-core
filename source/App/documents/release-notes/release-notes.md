@@ -1,5 +1,18 @@
 # App Release notes
 
+## Version 4.0.1
+
+- Bump version as part of pipeline change
+
+## Version 4.0.0
+
+- Update to the namespace for the `FunctionTelemetryScope` middleware.
+- CorrelationIdMiddleware now exposes `CorrelationId` from either a `HTTP-header` or a `ServicebusMessage` user property 
+
+## Version 3.0.1
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 3.0.0
 
 - Upgrade projects from .NET5 to .NET6

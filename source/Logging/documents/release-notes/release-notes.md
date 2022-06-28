@@ -4,6 +4,11 @@
 
 - Upgrade from .NET 5 to .NET 6
 
+
+## Version 1.2.3
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 1.2.2
 
 - Bumped patch version as pipeline file was updated.
