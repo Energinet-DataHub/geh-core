@@ -52,14 +52,18 @@ env:
   FunctionAppHostPath: '${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll'
 
 jobs:
+
+  # Note: All jobs running in geh-core needs a "CI" environment to pass to ensure that PRs cannot be merged to main before CI has passed
+  # Check Branch Protection Rules | "Require deployments to succeed before merging" setting for details
+  environment: CI
+
+
   build_and_publish:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
     permissions:
       contents: read
-
-    environment: CI
 
     steps:
       - name: Checkout repository
