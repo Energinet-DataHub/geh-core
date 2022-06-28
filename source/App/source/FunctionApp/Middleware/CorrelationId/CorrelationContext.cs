@@ -20,30 +20,11 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
     {
         private string? _id;
 
-        private string? _parentId;
-
         public string Id => _id ?? throw new InvalidOperationException("Correlation id not set");
-
-        public string? ParentId => _parentId;
 
         public void SetId(string id)
         {
             _id = id;
-        }
-
-        public void SetParentId(string parentId)
-        {
-            _parentId = parentId;
-        }
-
-        public string AsTraceContext()
-        {
-            if (string.IsNullOrEmpty(_id) || string.IsNullOrEmpty(_parentId))
-            {
-                return string.Empty;
-            }
-
-            return $"00-{_id}-{_parentId}-00"; // Specification of format can be found here: https://www.w3.org/TR/trace-context/#trace-context-http-headers-format
         }
     }
 }

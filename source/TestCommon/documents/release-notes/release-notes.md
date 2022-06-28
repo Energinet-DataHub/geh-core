@@ -1,5 +1,13 @@
 # TestCommon Release notes
 
+## Version 3.0.1
+
+- Bump version as part of pipeline change
+
+## Version 3.0.0
+
+- Upgrade solution projects from .NET 5 to .NET 6
+
 ## Version 2.4.4
 
 - Added `ObjectAssertionsExtensions` with extension `NotContainNullsOrEmptyEnumerables` which Recursively checks all properties if any are null.

@@ -26,29 +26,32 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
         [InlineAutoMoqData]
         public void SetMetadata_WhenSet_CanBeRetrieved(
             string messageType,
-            Instant operationTimestamp)
+            Instant operationTimestamp,
+            string operationCorrelationId)
         {
             // Arrange
             var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             // Act
-            target.SetMetadata(messageType, operationTimestamp);
+            target.SetMetadata(messageType, operationTimestamp, operationCorrelationId);
 
             // Assert
             var actual = target.ReadMetadata();
             actual.MessageType.Should().Be(messageType);
             actual.OperationTimestamp.Should().Be(operationTimestamp);
+            actual.OperationCorrelationId.Should().Be(operationCorrelationId);
         }
 
         [Theory]
         [InlineAutoMoqData]
         public void TryReadMetadata_WhenSet_CanBeRetrieved(
             string messageType,
-            Instant operationTimestamp)
+            Instant operationTimestamp,
+            string operationCorrelationId)
         {
             // Arrange
             var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
-            target.SetMetadata(messageType, operationTimestamp);
+            target.SetMetadata(messageType, operationTimestamp, operationCorrelationId);
 
             // Act
             var result = target.TryReadMetadata(out var actual);
@@ -57,6 +60,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
             result.Should().BeTrue();
             actual!.MessageType.Should().Be(messageType);
             actual.OperationTimestamp.Should().Be(operationTimestamp);
+            actual.OperationCorrelationId.Should().Be(operationCorrelationId);
         }
 
         [Fact]
