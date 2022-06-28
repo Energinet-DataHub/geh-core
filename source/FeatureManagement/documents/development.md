@@ -18,4 +18,4 @@ Copy the `local.settings.sample.json` file into `local.settings.json`.
 
 Added to kick of CI
 Add another line, same procedure as above
-
+Add third line
