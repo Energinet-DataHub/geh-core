@@ -30,12 +30,13 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  # Note: All jobs running in geh-core needs a "CI" environment to pass to ensure that PRs cannot be merged to main before CI has passed  
-  # Check Branch Protection Rules | "Require deployments to succeed before merging" setting for details
-  environment: CI
-  
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
+  
+    # Note: All jobs running in geh-core needs a "CI" environment to pass to ensure that PRs cannot be merged to main before CI has passed  
+    # Check Branch Protection Rules | "Require deployments to succeed before merging" setting for details
+    environment: CI
+
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@2.5.0
     with:
       SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
