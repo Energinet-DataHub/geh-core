@@ -36,6 +36,8 @@ jobs:
     ## Note: All jobs running in geh-core needs a "CI" environment to pass to ensure that PRs cannot be merged to main before CI has passed  
     ## Check Branch Protection Rules | "Require deployments to succeed before merging" setting for details
     # environment: CI
+    # flaf
+    
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@2.5.0
     with:
       SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
@@ -45,7 +47,7 @@ jobs:
       USE_AZURE_RESOURCES: false
 
   build_and_publish:
-    name: Publish bundle to NuGet.org  #This name should always be the same as the one blablba...
+    name: Publish bundle to NuGet.org  #This name should always be the same as the one blablba...          
     runs-on: windows-2022
     steps:
       - name: Print something
