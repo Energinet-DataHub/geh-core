@@ -56,6 +56,8 @@ jobs:
     permissions:
       contents: read
 
+    environment: CI
+
     steps:
       - name: Checkout repository
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.4.0
