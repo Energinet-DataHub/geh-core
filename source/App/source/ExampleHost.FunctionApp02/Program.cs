@@ -12,22 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.FunctionApp.Middleware;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(builder =>
     {
-        builder.UseMiddleware<CorrelationIdMiddleware>();
         builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
     })
     .ConfigureServices(services =>
     {
         services.AddApplicationInsightsTelemetryWorkerService();
-        services.AddScoped<ICorrelationContext, CorrelationContext>();
-        services.AddScoped<CorrelationIdMiddleware>();
         services.AddScoped<FunctionTelemetryScopeMiddleware>();
     })
     .Build();
