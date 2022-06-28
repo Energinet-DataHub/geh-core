@@ -13,3 +13,7 @@ Notes regarding the development of the sample `FeatureManagement`.
 ## Setup local environment
 
 Copy the `local.settings.sample.json` file into `local.settings.json`.
+
+## XKBER 
+
+Added to kick of CI
