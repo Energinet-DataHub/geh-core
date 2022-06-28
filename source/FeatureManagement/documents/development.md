@@ -17,3 +17,5 @@ Copy the `local.settings.sample.json` file into `local.settings.json`.
 ## XKBER 
 
 Added to kick of CI
+Add another line, same procedure as above
+
