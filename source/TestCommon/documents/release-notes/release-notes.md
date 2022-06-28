@@ -3,7 +3,6 @@
 ## Version 3.0.0
 
 - Upgrade solution projects from .NET 5 to .NET 6
-- remove before merging to main
 
 ## Version 2.4.4
 
