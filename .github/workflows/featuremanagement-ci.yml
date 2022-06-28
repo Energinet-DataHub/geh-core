@@ -46,6 +46,7 @@ jobs:
 
   build_and_publish:
     name: Publish bundle to NuGet.org  #This name should always be the same as the one blablba...
+    runs-on: windows-2022
     steps:
       - name: Print something
         run: echo This step is needed to enforce the 'Publish bundle to NuGet.org' status check
