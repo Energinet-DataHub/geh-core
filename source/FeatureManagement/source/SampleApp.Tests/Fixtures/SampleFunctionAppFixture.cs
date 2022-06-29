@@ -52,7 +52,7 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
             }
 
             var buildConfiguration = GetBuildConfiguration();
-            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\SampleApp\\bin\\{buildConfiguration}\\net5.0";
+            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\SampleApp\\bin\\{buildConfiguration}\\net6.0";
 
             hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
 
