@@ -28,7 +28,7 @@ namespace ExampleHost.FunctionApp01.Functions
         public RestApiExampleFunction(ILogger<RestApiExampleFunction> logger, ServiceBusSender serviceBusSender)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _serviceBusSender = serviceBusSender;
+            _serviceBusSender = serviceBusSender ?? throw new ArgumentNullException(nameof(serviceBusSender));
         }
 
         [Function(nameof(CreatePetAsync))]
