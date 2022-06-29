@@ -46,6 +46,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.Tests", "source
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.FunctionApp02", "source\ExampleHost.FunctionApp02\ExampleHost.FunctionApp02.csproj", "{F1E201ED-4DA7-49A0-A132-F0A48D109D94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.WebApi01", "source\ExampleHost.WebApi01\ExampleHost.WebApi01.csproj", "{A182F9DE-6C59-49C1-9EB8-E9DD12C522FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{F1E201ED-4DA7-49A0-A132-F0A48D109D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1E201ED-4DA7-49A0-A132-F0A48D109D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1E201ED-4DA7-49A0-A132-F0A48D109D94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A182F9DE-6C59-49C1-9EB8-E9DD12C522FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A182F9DE-6C59-49C1-9EB8-E9DD12C522FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A182F9DE-6C59-49C1-9EB8-E9DD12C522FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A182F9DE-6C59-49C1-9EB8-E9DD12C522FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +124,7 @@ Global
 		{FB0C3D18-4366-421B-B5C6-56F0A7D7BA16} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
 		{DFB36594-59B4-4ABB-A43D-BD78A648930F} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
 		{F1E201ED-4DA7-49A0-A132-F0A48D109D94} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
+		{A182F9DE-6C59-49C1-9EB8-E9DD12C522FE} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97C97DEA-A677-4CDB-919D-DECF30991C7B}
