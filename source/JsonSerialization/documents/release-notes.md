@@ -1,8 +1,8 @@
 # JsonSerialization Release Notes
 
-## Version 1.0.4
+## Version 2.0.0
 
-- Bumped patch version as pipeline file was updated.
+- Upgrade project to build .NET 6 instead of .NET Standard 2.1
 
 ## Version 1.0.3
 
