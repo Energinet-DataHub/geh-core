@@ -8,5 +8,7 @@
 
   // We must ensure this tool is installed at the same location on all developer machines.
   // Be sure to use 'nvm' to manage Node.js + npm and node modules.
+  // If you're completely lost on what this setting does, make sure to read the developer documentation for 
+  // TestCommon and be able to run all tests in the TestCommon solution locally before you proceed
   "FunctionAppHostPath": "C:\\Program Files\\nodejs\\node_modules\\azure-functions-core-tools\\bin\\func.dll"
 }
