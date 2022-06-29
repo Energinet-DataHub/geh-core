@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 
-namespace ExampleHost.Tests.Fixtures
+namespace ExampleHost.FunctionApp.Tests.Extensions
 {
-    /// <summary>
-    /// A xUnit collection fixture for ensuring tests don't run in parallel.
-    ///
-    /// xUnit documentation of collection fixtures:
-    ///  * https://xunit.net/docs/shared-context#collection-fixture
-    /// </summary>
-    [CollectionDefinition(nameof(ExampleHostCollectionFixture))]
-    public class ExampleHostCollectionFixture : ICollectionFixture<ExampleHostFixture>
+    public static class FunctionAppHostManagerExtensions
     {
+        public static bool CheckIfFunctionThrewException(this FunctionAppHostManager hostManager)
+        {
+            if (hostManager is null)
+            {
+                throw new ArgumentNullException(nameof(hostManager));
+            }
+
+            return hostManager.GetHostLogSnapshot()
+                .Any(log => log.Contains("Exception", StringComparison.OrdinalIgnoreCase));
+        }
     }
 }

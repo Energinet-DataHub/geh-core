@@ -25,7 +25,7 @@ using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ExampleHost.Tests.Fixtures
+namespace ExampleHost.FunctionApp.Tests.Fixtures
 {
     /// <summary>
     /// Support testing flows between multiple Function App hosts.

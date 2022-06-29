@@ -16,16 +16,16 @@ using System.Net;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
+using ExampleHost.FunctionApp.Tests.Extensions;
+using ExampleHost.FunctionApp.Tests.Fixtures;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp02.Functions;
-using ExampleHost.Tests.Extensions;
-using ExampleHost.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ExampleHost.Tests.Integration
+namespace ExampleHost.FunctionApp.Tests.Integration
 {
     /// <summary>
     /// Tests that documents and prooves how we should setup and configure our
