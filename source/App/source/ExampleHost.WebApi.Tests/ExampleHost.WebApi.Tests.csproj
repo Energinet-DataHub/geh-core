@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ExampleHost.WebApi01\ExampleHost.WebApi01.csproj" />
+    <ProjectReference Include="..\ExampleHost.WebApi02\ExampleHost.WebApi02.csproj" />
   </ItemGroup>
 
 </Project>

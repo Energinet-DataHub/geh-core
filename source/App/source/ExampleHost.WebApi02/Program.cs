@@ -12,19 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ExampleHost.WebApi01;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Xunit;
-
-namespace ExampleHost.WebApi.Tests.Fixtures
+namespace ExampleHost.WebApi02
 {
-    public abstract class WebHostTestBase : IClassFixture<WebApplicationFactory<Startup>>
+    public class Program
     {
-        protected WebHostTestBase(WebApplicationFactory<Startup> factory)
+        protected Program() { }
+
+        public static void Main(string[] args)
         {
-            HttpClient = factory.CreateClient();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        protected HttpClient HttpClient { get; }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

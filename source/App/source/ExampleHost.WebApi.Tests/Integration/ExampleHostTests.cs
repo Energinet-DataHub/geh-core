@@ -14,10 +14,8 @@
 
 using System.Net;
 using ExampleHost.WebApi.Tests.Fixtures;
-using ExampleHost.WebApi01;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Integration
@@ -26,12 +24,15 @@ namespace ExampleHost.WebApi.Tests.Integration
     /// Tests that documents and prooves how we should setup and configure our
     /// Asp.Net Core Web Api's (host's) so they behave as we expect.
     /// </summary>
-    public class ExampleHostTests : WebHostTestBase
+    [Collection(nameof(ExampleHostCollectionFixture))]
+    public class ExampleHostTests
     {
-        public ExampleHostTests(WebApplicationFactory<Startup> factory)
-            : base(factory)
+        public ExampleHostTests(ExampleHostFixture fixture)
         {
+            Fixture = fixture;
         }
+
+        private ExampleHostFixture Fixture { get; }
 
         /// <summary>
         /// Verify sunshine scenario.
@@ -43,7 +44,7 @@ namespace ExampleHost.WebApi.Tests.Integration
             var url = "weatherforecast";
 
             // Act
-            var actualResponse = await HttpClient.GetAsync(url);
+            var actualResponse = await Fixture.Web01HttpClient.GetAsync(url);
 
             // Assert
             using var assertionScope = new AssertionScope();
