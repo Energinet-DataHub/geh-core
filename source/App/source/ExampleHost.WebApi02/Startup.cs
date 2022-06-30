@@ -29,6 +29,8 @@ namespace ExampleHost.WebApi02
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddApplicationInsightsTelemetry();
         }
 
         /// <summary>

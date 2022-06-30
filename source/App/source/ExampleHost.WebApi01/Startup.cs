@@ -29,6 +29,14 @@ namespace ExampleHost.WebApi01
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // CONCLUSION:
+            //  * Logging should work, but by default it is set to "Warning" for Application Insights and changing it doesn't seem to work.
+            //    See https://docs.microsoft.com/en-us/azure/azure-monitor/faq#how-do-i-customize-ilogger-logs-collection-
+
+            // CONCLUSION:
+            //  * We can see Trace and Request entries in App Insights out-of-box. It should also work for depencencies, but we have not proved it yet.
+            services.AddApplicationInsightsTelemetry();
         }
 
         /// <summary>

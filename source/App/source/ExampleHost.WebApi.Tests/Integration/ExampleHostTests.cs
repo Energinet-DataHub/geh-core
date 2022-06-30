@@ -30,6 +30,8 @@ namespace ExampleHost.WebApi.Tests.Integration
         public ExampleHostTests(ExampleHostFixture fixture)
         {
             Fixture = fixture;
+
+            // TODO: Maybe change test to use: https://stackoverflow.com/questions/50578907/running-kestrel-for-testing-without-using-the-testserver-included-in-microsoft-a
         }
 
         private ExampleHostFixture Fixture { get; }
