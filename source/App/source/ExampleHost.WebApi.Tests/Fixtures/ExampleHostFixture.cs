@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ExampleHost;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixtures
@@ -22,25 +22,33 @@ namespace ExampleHost.WebApi.Tests.Fixtures
     {
         public ExampleHostFixture()
         {
-            Web01Factory = new WebApplicationFactory<WebApi01.Startup>();
-            Web01HttpClient = Web01Factory.CreateClient();
+            var web01BaseUrl = "http://localhost:5000";
+
+            // We cannot use TestServer as this would not work with Application Insights.
+            Web01Host = WebHost.CreateDefaultBuilder()
+                      .UseStartup<WebApi01.Startup>()
+                      .UseUrls(web01BaseUrl)
+                      .Build();
+
+            Web01HttpClient = new HttpClient
+            {
+                BaseAddress = new Uri(web01BaseUrl),
+            };
         }
 
         public HttpClient Web01HttpClient { get; }
 
-        private WebApplicationFactory<WebApi01.Startup> Web01Factory { get; }
+        private IWebHost Web01Host { get; }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            return Task.CompletedTask;
+            await Web01Host.StartAsync();
         }
 
-        public Task DisposeAsync()
+        public async Task DisposeAsync()
         {
-            // Disposing factory will dispose any created http clients.
-            Web01Factory.Dispose();
-
-            return Task.CompletedTask;
+            Web01HttpClient.Dispose();
+            await Web01Host.StopAsync();
         }
     }
 }

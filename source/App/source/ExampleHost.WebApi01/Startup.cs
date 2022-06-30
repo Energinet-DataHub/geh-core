@@ -35,7 +35,8 @@ namespace ExampleHost.WebApi01
             //    See "How do I customize ILogger logs collection" at https://docs.microsoft.com/en-us/azure/azure-monitor/faq#how-do-i-customize-ilogger-logs-collection-
 
             // CONCLUSION:
-            //  * We can see Trace and Request entries in App Insights out-of-box. It should also work for depencencies, but we have not proved it yet.
+            //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
+            //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
             services.AddApplicationInsightsTelemetry();
         }
 

@@ -30,8 +30,6 @@ namespace ExampleHost.WebApi.Tests.Integration
         public ExampleHostTests(ExampleHostFixture fixture)
         {
             Fixture = fixture;
-
-            // TODO: Maybe change test to use: https://stackoverflow.com/questions/50578907/running-kestrel-for-testing-without-using-the-testserver-included-in-microsoft-a
         }
 
         private ExampleHostFixture Fixture { get; }
@@ -42,19 +40,25 @@ namespace ExampleHost.WebApi.Tests.Integration
         [Fact]
         public async Task CallingApi01Get_Should_CallApi02Get()
         {
-            // Arrange
-            var url = "weatherforecast";
+            for (var i = 0; i < 3; i++)
+            {
+                // Arrange
+                var url = "weatherforecast";
 
-            // Act
-            var actualResponse = await Fixture.Web01HttpClient.GetAsync(url);
+                // Act
+                var actualResponse = await Fixture.Web01HttpClient.GetAsync(url);
 
-            // Assert
-            using var assertionScope = new AssertionScope();
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+                // Assert
+                using var assertionScope = new AssertionScope();
+                actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+                actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Contain("\"temperatureC\":");
+                var content = await actualResponse.Content.ReadAsStringAsync();
+                content.Should().Contain("\"temperatureC\":");
+
+                // Wait for telemetry client data is sent
+                await Task.Delay(TimeSpan.FromSeconds(40));
+            }
         }
     }
 }
