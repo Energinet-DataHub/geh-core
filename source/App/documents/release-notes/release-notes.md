@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 4.0.2
+
+- docs were added for IntegrationEventMetadataMiddleware
+
 ## Version 4.0.1
 
 - Bump version as part of pipeline change
