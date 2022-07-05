@@ -33,9 +33,9 @@ namespace ExampleHost.WebApi02.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<WeatherForecast> Get(string identification)
         {
-            _logger.LogInformation($"ExampleHost WebApi02 {nameof(Get)}: We should be able to find this log message by following the trace of the request.");
+            _logger.LogWarning($"ExampleHost WebApi02 {identification}: We should be able to find this log message by following the trace of the request.");
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

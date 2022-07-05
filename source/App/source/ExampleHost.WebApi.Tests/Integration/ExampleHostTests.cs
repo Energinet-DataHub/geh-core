@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Net;
+using Azure.Monitor.Query;
+using Energinet.DataHub.Core.TestCommon;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -43,10 +45,11 @@ namespace ExampleHost.WebApi.Tests.Integration
             for (var i = 0; i < 3; i++)
             {
                 // Arrange
-                var url = "weatherforecast";
+                var requestIdentification = Guid.NewGuid().ToString();
 
                 // Act
-                var actualResponse = await Fixture.Web01HttpClient.GetAsync(url);
+                using var request = new HttpRequestMessage(HttpMethod.Get, $"weatherforecast/{requestIdentification}");
+                var actualResponse = await Fixture.Web01HttpClient.SendAsync(request);
 
                 // Assert
                 using var assertionScope = new AssertionScope();
@@ -59,6 +62,124 @@ namespace ExampleHost.WebApi.Tests.Integration
                 // Wait for telemetry client data is sent
                 await Task.Delay(TimeSpan.FromSeconds(40));
             }
+        }
+
+        [Fact]
+        public async Task Configuration_Should_CauseExpectedEventsToBeLogged()
+        {
+            var requestIdentification = Guid.NewGuid().ToString();
+
+            var expectedEvents = new List<QueryResult>
+            {
+                new QueryResult { Type = "AppDependencies", Name = $"GET /weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
+                new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]" },
+                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
+            };
+
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"weatherforecast/{requestIdentification}");
+            await Fixture.Web01HttpClient.SendAsync(request);
+
+            var queryWithParameters = @"
+                let OperationIds = AppRequests
+                | where AppRoleInstance == '{{$Environment.MachineName}}'
+                | where Url contains '{{requestIdentification}}'
+                | project OperationId;
+                OperationIds
+                | join(union AppRequests, AppDependencies, AppTraces) on OperationId
+                | extend parsedProp = parse_json(Properties)
+                | project TimeGenerated, OperationId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Properties
+                | order by TimeGenerated asc";
+
+            var query = queryWithParameters
+                .Replace("{{$Environment.MachineName}}", Environment.MachineName)
+                .Replace("{{requestIdentification}}", requestIdentification)
+                .Replace("\n", string.Empty);
+
+            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(10));
+            var waitLimit = TimeSpan.FromMinutes(6);
+            var delay = TimeSpan.FromSeconds(50);
+
+            await Task.Delay(delay);
+
+            var wasEventsLogged = await Awaiter
+                .TryWaitUntilConditionAsync(
+                    async () =>
+                    {
+                        var actualResponse = await Fixture.LogsQueryClient.QueryWorkspaceAsync<QueryResult>(
+                            Fixture.LogAnalyticsWorkspaceId,
+                            query,
+                            queryTimerange);
+
+                        return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
+                    },
+                    waitLimit,
+                    delay);
+
+            wasEventsLogged.Should().BeTrue($"Was expected to log {expectedEvents.Count} number of events.");
+        }
+
+        private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
+        {
+            if (actualResults.Count != expectedEvents.Count)
+            {
+                return false;
+            }
+
+            foreach (var expected in expectedEvents)
+            {
+                switch (expected.Type)
+                {
+                    case "AppRequests":
+                        actualResults.First(actual =>
+                            actual.Name == expected.Name);
+                        break;
+
+                    case "AppDependencies":
+                        actualResults.First(actual =>
+                            actual.Name == expected.Name
+                            && actual.DependencyType == expected.DependencyType);
+                        break;
+
+                    // "AppTraces"
+                    default:
+                        actualResults.First(actual =>
+                            actual.EventName == expected.EventName
+                            && actual.Message.StartsWith(expected.Message));
+                        break;
+                }
+            }
+
+            return true;
+        }
+
+        private class QueryResult
+        {
+            public string TimeGenerated { get; set; }
+                = string.Empty;
+
+            public string OperationId { get; set; }
+                = string.Empty;
+
+            public string Id { get; set; }
+                = string.Empty;
+
+            public string Type { get; set; }
+                = string.Empty;
+
+            public string Name { get; set; }
+                = string.Empty;
+
+            public string DependencyType { get; set; }
+                = string.Empty;
+
+            public string EventName { get; set; }
+                = string.Empty;
+
+            public string Message { get; set; }
+                = string.Empty;
+
+            public string Properties { get; set; }
+                = string.Empty;
         }
     }
 }

@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
+using Azure.Monitor.Query;
+using Energinet.DataHub.Core.FunctionApp.TestCommon;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Xunit;
@@ -22,7 +26,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
     {
         public ExampleHostFixture()
         {
-            var web01BaseUrl = "http://localhost:5000";
+            var web01BaseUrl = "https://localhost:5000";
 
             // We cannot use TestServer as this would not work with Application Insights.
             Web01Host = WebHost.CreateDefaultBuilder()
@@ -34,11 +38,23 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             {
                 BaseAddress = new Uri(web01BaseUrl),
             };
+
+            IntegrationTestConfiguration = new IntegrationTestConfiguration();
+            LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+
+            // TODO: Extend "IntegrationTestConfiguration" with property for Log Analytics Workspace Id.
+            LogAnalyticsWorkspaceId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
         }
 
         public HttpClient Web01HttpClient { get; }
 
+        public LogsQueryClient LogsQueryClient { get; }
+
+        public string LogAnalyticsWorkspaceId { get; }
+
         private IWebHost Web01Host { get; }
+
+        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
         public async Task InitializeAsync()
         {
