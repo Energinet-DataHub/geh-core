@@ -26,13 +26,20 @@ namespace ExampleHost.WebApi.Tests.Fixtures
     {
         public ExampleHostFixture()
         {
+            var web02BaseUrl = "https://localhost:5001";
             var web01BaseUrl = "https://localhost:5000";
 
             // We cannot use TestServer as this would not work with Application Insights.
+            Web02Host = WebHost.CreateDefaultBuilder()
+                .UseStartup<WebApi02.Startup>()
+                .UseUrls(web02BaseUrl)
+                .Build();
+
+            Environment.SetEnvironmentVariable(WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl, web02BaseUrl);
             Web01Host = WebHost.CreateDefaultBuilder()
-                      .UseStartup<WebApi01.Startup>()
-                      .UseUrls(web01BaseUrl)
-                      .Build();
+                .UseStartup<WebApi01.Startup>()
+                .UseUrls(web01BaseUrl)
+                .Build();
 
             Web01HttpClient = new HttpClient
             {
@@ -54,10 +61,13 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
         private IWebHost Web01Host { get; }
 
+        private IWebHost Web02Host { get; }
+
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
         public async Task InitializeAsync()
         {
+            await Web02Host.StartAsync();
             await Web01Host.StartAsync();
         }
 
@@ -65,6 +75,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         {
             Web01HttpClient.Dispose();
             await Web01Host.StopAsync();
+            await Web02Host.StopAsync();
         }
     }
 }

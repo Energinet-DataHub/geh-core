@@ -42,26 +42,18 @@ namespace ExampleHost.WebApi.Tests.Integration
         [Fact]
         public async Task CallingApi01Get_Should_CallApi02Get()
         {
-            for (var i = 0; i < 3; i++)
-            {
-                // Arrange
-                var requestIdentification = Guid.NewGuid().ToString();
+            // Arrange
+            var requestIdentification = Guid.NewGuid().ToString();
 
-                // Act
-                using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
-                var actualResponse = await Fixture.Web01HttpClient.SendAsync(request);
+            // Act
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
+            var actualResponse = await Fixture.Web01HttpClient.SendAsync(request);
 
-                // Assert
-                using var assertionScope = new AssertionScope();
-                actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-                actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+            // Assert
+            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-                var content = await actualResponse.Content.ReadAsStringAsync();
-                content.Should().Contain("\"temperatureC\":");
-
-                // Wait for telemetry client data is sent
-                await Task.Delay(TimeSpan.FromSeconds(40));
-            }
+            var content = await actualResponse.Content.ReadAsStringAsync();
+            content.Should().Contain("\"temperatureC\":");
         }
 
         [Fact]

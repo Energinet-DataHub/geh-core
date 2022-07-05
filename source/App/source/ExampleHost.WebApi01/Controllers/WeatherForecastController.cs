@@ -36,9 +36,9 @@ namespace ExampleHost.WebApi01.Controllers
             _logger.LogInformation($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request.");
             _logger.LogWarning($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request.");
 
-            using var httpClient = _httpClientFactory.CreateClient(HttpClientNames.WebApi02);
+            var httpClient = _httpClientFactory.CreateClient(HttpClientNames.WebApi02);
             using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/weatherforecast/{identification}");
-            var response = await httpClient.SendAsync(request);
+            using var response = await httpClient.SendAsync(request);
 
             response.EnsureSuccessStatusCode();
 
