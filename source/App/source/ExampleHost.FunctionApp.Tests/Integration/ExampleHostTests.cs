@@ -77,7 +77,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         ///  * <see cref="IntegrationEventExampleFunction"/> must use <see cref="ILoggerFactory"/>.
         /// </summary>
         [Fact]
-        public async Task IloggerAndILoggerFactory_Should_BeRegisteredByDefault()
+        public async Task ILoggerAndILoggerFactory_Should_BeRegisteredByDefault()
         {
             const string ExpectedLogMessage = "We should be able to find this log message by following the trace of the request.";
 
