@@ -56,6 +56,14 @@ namespace ExampleHost.WebApi.Tests.Integration
             content.Should().Contain("\"temperatureC\":");
         }
 
+        /// <summary>
+        /// Requirements for this test:
+        ///
+        /// 1: Both hosts must call "ConfigureServices" with the following:
+        /// <code>
+        ///     services.AddApplicationInsightsTelemetry();
+        /// </code>
+        /// </summary>
         [Fact]
         public async Task Configuration_Should_CauseExpectedEventsToBeLogged()
         {
@@ -64,8 +72,12 @@ namespace ExampleHost.WebApi.Tests.Integration
             var expectedEvents = new List<QueryResult>
             {
                 new QueryResult { Type = "AppDependencies", Name = $"GET /webapi01/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
-                new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]" },
+                new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"https://localhost:5000/webapi01/weatherforecast/{requestIdentification}" },
                 new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
+
+                new QueryResult { Type = "AppDependencies", Name = $"GET /webapi02/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
+                new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"https://localhost:5001/webapi02/weatherforecast/{requestIdentification}" },
+                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
@@ -79,7 +91,7 @@ namespace ExampleHost.WebApi.Tests.Integration
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces) on OperationId
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Properties
+                | project TimeGenerated, OperationId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
                 | order by TimeGenerated asc";
 
             var query = queryWithParameters
@@ -123,7 +135,8 @@ namespace ExampleHost.WebApi.Tests.Integration
                 {
                     case "AppRequests":
                         actualResults.First(actual =>
-                            actual.Name == expected.Name);
+                            actual.Name == expected.Name
+                            && actual.Url == expected.Url);
                         break;
 
                     case "AppDependencies":
@@ -168,6 +181,9 @@ namespace ExampleHost.WebApi.Tests.Integration
                 = string.Empty;
 
             public string Message { get; set; }
+                = string.Empty;
+
+            public string Url { get; set; }
                 = string.Empty;
 
             public string Properties { get; set; }
