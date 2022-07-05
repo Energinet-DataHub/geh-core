@@ -31,7 +31,7 @@ namespace ExampleHost.WebApi01
             services.AddControllers();
 
             // CONCLUSION:
-            //  * Logging using ILogger<T> should work, but by default it is set to "Warning" for Application Insights so we might have to configure it.
+            //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to appear in Application Insights (can be configured).
             //    See "How do I customize ILogger logs collection" at https://docs.microsoft.com/en-us/azure/azure-monitor/faq#how-do-i-customize-ilogger-logs-collection-
 
             // CONCLUSION:
