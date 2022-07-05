@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExampleHost.WebApi02.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("webapi02/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]

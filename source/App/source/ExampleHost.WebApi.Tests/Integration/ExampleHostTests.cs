@@ -48,7 +48,7 @@ namespace ExampleHost.WebApi.Tests.Integration
                 var requestIdentification = Guid.NewGuid().ToString();
 
                 // Act
-                using var request = new HttpRequestMessage(HttpMethod.Get, $"weatherforecast/{requestIdentification}");
+                using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
                 var actualResponse = await Fixture.Web01HttpClient.SendAsync(request);
 
                 // Assert
@@ -71,12 +71,12 @@ namespace ExampleHost.WebApi.Tests.Integration
 
             var expectedEvents = new List<QueryResult>
             {
-                new QueryResult { Type = "AppDependencies", Name = $"GET /weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
+                new QueryResult { Type = "AppDependencies", Name = $"GET /webapi01/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
                 new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]" },
                 new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
             };
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"weatherforecast/{requestIdentification}");
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
             await Fixture.Web01HttpClient.SendAsync(request);
 
             var queryWithParameters = @"
