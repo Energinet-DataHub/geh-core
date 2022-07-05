@@ -1,4 +1,5 @@
 {
+  "WebApi02BaseUrl": "https://localhost:44386",
   "Logging": {
     "LogLevel": {
       "Default": "Information",

@@ -32,7 +32,7 @@ namespace ExampleHost.WebApi02.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [HttpGet]
+        [HttpGet("{identification}")]
         public IEnumerable<WeatherForecast> Get(string identification)
         {
             _logger.LogWarning($"ExampleHost WebApi02 {identification}: We should be able to find this log message by following the trace of the request.");

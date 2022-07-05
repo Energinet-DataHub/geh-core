@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using ExampleHost.WebApi01.Common;
+
 namespace ExampleHost.WebApi01
 {
     public class Startup
@@ -38,6 +40,12 @@ namespace ExampleHost.WebApi01
             //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
             //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
             services.AddApplicationInsightsTelemetry();
+
+            services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
+            {
+                var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
+                httpClient.BaseAddress = new Uri(baseUrl);
+            });
         }
 
         /// <summary>

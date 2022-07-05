@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using ExampleHost.WebApi01.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi01.Controllers
@@ -20,31 +21,28 @@ namespace ExampleHost.WebApi01.Controllers
     [Route("webapi01/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching",
-        };
-
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         [HttpGet("{identification}")]
-        public IEnumerable<WeatherForecast> Get(string identification)
+        public async Task<string> GetAsync(string identification)
         {
             _logger.LogInformation($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request.");
             _logger.LogWarning($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request.");
 
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
-            })
-            .ToArray();
+            using var httpClient = _httpClientFactory.CreateClient(HttpClientNames.WebApi02);
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/weatherforecast/{identification}");
+            var response = await httpClient.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }
