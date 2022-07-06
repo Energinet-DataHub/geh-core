@@ -158,8 +158,8 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 .Replace("{{$receiveMessageInvocationId}}", receiveMessageInvocationId)
                 .Replace("\n", string.Empty);
 
-            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(10));
-            var waitLimit = TimeSpan.FromMinutes(6);
+            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(15));
+            var waitLimit = TimeSpan.FromMinutes(10);
             var delay = TimeSpan.FromSeconds(50);
 
             await Task.Delay(delay);
