@@ -42,16 +42,14 @@ namespace ExampleHost.FunctionApp.Tests.Fixtures
 
             HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
-
-            // TODO: Extend "IntegrationTestConfiguration" with property for Log Analytics Workspace Id.
-            LogAnalyticsWorkspaceId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
         }
 
         public ITestDiagnosticsLogger TestLogger { get; }
 
         public LogsQueryClient LogsQueryClient { get; }
 
-        public string LogAnalyticsWorkspaceId { get; }
+        public string LogAnalyticsWorkspaceId
+            => IntegrationTestConfiguration.LogAnalyticsWorkspaceId;
 
         [NotNull]
         public FunctionAppHostManager? App01HostManager { get; private set; }

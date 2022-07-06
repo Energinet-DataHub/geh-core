@@ -48,16 +48,14 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
-
-            // TODO: Extend "IntegrationTestConfiguration" with property for Log Analytics Workspace Id.
-            LogAnalyticsWorkspaceId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
         }
 
         public HttpClient Web01HttpClient { get; }
 
         public LogsQueryClient LogsQueryClient { get; }
 
-        public string LogAnalyticsWorkspaceId { get; }
+        public string LogAnalyticsWorkspaceId
+            => IntegrationTestConfiguration.LogAnalyticsWorkspaceId;
 
         private IWebHost Web01Host { get; }
 
