@@ -12,21 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
-
-namespace ExampleHost.Tests.Extensions
+namespace ExampleHost.WebApi01.Common
 {
-    public static class FunctionAppHostManagerExtensions
+    public static class EnvironmentSettingNames
     {
-        public static bool CheckIfFunctionThrewException(this FunctionAppHostManager hostManager)
-        {
-            if (hostManager is null)
-            {
-                throw new ArgumentNullException(nameof(hostManager));
-            }
-
-            return hostManager.GetHostLogSnapshot()
-                .Any(log => log.Contains("Exception", StringComparison.OrdinalIgnoreCase));
-        }
+        public const string WebApi02BaseUrl = "WebApi02BaseUrl";
     }
 }

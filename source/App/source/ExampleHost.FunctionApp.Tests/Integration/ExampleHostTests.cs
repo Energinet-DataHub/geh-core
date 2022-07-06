@@ -16,16 +16,16 @@ using System.Net;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
+using ExampleHost.FunctionApp.Tests.Extensions;
+using ExampleHost.FunctionApp.Tests.Fixtures;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp02.Functions;
-using ExampleHost.Tests.Extensions;
-using ExampleHost.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ExampleHost.Tests.Integration
+namespace ExampleHost.FunctionApp.Tests.Integration
 {
     /// <summary>
     /// Tests that documents and prooves how we should setup and configure our
@@ -77,7 +77,7 @@ namespace ExampleHost.Tests.Integration
         ///  * <see cref="IntegrationEventExampleFunction"/> must use <see cref="ILoggerFactory"/>.
         /// </summary>
         [Fact]
-        public async Task IloggerAndILoggerFactory_Should_BeRegisteredByDefault()
+        public async Task ILoggerAndILoggerFactory_Should_BeRegisteredByDefault()
         {
             const string ExpectedLogMessage = "We should be able to find this log message by following the trace of the request.";
 
@@ -158,12 +158,13 @@ namespace ExampleHost.Tests.Integration
                 .Replace("{{$receiveMessageInvocationId}}", receiveMessageInvocationId)
                 .Replace("\n", string.Empty);
 
-            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(10));
-            var waitLimit = TimeSpan.FromMinutes(6);
+            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(15));
+            var waitLimit = TimeSpan.FromMinutes(10);
             var delay = TimeSpan.FromSeconds(50);
 
             await Task.Delay(delay);
 
+            var actualCount = 0;
             var wasEventsLogged = await Awaiter
                 .TryWaitUntilConditionAsync(
                     async () =>
@@ -173,12 +174,13 @@ namespace ExampleHost.Tests.Integration
                             query,
                             queryTimerange);
 
+                        actualCount = actualResponse.Value.Count;
                         return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
                     },
                     waitLimit,
                     delay);
 
-            wasEventsLogged.Should().BeTrue($"Was expected to log {expectedEvents.Count} number of events.");
+            wasEventsLogged.Should().BeTrue($"'Was expected to log {expectedEvents.Count} number of events, but found {actualCount}.'");
         }
 
         private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)

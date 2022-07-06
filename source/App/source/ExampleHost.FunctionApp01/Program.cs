@@ -14,7 +14,6 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using ExampleHost.FunctionApp01.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,7 +29,7 @@ var host = new HostBuilder()
         //  * We can see Trace and Request entries in App Insights out-of-box.
         //  * Dependency tracing is not support (out-of-box) in isolated-process [https://docs.microsoft.com/en-us/azure/azure-functions/functions-monitoring#dependencies]
 
-        // TODO: Investigate if any of this is relevant for us:
+        // UNDONE: Investigate if any of this is relevant for us:
         //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/760
         //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705
 

@@ -38,7 +38,7 @@ Secondly, we must ensure we obey the following [prerequisites](../../TestCommon/
 
 ### Dependencies to live Azure resources
 
-The `ExampleHost.Tests` depends on live Azure resources like Service Bus end Application Insights. We cannot mock, or install these locally, so we have to use actual instances.
+The `ExampleHost.FunctionApp.Tests` depends on live Azure resources like Service Bus end Application Insights. We cannot mock, or install these locally, so we have to use actual instances.
 
 To be able to use the Azure resources prepared in the Integration Test environment, developers must do the following:
 

@@ -12,18 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
-
-namespace ExampleHost.Tests.Fixtures
+namespace ExampleHost.WebApi02
 {
-    /// <summary>
-    /// A xUnit collection fixture for ensuring tests don't run in parallel.
-    ///
-    /// xUnit documentation of collection fixtures:
-    ///  * https://xunit.net/docs/shared-context#collection-fixture
-    /// </summary>
-    [CollectionDefinition(nameof(ExampleHostCollectionFixture))]
-    public class ExampleHostCollectionFixture : ICollectionFixture<ExampleHostFixture>
+    public class Program
     {
+        protected Program() { }
+
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
