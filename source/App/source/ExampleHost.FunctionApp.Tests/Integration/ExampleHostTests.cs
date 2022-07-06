@@ -180,7 +180,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                     waitLimit,
                     delay);
 
-            wasEventsLogged.Should().BeTrue($"Was expected to log {expectedEvents.Count} number of events, but found {actualCount}.");
+            wasEventsLogged.Should().BeTrue($"'Was expected to log {expectedEvents.Count} number of events, but found {actualCount}.'");
         }
 
         private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
