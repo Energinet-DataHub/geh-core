@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.1.0
+
+- Added property `LogAnalyticsWorkspaceId` to `IntegrationTestConfiguration` to support use of Log Analytics Workspace.
+
 ## Version 3.0.1
 
 - Bump version as part of pipeline change

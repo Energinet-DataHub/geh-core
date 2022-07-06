@@ -32,6 +32,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             Configuration = BuildKeyVaultConfigurationRoot();
 
             ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
+            LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
             EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
             ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
 
@@ -48,6 +49,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         /// Instrumentation Key to the Application Insights in the Integration Test environment.
         /// </summary>
         public string ApplicationInsightsInstrumentationKey { get; }
+
+        /// <summary>
+        /// ID of the Log Analytics Workspace in the Integration Test environment.
+        /// </summary>
+        public string LogAnalyticsWorkspaceId { get; }
 
         /// <summary>
         /// Connection string to the Azure Event Hub in the Integration Test environment.
