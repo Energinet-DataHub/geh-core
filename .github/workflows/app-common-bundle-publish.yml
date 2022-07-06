@@ -76,6 +76,11 @@ jobs:
           AZURITE_VERSION: '3.15.0'
           AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
+      - name: Trust localhost SSL certificate (for Web API tests)
+        shell: pwsh
+        run: |
+          dotnet dev-certs https --trust
+
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.5.0
         with:
