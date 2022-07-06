@@ -53,7 +53,9 @@ namespace ExampleHost.WebApi01
         /// </summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
         {
-            app.UseHttpsRedirection();
+            // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
+            ////app.UseHttpsRedirection();
+
             app.UseRouting();
             app.UseAuthorization();
 

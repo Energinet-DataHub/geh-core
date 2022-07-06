@@ -26,8 +26,8 @@ namespace ExampleHost.WebApi.Tests.Fixtures
     {
         public ExampleHostFixture()
         {
-            var web02BaseUrl = "https://localhost:5001";
-            var web01BaseUrl = "https://localhost:5000";
+            var web02BaseUrl = "http://localhost:5001";
+            var web01BaseUrl = "http://localhost:5000";
 
             // We cannot use TestServer as this would not work with Application Insights.
             Web02Host = WebHost.CreateDefaultBuilder()
