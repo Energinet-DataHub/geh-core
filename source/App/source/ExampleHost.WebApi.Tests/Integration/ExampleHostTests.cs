@@ -105,6 +105,7 @@ namespace ExampleHost.WebApi.Tests.Integration
 
             await Task.Delay(delay);
 
+            var actualCount = 0;
             var wasEventsLogged = await Awaiter
                 .TryWaitUntilConditionAsync(
                     async () =>
@@ -114,12 +115,13 @@ namespace ExampleHost.WebApi.Tests.Integration
                             query,
                             queryTimerange);
 
+                        actualCount = actualResponse.Value.Count;
                         return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
                     },
                     waitLimit,
                     delay);
 
-            wasEventsLogged.Should().BeTrue($"Was expected to log {expectedEvents.Count} number of events.");
+            wasEventsLogged.Should().BeTrue($"Was expected to log {expectedEvents.Count} number of events, but found {actualCount}.");
         }
 
         private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
