@@ -29,6 +29,9 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             var web02BaseUrl = "http://localhost:5001";
             var web01BaseUrl = "http://localhost:5000";
 
+            IntegrationTestConfiguration = new IntegrationTestConfiguration();
+            Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+
             // We cannot use TestServer as this would not work with Application Insights.
             Web02Host = WebHost.CreateDefaultBuilder()
                 .UseStartup<WebApi02.Startup>()
@@ -46,7 +49,6 @@ namespace ExampleHost.WebApi.Tests.Fixtures
                 BaseAddress = new Uri(web01BaseUrl),
             };
 
-            IntegrationTestConfiguration = new IntegrationTestConfiguration();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         }
 
