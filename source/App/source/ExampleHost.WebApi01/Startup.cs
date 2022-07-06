@@ -41,17 +41,11 @@ namespace ExampleHost.WebApi01
             //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
             services.AddApplicationInsightsTelemetry();
 
-            services
-                .AddHttpClient(HttpClientNames.WebApi02, httpClient =>
-                {
-                    var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
-                    httpClient.BaseAddress = new Uri(baseUrl);
-                })
-                .ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
-                {
-                    // Don't validate SSL certificate
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; },
-                });
+            services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
+            {
+                var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
+                httpClient.BaseAddress = new Uri(baseUrl);
+            });
         }
 
         /// <summary>
