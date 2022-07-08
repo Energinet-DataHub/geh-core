@@ -91,7 +91,7 @@ namespace ExampleHost.WebApi.Tests.Integration
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces) on OperationId
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
+                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
                 | order by TimeGenerated asc";
 
             var query = queryWithParameters
@@ -165,6 +165,9 @@ namespace ExampleHost.WebApi.Tests.Integration
                 = string.Empty;
 
             public string OperationId { get; set; }
+                = string.Empty;
+
+            public string ParentId { get; set; }
                 = string.Empty;
 
             public string Id { get; set; }
