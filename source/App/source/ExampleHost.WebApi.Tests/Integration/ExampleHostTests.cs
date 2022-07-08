@@ -73,11 +73,11 @@ namespace ExampleHost.WebApi.Tests.Integration
             {
                 new QueryResult { Type = "AppDependencies", Name = $"GET /webapi01/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
                 new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"http://localhost:5000/webapi01/weatherforecast/{requestIdentification}" },
-                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
+                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request" },
 
                 new QueryResult { Type = "AppDependencies", Name = $"GET /webapi02/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
                 new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"http://localhost:5001/webapi02/weatherforecast/{requestIdentification}" },
-                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
+                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification}: We should be able to find this log message by following the trace of the request" },
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
