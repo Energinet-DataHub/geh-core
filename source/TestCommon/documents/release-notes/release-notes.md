@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.0.0
+
+- Replaced nuget package [System.Data.SqlClient](https://www.nuget.org/packages/System.Data.SqlClient) with [Microsoft.Data.SqlClient](https://github.com/dotnet/SqlClient). Going forward, support for new SQL Server features will be implemented in Microsoft.Data.SqlClient. This is a breaking change, if users are referencing the package `System.Data.SqlClient` through `FunctionApp.TestCommon`. 
+
 ## Version 3.1.0
 
 - Added property `LogAnalyticsWorkspaceId` to `IntegrationTestConfiguration` to support use of Log Analytics Workspace.
