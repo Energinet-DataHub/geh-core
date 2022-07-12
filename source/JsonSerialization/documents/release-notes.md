@@ -1,5 +1,13 @@
 # JsonSerialization Release Notes
 
+## Version 2.0.0
+
+- Upgrade project to build .NET 6 instead of .NET Standard 2.1
+
+## Version 1.0.3
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 1.0.2
 
 - Add serializer that can serialize to a stream SerializeAsync

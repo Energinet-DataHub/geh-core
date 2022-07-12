@@ -32,10 +32,22 @@ on:
 jobs:
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@2.5.0
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.5.0
     with:
       SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
-      DOTNET_VERSION: '5.0.403'
-      USE_AZURITE: true
-      USE_AZURE_FUNCTIONS_CORE_TOOLS: true
-      USE_AZURE_RESOURCES: false
+      DOTNET_VERSION: '6.0.301'
+      USE_AZURE_FUNCTIONS_TOOLS: true
+
+  # This job is relevant to allow the status check for 'Publish bundle to NuGet.org' to execute
+  # It's not pretty, but it's currently the path of least resistence if we want to enforce
+  # running checks for Nuget publishes in a mono-repo with multiple CI builds where not all CI's 
+  # end up producing and pushing Nuget artifacts to Nuget.org
+  #
+  # 
+  # See Github discussion answered in March 2022 for reference: https://github.com/github-community/community/discussions/13690 
+  build_and_publish:
+    name: Publish bundle to NuGet.org  
+    runs-on: windows-2022
+    steps:
+      - name: Print something
+        run: echo 'This step is needed to enforce the "Publish bundle to NuGet.org" status check'

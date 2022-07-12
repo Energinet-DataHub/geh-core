@@ -37,6 +37,6 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
         /// <summary>
         /// Sets the metadata properties of the received event.
         /// </summary>
-        void SetMetadata(string messageType, Instant operationTimeStamp);
+        void SetMetadata(string messageType, Instant operationTimeStamp, string operationCorrelationId);
     }
 }

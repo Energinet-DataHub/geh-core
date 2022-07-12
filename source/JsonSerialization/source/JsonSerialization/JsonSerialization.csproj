@@ -16,7 +16,7 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>Energinet.DataHub.Core.JsonSerialization</AssemblyName>
@@ -29,7 +29,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.JsonSerialization</PackageId>
-    <PackageVersion>1.0.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.0.0$(VersionSuffix)</PackageVersion>
     <Title>JsonSerialization library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>

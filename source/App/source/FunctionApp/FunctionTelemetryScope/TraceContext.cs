@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
+namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope
 {
     /// <summary>
     /// Implementation of w3c trace context
@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId
 
         public bool IsValid { get; }
 
-        public static TraceContext Parse([NotNull] string traceContext)
+        public static TraceContext Parse(string traceContext)
         {
             if (string.IsNullOrWhiteSpace(traceContext)) return Invalid();
 

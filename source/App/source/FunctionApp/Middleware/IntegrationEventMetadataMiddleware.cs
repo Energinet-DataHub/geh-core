@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.Helpers;
 using Energinet.DataHub.Core.JsonSerialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -26,15 +25,15 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
 {
     public sealed class IntegrationEventMetadataMiddleware : IFunctionsWorkerMiddleware
     {
-        private readonly IJsonSerializer _jsonSerializer;
         private readonly IIntegrationEventContext _integrationEventContext;
+        private readonly IntegrationEventMetadataParser _integrationEventMetadataParser;
 
         public IntegrationEventMetadataMiddleware(
             IJsonSerializer jsonSerializer,
             IIntegrationEventContext integrationEventContext)
         {
-            _jsonSerializer = jsonSerializer;
             _integrationEventContext = integrationEventContext;
+            _integrationEventMetadataParser = new IntegrationEventMetadataParser(jsonSerializer);
         }
 
         public Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
@@ -49,34 +48,15 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware
                 return next(context);
             }
 
-            if (TryGetUserProperties(context, out var userProperties))
+            if (_integrationEventMetadataParser.TryParse(context, out var userProperties))
             {
                 _integrationEventContext.SetMetadata(
                     userProperties.MessageType,
-                    userProperties.OperationTimestamp);
+                    userProperties.OperationTimestamp,
+                    userProperties.OperationCorrelationId);
             }
 
             return next(context);
-        }
-
-        private bool TryGetUserProperties(
-            FunctionContext functionContext,
-            [NotNullWhen(true)]
-            out IntegrationEventJsonMetadata? userProperties)
-        {
-            userProperties = null;
-
-            var bindingData = functionContext.BindingContext.BindingData;
-            if (bindingData.TryGetValue("UserProperties", out var userPropertiesObject))
-            {
-                if (userPropertiesObject is string userProps)
-                {
-                    userProperties = _jsonSerializer.Deserialize<IntegrationEventJsonMetadata>(userProps);
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }
