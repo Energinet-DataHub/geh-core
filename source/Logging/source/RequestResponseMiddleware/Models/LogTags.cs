@@ -24,12 +24,24 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models
         private Dictionary<string, string> _queryTags = new();
         private Dictionary<string, string> _tags = new();
 
-        public void AddQueryTagsCollection(Dictionary<string, string> collection)
+        public void ParseAndAddQueryTagsCollection(string? queryKeyValue)
         {
-            foreach (var item in collection)
+            if (!string.IsNullOrWhiteSpace(queryKeyValue) && queryKeyValue != "{}")
             {
-                _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
-                _tags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
+                try
+                {
+                    var jsonQueryCollection = JsonSerializer.Deserialize<Dictionary<string, string>>(queryKeyValue);
+                    foreach (var item in jsonQueryCollection)
+                    {
+                        _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
+                        _tags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter("invalid query parsing"), e.Message);
+                    _tags.TryAdd(LogDataBuilder.MetaNameFormatter("invalid query parsing"), e.Message);
+                }
             }
         }
 

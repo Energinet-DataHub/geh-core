@@ -108,8 +108,8 @@ namespace RequestResponseMiddleware.Tests
             var inputData = new Dictionary<string, object>(System.StringComparer.OrdinalIgnoreCase)
             {
                 { "Headers", "{\"Authorization\":\"Bearer ey?????\"}" },
-                { "Query", "{ BundleId: 123 }" },
-                { "BundleId", "132" },
+                { "Query", "{ \"Saved\": \"SavedValue\" }" },
+                { "BundleId4", "1324" },
                 { "Correlationid", "132" },
             };
 
@@ -130,6 +130,50 @@ namespace RequestResponseMiddleware.Tests
             Assert.Contains("TestName", logData.GetAllTags().Values);
             Assert.Contains("invocationid", logData.GetAllTags().Keys);
             Assert.Contains(logData.GetAllTags(), e => e.Key.Equals("httpdatatype") && e.Value.Equals("request"));
+
+            Assert.Contains("saved", logData.GetQueryTags().Keys);
+            Assert.Contains("SavedValue", logData.GetQueryTags().Values);
+        }
+
+        [Theory]
+        [InlineData("{}")]
+        [InlineData("")]
+        [InlineData(null)]
+        public void QueryTagsNotFoundTests(string queryJsonString)
+        {
+            // Arrange
+            var functionContext = new MockedFunctionContext();
+            functionContext.FunctionContextMock.Setup(e => e.FunctionId).Returns("123456");
+            functionContext.FunctionContextMock.Setup(e => e.InvocationId).Returns(Guid.NewGuid().ToString);
+            functionContext.FunctionDefinitionMock.Setup(e => e.Name).Returns("TestName");
+
+            var inputData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Headers", "{\"Authorization\":\"Bearer ey?????\"}" },
+                { "Query", queryJsonString },
+                { "NotSaved", "NotSavedValue" },
+            };
+
+            functionContext.BindingContext
+                .Setup(x => x.BindingData)
+                .Returns(inputData);
+
+            // Act
+            var logData =
+                LogDataBuilder.BuildDictionaryFromContext(
+                    functionContext.FunctionContext,
+                    true);
+
+            // Assert
+            Assert.DoesNotContain("query", logData.GetAllTags().Keys);
+            Assert.DoesNotContain("headers", logData.GetAllTags().Keys);
+            Assert.Contains("functionname", logData.GetAllTags().Keys);
+            Assert.Contains("TestName", logData.GetAllTags().Values);
+            Assert.Contains("invocationid", logData.GetAllTags().Keys);
+            Assert.Contains(logData.GetAllTags(), e => e.Key.Equals("httpdatatype") && e.Value.Equals("request"));
+
+            Assert.DoesNotContain("saved", logData.BuildMetaDataForLog().Values);
+            Assert.DoesNotContain("SavedValue", logData.GetQueryTags().Values);
         }
     }
 }
