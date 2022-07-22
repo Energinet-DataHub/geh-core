@@ -54,13 +54,11 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             FunctionContext context,
             bool isRequest)
         {
-            var queryData = context.BindingContext.BindingData
-                .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Key.Equals("query", StringComparison.InvariantCultureIgnoreCase))
-                .ToDictionary(e => MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+            var queryData = context.BindingContext.BindingData.FirstOrDefault(m => m.Key.Equals("query", StringComparison.InvariantCultureIgnoreCase));
 
             var logTags = new LogTags();
             logTags.AddContextTagsCollection(AddBaseInfoFromContextToDictionary(context, isRequest));
-            logTags.ParseAndAddQueryTagsCollection(queryData.Any() ? queryData.First().Value : "{}");
+            logTags.ParseAndAddQueryTagsCollection(queryData.Value != null ? queryData.Value as string : "{}");
 
             return logTags;
         }

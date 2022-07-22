@@ -4,7 +4,7 @@
 
 - Upgrade Azure.Storage.Blobs to 12.13.0
 - Changed the way query parameters are parsed.
-- BUG FIX: Json in request body now dose not throw error.
+- BUG FIX: Json in request body now does not throw error.
 
 ## Version 2.0.0
 
