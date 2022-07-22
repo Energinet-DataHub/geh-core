@@ -54,7 +54,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             FunctionContext context,
             bool isRequest)
         {
-            var queryData = context.BindingContext.BindingData.FirstOrDefault(m => m.Key.Equals("query", StringComparison.InvariantCultureIgnoreCase));
+            var queryData = context.BindingContext.BindingData.FirstOrDefault(m => string.Equals(m.Key, "query", StringComparison.InvariantCultureIgnoreCase));
 
             var logTags = new LogTags();
             logTags.AddContextTagsCollection(AddBaseInfoFromContextToDictionary(context, isRequest));
