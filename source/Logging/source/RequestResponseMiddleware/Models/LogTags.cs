@@ -24,24 +24,21 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models
         private Dictionary<string, string> _queryTags = new();
         private Dictionary<string, string> _tags = new();
 
-        public void ParseAndAddQueryTagsCollection(string? queryKeyValue)
+        public void ParseAndAddQueryTagsCollection(string queryKeyValue)
         {
-            if (!string.IsNullOrWhiteSpace(queryKeyValue) && queryKeyValue != "{}")
+            try
             {
-                try
+                var jsonQueryCollection = JsonSerializer.Deserialize<Dictionary<string, string>>(queryKeyValue);
+                foreach (var item in jsonQueryCollection)
                 {
-                    var jsonQueryCollection = JsonSerializer.Deserialize<Dictionary<string, string>>(queryKeyValue);
-                    foreach (var item in jsonQueryCollection)
-                    {
-                        _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
-                        _tags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
-                    }
+                    _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
+                    _tags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
                 }
-                catch (Exception e)
-                {
-                    _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter("invalid query parsing"), e.Message);
-                    _tags.TryAdd(LogDataBuilder.MetaNameFormatter("invalid query parsing"), e.Message);
-                }
+            }
+            catch (JsonException e)
+            {
+                _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter("invalid query parsing"), e.Message);
+                _tags.TryAdd(LogDataBuilder.MetaNameFormatter("invalid query parsing"), e.Message);
             }
         }
 

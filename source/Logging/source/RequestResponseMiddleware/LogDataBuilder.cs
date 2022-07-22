@@ -58,7 +58,10 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
 
             var logTags = new LogTags();
             logTags.AddContextTagsCollection(AddBaseInfoFromContextToDictionary(context, isRequest));
-            logTags.ParseAndAddQueryTagsCollection(queryData.Value != null ? queryData.Value as string : "{}");
+            if (!string.IsNullOrWhiteSpace(queryData.Value as string))
+            {
+                logTags.ParseAndAddQueryTagsCollection((string)queryData.Value);
+            }
 
             return logTags;
         }
