@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
+namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models
 {
     internal record LogInformation(
         Stream LogStream,
