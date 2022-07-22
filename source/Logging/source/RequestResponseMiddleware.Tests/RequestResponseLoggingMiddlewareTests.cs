@@ -25,6 +25,7 @@ using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -74,6 +75,44 @@ namespace RequestResponseMiddleware.Tests
         }
 
         [Fact]
+        public async Task RequestResponseLoggingMiddleware_JsonBody_AllOk()
+        {
+            // Arrange
+            var testStorage = new LocalLogStorage();
+            var logger = Mock.Of<ILogger<RequestResponseLoggingMiddleware>>();
+            var middleware = new RequestResponseLoggingMiddleware(testStorage, logger);
+            var functionContext = new MockedFunctionContext();
+
+            var responseHeaderData = new List<KeyValuePair<string, string>>() { new("StatusCodeTest", "200") };
+
+            functionContext.BindingContext
+                .Setup(x => x.BindingData)
+                .Returns(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase));
+
+            var bindingData = new Dictionary<string, BindingMetadata>();
+            bindingData.Add("request", new FunctionBindingMetaData("httpTrigger", BindingDirection.In));
+            functionContext.SetBindingMetaData(bindingData);
+
+            var expectedStatusCode = HttpStatusCode.Accepted;
+
+            var (request, response) = SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
+
+            var expectedLogBody = MoveInJson;
+
+            request.HttpRequestDataMock.SetupGet(e => e.Body).Returns(new MemoryStream(Encoding.UTF8.GetBytes(expectedLogBody)));
+
+            response.Body = new MemoryStream(Encoding.UTF8.GetBytes(expectedLogBody));
+
+            // Act
+            await middleware.Invoke(functionContext.FunctionContext, _ => Task.CompletedTask).ConfigureAwait(false);
+
+            // Assert
+            var savedLogs = testStorage.GetLogs().ToList();
+            Assert.Equal(expectedLogBody, savedLogs[0].Body);
+            Assert.Equal(expectedLogBody, savedLogs[1].Body);
+        }
+
+        [Fact]
         public async Task RequestResponseLoggingMiddleware_AllOk()
         {
             // Arrange
@@ -85,10 +124,16 @@ namespace RequestResponseMiddleware.Tests
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Headers", "{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0In0.vVkzbkZ6lB3srqYWXVA00ic5eXwy4R8oniHQyok0QWY\"}" },
-                { "Query", "{ BundleId: 123 }" },
-                { "BundleId", "132" },
+                { "Query", "{ \"BundleId\": \"123\" }" },
+                { "BundleId4", "1324" },
                 { string.Empty, "error skipped" },
-                { "Correlationid", "2aaa720a-a7b9-4fe4-a004-f222ad932c7a" },
+            };
+
+            var requestHeaderData = new List<KeyValuePair<string, string>>()
+            {
+                new("Accept-Type", "232323232"),
+                new("Authorization", "Bearer ****"),
+                new("Correlationid", "2aaa720a-a7b9-4fe4-a004-f222ad932c7a"),
             };
 
             var responseHeaderData = new List<KeyValuePair<string, string>>()
@@ -111,6 +156,7 @@ namespace RequestResponseMiddleware.Tests
             var expectedStatusCode = HttpStatusCode.Accepted;
 
             var (request, response) = SetUpContext(functionContext, responseHeaderData, expectedStatusCode);
+            request.SetRequestHeaderCollection(new HttpHeadersCollection(requestHeaderData));
 
             var logBody = "BODYTEXT";
             request.HttpRequestDataMock.SetupGet(e => e.Body).Returns(new MemoryStream(Encoding.UTF8.GetBytes(logBody)));
@@ -197,8 +243,8 @@ namespace RequestResponseMiddleware.Tests
             var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Headers", "{\"Authorization\":\"Bearer " + token + "\"}" },
-                { "Query", "{ BundleId: 123 }" },
-                { "BundleId", "132" },
+                { "Query", "{ \"BundleId\": \"123\" }" },
+                { "BundleId5", "1325" },
                 { string.Empty, "error skipped" },
             };
 
@@ -313,5 +359,8 @@ namespace RequestResponseMiddleware.Tests
 
             public IReadOnlyDictionary<string, object> InputData { get; set; } = null!;
         }
+
+        private const string MoveInJson =
+            "{\"RequestChangeOfSupplier_MarketDocument\":{\"mRID\":\"78954612\",\"businessSector.type\":{\"value\":\"23\"},\"createdDateTime\":\"2022-09-07T09:30:47Z\",\"process.processType\":{\"value\":\"E65\"},\"receiver_MarketParticipant.mRID\":{\"codingScheme\":\"A10\",\"value\":\"5790001330552\"},\"receiver_MarketParticipant.marketRole.type\":{\"value\":\"DDZ\"},\"sender_MarketParticipant.mRID\":{\"codingScheme\":\"A10\",\"value\":\"5799999933318\"},\"sender_MarketParticipant.marketRole.type\":{\"value\":\"DDQ\"},\"type\":{\"value\":\"392\"},\"MktActivityRecord\":[{\"mRID\":\"12345689\",\"marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID\":{\"codingScheme\":\"A10\",\"value\":\"5799999933340\"},\"marketEvaluationPoint.customer_MarketParticipant.mRID\":{\"codingScheme\":\"ARR\",\"value\":\"0801741527\"},\"marketEvaluationPoint.customer_MarketParticipant.name\":\"JanHansen\",\"marketEvaluationPoint.energySupplier_MarketParticipant.mRID\":{\"codingScheme\":\"A10\",\"value\":\"5799999933318\"},\"marketEvaluationPoint.mRID\":{\"codingScheme\":\"A10\",\"value\":\"579999993331812345\"},\"start_DateAndOrTime.dateTime\":\"2022-09-07T22:00:00Z\"}]}}";
     }
 }
