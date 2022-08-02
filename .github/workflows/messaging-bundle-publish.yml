@@ -54,36 +54,34 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.4.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.7.0
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.4.0
-        with:
-          DOTNET_VERSION: '5.0.407'
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.7.0
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.4.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.7.0
         with:
           SOLUTION_FILE_PATH: './source/Messaging/Messaging.sln'
           CODE_COVERAGE_FLAGS: messaging
 
       - name: Pack Messaging project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
         with:
           PROJECT_PATH: './source/Messaging/source/Messaging/Messaging.csproj'
 
       - name: Pack Messaging.Integration.ServiceCollection project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
         with:
           PROJECT_PATH: './source/Messaging/source/Messaging.Integration.ServiceCollection/Messaging.Integration.ServiceCollection.csproj'
 
       - name: Pack Messaging.Protobuf project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
         with:
           PROJECT_PATH: './source/Messaging/source/Messaging.Protobuf/Messaging.Protobuf.csproj'
 
       - name: Pack Messaging.Protobuf.Integration.ServiceCollection project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.4.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
         with:
           PROJECT_PATH: './source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/Messaging.Protobuf.Integration.ServiceCollection.csproj'
 
@@ -99,7 +97,7 @@ jobs:
             .github/workflows/messaging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.4.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.7.0
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
