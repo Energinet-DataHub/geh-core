@@ -1,5 +1,9 @@
 # JsonSerialization Release Notes
 
+## Version 2.1.0
+
+- Use default .NET Core SDK version pre-installed on Github Runner when running CI workflow
+
 ## Version 2.0.0
 
 - Upgrade project to build .NET 6 instead of .NET Standard 2.1

@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.2.0
+
+- Use default .NET Core SDK version pre-installed on Github Runner when running CI workflow
+
 ## Version 3.1.0
 
 - Added property `LogAnalyticsWorkspaceId` to `IntegrationTestConfiguration` to support use of Log Analytics Workspace.

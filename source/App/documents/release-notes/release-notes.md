@@ -1,6 +1,6 @@
 # App Release notes
 
-## Version 4.0.3
+## Version 4.1.0
 
 - Use default .NET Core SDK version pre-installed on Github Runner when running CI workflow
 
