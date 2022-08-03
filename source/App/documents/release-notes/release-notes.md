@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 4.0.3
+
+- Use default .NET Core SDK version pre-installed on Github Runner when running CI workflow
+
 ## Version 4.0.2
 
 - docs were added for IntegrationEventMetadataMiddleware
