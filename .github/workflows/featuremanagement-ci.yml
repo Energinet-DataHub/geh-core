@@ -46,7 +46,7 @@ jobs:
   # See Github discussion answered in March 2022 for reference: https://github.com/github-community/community/discussions/13690 
   build_and_publish:
     name: Publish bundle to NuGet.org  
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Print something
         run: echo 'This step is needed to enforce the "Publish bundle to NuGet.org" status check'
