@@ -190,7 +190,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
 
         private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
         {
-            if (actualResults.Count != expectedEvents.Count)
+            if (actualResults.Count < expectedEvents.Count)
             {
                 return false;
             }
@@ -200,21 +200,42 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 switch (expected.Type)
                 {
                     case "AppRequests":
-                        actualResults.First(actual =>
+                        var appRequestsExists = actualResults.Any(actual =>
                             actual.Name == expected.Name);
+
+                        if (!appRequestsExists)
+                        {
+                            Fixture.TestLogger.WriteLine($"Did not find expected AppRequests: Name='{expected.Name}'");
+                            return false;
+                        }
+
                         break;
 
                     case "AppDependencies":
-                        actualResults.First(actual =>
+                        var appDependenciesExists = actualResults.Any(actual =>
                             actual.Name == expected.Name
                             && actual.DependencyType == expected.DependencyType);
+
+                        if (!appDependenciesExists)
+                        {
+                            Fixture.TestLogger.WriteLine($"Did not find expected AppDependencies: Name='{expected.Name}' DependencyType='{expected.DependencyType}'");
+                            return false;
+                        }
+
                         break;
 
                     // "AppTraces"
                     default:
-                        actualResults.First(actual =>
+                        var appTracesExists = actualResults.Any(actual =>
                             actual.EventName == expected.EventName
                             && actual.Message.StartsWith(expected.Message));
+
+                        if (!appTracesExists)
+                        {
+                            Fixture.TestLogger.WriteLine($"Did not find expected AppTrace: EventName='{expected.EventName}' Message='{expected.Message}'");
+                            return false;
+                        }
+
                         break;
                 }
             }
