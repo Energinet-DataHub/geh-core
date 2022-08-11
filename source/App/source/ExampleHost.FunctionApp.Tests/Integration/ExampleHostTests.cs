@@ -119,8 +119,8 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 new QueryResult { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.CreatePetAsync'" },
                 new QueryResult { Type = "AppDependencies", Name = "CreatePetAsync", DependencyType = "Function" },
                 new QueryResult { Type = "AppTraces", EventName = "0", Message = "ExampleHost CreatePetAsync: We should be able to find this log message by following the trace of the request." },
-                new QueryResult { Type = "AppDependencies", Name = "Message", DependencyType = "Queue Message | servicebus" },
-                new QueryResult { Type = "AppDependencies", Name = "ServiceBusSender.Send", DependencyType = "servicebus" },
+                new QueryResult { Type = "AppDependencies", Name = "Message", DependencyType = "Queue Message | Azure Service Bus" },
+                new QueryResult { Type = "AppDependencies", Name = "ServiceBusSender.Send", DependencyType = "Azure Service Bus" },
 
                 new QueryResult { Type = "AppRequests", Name = "ReceiveMessage" },
                 new QueryResult { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.CreatePetAsync' (Succeeded" },
