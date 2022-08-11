@@ -29,18 +29,18 @@ namespace RequestResponseMiddleware.Tests
             // Arrange
             var logTags = new LogTags();
 
-            var queryTags = new Dictionary<string, string>()
-            {
-                { "bundleId", "944aaf2e-aa6b-4789-b34c-d19aca4bdef8" },
-                { "marketOperator", "name" },
-                { "userId", "1234" },
-                { "userId1", "1234" },
-                { "userId2", "1234" },
-                { "userId3", "1234" },
-                { "userId4", "1234" },
-                { "userId5", "1234" },
-            };
-            logTags.AddQueryTagsCollection(queryTags);
+            var queryValue =
+                "{ \"bundleid\": \"944aaf2e-aa6b-4789-b34c-d19aca4bdef8\"," +
+                "\"marketOperator\":\"name\"," +
+                "\"userId\": \"1234\"," +
+                "\"userId1\": \"1234\"," +
+                "\"userId2\": \"1234\"," +
+                "\"userId3\": \"1234\"," +
+                "\"userId4\": \"1234\"," +
+                "\"userId5\": \"1234\" }";
+            var queryTagsCount = 8;
+
+            logTags.ParseAndAddQueryTagsCollection(queryValue);
 
             var jwtActorId = Guid.NewGuid().ToString();
             var functionName = "TestFunctionName";
@@ -83,11 +83,11 @@ namespace RequestResponseMiddleware.Tests
             var max10IndexTags = logTags.GetIndexTagsWithMax10Items();
 
             // Assert
-            var totalTags = queryTags.Count + contextTags.Count + headerTags.Count;
+            var totalTags = queryTagsCount + contextTags.Count + headerTags.Count;
             Assert.Equal(10, max10IndexTags.Count);
             Assert.Equal(totalTags, allTags.Count);
             Assert.Equal(7, allIndexTags.Count);
-            Assert.Equal(queryTags.Count, queryLogTags.Count);
+            Assert.Equal(queryTagsCount, queryLogTags.Count);
 
             Assert.True(metaDataJsonString["indextags"].Length > 50);
             Assert.True(metaDataJsonString["querytags"].Length > 30);

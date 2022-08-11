@@ -32,10 +32,9 @@ on:
 jobs:
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.5.0
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.7.0
     with:
       SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
-      DOTNET_VERSION: '6.0.301'
       USE_AZURE_FUNCTIONS_TOOLS: true
 
   # This job is relevant to allow the status check for 'Publish bundle to NuGet.org' to execute

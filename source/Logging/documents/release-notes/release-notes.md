@@ -1,5 +1,15 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 2.2.0
+
+- Use default .NET Core SDK version pre-installed on Github Runner when running CI workflow
+
+## Version 2.1.0
+
+- Upgrade Azure.Storage.Blobs to 12.13.0
+- Changed the way query parameters are parsed.
+- BUG FIX: Json in request body now does not throw error.
+
 ## Version 2.0.0
 
 - Upgrade from .NET 5 to .NET 6

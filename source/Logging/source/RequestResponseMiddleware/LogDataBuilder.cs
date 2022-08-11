@@ -54,16 +54,14 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
             FunctionContext context,
             bool isRequest)
         {
-            var bindingdata = context.BindingContext.BindingData
-                .Where(m =>
-                    !string.IsNullOrWhiteSpace(m.Key) &&
-                    !m.Key.Equals("headers", StringComparison.InvariantCultureIgnoreCase) &&
-                    !m.Key.Equals("query", StringComparison.InvariantCultureIgnoreCase))
-                .ToDictionary(e => MetaNameFormatter(e.Key), pair => pair.Value as string ?? string.Empty);
+            var queryData = context.BindingContext.BindingData.FirstOrDefault(m => string.Equals(m.Key, "query", StringComparison.InvariantCultureIgnoreCase));
 
             var logTags = new LogTags();
             logTags.AddContextTagsCollection(AddBaseInfoFromContextToDictionary(context, isRequest));
-            logTags.AddQueryTagsCollection(bindingdata);
+            if (!string.IsNullOrWhiteSpace(queryData.Value as string))
+            {
+                logTags.ParseAndAddQueryTagsCollection((string)queryData.Value);
+            }
 
             return logTags;
         }
@@ -89,12 +87,6 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware
         }
 
         internal static Func<string, string> MetaNameFormatter => s => s.Replace("-", string.Empty).ToLower();
-
-        private static Func<string, Dictionary<string, string>, string> LookUpInDictionary
-            => (n, d) =>
-                d.TryGetValue(n, out var value)
-                    ? string.IsNullOrWhiteSpace(value) ? string.Empty : $"{value}_"
-                    : string.Empty;
 
         private static Dictionary<string, string> AddBaseInfoFromContextToDictionary(
             FunctionContext context,
