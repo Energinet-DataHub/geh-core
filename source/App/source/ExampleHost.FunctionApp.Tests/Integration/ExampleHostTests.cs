@@ -133,10 +133,6 @@ namespace ExampleHost.FunctionApp.Tests.Integration
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
 
-            // UNDONE: Add Theory so we test with and without setting traceparent?
-            ////var traceParent = $"00-{Guid.NewGuid():N}-{string.Format("{0:x16}", new Random().Next(0x1000000))}-01";
-            ////request.Headers.Add("traceparent", traceParent);
-
             await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
