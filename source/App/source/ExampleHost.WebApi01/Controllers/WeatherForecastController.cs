@@ -33,8 +33,9 @@ namespace ExampleHost.WebApi01.Controllers
         [HttpGet("{identification}")]
         public async Task<string> GetAsync(string identification)
         {
-            _logger.LogInformation($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request.");
-            _logger.LogWarning($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request.");
+            var traceparent = HttpContext.Request.Headers["traceparent"].ToString();
+            _logger.LogInformation($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
+            _logger.LogWarning($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
 
             var httpClient = _httpClientFactory.CreateClient(HttpClientNames.WebApi02);
             using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/weatherforecast/{identification}");

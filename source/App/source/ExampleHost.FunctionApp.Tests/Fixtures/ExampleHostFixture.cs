@@ -41,6 +41,9 @@ namespace ExampleHost.FunctionApp.Tests.Fixtures
             ServiceBusResourceProvider = new ServiceBusResourceProvider(IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
 
             HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
+
+            // In VS 2022 17.3.0 the use of DefaultAzureCredential with LogsQueryClient fails when a token has to be retrieve using the account configured in VS 2022.
+            // As a workaround the developer can login in a shell using 'az login', or use an earlier version of VS 2022.
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         }
 

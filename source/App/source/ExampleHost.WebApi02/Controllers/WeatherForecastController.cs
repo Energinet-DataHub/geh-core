@@ -35,7 +35,8 @@ namespace ExampleHost.WebApi02.Controllers
         [HttpGet("{identification}")]
         public IEnumerable<WeatherForecast> Get(string identification)
         {
-            _logger.LogWarning($"ExampleHost WebApi02 {identification}: We should be able to find this log message by following the trace of the request.");
+            var traceparent = HttpContext.Request.Headers["traceparent"].ToString();
+            _logger.LogWarning($"ExampleHost WebApi02 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

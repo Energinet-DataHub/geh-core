@@ -73,11 +73,11 @@ namespace ExampleHost.WebApi.Tests.Integration
             {
                 new QueryResult { Type = "AppDependencies", Name = $"GET /webapi01/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
                 new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"http://localhost:5000/webapi01/weatherforecast/{requestIdentification}" },
-                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
+                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request" },
 
                 new QueryResult { Type = "AppDependencies", Name = $"GET /webapi02/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
                 new QueryResult { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"http://localhost:5001/webapi02/weatherforecast/{requestIdentification}" },
-                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification}: We should be able to find this log message by following the trace of the request." },
+                new QueryResult { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification}: We should be able to find this log message by following the trace of the request" },
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
@@ -91,7 +91,7 @@ namespace ExampleHost.WebApi.Tests.Integration
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces) on OperationId
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
+                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
                 | order by TimeGenerated asc";
 
             var query = queryWithParameters
@@ -99,8 +99,8 @@ namespace ExampleHost.WebApi.Tests.Integration
                 .Replace("{{requestIdentification}}", requestIdentification)
                 .Replace("\n", string.Empty);
 
-            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(15));
-            var waitLimit = TimeSpan.FromMinutes(10);
+            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(20));
+            var waitLimit = TimeSpan.FromMinutes(20);
             var delay = TimeSpan.FromSeconds(50);
 
             await Task.Delay(delay);
@@ -165,6 +165,9 @@ namespace ExampleHost.WebApi.Tests.Integration
                 = string.Empty;
 
             public string OperationId { get; set; }
+                = string.Empty;
+
+            public string ParentId { get; set; }
                 = string.Empty;
 
             public string Id { get; set; }

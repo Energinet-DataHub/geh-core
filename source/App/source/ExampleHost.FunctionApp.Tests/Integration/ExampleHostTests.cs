@@ -119,8 +119,8 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 new QueryResult { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.CreatePetAsync'" },
                 new QueryResult { Type = "AppDependencies", Name = "CreatePetAsync", DependencyType = "Function" },
                 new QueryResult { Type = "AppTraces", EventName = "0", Message = "ExampleHost CreatePetAsync: We should be able to find this log message by following the trace of the request." },
-                new QueryResult { Type = "AppDependencies", Name = "Message", DependencyType = "Queue Message | servicebus" },
-                new QueryResult { Type = "AppDependencies", Name = "ServiceBusSender.Send", DependencyType = "servicebus" },
+                new QueryResult { Type = "AppDependencies", Name = "Message", DependencyType = "Queue Message | Azure Service Bus" },
+                new QueryResult { Type = "AppDependencies", Name = "ServiceBusSender.Send", DependencyType = "Azure Service Bus" },
 
                 new QueryResult { Type = "AppRequests", Name = "ReceiveMessage" },
                 new QueryResult { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.CreatePetAsync' (Succeeded" },
@@ -132,6 +132,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+
             await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
             await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
@@ -149,7 +150,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 OperationIds
                   | join(union AppRequests, AppDependencies, AppTraces) on OperationId
                   | extend parsedProp = parse_json(Properties)
-                  | project TimeGenerated, OperationId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Properties
+                  | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Properties
                   | order by TimeGenerated asc";
 
             var query = queryWithParameters
@@ -158,8 +159,8 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 .Replace("{{$receiveMessageInvocationId}}", receiveMessageInvocationId)
                 .Replace("\n", string.Empty);
 
-            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(15));
-            var waitLimit = TimeSpan.FromMinutes(10);
+            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(20));
+            var waitLimit = TimeSpan.FromMinutes(20);
             var delay = TimeSpan.FromSeconds(50);
 
             await Task.Delay(delay);
@@ -180,12 +181,12 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                     waitLimit,
                     delay);
 
-            wasEventsLogged.Should().BeTrue($"'Was expected to log {expectedEvents.Count} number of events, but found {actualCount}.'");
+            wasEventsLogged.Should().BeTrue($"'Was expected to log {expectedEvents.Count} number of events, but found {actualCount}. See log output for details.'");
         }
 
         private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
         {
-            if (actualResults.Count != expectedEvents.Count)
+            if (actualResults.Count < expectedEvents.Count)
             {
                 return false;
             }
@@ -195,21 +196,42 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 switch (expected.Type)
                 {
                     case "AppRequests":
-                        actualResults.First(actual =>
+                        var appRequestsExists = actualResults.Any(actual =>
                             actual.Name == expected.Name);
+
+                        if (!appRequestsExists)
+                        {
+                            Fixture.TestLogger.WriteLine($"Did not find expected AppRequests: Name='{expected.Name}'");
+                            return false;
+                        }
+
                         break;
 
                     case "AppDependencies":
-                        actualResults.First(actual =>
+                        var appDependenciesExists = actualResults.Any(actual =>
                             actual.Name == expected.Name
                             && actual.DependencyType == expected.DependencyType);
+
+                        if (!appDependenciesExists)
+                        {
+                            Fixture.TestLogger.WriteLine($"Did not find expected AppDependencies: Name='{expected.Name}' DependencyType='{expected.DependencyType}'");
+                            return false;
+                        }
+
                         break;
 
                     // "AppTraces"
                     default:
-                        actualResults.First(actual =>
+                        var appTracesExists = actualResults.Any(actual =>
                             actual.EventName == expected.EventName
                             && actual.Message.StartsWith(expected.Message));
+
+                        if (!appTracesExists)
+                        {
+                            Fixture.TestLogger.WriteLine($"Did not find expected AppTrace: EventName='{expected.EventName}' Message='{expected.Message}'");
+                            return false;
+                        }
+
                         break;
                 }
             }
@@ -248,6 +270,9 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 = string.Empty;
 
             public string OperationId { get; set; }
+                = string.Empty;
+
+            public string ParentId { get; set; }
                 = string.Empty;
 
             public string Id { get; set; }
