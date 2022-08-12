@@ -14,6 +14,12 @@ The bundle contains the following packages:
 
 The packages contain types commonly used by domain teams when implementing Azure Function App's and Web App's.
 
+## Important
+
+Running `ExampleHost.FunctionApp.Tests` with VS 2022 17.3.0 will fail if not the user is logged in using `az login` in a shell. 
+
+This is a bug in VS 2022 17.3.0, it is possible to use earlier versions of VS 2022.
+
 ## Workflows
 
 ### `app-common-bundle-publish.yml`
