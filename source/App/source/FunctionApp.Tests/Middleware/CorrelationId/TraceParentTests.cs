@@ -13,31 +13,31 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.CorrelationId
 {
-    public class TraceContextTests
+    public class TraceParentTests
     {
         [Theory]
         [InlineData("", false)]
         [InlineData("00,0af7651916cd43dd8448eb211c80319c,b9c7c989f97918e1,00", false)] // wrong separator used
-        [InlineData("00-0af7651916cd43dd8448eb211c80319-b9c7c989f97918e1-00-", false)] // TraceContext > 55
-        [InlineData("00-0af7651916cd43dd8448eb211c80319-b9c7c989f97918e1-0", false)] // TraceContext < 55
+        [InlineData("00-0af7651916cd43dd8448eb211c80319-b9c7c989f97918e1-00-", false)] // TraceParent > 55
+        [InlineData("00-0af7651916cd43dd8448eb211c80319-b9c7c989f97918e1-0", false)] // TraceParent < 55
         [InlineData("00-0af7651916cd43dd8448eb211c80319c-b9c7c989f97918e1", false)] // parts < 4
         [InlineData("00-0af7651916cd43dd8448eb211c80319c-b9c7c989f97918e1-00-1", false)] // parts > 4
         [InlineData("00-0af7651916cd43dd8448eb211c80319-b9c7c989f97918e1-00", false)] // TraceId < 32
         [InlineData("00-0af7651916cd43dd8448eb211c80319cd-b9c7c989f97918e1-00", false)] // TraceId > 32
         [InlineData("00-0af7651916cd43dd8448eb211c80319-b9c7c989f97918e-00", false)] // ParentId < 16
         [InlineData("00-0af7651916cd43dd8448eb211c80319-b9c7c989f97918e12-00", false)] // ParentId > 16
+        [InlineData("01-0af7651916cd43dd8448eb211c80319c-b9c7c989f97918e1-00", false)] // Version != 01
         [InlineData("00-0af7651916cd43dd8448eb211c80319c-b9c7c989f97918e1-00", true)]
-        public void TraceContextShouldParse(string traceContextString, bool validated)
+        public void TraceParentShouldParse(string traceParentString, bool validated)
         {
-            var traceContext = TraceContext.Parse(traceContextString);
+            var traceParent = TraceParent.Parse(traceParentString);
 
-            traceContext.IsValid.Should().Be(validated);
+            traceParent.IsValid.Should().Be(validated);
         }
     }
 }

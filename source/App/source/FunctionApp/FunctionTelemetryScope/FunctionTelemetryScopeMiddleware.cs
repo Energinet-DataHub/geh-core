@@ -35,12 +35,12 @@ namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var traceContext = TraceContext.Parse(context.TraceContext.TraceParent);
+            var traceParent = TraceParent.Parse(context.TraceContext.TraceParent);
 
             var operation = _telemetryClient.StartOperation<DependencyTelemetry>(
                 context.FunctionDefinition.Name,
-                traceContext.TraceId,
-                traceContext.ParentId);
+                traceParent.TraceId,
+                traceParent.ParentId);
 
             operation.Telemetry.Type = "Function";
             try

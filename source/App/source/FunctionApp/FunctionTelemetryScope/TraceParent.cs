@@ -17,15 +17,15 @@ using System.Diagnostics.CodeAnalysis;
 namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope
 {
     /// <summary>
-    /// Implementation of w3c trace context
+    /// Implementation of W3C Trace Context ('traceparent' header).
     /// </summary>
     /// <remarks>
-    /// For now, the implementation doesn't handle all validation nor uses version or flags.
+    /// For now, the implementation doesn't handle all validation nor uses flags.
     /// Specification can be found here: https://www.w3.org/TR/trace-context/#trace-id
     /// </remarks>
-    internal sealed class TraceContext
+    internal sealed class TraceParent
     {
-        private TraceContext(string traceId, string parentId, bool isValid)
+        private TraceParent(string traceId, string parentId, bool isValid)
         {
             TraceId = traceId;
             ParentId = parentId;
@@ -38,21 +38,24 @@ namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope
 
         public bool IsValid { get; }
 
-        public static TraceContext Parse(string traceContext)
+        public static TraceParent Parse(string traceParent)
         {
-            if (string.IsNullOrWhiteSpace(traceContext)) return Invalid();
+            if (string.IsNullOrWhiteSpace(traceParent)) return Invalid();
 
             // 55 is the valid length of trace context.
             // An example looks like this: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
-            if (traceContext.Length != 55) return Invalid();
+            if (traceParent.Length != 55) return Invalid();
 
-            var parts = traceContext.Split('-');
+            var parts = traceParent.Split('-');
 
             // Trace context is made up of four parts: version-format, trace-id, parent-id and trace-flags.
             if (parts.Length != 4) return Invalid();
 
+            var version = parts[0];
             var traceId = parts[1];
             var parentId = parts[2];
+
+            if (version != "00") return Invalid();
 
             // 32 is the valid length of trace-id
             if (traceId.Length != 32) return Invalid();
@@ -63,17 +66,17 @@ namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope
             return Create(traceId, parentId);
         }
 
-        private static TraceContext Create(string traceId, string parentId)
+        private static TraceParent Create(string traceId, string parentId)
         {
-            return new TraceContext(
+            return new TraceParent(
                 traceId,
                 parentId,
                 true);
         }
 
-        private static TraceContext Invalid()
+        private static TraceParent Invalid()
         {
-            return new TraceContext(
+            return new TraceParent(
                 string.Empty,
                 string.Empty,
                 false);
