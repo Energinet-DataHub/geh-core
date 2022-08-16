@@ -8,6 +8,11 @@ In the following we will use the term _NuGet package bundle_ when referring to a
 
 ## Multiple NuGet packages in mono repository
 
+i342 h352 tao asdf write1!
+
+
+
+
 It is important to read and understand this section before changing anything. The fundamental idea behind the organization of this repository, and how everything works together, is to support:
 
 * [KISS principle](https://en.wikipedia.org/wiki/KISS_principle)
