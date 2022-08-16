@@ -57,6 +57,25 @@ namespace ExampleHost.FunctionApp.Tests.Integration
             return Task.CompletedTask;
         }
 
+        public static IEnumerable<object[]> TraceParentParameters()
+        {
+            yield return new object[]
+            {
+                TraceParentTestData.Empty,
+            };
+
+            yield return new object[]
+            {
+                new TraceParentTestData
+                {
+                     Version = "00",
+                     TraceId = Guid.NewGuid().ToString("N"),
+                     ParentId = string.Format("{0:x16}", new Random().Next(0x1000000)),
+                     TraceFlags = "01",
+                },
+            };
+        }
+
         /// <summary>
         /// Verify sunshine scenario.
         /// </summary>
@@ -111,9 +130,8 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         /// </code>
         /// </summary>
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task Middleware_Should_CauseExpectedEventsToBeLogged(bool setTraceparentHeader)
+        [MemberData(nameof(TraceParentParameters))]
+        public async Task Middleware_Should_CauseExpectedEventsToBeLogged(TraceParentTestData traceParentTestData)
         {
             var expectedEvents = new List<QueryResult>
             {
@@ -134,14 +152,9 @@ namespace ExampleHost.FunctionApp.Tests.Integration
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
-            if (setTraceparentHeader)
+            if (traceParentTestData != TraceParentTestData.Empty)
             {
-                var version = "00";
-                var traceId = Guid.NewGuid().ToString("N");
-                var parentId = string.Format("{0:x16}", new Random().Next(0x1000000));
-                var traceFlags = "01";
-
-                var traceParent = $"{version}-{traceId}-{parentId}-{traceFlags}";
+                var traceParent = $"{traceParentTestData.Version}-{traceParentTestData.TraceId}-{traceParentTestData.ParentId}-{traceParentTestData.TraceFlags}";
                 request.Headers.Add("traceparent", traceParent);
             }
 
@@ -188,7 +201,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                             queryTimerange);
 
                         actualCount = actualResponse.Value.Count;
-                        return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
+                        return ContainsExpectedEvents(expectedEvents, actualResponse.Value, traceParentTestData);
                     },
                     waitLimit,
                     delay);
@@ -196,7 +209,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
             wasEventsLogged.Should().BeTrue($"'Was expected to log {expectedEvents.Count} number of events, but found {actualCount}. See log output for details.'");
         }
 
-        private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
+        private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults, TraceParentTestData traceParentTestData)
         {
             if (actualResults.Count < expectedEvents.Count)
             {
@@ -248,7 +261,15 @@ namespace ExampleHost.FunctionApp.Tests.Integration
                 }
             }
 
-            return true;
+            if (traceParentTestData == TraceParentTestData.Empty)
+            {
+                return true;
+            }
+
+            // If we added ´traceparent´ header while requesting, the Trace Id and Parent Id will be set for the first activity.
+            return actualResults.Any(actual =>
+                actual.OperationId == traceParentTestData.TraceId
+                && actual.ParentId == traceParentTestData.ParentId);
         }
 
         private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
@@ -274,6 +295,24 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         private void AssertNoExceptionsThrown()
         {
             Fixture.App01HostManager.CheckIfFunctionThrewException().Should().BeFalse();
+        }
+
+        public record TraceParentTestData
+        {
+            public static TraceParentTestData Empty { get; }
+                = new TraceParentTestData();
+
+            public string Version { get; set; }
+                = string.Empty;
+
+            public string TraceId { get; set; }
+                = string.Empty;
+
+            public string ParentId { get; set; }
+                = string.Empty;
+
+            public string TraceFlags { get; set; }
+                = string.Empty;
         }
 
         private class QueryResult
