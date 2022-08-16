@@ -38,6 +38,9 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         {
             Fixture = fixture;
             Fixture.SetTestOutputHelper(testOutputHelper);
+
+            Fixture.App01HostManager.ClearHostLog();
+            Fixture.App02HostManager.ClearHostLog();
         }
 
         private ExampleHostFixture Fixture { get; }
@@ -107,8 +110,10 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         ///     services.AddScoped{FunctionTelemetryScopeMiddleware}();
         /// </code>
         /// </summary>
-        [Fact]
-        public async Task Middleware_Should_CauseExpectedEventsToBeLogged()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Middleware_Should_CauseExpectedEventsToBeLogged(bool setTraceparentHeader)
         {
             var expectedEvents = new List<QueryResult>
             {
@@ -129,6 +134,16 @@ namespace ExampleHost.FunctionApp.Tests.Integration
             };
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+            if (setTraceparentHeader)
+            {
+                var version = "00";
+                var traceId = Guid.NewGuid().ToString("N");
+                var parentId = string.Format("{0:x16}", new Random().Next(0x1000000));
+                var traceFlags = "01";
+
+                var traceParent = $"{version}-{traceId}-{parentId}-{traceFlags}";
+                request.Headers.Add("traceparent", traceParent);
+            }
 
             await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
