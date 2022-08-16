@@ -98,15 +98,12 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         ///
         /// 1: Both hosts must call "ConfigureFunctionsWorkerDefaults" with the following:
         /// <code>
-        ///     builder.UseMiddleware{CorrelationIdMiddleware}();
         ///     builder.UseMiddleware{FunctionTelemetryScopeMiddleware}();
         /// </code>
         ///
         /// 2: Both hosts must call "ConfigureServices" with the following:
         /// <code>
         ///     services.AddApplicationInsightsTelemetryWorkerService();
-        ///     services.AddScoped{ICorrelationContext, CorrelationContext}();
-        ///     services.AddScoped{CorrelationIdMiddleware}();
         ///     services.AddScoped{FunctionTelemetryScopeMiddleware}();
         /// </code>
         /// </summary>

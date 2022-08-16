@@ -33,8 +33,6 @@ var host = new HostBuilder()
         //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/760
         //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705
 
-        //// UNDONE: Track custom operations with App Insights SDK's [https://docs.microsoft.com/en-us/azure/azure-monitor/app/custom-operations-tracking]
-
         // CONCLUSION: We can use ILogger<> without calling the following:
         ////services.AddLogging();
 
