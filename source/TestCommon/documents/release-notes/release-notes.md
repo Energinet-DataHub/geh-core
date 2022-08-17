@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.3.0
+
+- Bump version as part of pipeline change
+
 ## Version 3.2.0
 
 - Use default .NET Core SDK version pre-installed on Github Runner when running CI workflow
