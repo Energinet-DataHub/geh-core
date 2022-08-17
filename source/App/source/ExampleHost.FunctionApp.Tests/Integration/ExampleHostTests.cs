@@ -123,10 +123,9 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         ///     builder.UseMiddleware{FunctionTelemetryScopeMiddleware}();
         /// </code>
         ///
-        /// 2: Both hosts must call "ConfigureServices" with the following:
+        /// 2: Both hosts must call "ConfigureServices" with the following DataHub developed extension:
         /// <code>
-        ///     services.AddApplicationInsightsTelemetryWorkerService();
-        ///     services.AddScoped{FunctionTelemetryScopeMiddleware}();
+        ///     services.AddApplicationInsights();
         /// </code>
         /// </summary>
         [Theory]

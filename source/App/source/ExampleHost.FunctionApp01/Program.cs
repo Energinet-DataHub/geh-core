@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using ExampleHost.FunctionApp01.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,8 +37,7 @@ var host = new HostBuilder()
         // CONCLUSION: We can use ILogger<> without calling the following:
         ////services.AddLogging();
 
-        services.AddApplicationInsightsTelemetryWorkerService();
-        services.AddScoped<FunctionTelemetryScopeMiddleware>();
+        services.AddApplicationInsights();
 
         services.AddSingleton(_ =>
         {

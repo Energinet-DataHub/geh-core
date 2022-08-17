@@ -29,8 +29,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddApplicationInsights(this IServiceCollection services)
         {
-            // TODO: Uncomment, when packages has been updated.
-            ////services.AddApplicationInsightsTelemetryWorkerService();
+            services.AddApplicationInsightsTelemetryWorkerService();
             services.TryAddScoped<FunctionTelemetryScopeMiddleware>();
 
             return services;
