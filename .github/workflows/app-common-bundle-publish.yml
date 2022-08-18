@@ -51,6 +51,10 @@ env:
   # Overrides settings in 'functionhost.settings.json'
   FunctionAppHostPath: '${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
 
   build_and_publish:
@@ -58,17 +62,14 @@ jobs:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
-    permissions:
-      contents: read
-
     environment: CI
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.8.0
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.8.0
         with:
           USE_AZURE_FUNCTIONS_TOOLS: 'true'
           NODE_VERSION: '16'
@@ -76,48 +77,47 @@ jobs:
           AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.8.0
         with:
           SOLUTION_FILE_PATH: './source/App/App.sln'
           CODE_COVERAGE_FLAGS: appcommon
           AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID }}
-          AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
+          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
       - name: Pack Common project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.8.0
         with:
           PROJECT_PATH: './source/App/source/Common/Common.csproj'
 
       - name: Pack Common.Abstractions project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.8.0
         with:
           PROJECT_PATH: './source/App/source/Common.Abstractions/Common.Abstractions.csproj'
 
       - name: Pack Common.Security project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.8.0
         with:
           PROJECT_PATH: './source/App/source/Common.Security/Common.Security.csproj'
 
       - name: Pack FunctionApp project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.8.0
         with:
           PROJECT_PATH: './source/App/source/FunctionApp/FunctionApp.csproj'
 
       - name: Pack WebApp project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.8.0
         with:
           PROJECT_PATH: './source/App/source/WebApp/WebApp.csproj'
 
       - name: Pack FunctionApp.SimpleInjector project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.8.0
         with:
           PROJECT_PATH: './source/App/source/FunctionApp.SimpleInjector/FunctionApp.SimpleInjector.csproj'
 
       - name: Pack WebApp.SimpleInjector project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.8.0
         with:
           PROJECT_PATH: './source/App/source/WebApp.SimpleInjector/WebApp.SimpleInjector.csproj'
 
@@ -136,7 +136,7 @@ jobs:
             .github/workflows/app-common-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.8.0
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
