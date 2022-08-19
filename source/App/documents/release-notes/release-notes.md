@@ -1,5 +1,11 @@
 # App Release notes
 
+## Version 5.0.0
+
+- **Beaking change:** Renamed class `TraceContext` to `TraceParent`.
+- Implemented Function App extension `AddApplicationInsights` documented [here](..\extensions.md#application-insights).
+- Updated all dependent NuGet packags to latest versions.
+
 ## Version 4.1.1
 
 - Bump version as part of pipeline change

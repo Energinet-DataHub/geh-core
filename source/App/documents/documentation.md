@@ -4,6 +4,8 @@ A library containing common functionality for Azure Functions and ASP.Net Core W
 
 ## Overview
 
+- Extensions
+  - [Application Insights](extensions.md#application-insights)
 - Middleware
   - [JWT Token Middleware](middleware.md#jwt-token-middleware)
   - [Actor Middleware](middleware.md#actor-middleware)
