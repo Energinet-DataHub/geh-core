@@ -27,9 +27,9 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
         {
             var eventMetadata = _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
 
-            VerifyExists(eventMetadata.MessageType);
-            VerifyExists(eventMetadata.OperationTimestamp);
-            VerifyExists(eventMetadata.OperationCorrelationId);
+            VerifyValueExists(eventMetadata.MessageType);
+            VerifyValueExists(eventMetadata.OperationTimestamp);
+            VerifyValueExists(eventMetadata.OperationCorrelationId);
 
             return eventMetadata;
         }
@@ -45,7 +45,7 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
             _eventMetadata = new IntegrationEventMetadata(messageType, operationTimeStamp, operationCorrelationId);
         }
 
-        private static void VerifyExists(string value, [CallerArgumentExpression("value")] string? paramName = null)
+        private static void VerifyValueExists(string value, [CallerArgumentExpression("value")] string? paramName = null)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -53,7 +53,7 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
             }
         }
 
-        private static void VerifyExists(Instant value, [CallerArgumentExpression("value")] string? paramName = null)
+        private static void VerifyValueExists(Instant value, [CallerArgumentExpression("value")] string? paramName = null)
         {
             if (value == default)
             {
