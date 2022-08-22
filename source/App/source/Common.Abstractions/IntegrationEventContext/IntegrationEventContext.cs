@@ -24,7 +24,13 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
 
         public IntegrationEventMetadata ReadMetadata()
         {
-            return _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
+            var eventMetadata = _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
+
+            VerifyMessageType(eventMetadata.MessageType);
+            VerifyOperationTimeStamp(eventMetadata.OperationTimestamp);
+            VerifyCorrelationId(eventMetadata.OperationCorrelationId);
+
+            return eventMetadata;
         }
 
         public bool TryReadMetadata([NotNullWhen(true)] out IntegrationEventMetadata? metadata)
@@ -36,6 +42,30 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
         public void SetMetadata(string messageType, Instant operationTimeStamp, string operationCorrelationId)
         {
             _eventMetadata = new IntegrationEventMetadata(messageType, operationTimeStamp, operationCorrelationId);
+        }
+
+        private static void VerifyMessageType(string messageType)
+        {
+            if (string.IsNullOrWhiteSpace(messageType))
+            {
+                throw new InvalidOperationException("MessageType metadata is missing.");
+            }
+        }
+
+        private static void VerifyOperationTimeStamp(Instant operationTimestamp)
+        {
+            if (operationTimestamp == default)
+            {
+                throw new InvalidOperationException("OperationTimestamp metadata is missing.");
+            }
+        }
+
+        private static void VerifyCorrelationId(string operationCorrelationId)
+        {
+            if (string.IsNullOrWhiteSpace(operationCorrelationId))
+            {
+                throw new InvalidOperationException("OperationCorrelationId metadata is missing.");
+            }
         }
     }
 }
