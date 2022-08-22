@@ -14,6 +14,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
@@ -24,7 +25,13 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
 
         public IntegrationEventMetadata ReadMetadata()
         {
-            return _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
+            var eventMetadata = _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
+
+            VerifyValueExists(eventMetadata.MessageType);
+            VerifyValueExists(eventMetadata.OperationTimestamp);
+            VerifyValueExists(eventMetadata.OperationCorrelationId);
+
+            return eventMetadata;
         }
 
         public bool TryReadMetadata([NotNullWhen(true)] out IntegrationEventMetadata? metadata)
@@ -36,6 +43,22 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
         public void SetMetadata(string messageType, Instant operationTimeStamp, string operationCorrelationId)
         {
             _eventMetadata = new IntegrationEventMetadata(messageType, operationTimeStamp, operationCorrelationId);
+        }
+
+        private static void VerifyValueExists(string value, [CallerArgumentExpression("value")] string? paramName = null)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new InvalidOperationException($"{paramName} metadata is missing.");
+            }
+        }
+
+        private static void VerifyValueExists(Instant value, [CallerArgumentExpression("value")] string? paramName = null)
+        {
+            if (value == default)
+            {
+                throw new InvalidOperationException($"{paramName} metadata is missing.");
+            }
         }
     }
 }

@@ -89,5 +89,59 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
                 .Should()
                 .Throw<InvalidOperationException>();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void ReadMetadata_WhenMessageTypeNotSet_ThrowsException(string invalidMessageType)
+        {
+            // Arrange
+            var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
+
+            // Act
+            target.SetMetadata(invalidMessageType, Instant.MaxValue, "8CD445F0-786B-4F8A-ACC5-F9E23339448E");
+
+            // Act + Assert
+            target
+                .Invoking(t => t.ReadMetadata())
+                .Should()
+                .Throw<InvalidOperationException>();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void ReadMetadata_WhenCorrelationIdNotSet_ThrowsException(string invalidCorrelationId)
+        {
+            // Arrange
+            var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
+
+            // Act
+            target.SetMetadata("some_message_type", Instant.MaxValue, invalidCorrelationId);
+
+            // Act + Assert
+            target
+                .Invoking(t => t.ReadMetadata())
+                .Should()
+                .Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void ReadMetadata_WhenOperationTimestampNotSet_ThrowsException()
+        {
+            // Arrange
+            var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
+
+            // Act
+            target.SetMetadata("some_message_type", default, "7BADED58-00E3-44FB-BE64-B42648478C81");
+
+            // Act + Assert
+            target
+                .Invoking(t => t.ReadMetadata())
+                .Should()
+                .Throw<InvalidOperationException>();
+        }
     }
 }

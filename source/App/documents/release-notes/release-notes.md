@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 5.0.1
+
+- ReadMetadata() now correctly throws when data is missing.
+
 ## Version 5.0.0
 
 - **Beaking change:** Renamed class `TraceContext` to `TraceParent`.
