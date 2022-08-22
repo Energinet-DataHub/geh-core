@@ -14,6 +14,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
@@ -26,9 +27,9 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
         {
             var eventMetadata = _eventMetadata ?? throw new InvalidOperationException("Metadata for integration event has not been set.");
 
-            VerifyMessageType(eventMetadata.MessageType);
-            VerifyOperationTimeStamp(eventMetadata.OperationTimestamp);
-            VerifyCorrelationId(eventMetadata.OperationCorrelationId);
+            VerifyExists(eventMetadata.MessageType);
+            VerifyExists(eventMetadata.OperationTimestamp);
+            VerifyExists(eventMetadata.OperationCorrelationId);
 
             return eventMetadata;
         }
@@ -44,27 +45,19 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext
             _eventMetadata = new IntegrationEventMetadata(messageType, operationTimeStamp, operationCorrelationId);
         }
 
-        private static void VerifyMessageType(string messageType)
+        private static void VerifyExists(string value, [CallerArgumentExpression("value")] string? paramName = null)
         {
-            if (string.IsNullOrWhiteSpace(messageType))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                throw new InvalidOperationException("MessageType metadata is missing.");
+                throw new InvalidOperationException($"{paramName} metadata is missing.");
             }
         }
 
-        private static void VerifyOperationTimeStamp(Instant operationTimestamp)
+        private static void VerifyExists(Instant value, [CallerArgumentExpression("value")] string? paramName = null)
         {
-            if (operationTimestamp == default)
+            if (value == default)
             {
-                throw new InvalidOperationException("OperationTimestamp metadata is missing.");
-            }
-        }
-
-        private static void VerifyCorrelationId(string operationCorrelationId)
-        {
-            if (string.IsNullOrWhiteSpace(operationCorrelationId))
-            {
-                throw new InvalidOperationException("OperationCorrelationId metadata is missing.");
+                throw new InvalidOperationException($"{paramName} metadata is missing.");
             }
         }
     }
