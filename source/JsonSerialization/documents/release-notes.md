@@ -1,5 +1,9 @@
 # JsonSerialization Release Notes
 
+## Version 2.1.1
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 2.1.0
 
 - Use default .NET Core SDK version pre-installed on Github Runner when running CI workflow
