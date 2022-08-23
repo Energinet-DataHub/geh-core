@@ -51,22 +51,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v8
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.7.0
-      
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v8
+
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v8
         with:
           SOLUTION_FILE_PATH: './source/SchemaValidation/SchemaValidation.sln'
           CODE_COVERAGE_FLAGS: schemavalidation
 
       - name: Pack SchemaValidation project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
-        with: 
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v8
+        with:
           PROJECT_PATH: './source/SchemaValidation/source/SchemaValidation/SchemaValidation.csproj'
-      
+
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v17.2
@@ -76,7 +76,7 @@ jobs:
             .github/workflows/schemavalidation-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v8
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
