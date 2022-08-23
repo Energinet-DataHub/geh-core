@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 5.0.2
+
+- Bump version as part of pipeline change
+
 ## Version 5.0.1
 
 - ReadMetadata() now correctly throws when data is missing.
