@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.2.2
+
+- Bump version as part of pipeline change
+
 ## Version 3.2.1
 
 - Bump version as part of pipeline change
