@@ -42,7 +42,7 @@ env:
 jobs:
 
   build_and_publish:
-    
+
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
@@ -51,19 +51,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v8
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v8
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v8
         with:
           SOLUTION_FILE_PATH: './source/Logging/Logging.sln'
           CODE_COVERAGE_FLAGS: logging
 
       - name: Pack RequestResponseMiddleware project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v8
         with:
           PROJECT_PATH: './source/Logging/source/RequestResponseMiddleware/RequestResponseMiddleware.csproj'
 
@@ -76,7 +76,7 @@ jobs:
             .github/workflows/logging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v8
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
