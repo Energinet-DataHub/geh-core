@@ -26,7 +26,7 @@ limitations under the License.
 
 	<PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Logging</PackageId>
-    <PackageVersion>2.2.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.2.1$(VersionSuffix)</PackageVersion>
     <Title>Logging Middleware For Requests and Responses</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
