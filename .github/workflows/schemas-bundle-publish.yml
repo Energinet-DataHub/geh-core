@@ -51,19 +51,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v7
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v7
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v7
         with:
           SOLUTION_FILE_PATH: './source/Schemas/Schemas.sln'
           USE_CODE_COVERAGE: 'false'
 
       - name: Pack Schemas project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v7
         with:
           PROJECT_PATH: './source/Schemas/source/Schemas/Schemas.csproj'
 
@@ -76,7 +76,7 @@ jobs:
             .github/workflows/schemas-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@7.7.0
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v7
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
