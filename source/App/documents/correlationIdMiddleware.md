@@ -3,7 +3,7 @@
 Contains a middleware implementation of exposing the `CorrelationId` from the `FunctionContext` from either a `HttpTrigger` or `ServiceBusTrigger`.
 
 ### HttpTrigger
-The CorrelationId is parsed from a http-header named `Correlation-ID`
+The CorrelationId is parsed from a http-header named `CorrelationId`
 
 ### ServiceBusTrigger
 The CorrelationId is parsed from a user property named `OperationCorrelationId`

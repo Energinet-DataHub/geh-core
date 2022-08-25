@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 6.0.0
+
+- Change `CorrelationIdMiddleware` to use `CorrelationId` header instead of `Correlation-ID` header.
+
 ## Version 5.0.2
 
 - Bump version as part of pipeline change
