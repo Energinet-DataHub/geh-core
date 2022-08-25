@@ -232,7 +232,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
 
             context.BindingContext
                 .Setup(bindingContext => bindingContext.BindingData)
-                .Returns(SetupHeaders("Correlation-ID", operationCorrelationId));
+                .Returns(SetupHeaders("CorrelationId", operationCorrelationId));
 
             // Act
             await target.Invoke(context.FunctionContext, _ => Task.CompletedTask);
@@ -243,10 +243,10 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware
         }
 
         [Theory]
-        [InlineData("CORRELATION-ID")]
-        [InlineData("correlation-ID")]
-        [InlineData("Correlation-ID")]
-        [InlineData("correlation-id")]
+        [InlineData("CORRELATIONID")]
+        [InlineData("correlationID")]
+        [InlineData("CorrelationID")]
+        [InlineData("correlationid")]
         public async Task Invoke_HttpTriggerWithDifferentCasing_SetsCorrelationId(string headerName)
         {
             // Arrange
