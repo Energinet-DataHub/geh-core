@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.App.Common.Tests.Fixtures;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Core.App.Common.Tests.Security
+namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
 {
     public class JwtTokenValidatorTests : IClassFixture<B2CFixture>
     {
