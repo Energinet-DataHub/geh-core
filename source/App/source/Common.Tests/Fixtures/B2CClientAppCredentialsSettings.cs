@@ -15,9 +15,10 @@
 namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
 {
     /// <summary>
-    /// Settings necessary for aquiring an access token from the B2C tenant using the client credentials flow.
+    /// Settings necessary for aquiring an access token for a client app, from the B2C tenant,
+    /// using the client credentials flow.
     /// </summary>
     /// <param name="ClientId"></param>
     /// <param name="ClientSecret"></param>
-    public record ClientCredentialsSettings(string ClientId, string ClientSecret);
+    public record B2CClientAppCredentialsSettings(string ClientId, string ClientSecret);
 }
