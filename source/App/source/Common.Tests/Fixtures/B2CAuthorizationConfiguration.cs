@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using GreenEnergyHub.Charges.IntegrationTest.Core.TestHelpers;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
@@ -69,7 +68,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
         /// <summary>
         /// Client apps settings.
         /// </summary>
-        public IEnumerable<B2CClientAppSettings> ClientApps { get; }
+        public IReadOnlyDictionary<string, B2CClientAppSettings> ClientApps { get; }
 
         /// <summary>
         /// The B2C tenant id in the configured environment.
@@ -104,11 +103,11 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
         private IConfigurationRoot SecretsConfiguration { get; }
 
         /// <summary>
-        /// Create a list of B2C 'test client apps' each with own settings necessary to acquire an access token in a configured environment.
+        /// Create a dictionary of B2C 'test client apps' each with own settings necessary to acquire an access token in a configured environment.
         /// </summary>
         /// <param name="clientNames">List of client names or shorthands. For many clients the name is a team name.</param>
         /// <returns>A list of B2C 'test clients apps'.</returns>
-        private IEnumerable<B2CClientAppSettings> CreateClientApps(IEnumerable<string> clientNames)
+        private IReadOnlyDictionary<string, B2CClientAppSettings> CreateClientApps(IEnumerable<string> clientNames)
         {
             return clientNames
                 .Select(clientName => new B2CClientAppSettings(
@@ -116,7 +115,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
                         new B2CClientAppCredentialsSettings(
                             SecretsConfiguration.GetValue<string>(BuildB2CClientSecretName(Environment, clientName, "client-id")),
                             SecretsConfiguration.GetValue<string>(BuildB2CClientSecretName(Environment, clientName, "client-secret")))))
-                .ToList();
+                .ToDictionary(o => o.Name, o => o);
         }
 
         /// <summary>

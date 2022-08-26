@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Tests.Fixtures;
-
-namespace GreenEnergyHub.Charges.IntegrationTest.Core.TestHelpers
+namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
 {
     /// <summary>
     /// Name and credential settings for a B2C 'test client app'.

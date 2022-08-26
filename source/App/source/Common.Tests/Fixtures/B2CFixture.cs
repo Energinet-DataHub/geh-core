@@ -36,8 +36,15 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
                 usedFromSystemTests: false,
                 environment: Environment,
                 new List<string> { SystemOperator });
+
+            BackendAppAuthenticationClient = new B2CAppAuthenticationClient(
+                AuthorizationConfiguration.TenantId,
+                AuthorizationConfiguration.BackendApp,
+                AuthorizationConfiguration.ClientApps[SystemOperator]);
         }
 
         public B2CAuthorizationConfiguration AuthorizationConfiguration { get; }
+
+        public B2CAppAuthenticationClient BackendAppAuthenticationClient { get; }
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Tests.Fixtures;
 using FluentAssertions;
 using Xunit;
@@ -31,6 +32,13 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         public void ClientApps_Should_ContainSingle()
         {
             Fixture.AuthorizationConfiguration.ClientApps.Should().ContainSingle();
+        }
+
+        [Fact]
+        public async Task BackendAppAuthenticationClient_Should_RetrieveToken()
+        {
+            var token = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+            token.Should().NotBeNull();
         }
     }
 }
