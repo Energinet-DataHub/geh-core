@@ -12,12 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Tests.Fixtures;
+using FluentAssertions;
+using Xunit;
+
 namespace Energinet.DataHub.Core.App.Common.Tests.Security
 {
-    public class JwtTokenValidatorTests
+    public class JwtTokenValidatorTests : IClassFixture<B2CFixture>
     {
-        public JwtTokenValidatorTests()
+        public JwtTokenValidatorTests(B2CFixture fixture)
         {
+            Fixture = fixture;
+        }
+
+        private B2CFixture Fixture { get; }
+
+        [Fact]
+        public void ClientApps_Should_ContainSingle()
+        {
+            Fixture.AuthorizationConfiguration.ClientApps.Should().ContainSingle();
         }
     }
 }
