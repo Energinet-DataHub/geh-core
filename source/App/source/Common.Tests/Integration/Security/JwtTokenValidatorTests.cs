@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.Common.Tests.Fixtures;
 using FluentAssertions;
 using Xunit;
@@ -29,16 +30,19 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         private B2CFixture Fixture { get; }
 
         [Fact]
-        public void ClientApps_Should_ContainSingle()
+        public async Task Given_ValidToken_When_CallingValidateTokenAsync_Then_IsValidAndClaimsPrincipalIsNotNull()
         {
-            Fixture.AuthorizationConfiguration.ClientApps.Should().ContainSingle();
-        }
+            var tokenResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
 
-        [Fact]
-        public async Task BackendAppAuthenticationClient_Should_RetrieveToken()
-        {
-            var token = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
-            token.Should().NotBeNull();
+            var openIdSettings = new OpenIdSettings(
+                $"https://login.microsoftonline.com/{Fixture.AuthorizationConfiguration.TenantId}/v2.0/.well-known/openid-configuration",
+                Fixture.BackendAppAuthenticationClient.AppSettings.AppId);
+            var sut = new JwtTokenValidator(openIdSettings);
+
+            var (isValid, claimsPrincipal) = await sut.ValidateTokenAsync(tokenResult.AccessToken);
+
+            isValid.Should().BeTrue();
+            claimsPrincipal.Should().NotBeNull();
         }
     }
 }

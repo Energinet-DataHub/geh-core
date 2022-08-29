@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
 {
@@ -33,7 +34,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
         public B2CFixture()
         {
             AuthorizationConfiguration = new B2CAuthorizationConfiguration(
-                usedFromSystemTests: false,
+                usedForSystemTests: false,
                 environment: Environment,
                 new List<string> { SystemOperator });
 
