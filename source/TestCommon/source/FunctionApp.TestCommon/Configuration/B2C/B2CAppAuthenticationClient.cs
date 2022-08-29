@@ -18,6 +18,10 @@ using Microsoft.Identity.Client;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
 {
+    /// <summary>
+    /// A component that encapsulates the retrieval of an access token for a
+    /// B2C client application accessing another B2C application.
+    /// </summary>
     public class B2CAppAuthenticationClient
     {
         public B2CAppAuthenticationClient(
