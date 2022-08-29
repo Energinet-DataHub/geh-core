@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
 {
     /// <summary>
-    /// Settings necessary for managing the Azure AD B2C.
+    /// Settings necessary for managing the Azure AD B2C located in the integration test environment.
     /// </summary>
     public record AzureB2CSettings()
     {
