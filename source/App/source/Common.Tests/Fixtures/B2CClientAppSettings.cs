@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
 {
     /// <summary>
-    /// Name and credential settings for a B2C 'test client app'.
+    /// Name and credential settings for a B2C client app to be used for testing.
     /// </summary>
     /// <param name="Name">Name of the client app.</param>
     /// <param name="CredentialSettings">Credential settings necessary for acquiring an access token for the client app.</param>
