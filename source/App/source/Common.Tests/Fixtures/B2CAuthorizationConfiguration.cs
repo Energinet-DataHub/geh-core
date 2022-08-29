@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
     public class B2CAuthorizationConfiguration
     {
         public B2CAuthorizationConfiguration(
-            bool usedFromSystemTests,
+            bool usedForSystemTests,
             string environment,
             IEnumerable<string> clientNames)
         {
