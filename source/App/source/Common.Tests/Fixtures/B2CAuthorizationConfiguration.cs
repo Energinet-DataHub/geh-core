@@ -103,10 +103,10 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
         private IConfigurationRoot SecretsConfiguration { get; }
 
         /// <summary>
-        /// Create a dictionary of B2C 'test client apps' each with own settings necessary to acquire an access token in a configured environment.
+        /// Create a dictionary of B2C client apps used for testing, each with its own settings necessary to acquire an access token in a configured environment.
         /// </summary>
         /// <param name="clientNames">List of client names or shorthands. For many clients the name is a team name.</param>
-        /// <returns>A list of B2C 'test clients apps'.</returns>
+        /// <returns>A dictionary of B2C clients apps used for testing.</returns>
         private IReadOnlyDictionary<string, B2CClientAppSettings> CreateClientApps(IEnumerable<string> clientNames)
         {
             return clientNames
