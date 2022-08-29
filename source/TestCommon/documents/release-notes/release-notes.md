@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.3.0
+
+- Implement classes in `Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C` namespace, to support tests using B2C access tokens.
+
 ## Version 3.2.2
 
 - Bump version as part of pipeline change
