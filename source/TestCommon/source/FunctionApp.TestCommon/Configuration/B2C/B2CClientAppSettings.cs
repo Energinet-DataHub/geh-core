@@ -17,7 +17,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
     /// <summary>
     /// Name and credential settings for a B2C client app to be used for testing.
     /// </summary>
-    /// <param name="Name">Name of the client app.</param>
-    /// <param name="CredentialSettings">Credential settings necessary for acquiring an access token for the client app.</param>
-    public record B2CClientAppSettings(string Name, B2CClientAppCredentialsSettings CredentialSettings);
+    public record B2CClientAppSettings
+    {
+        /// <summary>
+        /// Name of the client app.
+        /// </summary>
+        public string Name { get; internal set; }
+            = string.Empty;
+
+        /// <summary>
+        /// Credential settings necessary for acquiring an access token for the client app.
+        /// </summary>
+        public B2CClientAppCredentialsSettings CredentialSettings { get; internal set; }
+            = B2CClientAppCredentialsSettings.Empty;
+    }
 }

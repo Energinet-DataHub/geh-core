@@ -109,12 +109,21 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
         private IReadOnlyDictionary<string, B2CClientAppSettings> CreateClientApps(IEnumerable<string> clientNames)
         {
             return clientNames
-                .Select(clientName => new B2CClientAppSettings(
-                        clientName,
-                        new B2CClientAppCredentialsSettings(
-                            SecretsConfiguration.GetValue<string>(BuildB2CClientSecretName(Environment, clientName, "client-id")),
-                            SecretsConfiguration.GetValue<string>(BuildB2CClientSecretName(Environment, clientName, "client-secret")))))
+                .Select(clientName => CreateClientAppSettings(clientName))
                 .ToDictionary(o => o.Name, o => o);
+        }
+
+        private B2CClientAppSettings CreateClientAppSettings(string clientName)
+        {
+            return new B2CClientAppSettings
+            {
+                Name = clientName,
+                CredentialSettings = new B2CClientAppCredentialsSettings
+                {
+                    ClientId = SecretsConfiguration.GetValue<string>(BuildB2CClientSecretName(Environment, clientName, "client-id")),
+                    ClientSecret = SecretsConfiguration.GetValue<string>(BuildB2CClientSecretName(Environment, clientName, "client-secret")),
+                },
+            };
         }
 
         /// <summary>

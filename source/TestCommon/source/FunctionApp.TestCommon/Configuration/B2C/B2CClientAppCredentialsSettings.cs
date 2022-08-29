@@ -18,7 +18,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
     /// Settings necessary for aquiring an access token for a client app, from the B2C tenant,
     /// using the client credentials flow.
     /// </summary>
-    /// <param name="ClientId"></param>
-    /// <param name="ClientSecret"></param>
-    public record B2CClientAppCredentialsSettings(string ClientId, string ClientSecret);
+    public record B2CClientAppCredentialsSettings
+    {
+        public static B2CClientAppCredentialsSettings Empty { get; }
+            = new();
+
+        public string ClientId { get; internal set; }
+            = string.Empty;
+
+        public string ClientSecret { get; internal set; }
+            = string.Empty;
+    }
 }
