@@ -51,12 +51,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
 
             var backendAppId = SecretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(Environment, "backend-app-id"));
             BackendApp = new B2CAppSettings(backendAppId);
+            BackendOpenIdConfigurationUrl = $"https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration";
 
             var frontendAppId = SecretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(Environment, "frontend-app-id"));
             FrontendApp = new B2CAppSettings(frontendAppId);
+            FrontendOpenIdConfigurationUrl = SecretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(Environment, "frontend-open-id-url"));
 
             ApiManagementBaseAddress = SecretsConfiguration.GetValue<Uri>(BuildApiManagementEnvironmentSecretName(Environment, "host-url"));
-            FrontendOpenIdUrl = SecretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(Environment, "frontend-open-id-url"));
         }
 
         /// <summary>
@@ -80,14 +81,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
         public B2CAppSettings BackendApp { get; }
 
         /// <summary>
+        /// URL of the Open ID configuration for the backend (necessary when validating tokens).
+        /// </summary>
+        public string BackendOpenIdConfigurationUrl { get; }
+
+        /// <summary>
         /// Frontend application ID and scope.
         /// </summary>
         public B2CAppSettings FrontendApp { get; }
 
         /// <summary>
-        /// URL of the Open ID configuration for the frontend.
+        /// URL of the Open ID configuration for the frontend (necessary when validating tokens).
         /// </summary>
-        public string FrontendOpenIdUrl { get; }
+        public string FrontendOpenIdConfigurationUrl { get; }
 
         /// <summary>
         /// The base address for the API Management in the configured environment.
