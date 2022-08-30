@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
