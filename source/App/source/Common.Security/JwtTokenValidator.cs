@@ -49,23 +49,23 @@ namespace Energinet.DataHub.Core.App.Common.Security
 
             try
             {
-                var openIdConnectConfigData = await _openIdConfigurationManager.GetConfigurationAsync(CancellationToken.None);
+                var claimsPrincipal = await ValidateTokenUsingConfigurationAsync(token);
+                return (true, claimsPrincipal);
+            }
+            catch (SecurityTokenSignatureKeyNotFoundException)
+            {
+                // Refresh configuration and try once more
+                _openIdConfigurationManager.RequestRefresh();
+            }
+            catch (Exception)
+            {
+                // Token is not valid (expired etc.)
+                return (false, null);
+            }
 
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    RequireSignedTokens = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidAudience = _validAudience,
-                    IssuerSigningKeys = openIdConnectConfigData.SigningKeys,
-                    ValidIssuer = openIdConnectConfigData.Issuer,
-                };
-
-                var claimsPrincipal = _securityTokenValidator.ValidateToken(token, validationParameters, out _);
-
+            try
+            {
+                var claimsPrincipal = await ValidateTokenUsingConfigurationAsync(token);
                 return (true, claimsPrincipal);
             }
             catch (Exception)
@@ -73,6 +73,26 @@ namespace Energinet.DataHub.Core.App.Common.Security
                 // Token is not valid (expired etc.)
                 return (false, null);
             }
+        }
+
+        private async Task<ClaimsPrincipal> ValidateTokenUsingConfigurationAsync(string? token)
+        {
+            var openIdConnectConfiguration = await _openIdConfigurationManager.GetConfigurationAsync(CancellationToken.None);
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                RequireSignedTokens = true,
+                ClockSkew = TimeSpan.Zero,
+                ValidAudience = _validAudience,
+                IssuerSigningKeys = openIdConnectConfiguration.SigningKeys,
+                ValidIssuer = openIdConnectConfiguration.Issuer,
+            };
+
+            return _securityTokenValidator.ValidateToken(token, validationParameters, out _);
         }
     }
 }
