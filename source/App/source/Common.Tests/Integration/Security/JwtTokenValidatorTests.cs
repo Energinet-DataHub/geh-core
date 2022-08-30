@@ -21,7 +21,6 @@ using FluentAssertions;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security

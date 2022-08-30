@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
