@@ -43,16 +43,10 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
                 AuthorizationConfiguration.TenantId,
                 AuthorizationConfiguration.BackendApp,
                 AuthorizationConfiguration.ClientApps[SystemOperator]);
-
-            BackendAppOpenIdSettings = new OpenIdSettings(
-                AuthorizationConfiguration.BackendOpenIdConfigurationUrl,
-                BackendAppAuthenticationClient.AppSettings.AppId);
         }
 
         public B2CAuthorizationConfiguration AuthorizationConfiguration { get; }
 
         public B2CAppAuthenticationClient BackendAppAuthenticationClient { get; }
-
-        public OpenIdSettings BackendAppOpenIdSettings { get; }
     }
 }

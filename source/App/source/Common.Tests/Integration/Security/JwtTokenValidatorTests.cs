@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.Common.Tests.Fixtures;
 using FluentAssertions;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
@@ -25,14 +29,26 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         public JwtTokenValidatorTests(B2CFixture fixture)
         {
             Fixture = fixture;
+
+            SecurityTokenValidator = new JwtSecurityTokenHandler();
+            BackendOpenIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                Fixture.AuthorizationConfiguration.BackendOpenIdConfigurationUrl,
+                new OpenIdConnectConfigurationRetriever());
         }
 
         private B2CFixture Fixture { get; }
 
+        private ISecurityTokenValidator SecurityTokenValidator { get; }
+
+        private IConfigurationManager<OpenIdConnectConfiguration> BackendOpenIdConfigurationManager { get; }
+
         [Fact]
         public async Task Given_AccessTokenIsNotAToken_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
         {
-            var sut = new JwtTokenValidator(Fixture.BackendAppOpenIdSettings);
+            var sut = new JwtTokenValidator(
+                SecurityTokenValidator,
+                BackendOpenIdConfigurationManager,
+                Fixture.AuthorizationConfiguration.BackendApp.AppId);
             var accessToken = string.Empty;
 
             // Act
@@ -45,7 +61,10 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         [Fact]
         public async Task Given_ValidAccessToken_When_ValidateTokenAsync_Then_IsValidShouldBeTrue_And_ClaimsPrincipalShouldNotBeNull()
         {
-            var sut = new JwtTokenValidator(Fixture.BackendAppOpenIdSettings);
+            var sut = new JwtTokenValidator(
+                SecurityTokenValidator,
+                BackendOpenIdConfigurationManager,
+                Fixture.AuthorizationConfiguration.BackendApp.AppId);
             var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
 
             // Act
@@ -56,11 +75,12 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         }
 
         [Fact]
-        public async Task Given_BackendAccessToken_And_FrontendOpenIdSetting_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
+        public async Task Given_BackendAccessToken_And_FrontendAudience_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
         {
-            var sut = new JwtTokenValidator(new OpenIdSettings(
-                Fixture.AuthorizationConfiguration.FrontendOpenIdConfigurationUrl,
-                Fixture.AuthorizationConfiguration.FrontendApp.AppId));
+            var sut = new JwtTokenValidator(
+                SecurityTokenValidator,
+                BackendOpenIdConfigurationManager,
+                Fixture.AuthorizationConfiguration.FrontendApp.AppId);
             var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
 
             // Act

@@ -15,6 +15,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Microsoft.IdentityModel.Protocols;
@@ -25,18 +26,23 @@ namespace Energinet.DataHub.Core.App.Common.Security
 {
     public class JwtTokenValidator : IJwtTokenValidator
     {
-        private readonly JwtSecurityTokenHandler _tokenValidator;
-        private readonly OpenIdSettings _openIdSettings;
+        private readonly ISecurityTokenValidator _securityTokenValidator;
+        private readonly IConfigurationManager<OpenIdConnectConfiguration> _openIdConfigurationManager;
+        private readonly string _validAudience;
 
-        public JwtTokenValidator(OpenIdSettings openIdSettings)
+        public JwtTokenValidator(
+            ISecurityTokenValidator securityTokenValidator,
+            IConfigurationManager<OpenIdConnectConfiguration> openIdConfigurationManager,
+            string validAudience)
         {
-            _tokenValidator = new JwtSecurityTokenHandler();
-            _openIdSettings = openIdSettings ?? throw new ArgumentNullException(nameof(openIdSettings));
+            _securityTokenValidator = securityTokenValidator;
+            _openIdConfigurationManager = openIdConfigurationManager;
+            _validAudience = validAudience;
         }
 
         public async Task<(bool IsValid, ClaimsPrincipal? ClaimsPrincipal)> ValidateTokenAsync(string? token)
         {
-            if (!_tokenValidator.CanReadToken(token))
+            if (!_securityTokenValidator.CanReadToken(token))
             {
                 // Token is malformed
                 return (false, null);
@@ -44,8 +50,7 @@ namespace Energinet.DataHub.Core.App.Common.Security
 
             try
             {
-                var openIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(_openIdSettings.MetadataAddress, new OpenIdConnectConfigurationRetriever());
-                var openIdConnectConfigData = await openIdConfigurationManager.GetConfigurationAsync();
+                var openIdConnectConfigData = await _openIdConfigurationManager.GetConfigurationAsync(CancellationToken.None);
 
                 var validationParameters = new TokenValidationParameters
                 {
@@ -55,14 +60,14 @@ namespace Energinet.DataHub.Core.App.Common.Security
                     ValidateLifetime = true,
                     RequireSignedTokens = true,
                     ClockSkew = TimeSpan.Zero,
-                    ValidAudience = _openIdSettings.Audience,
+                    ValidAudience = _validAudience,
                     IssuerSigningKeys = openIdConnectConfigData.SigningKeys,
                     ValidIssuer = openIdConnectConfigData.Issuer,
                 };
 
-                var principal = _tokenValidator.ValidateToken(token, validationParameters, out _);
+                var claimsPrincipal = _securityTokenValidator.ValidateToken(token, validationParameters, out _);
 
-                return (true, principal);
+                return (true, claimsPrincipal);
             }
             catch (Exception)
             {

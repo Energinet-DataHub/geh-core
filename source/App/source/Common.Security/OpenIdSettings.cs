@@ -14,6 +14,7 @@
 
 namespace Energinet.DataHub.Core.App.Common.Security
 {
+    // TODO: Delete this class
     public sealed class OpenIdSettings
     {
         public string MetadataAddress { get; }
