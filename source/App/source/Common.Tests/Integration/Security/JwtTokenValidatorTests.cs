@@ -25,24 +25,33 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         public JwtTokenValidatorTests(B2CFixture fixture)
         {
             Fixture = fixture;
+
+            Sut = new JwtTokenValidator(Fixture.BackendAppOpenIdSettings);
         }
 
         private B2CFixture Fixture { get; }
 
+        private JwtTokenValidator Sut { get; }
+
         [Fact]
-        public async Task Given_ValidToken_When_CallingValidateTokenAsync_Then_IsValidAndClaimsPrincipalIsNotNull()
+        public async Task Given_ValidAccessToken_When_CallingValidateTokenAsync_Then_IsValidShouldBeTrue_And_ClaimsPrincipalShouldNotBeNull()
         {
-            var tokenResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+            var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
 
-            var openIdSettings = new OpenIdSettings(
-                $"https://login.microsoftonline.com/{Fixture.AuthorizationConfiguration.TenantId}/v2.0/.well-known/openid-configuration",
-                Fixture.BackendAppAuthenticationClient.AppSettings.AppId);
-            var sut = new JwtTokenValidator(openIdSettings);
-
-            var (isValid, claimsPrincipal) = await sut.ValidateTokenAsync(tokenResult.AccessToken);
+            var (isValid, claimsPrincipal) = await Sut.ValidateTokenAsync(authenticationResult.AccessToken);
 
             isValid.Should().BeTrue();
             claimsPrincipal.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task Given_AccessTokenIsNotAToken_When_CallingValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
+        {
+            var accessToken = string.Empty;
+            var (isValid, claimsPrincipal) = await Sut.ValidateTokenAsync(accessToken);
+
+            isValid.Should().BeFalse();
+            claimsPrincipal.Should().BeNull();
         }
     }
 }
