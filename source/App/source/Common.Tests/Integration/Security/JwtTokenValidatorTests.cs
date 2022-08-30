@@ -25,30 +25,46 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         public JwtTokenValidatorTests(B2CFixture fixture)
         {
             Fixture = fixture;
-
-            Sut = new JwtTokenValidator(Fixture.BackendAppOpenIdSettings);
         }
 
         private B2CFixture Fixture { get; }
 
-        private JwtTokenValidator Sut { get; }
+        [Fact]
+        public async Task Given_AccessTokenIsNotAToken_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
+        {
+            var sut = new JwtTokenValidator(Fixture.BackendAppOpenIdSettings);
+            var accessToken = string.Empty;
+
+            // Act
+            var (isValid, claimsPrincipal) = await sut.ValidateTokenAsync(accessToken);
+
+            isValid.Should().BeFalse();
+            claimsPrincipal.Should().BeNull();
+        }
 
         [Fact]
-        public async Task Given_ValidAccessToken_When_CallingValidateTokenAsync_Then_IsValidShouldBeTrue_And_ClaimsPrincipalShouldNotBeNull()
+        public async Task Given_ValidAccessToken_When_ValidateTokenAsync_Then_IsValidShouldBeTrue_And_ClaimsPrincipalShouldNotBeNull()
         {
+            var sut = new JwtTokenValidator(Fixture.BackendAppOpenIdSettings);
             var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
 
-            var (isValid, claimsPrincipal) = await Sut.ValidateTokenAsync(authenticationResult.AccessToken);
+            // Act
+            var (isValid, claimsPrincipal) = await sut.ValidateTokenAsync(authenticationResult.AccessToken);
 
             isValid.Should().BeTrue();
             claimsPrincipal.Should().NotBeNull();
         }
 
         [Fact]
-        public async Task Given_AccessTokenIsNotAToken_When_CallingValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
+        public async Task Given_BackendAccessToken_And_FrontendOpenIdSetting_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
         {
-            var accessToken = string.Empty;
-            var (isValid, claimsPrincipal) = await Sut.ValidateTokenAsync(accessToken);
+            var sut = new JwtTokenValidator(new OpenIdSettings(
+                Fixture.AuthorizationConfiguration.FrontendOpenIdConfigurationUrl,
+                Fixture.AuthorizationConfiguration.FrontendApp.AppId));
+            var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+
+            // Act
+            var (isValid, claimsPrincipal) = await sut.ValidateTokenAsync(authenticationResult.AccessToken);
 
             isValid.Should().BeFalse();
             claimsPrincipal.Should().BeNull();
