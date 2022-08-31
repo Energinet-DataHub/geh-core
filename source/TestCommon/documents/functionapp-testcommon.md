@@ -129,6 +129,8 @@ To support the retrieval of B2C access tokens we have the following classes:
 * `B2CAuthorizationConfiguration` can be used to retrieve B2C relevant settings for the U/T environments.
 * `B2CAppAuthenticationClient` can be used to retrieve an access token for a B2C client application that want to access another B2C application.
 
+For details, see [b2ctokenretrieval.md](b2ctokenretrieval.md).
+
 ### Managers
 
 First of all we have a group of components that we use to *manage* ressources or tools. Each component can manage a certain kind of ressource/tool, and are named as `<ressource/tool-type>Manager`.

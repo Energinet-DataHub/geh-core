@@ -31,8 +31,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
         [Fact]
         public async Task BackendAppAuthenticationClient_Should_RetrieveToken()
         {
-            var token = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
-            token.Should().NotBeNull();
+            var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+            authenticationResult.Should().NotBeNull();
+            authenticationResult.AccessToken.Should().NotBeNullOrWhiteSpace();
         }
     }
 }

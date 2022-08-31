@@ -2,7 +2,7 @@
 
 ## Version 3.3.0
 
-- Implement classes in `Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C` namespace, to support tests using B2C access tokens.
+- Implemented classes in `Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C` namespace, to support tests using B2C access tokens. See [Azure AD B2C token retrieval](..\functionapp-testcommon.md#Azure-AD-B2C-token-retrieval).
 
 ## Version 3.2.2
 
