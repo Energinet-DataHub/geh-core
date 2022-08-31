@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IdentityModel.Tokens.Jwt;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
@@ -19,6 +20,10 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using SimpleInjector;
 
 namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector
@@ -33,11 +38,21 @@ namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector
         /// <param name="audience">Audience used for validation of JWT token</param>
         public static void AddJwtTokenSecurity(this Container container, string metadataAddress, string audience)
         {
+            container.Register<ISecurityTokenValidator, JwtSecurityTokenHandler>(Lifestyle.Singleton);
+            container.Register<IConfigurationManager<OpenIdConnectConfiguration>>(
+                () => new ConfigurationManager<OpenIdConnectConfiguration>(metadataAddress, new OpenIdConnectConfigurationRetriever()),
+                Lifestyle.Singleton);
+
+            container.Register<IJwtTokenValidator>(
+                () => new JwtTokenValidator(
+                    container.GetRequiredService<ISecurityTokenValidator>(),
+                    container.GetRequiredService<IConfigurationManager<OpenIdConnectConfiguration>>(),
+                    audience),
+                Lifestyle.Scoped);
             container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
-            container.Register<IJwtTokenValidator, JwtTokenValidator>(Lifestyle.Scoped);
+
             container.Register<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>(Lifestyle.Scoped);
             container.Register<ClaimsPrincipalContext>(Lifestyle.Scoped);
-            container.Register(() => new OpenIdSettings(metadataAddress, audience));
         }
 
         /// <summary>

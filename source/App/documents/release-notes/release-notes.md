@@ -3,6 +3,8 @@
 ## Version 7.0.0
 
 - Change `JwtTokenValidator` constructor. Dependent types should be configured for dependency injection. The purpose of these changes is to reuse (cache) Open ID configuration used for JWT validation to avoid requesting these information for each http request validated.
+- Deleted class `OpenIdSettings`.
+- Updated `AddJwtTokenSecurity` extensions to match new dependency injection requirements.
 
 ## Version 6.0.0
 
