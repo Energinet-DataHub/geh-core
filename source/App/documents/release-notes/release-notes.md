@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.0.0
+
+- Change `JwtTokenValidator` constructor. Dependent types should be configured for dependency injection. The purpose of these changes is to reuse (cache) Open ID configuration used for JWT validation to avoid requesting these information for each http request validated.
+
 ## Version 6.0.0
 
 - Change `CorrelationIdMiddleware` to use `CorrelationId` header instead of `Correlation-ID` header.
