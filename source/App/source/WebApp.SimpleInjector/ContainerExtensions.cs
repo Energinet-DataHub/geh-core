@@ -49,10 +49,11 @@ namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector
                     container.GetRequiredService<IConfigurationManager<OpenIdConnectConfiguration>>(),
                     audience),
                 Lifestyle.Scoped);
-            container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
 
             container.Register<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>(Lifestyle.Scoped);
             container.Register<ClaimsPrincipalContext>(Lifestyle.Scoped);
+
+            container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
         }
 
         /// <summary>
