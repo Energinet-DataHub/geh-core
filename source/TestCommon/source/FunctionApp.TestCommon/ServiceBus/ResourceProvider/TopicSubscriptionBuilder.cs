@@ -26,11 +26,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
     {
         internal TopicSubscriptionBuilder(
             TopicResourceBuilder topicResourceBuilder,
-            CreateSubscriptionOptions createSubscriptionOptions,
-            CreateRuleOptions? createRuleOptions)
+            CreateSubscriptionOptions createSubscriptionOptions)
         {
             TopicResourceBuilder = topicResourceBuilder;
-            CreateRuleOptions = createRuleOptions;
             CreateSubscriptionOptions = createSubscriptionOptions;
 
             PostActions = new List<Action<SubscriptionProperties>>();
@@ -38,7 +36,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         internal CreateSubscriptionOptions CreateSubscriptionOptions { get; }
 
-        internal CreateRuleOptions? CreateRuleOptions { get; }
+        internal CreateRuleOptions? CreateRuleOptions { get; set; }
 
         internal IList<Action<SubscriptionProperties>> PostActions { get; }
 
@@ -59,13 +57,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <inheritdoc/>
         public TopicSubscriptionBuilder AddSubscription(
             string subscriptionName,
-            CreateRuleOptions? createRuleOptions = null,
             int maxDeliveryCount = 1,
             TimeSpan? lockDuration = null,
             bool requiresSession = false)
         {
             return TopicResourceBuilder.AddSubscription(
-                subscriptionName, createRuleOptions, maxDeliveryCount, lockDuration, requiresSession);
+                subscriptionName, maxDeliveryCount, lockDuration, requiresSession);
         }
 
         /// <inheritdoc/>

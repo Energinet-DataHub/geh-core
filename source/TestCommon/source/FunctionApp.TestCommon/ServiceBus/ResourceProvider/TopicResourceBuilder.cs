@@ -56,7 +56,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <inheritdoc/>
         public TopicSubscriptionBuilder AddSubscription(
             string subscriptionName,
-            CreateRuleOptions? createRuleOptions = null,
             int maxDeliveryCount = 1,
             TimeSpan? lockDuration = null,
             bool requiresSession = false)
@@ -69,7 +68,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                 RequiresSession = requiresSession,
             };
 
-            var subscriptionBuilder = new TopicSubscriptionBuilder(this, createSubscriptionOptions, createRuleOptions);
+            var subscriptionBuilder = new TopicSubscriptionBuilder(this, createSubscriptionOptions);
             SubscriptionBuilders.Add(subscriptionName, subscriptionBuilder);
 
             return subscriptionBuilder;

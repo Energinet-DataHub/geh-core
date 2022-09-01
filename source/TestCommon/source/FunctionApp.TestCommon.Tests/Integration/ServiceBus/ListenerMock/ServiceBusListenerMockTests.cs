@@ -124,8 +124,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var rule2 = new CreateRuleOptions("rule2", new CorrelationRuleFilter { Subject = subject2 });
                 var topic = await ResourceProvider
                     .BuildTopic("topic")
-                    .AddSubscription(subscription1, rule1)
-                    .AddSubscription(subscription2, rule2)
+                    .AddSubscription(subscription1).SetCreateRuleOptions(rule1)
+                    .AddSubscription(subscription2).SetCreateRuleOptions(rule2)
                     .CreateAsync();
 
                 await Sut.AddTopicSubscriptionListenerAsync(topic.Name, subscription1);

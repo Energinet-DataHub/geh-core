@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using Azure.Messaging.ServiceBus.Administration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
 {
@@ -21,6 +22,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         public static TopicSubscriptionBuilder SetEnvironmentVariableToSubscriptionName(this TopicSubscriptionBuilder builder, string variable)
         {
             builder.Do(subscriptionProperties => Environment.SetEnvironmentVariable(variable, subscriptionProperties.SubscriptionName));
+
+            return builder;
+        }
+
+        public static TopicSubscriptionBuilder SetCreateRuleOptions(this TopicSubscriptionBuilder builder, CreateRuleOptions createRuleOptions)
+        {
+            builder.CreateRuleOptions = createRuleOptions;
 
             return builder;
         }

@@ -27,14 +27,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// Add a subscription to the topic we are building.
         /// </summary>
         /// <param name="subscriptionName">The subscription name.</param>
-        /// <param name="createRuleOptions">Subscription rules.</param>
         /// <param name="maxDeliveryCount"></param>
         /// <param name="lockDuration"></param>
         /// <param name="requiresSession"></param>
         /// <returns>Subscription resource builder.</returns>
         TopicSubscriptionBuilder AddSubscription(
             string subscriptionName,
-            CreateRuleOptions? createRuleOptions = null,
             int maxDeliveryCount = 1,
             TimeSpan? lockDuration = null,
             bool requiresSession = false);
