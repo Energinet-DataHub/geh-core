@@ -56,6 +56,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <inheritdoc/>
         public TopicSubscriptionBuilder AddSubscription(
             string subscriptionName,
+            CreateRuleOptions? createRuleOptions = null,
             int maxDeliveryCount = 1,
             TimeSpan? lockDuration = null,
             bool requiresSession = false)
@@ -68,7 +69,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                 RequiresSession = requiresSession,
             };
 
-            var subscriptionBuilder = new TopicSubscriptionBuilder(this, createSubscriptionOptions);
+            var subscriptionBuilder = new TopicSubscriptionBuilder(this, createSubscriptionOptions, createRuleOptions);
             SubscriptionBuilders.Add(subscriptionName, subscriptionBuilder);
 
             return subscriptionBuilder;
@@ -111,8 +112,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             {
                 ResourceProvider.TestLogger.WriteLine($"Creating subscription '{subscriptionBuilderPair.Value.CreateSubscriptionOptions.SubscriptionName}'");
 
-                var response = await ResourceProvider.AdministrationClient.CreateSubscriptionAsync(subscriptionBuilderPair.Value.CreateSubscriptionOptions)
-                    .ConfigureAwait(false);
+                var response = subscriptionBuilderPair.Value.CreateRuleOptions is null
+                    ? await ResourceProvider.AdministrationClient.CreateSubscriptionAsync(
+                            subscriptionBuilderPair.Value.CreateSubscriptionOptions)
+                        .ConfigureAwait(false)
+                    : await ResourceProvider.AdministrationClient
+                        .CreateSubscriptionAsync(
+                            subscriptionBuilderPair.Value.CreateSubscriptionOptions,
+                            subscriptionBuilderPair.Value.CreateRuleOptions)
+                        .ConfigureAwait(false);
 
                 topicResource.AddSubscription(response.Value);
 

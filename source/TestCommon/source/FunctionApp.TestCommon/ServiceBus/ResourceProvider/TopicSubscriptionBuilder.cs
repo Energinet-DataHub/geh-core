@@ -24,15 +24,21 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
     /// </summary>
     public class TopicSubscriptionBuilder : ITopicResourceBuilder
     {
-        internal TopicSubscriptionBuilder(TopicResourceBuilder topicResourceBuilder, CreateSubscriptionOptions createSubscriptionOptions)
+        internal TopicSubscriptionBuilder(
+            TopicResourceBuilder topicResourceBuilder,
+            CreateSubscriptionOptions createSubscriptionOptions,
+            CreateRuleOptions? createRuleOptions)
         {
             TopicResourceBuilder = topicResourceBuilder;
+            CreateRuleOptions = createRuleOptions;
             CreateSubscriptionOptions = createSubscriptionOptions;
 
             PostActions = new List<Action<SubscriptionProperties>>();
         }
 
         internal CreateSubscriptionOptions CreateSubscriptionOptions { get; }
+
+        internal CreateRuleOptions? CreateRuleOptions { get; }
 
         internal IList<Action<SubscriptionProperties>> PostActions { get; }
 
@@ -53,12 +59,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         /// <inheritdoc/>
         public TopicSubscriptionBuilder AddSubscription(
             string subscriptionName,
+            CreateRuleOptions? createRuleOptions = null,
             int maxDeliveryCount = 1,
             TimeSpan? lockDuration = null,
             bool requiresSession = false)
         {
             return TopicResourceBuilder.AddSubscription(
-                subscriptionName, maxDeliveryCount, lockDuration, requiresSession);
+                subscriptionName, createRuleOptions, maxDeliveryCount, lockDuration, requiresSession);
         }
 
         /// <inheritdoc/>

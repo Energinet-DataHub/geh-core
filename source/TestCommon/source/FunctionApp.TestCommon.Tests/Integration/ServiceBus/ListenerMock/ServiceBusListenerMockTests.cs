@@ -20,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
@@ -109,6 +110,47 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 // Assert
                 var isReceived = isReceivedEvent.Wait(DefaultTimeout);
                 isReceived.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_CorrelationFilter_On_Subscription_Verify_receivers()
+            {
+                // Arrange
+                var subscription1 = "subscription1";
+                var subscription2 = "subscription2";
+                var subject1 = "subject1";
+                var rule1 = new CreateRuleOptions("rule1", new CorrelationRuleFilter { Subject = subject1 });
+                var subject2 = "subject2";
+                var rule2 = new CreateRuleOptions("rule2", new CorrelationRuleFilter { Subject = subject2 });
+                var topic = await ResourceProvider
+                    .BuildTopic("topic")
+                    .AddSubscription(subscription1, rule1)
+                    .AddSubscription(subscription2, rule2)
+                    .CreateAsync();
+
+                await Sut.AddTopicSubscriptionListenerAsync(topic.Name, subscription1);
+                await Sut.AddTopicSubscriptionListenerAsync(topic.Name, subscription2);
+
+                var message1 = Fixture.Create<ServiceBusMessage>();
+                message1.Subject = subject1;
+                var message2 = Fixture.Create<ServiceBusMessage>();
+                message2.Subject = subject2;
+
+                using var isEvent1Received = await Sut
+                    .WhenSubject(subject1)
+                    .VerifyOnceAsync();
+                using var isEvent2Received = await Sut
+                    .WhenSubject(subject2)
+                    .VerifyOnceAsync();
+
+                await topic.SenderClient.SendMessageAsync(message1);
+                await topic.SenderClient.SendMessageAsync(message2);
+
+                // Assert
+                var isFirstEventReceived = isEvent1Received.Wait(DefaultTimeout);
+                isFirstEventReceived.Should().BeTrue();
+                var isSecondEventReceived = isEvent2Received.Wait(DefaultTimeout);
+                isSecondEventReceived.Should().BeTrue();
             }
         }
 
