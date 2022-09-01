@@ -315,24 +315,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 actualEnvironmentValue = Environment.GetEnvironmentVariable(subscriptionEnvironmentVariable02);
                 actualEnvironmentValue.Should().Be(SubscriptionName02);
             }
-
-            [Fact]
-            public async Task When_AddSubscriptionWithRule()
-            {
-                // Arrange
-                var subjectName = "MessageTypeName";
-                var filter = new CorrelationRuleFilter { Subject = subjectName };
-                var ruleOption = new CreateRuleOptions("RuleOption", filter);
-
-                // Act
-                var actualResource = await Sut
-                    .BuildTopic(NamePrefix)
-                    .AddSubscription(SubscriptionName01, ruleOption)
-                    .CreateAsync();
-
-                // Assert
-                var sub = actualResource.Subscriptions.First();
-            }
         }
 
         /// <summary>
