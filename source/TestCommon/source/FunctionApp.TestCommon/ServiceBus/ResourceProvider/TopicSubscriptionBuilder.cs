@@ -30,13 +30,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         {
             TopicResourceBuilder = topicResourceBuilder;
             CreateSubscriptionOptions = createSubscriptionOptions;
+            CreateRuleOptions = new CreateRuleOptions();
 
             PostActions = new List<Action<SubscriptionProperties>>();
         }
 
         internal CreateSubscriptionOptions CreateSubscriptionOptions { get; }
 
-        internal CreateRuleOptions? CreateRuleOptions { get; set; }
+        internal CreateRuleOptions CreateRuleOptions { get; set; }
 
         internal IList<Action<SubscriptionProperties>> PostActions { get; }
 

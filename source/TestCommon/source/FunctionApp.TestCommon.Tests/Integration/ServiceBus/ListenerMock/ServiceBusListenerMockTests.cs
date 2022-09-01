@@ -124,8 +124,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var rule2 = new CreateRuleOptions("rule2", new CorrelationRuleFilter { Subject = subject2 });
                 var topic = await ResourceProvider
                     .BuildTopic("topic")
-                    .AddSubscription(subscription1).SetCreateRuleOptions(rule1)
-                    .AddSubscription(subscription2).SetCreateRuleOptions(rule2)
+                    .AddSubscription(subscription1).AddCreateRuleOptions(rule1)
+                    .AddSubscription(subscription2).AddCreateRuleOptions(rule2)
                     .CreateAsync();
 
                 await Sut.AddTopicSubscriptionListenerAsync(topic.Name, subscription1);
@@ -134,13 +134,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var message1 = Fixture.Create<ServiceBusMessage>();
                 message1.Subject = subject1;
                 var message2 = Fixture.Create<ServiceBusMessage>();
-                message2.Subject = subject2;
+                message2.Subject = "subject22";
 
                 using var isEvent1Received = await Sut
-                    .WhenSubject(subject1)
+                    .WhenAny()
                     .VerifyOnceAsync();
                 using var isEvent2Received = await Sut
-                    .WhenSubject(subject2)
+                    .WhenAny()
                     .VerifyOnceAsync();
 
                 await topic.SenderClient.SendMessageAsync(message1);
@@ -151,6 +151,33 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 isFirstEventReceived.Should().BeTrue();
                 var isSecondEventReceived = isEvent2Received.Wait(DefaultTimeout);
                 isSecondEventReceived.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_SubjectFilter_On_Subscription_Verify_receiver()
+            {
+                // Arrange
+                var subscription = "subscription1";
+                var subject = "subject1";
+                var topic = await ResourceProvider
+                    .BuildTopic("topic")
+                    .AddSubscription(subscription)
+                    .AddCreateSubjectRule(subject)
+                    .CreateAsync();
+
+                await Sut.AddTopicSubscriptionListenerAsync(topic.Name, subscription);
+
+                var message1 = Fixture.Create<ServiceBusMessage>();
+                message1.Subject = subject;
+                using var isEventReceived = await Sut
+                    .WhenAny()
+                    .VerifyOnceAsync();
+
+                await topic.SenderClient.SendMessageAsync(message1);
+
+                // Assert
+                var isFirstEventReceived = isEventReceived.Wait(DefaultTimeout);
+                isFirstEventReceived.Should().BeTrue();
             }
         }
 

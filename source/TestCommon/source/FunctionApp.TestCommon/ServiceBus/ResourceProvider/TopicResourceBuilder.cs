@@ -109,16 +109,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         {
             foreach (var subscriptionBuilderPair in SubscriptionBuilders)
             {
-                ResourceProvider.TestLogger.WriteLine($"Creating subscription '{subscriptionBuilderPair.Value.CreateSubscriptionOptions.SubscriptionName}'");
-
-                var response = subscriptionBuilderPair.Value.CreateRuleOptions is null
-                    ? await ResourceProvider.AdministrationClient.CreateSubscriptionAsync(
-                            subscriptionBuilderPair.Value.CreateSubscriptionOptions)
-                        .ConfigureAwait(false)
-                    : await ResourceProvider.AdministrationClient
-                        .CreateSubscriptionAsync(
-                            subscriptionBuilderPair.Value.CreateSubscriptionOptions,
-                            subscriptionBuilderPair.Value.CreateRuleOptions)
+                var subscription = subscriptionBuilderPair.Value;
+                ResourceProvider.TestLogger.WriteLine($"Creating subscription '{subscription.CreateSubscriptionOptions.SubscriptionName}'");
+                var subscriptionName = subscription.CreateSubscriptionOptions.SubscriptionName;
+                var response = await ResourceProvider.AdministrationClient.CreateSubscriptionAsync(
+                            subscription.CreateSubscriptionOptions, subscription.CreateRuleOptions)
                         .ConfigureAwait(false);
 
                 topicResource.AddSubscription(response.Value);

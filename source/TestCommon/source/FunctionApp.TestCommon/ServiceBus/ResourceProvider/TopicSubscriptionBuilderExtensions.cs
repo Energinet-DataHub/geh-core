@@ -26,9 +26,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
             return builder;
         }
 
-        public static TopicSubscriptionBuilder SetCreateRuleOptions(this TopicSubscriptionBuilder builder, CreateRuleOptions createRuleOptions)
+        public static TopicSubscriptionBuilder AddCreateRuleOptions(this TopicSubscriptionBuilder builder, CreateRuleOptions createRuleOptions)
         {
             builder.CreateRuleOptions = createRuleOptions;
+
+            return builder;
+        }
+
+        public static TopicSubscriptionBuilder AddCreateSubjectRule(this TopicSubscriptionBuilder builder, string subject)
+        {
+            builder.CreateRuleOptions = new CreateRuleOptions("subject-rule", new CorrelationRuleFilter() { Subject = subject });
 
             return builder;
         }
