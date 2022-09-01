@@ -134,7 +134,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var message1 = Fixture.Create<ServiceBusMessage>();
                 message1.Subject = subject1;
                 var message2 = Fixture.Create<ServiceBusMessage>();
-                message2.Subject = "subject22";
+                message2.Subject = subject2;
 
                 using var isEvent1Received = await Sut
                     .WhenAny()
