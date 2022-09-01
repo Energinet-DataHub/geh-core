@@ -68,7 +68,7 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
-    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.1.0" />
+    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.1.1" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
