@@ -17,7 +17,6 @@ using Azure.Monitor.Query;
 using Energinet.DataHub.Core.TestCommon;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Integration

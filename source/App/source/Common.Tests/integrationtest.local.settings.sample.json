@@ -1,0 +1,3 @@
+﻿{
+  "AZURE_SECRETS_KEYVAULT_URL": "<Key vault with secrets url>"
+}

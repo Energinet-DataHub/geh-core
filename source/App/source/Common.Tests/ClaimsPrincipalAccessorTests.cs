@@ -21,7 +21,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.SchemaValidation.Tests
+namespace Energinet.DataHub.Core.App.Common.Tests
 {
     [UnitTest]
     public class ClaimsPrincipalAccessorTests
