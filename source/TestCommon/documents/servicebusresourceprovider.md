@@ -86,3 +86,12 @@ Clean up:
 // Delete resources and close any created sender clients.
 await resourceProvider.DisposeAsync();
 ```
+
+Example 2 - creating a subscription with a subject filter
+```csharp
+var topicResource = await resourceProvider
+    .BuildTopic("topic")
+    .AddSubscription("subscription")
+    .AddSubjectFilter("message-subject")
+    .CreateAsync();
+```
