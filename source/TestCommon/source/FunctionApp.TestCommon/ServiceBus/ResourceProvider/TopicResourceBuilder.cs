@@ -115,7 +115,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
                     .CreateSubscriptionAsync(
                             subscription.CreateSubscriptionOptions,
                             subscription.CreateRuleOptions)
-                        .ConfigureAwait(false);
+                    .ConfigureAwait(false);
 
                 topicResource.AddSubscription(response.Value);
 
