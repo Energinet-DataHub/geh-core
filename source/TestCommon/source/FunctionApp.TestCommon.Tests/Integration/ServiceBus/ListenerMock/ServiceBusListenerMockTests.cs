@@ -135,10 +135,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 message2.Subject = subject2;
 
                 using var isEvent1Received = await Sut
-                    .WhenAny()
+                    .WhenSubject(subject1)
                     .VerifyOnceAsync();
                 using var isEvent2Received = await Sut
-                    .WhenAny()
+                    .WhenSubject(subject2)
                     .VerifyOnceAsync();
 
                 await topic.SenderClient.SendMessageAsync(message1);
