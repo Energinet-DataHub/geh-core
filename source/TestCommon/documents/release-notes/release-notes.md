@@ -2,11 +2,11 @@
 
 ## Version 3.3.1
 
-- Add a subject filter on Service bus subscriptions [Examples](..\servicebusresourceprovider.md#examples)
+- Add a subject filter on Service bus subscriptions [Examples](../servicebusresourceprovider.md#examples)
 
 ## Version 3.3.0
 
-- Implemented classes in `Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C` namespace, to support tests using B2C access tokens. See [Azure AD B2C token retrieval](..\functionapp-testcommon.md#azure-ad-b2c-token-retrieval).
+- Implemented classes in `Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C` namespace, to support tests using B2C access tokens. See [Azure AD B2C token retrieval](../functionapp-testcommon.md#azure-ad-b2c-token-retrieval).
 
 ## Version 3.2.2
 
