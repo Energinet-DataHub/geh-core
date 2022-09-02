@@ -2,7 +2,7 @@
 
 ## Version 3.3.1
 
-- Add a subject filter on Service bus subscriptions []
+- Add a subject filter on Service bus subscriptions [Example](..\servicebusresourceprovider.md#Example)
 
 ## Version 3.3.0
 
