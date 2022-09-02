@@ -13,7 +13,10 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
 {
@@ -42,10 +45,14 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
                 AuthorizationConfiguration.TenantId,
                 AuthorizationConfiguration.BackendApp,
                 AuthorizationConfiguration.ClientApps[SystemOperator]);
+
+            LoggerStub = Mock.Of<ILogger<JwtTokenValidator>>();
         }
 
         public B2CAuthorizationConfiguration AuthorizationConfiguration { get; }
 
         public B2CAppAuthenticationClient BackendAppAuthenticationClient { get; }
+
+        public ILogger<JwtTokenValidator> LoggerStub { get; }
     }
 }

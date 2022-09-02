@@ -15,6 +15,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.Common.Tests.Fixtures;
 using FluentAssertions;
@@ -51,6 +52,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
             string accessToken)
         {
             var sut = new JwtTokenValidator(
+                Fixture.LoggerStub,
                 SecurityTokenValidator,
                 BackendOpenIdConfigurationManager,
                 Fixture.AuthorizationConfiguration.BackendApp.AppId);
@@ -66,6 +68,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         public async Task Given_ValidAccessToken_When_ValidateTokenAsync_Then_IsValidShouldBeTrue_And_ClaimsPrincipalShouldNotBeNull()
         {
             var sut = new JwtTokenValidator(
+                Fixture.LoggerStub,
                 SecurityTokenValidator,
                 BackendOpenIdConfigurationManager,
                 Fixture.AuthorizationConfiguration.BackendApp.AppId);
@@ -82,6 +85,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         public async Task Given_BackendAccessToken_And_FrontendAudience_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
         {
             var sut = new JwtTokenValidator(
+                Fixture.LoggerStub,
                 SecurityTokenValidator,
                 BackendOpenIdConfigurationManager,
                 Fixture.AuthorizationConfiguration.FrontendApp.AppId);
@@ -99,6 +103,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
         {
             var openIdConfigurationManagerMock = new ConfigurationManagerMock(BackendOpenIdConfigurationManager);
             var sut = new JwtTokenValidator(
+                Fixture.LoggerStub,
                 SecurityTokenValidator,
                 openIdConfigurationManagerMock,
                 Fixture.AuthorizationConfiguration.BackendApp.AppId);

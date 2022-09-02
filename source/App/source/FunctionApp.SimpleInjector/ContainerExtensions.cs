@@ -21,6 +21,7 @@ using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -45,6 +46,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.SimpleInjector
 
             container.Register<IJwtTokenValidator>(
                 () => new JwtTokenValidator(
+                    container.GetRequiredService<ILogger<JwtTokenValidator>>(),
                     container.GetRequiredService<ISecurityTokenValidator>(),
                     container.GetRequiredService<IConfigurationManager<OpenIdConnectConfiguration>>(),
                     audience),

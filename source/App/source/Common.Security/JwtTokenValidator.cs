@@ -17,6 +17,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -25,15 +26,18 @@ namespace Energinet.DataHub.Core.App.Common.Security
 {
     public class JwtTokenValidator : IJwtTokenValidator
     {
+        private readonly ILogger<JwtTokenValidator> _logger;
         private readonly ISecurityTokenValidator _securityTokenValidator;
         private readonly IConfigurationManager<OpenIdConnectConfiguration> _openIdConfigurationManager;
         private readonly string _validAudience;
 
         public JwtTokenValidator(
+            ILogger<JwtTokenValidator> logger,
             ISecurityTokenValidator securityTokenValidator,
             IConfigurationManager<OpenIdConnectConfiguration> openIdConfigurationManager,
             string validAudience)
         {
+            _logger = logger;
             _securityTokenValidator = securityTokenValidator;
             _openIdConfigurationManager = openIdConfigurationManager;
             _validAudience = validAudience;
@@ -55,6 +59,7 @@ namespace Energinet.DataHub.Core.App.Common.Security
             catch (SecurityTokenSignatureKeyNotFoundException)
             {
                 // Refresh configuration and try once more
+                _logger.LogInformation("Force refreshing OpenID configuration because of missing signing key.");
                 _openIdConfigurationManager.RequestRefresh();
             }
             catch (Exception)
