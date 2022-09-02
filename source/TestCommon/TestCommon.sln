@@ -1,10 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32802.462
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{3596B88D-1C47-4D10-AFE8-0EE81AD6B968}"
 	ProjectSection(SolutionItems) = preProject
+		documents\b2ctokenretrieval.md = documents\b2ctokenretrieval.md
 		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
 		documents\eventhublistenermock.md = documents\eventhublistenermock.md
