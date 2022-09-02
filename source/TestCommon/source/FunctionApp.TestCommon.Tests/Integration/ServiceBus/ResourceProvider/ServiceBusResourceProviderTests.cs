@@ -13,11 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Energinet.DataHub.Core.TestCommon;
