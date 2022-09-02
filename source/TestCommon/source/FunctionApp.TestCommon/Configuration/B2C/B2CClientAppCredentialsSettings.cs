@@ -12,29 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
 {
     /// <summary>
-    /// Settings necessary for managing the Azure AD B2C located in the integration test environment.
+    /// Settings necessary for aquiring an access token for a client app, from the B2C tenant,
+    /// using the client credentials flow.
     /// </summary>
-    public record AzureB2CSettings()
+    public record B2CClientAppCredentialsSettings
     {
-        public string Tenant { get; internal set; }
+        public static B2CClientAppCredentialsSettings Empty { get; }
+            = new();
+
+        public string ClientId { get; internal set; }
             = string.Empty;
 
-        public string ServicePrincipalId { get; internal set; }
-            = string.Empty;
-
-        public string ServicePrincipalSecret { get; internal set; }
-            = string.Empty;
-
-        public string BackendAppId { get; internal set; }
-            = string.Empty;
-
-        public string BackendServicePrincipalObjectId { get; internal set; }
-            = string.Empty;
-
-        public string BackendAppObjectId { get; internal set; }
+        public string ClientSecret { get; internal set; }
             = string.Empty;
     }
 }
