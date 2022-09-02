@@ -43,14 +43,17 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security
 
         private IConfigurationManager<OpenIdConnectConfiguration> BackendOpenIdConfigurationManager { get; }
 
-        [Fact]
-        public async Task Given_AccessTokenIsNotAToken_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull()
+        [Theory]
+        [InlineAutoData("")]
+        [InlineAutoData(null!)]
+        [InlineAutoData("NotAValidToken")]
+        public async Task Given_AccessTokenIsNotAToken_When_ValidateTokenAsync_Then_IsValidShouldBeFalse_And_ClaimsPrincipalShouldBeNull(
+            string accessToken)
         {
             var sut = new JwtTokenValidator(
                 SecurityTokenValidator,
                 BackendOpenIdConfigurationManager,
                 Fixture.AuthorizationConfiguration.BackendApp.AppId);
-            var accessToken = string.Empty;
 
             // Act
             var (isValid, claimsPrincipal) = await sut.ValidateTokenAsync(accessToken);
