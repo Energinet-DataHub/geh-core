@@ -23,8 +23,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Fixtures
     public class B2CFixture
     {
         /// <summary>
-        /// We are actually using this for integration tests and not system tests,
-        /// so we can use any of the allowed environments.
+        /// We can use any of the allowed environments.
         /// </summary>
         public const string Environment = "u001";
 
