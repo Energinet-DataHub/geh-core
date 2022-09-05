@@ -19,6 +19,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 {
     public static class TopicSubscriptionBuilderExtensions
     {
+        public const string DefaultSubjectRuleName = "subject-rule";
+
         public static TopicSubscriptionBuilder SetEnvironmentVariableToSubscriptionName(this TopicSubscriptionBuilder builder, string variable)
         {
             builder.Do(subscriptionProperties => Environment.SetEnvironmentVariable(variable, subscriptionProperties.SubscriptionName));
@@ -28,7 +30,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         public static TopicSubscriptionBuilder AddSubjectFilter(this TopicSubscriptionBuilder builder, string subject)
         {
-            builder.CreateRuleOptions = new CreateRuleOptions("subject-rule", new CorrelationRuleFilter { Subject = subject });
+            builder.CreateRuleOptions = new CreateRuleOptions(DefaultSubjectRuleName, new CorrelationRuleFilter { Subject = subject });
 
             return builder;
         }

@@ -257,8 +257,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     .CreateAsync();
 
                 // Assert
-                var response = await ResourceProviderFixture.AdministrationClient
-                    .SubscriptionExistsAsync(actualResource.Name, SubscriptionName01);
+                var response = await ResourceProviderFixture.AdministrationClient.SubscriptionExistsAsync(actualResource.Name, SubscriptionName01);
                 response.Value.Should().BeTrue();
             }
 
@@ -284,6 +283,28 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                     var response = await ResourceProviderFixture.AdministrationClient.SubscriptionExistsAsync(topicName, subscription.SubscriptionName);
                     response.Value.Should().BeTrue();
                 }
+            }
+
+            [Fact]
+            public async Task When_AddSubjectFilter_Then_SubjectRuleExists()
+            {
+                // Arrange
+
+                // Act
+                var actualResource = await Sut
+                    .BuildTopic(NamePrefix)
+                    .AddSubscription(SubscriptionName01)
+                    .AddSubjectFilter("subject1")
+                    .CreateAsync();
+
+                // Assert
+                var topicName = actualResource.Name;
+
+                var response = await ResourceProviderFixture.AdministrationClient.RuleExistsAsync(
+                    topicName,
+                    SubscriptionName01,
+                    TopicSubscriptionBuilderExtensions.DefaultSubjectRuleName);
+                response.Value.Should().BeTrue();
             }
 
             [Fact]
