@@ -20,7 +20,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
@@ -112,8 +111,48 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 isReceived.Should().BeTrue();
             }
 
+            /// <summary>
+            /// This tests actually verifies if the resource builder is working correctly with regards to
+            /// the creation of correlation filters on a subscription. The listener is not directly impacted
+            /// by filters, instead it just gets any messages send to the configured subscription.
+            /// </summary>
+            [Theory]
+            [InlineData("subject1", "subject1", true)]
+            [InlineData("subject1", "subject2", false)]
+            public async Task When_SubjectFilter_On_Subscription_Then_Only_Message_With_Subject_Is_Received(
+                string filterSubject,
+                string messageSubject,
+                bool expectIsReceived)
+            {
+                // Arrange
+                var subscription = "subscription1";
+                var topic = await ResourceProvider
+                    .BuildTopic("topic")
+                    .AddSubscription(subscription)
+                    .AddSubjectFilter(filterSubject)
+                    .CreateAsync();
+
+                await Sut.AddTopicSubscriptionListenerAsync(topic.Name, subscription);
+
+                var message = Fixture.Create<ServiceBusMessage>();
+                message.Subject = messageSubject;
+                using var isReceivedEvent = await Sut
+                    .WhenAny()
+                    .VerifyOnceAsync();
+
+                await topic.SenderClient.SendMessageAsync(message);
+
+                // Assert
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().Be(expectIsReceived);
+            }
+
+            /// <summary>
+            /// The listener gets all messages for any configured subscriptions, its not directly impacted
+            /// by filters, but the subscriptions are.
+            /// </summary>
             [Fact]
-            public async Task When_CorrelationFilter_On_Subscription_Verify_receivers()
+            public async Task When_MessagesAreSentToTopic_With_Multiple_SubscriptionFilters_Then_MessagesAreReceived()
             {
                 // Arrange
                 var subscription1 = "subscription1";
@@ -134,48 +173,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var message2 = Fixture.Create<ServiceBusMessage>();
                 message2.Subject = subject2;
 
-                using var isEvent1Received = await Sut
-                    .WhenSubject(subject1)
-                    .VerifyOnceAsync();
-                using var isEvent2Received = await Sut
-                    .WhenSubject(subject2)
-                    .VerifyOnceAsync();
+                using var isReceivedEvent = await Sut
+                    .WhenAny()
+                    .VerifyCountAsync(expectedCount: 2);
 
                 await topic.SenderClient.SendMessageAsync(message1);
                 await topic.SenderClient.SendMessageAsync(message2);
 
                 // Assert
-                var isFirstEventReceived = isEvent1Received.Wait(DefaultTimeout);
-                isFirstEventReceived.Should().BeTrue();
-                var isSecondEventReceived = isEvent2Received.Wait(DefaultTimeout);
-                isSecondEventReceived.Should().BeTrue();
-            }
-
-            [Fact]
-            public async Task When_SubjectFilter_On_Subscription_Verify_receiver()
-            {
-                // Arrange
-                var subscription = "subscription1";
-                var subject = "subject1";
-                var topic = await ResourceProvider
-                    .BuildTopic("topic")
-                    .AddSubscription(subscription)
-                    .AddSubjectFilter(subject)
-                    .CreateAsync();
-
-                await Sut.AddTopicSubscriptionListenerAsync(topic.Name, subscription);
-
-                var message1 = Fixture.Create<ServiceBusMessage>();
-                message1.Subject = subject;
-                using var isEventReceived = await Sut
-                    .WhenAny()
-                    .VerifyOnceAsync();
-
-                await topic.SenderClient.SendMessageAsync(message1);
-
-                // Assert
-                var isFirstEventReceived = isEventReceived.Wait(DefaultTimeout);
-                isFirstEventReceived.Should().BeTrue();
+                var isReceived = isReceivedEvent.Wait(DefaultTimeout);
+                isReceived.Should().BeTrue();
             }
         }
 

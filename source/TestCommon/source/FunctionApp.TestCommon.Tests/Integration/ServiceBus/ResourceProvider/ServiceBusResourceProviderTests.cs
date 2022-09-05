@@ -246,7 +246,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             }
 
             [Fact]
-            public async Task When_AddSubscriptionName_requiresSession_ThenTopicAndSubscriptionIsCreated()
+            public async Task When_AddSubscriptionName_RequiresSession_Then_TopicAndSubscriptionIsCreated()
             {
                 // Arrange
 
