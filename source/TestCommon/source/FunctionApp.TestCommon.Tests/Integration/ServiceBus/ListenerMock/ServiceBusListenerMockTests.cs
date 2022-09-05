@@ -155,6 +155,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
             [Theory]
             [InlineData("subject1", "subject1", "to1", "to1", true)]
             [InlineData("subject1", "subject1", "to1", "to2", false)]
+            [InlineData("subject1", "subject2", "to1", "to2", false)]
+            [InlineData("subject1", "subject2", "to1", "to1", false)]
             public async Task When_SubjectAndToFilter_On_Subscription_Then_Only_Message_With_Subject_And_To_Is_Received(
                 string filterSubject,
                 string messageSubject,
