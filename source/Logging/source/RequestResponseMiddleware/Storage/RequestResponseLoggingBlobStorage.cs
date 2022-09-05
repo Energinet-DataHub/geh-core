@@ -26,16 +26,16 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
 {
     public class RequestResponseLoggingBlobStorage : IRequestResponseLogging
     {
-        private readonly string _storageConnectionString;
+        private readonly string _storageAccountName;
         private readonly string _storageContainerName;
         private readonly ILogger<RequestResponseLoggingBlobStorage> _logger;
 
         public RequestResponseLoggingBlobStorage(
-            string storageConnectionString,
+            string storageAccountName,
             string storageContainerName,
             ILogger<RequestResponseLoggingBlobStorage> logger)
         {
-            _storageConnectionString = storageConnectionString;
+            _storageAccountName = storageAccountName;
             _storageContainerName = storageContainerName;
             _logger = logger;
         }
@@ -65,7 +65,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage
             string logName,
             bool isRequest)
         {
-            var blobClient = new BlobClient(_storageConnectionString, _storageContainerName, logName);
+            var blobClient = new BlobClient(_storageAccountName, _storageContainerName, logName);
             var options = new BlobUploadOptions { Tags = indexTags, Metadata = metaData };
             var actorFound = metaData.TryGetValue(IndexTagsKeys.JwtActorId, out var actor);
 
