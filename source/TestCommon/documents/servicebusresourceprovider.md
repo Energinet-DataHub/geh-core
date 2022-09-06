@@ -36,6 +36,10 @@ Depending on the resource type being built, additional operations are available.
 
 When building a topic its possible to also add subscriptions.
 
+### `AddRule()`,  `AddSubjectFilter()`,  `AddSubjectAndToFilter()`
+
+When building a subscriptions it is possible to add rules and filters.
+
 ### `Do()` and `SetEnvironmentVariableTo` extensions
 
 All `Builder` types support the `Do()` operation which allows us to register *post actions*. Each post action will be called just after the resource type has been created, with the properties of the resource type.
@@ -87,7 +91,7 @@ Clean up:
 await resourceProvider.DisposeAsync();
 ```
 
-Example 2 - creating a subscription with a subject filter
+Example 3 - creating a subscription with a subject filter
 ```csharp
 var topicResource = await resourceProvider
     .BuildTopic("topic")
