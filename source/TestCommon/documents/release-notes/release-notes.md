@@ -1,8 +1,12 @@
 # TestCommon Release notes
 
+## Version 3.4.0
+
+- Added support for creating filters on Service bus subscriptions [Examples](../servicebusresourceprovider.md#examples)
+
 ## Version 3.3.0
 
-- Implemented classes in `Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C` namespace, to support tests using B2C access tokens. See [Azure AD B2C token retrieval](..\functionapp-testcommon.md#Azure-AD-B2C-token-retrieval).
+- Implemented classes in `Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C` namespace, to support tests using B2C access tokens. See [Azure AD B2C token retrieval](../functionapp-testcommon.md#azure-ad-b2c-token-retrieval).
 
 ## Version 3.2.2
 
