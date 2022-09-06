@@ -14,7 +14,6 @@
 
 using Azure.Identity;
 using Azure.Monitor.Query;
-using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.Core.App.Common.Parsers.Helpers;
 using Xunit;
 
-namespace Energinet.DataHub.Core.SchemaValidation.Tests
+namespace Energinet.DataHub.Core.App.Common.Tests
 {
     public class UserIdentityFactoryTests
     {

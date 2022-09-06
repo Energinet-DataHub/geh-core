@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -25,18 +26,26 @@ namespace Energinet.DataHub.Core.App.Common.Security
 {
     public class JwtTokenValidator : IJwtTokenValidator
     {
-        private readonly JwtSecurityTokenHandler _tokenValidator;
-        private readonly OpenIdSettings _openIdSettings;
+        private readonly ILogger<JwtTokenValidator> _logger;
+        private readonly ISecurityTokenValidator _securityTokenValidator;
+        private readonly IConfigurationManager<OpenIdConnectConfiguration> _openIdConfigurationManager;
+        private readonly string _validAudience;
 
-        public JwtTokenValidator(OpenIdSettings openIdSettings)
+        public JwtTokenValidator(
+            ILogger<JwtTokenValidator> logger,
+            ISecurityTokenValidator securityTokenValidator,
+            IConfigurationManager<OpenIdConnectConfiguration> openIdConfigurationManager,
+            string validAudience)
         {
-            _tokenValidator = new JwtSecurityTokenHandler();
-            _openIdSettings = openIdSettings ?? throw new ArgumentNullException(nameof(openIdSettings));
+            _logger = logger;
+            _securityTokenValidator = securityTokenValidator;
+            _openIdConfigurationManager = openIdConfigurationManager;
+            _validAudience = validAudience;
         }
 
         public async Task<(bool IsValid, ClaimsPrincipal? ClaimsPrincipal)> ValidateTokenAsync(string? token)
         {
-            if (!_tokenValidator.CanReadToken(token))
+            if (!_securityTokenValidator.CanReadToken(token))
             {
                 // Token is malformed
                 return (false, null);
@@ -44,31 +53,51 @@ namespace Energinet.DataHub.Core.App.Common.Security
 
             try
             {
-                var openIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(_openIdSettings.MetadataAddress, new OpenIdConnectConfigurationRetriever());
-                var openIdConnectConfigData = await openIdConfigurationManager.GetConfigurationAsync();
-
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    RequireSignedTokens = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidAudience = _openIdSettings.Audience,
-                    IssuerSigningKeys = openIdConnectConfigData.SigningKeys,
-                    ValidIssuer = openIdConnectConfigData.Issuer,
-                };
-
-                var principal = _tokenValidator.ValidateToken(token, validationParameters, out _);
-
-                return (true, principal);
+                var claimsPrincipal = await ValidateTokenUsingConfigurationAsync(token);
+                return (true, claimsPrincipal);
+            }
+            catch (SecurityTokenSignatureKeyNotFoundException)
+            {
+                // Refresh configuration and try once more
+                _logger.LogInformation("Force refreshing OpenID configuration because of missing signing key.");
+                _openIdConfigurationManager.RequestRefresh();
             }
             catch (Exception)
             {
                 // Token is not valid (expired etc.)
                 return (false, null);
             }
+
+            try
+            {
+                var claimsPrincipal = await ValidateTokenUsingConfigurationAsync(token);
+                return (true, claimsPrincipal);
+            }
+            catch (Exception)
+            {
+                // Token is not valid (expired etc.)
+                return (false, null);
+            }
+        }
+
+        private async Task<ClaimsPrincipal> ValidateTokenUsingConfigurationAsync(string? token)
+        {
+            var openIdConnectConfiguration = await _openIdConfigurationManager.GetConfigurationAsync(CancellationToken.None);
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                RequireSignedTokens = true,
+                ClockSkew = TimeSpan.Zero,
+                ValidAudience = _validAudience,
+                IssuerSigningKeys = openIdConnectConfiguration.SigningKeys,
+                ValidIssuer = openIdConnectConfiguration.Issuer,
+            };
+
+            return _securityTokenValidator.ValidateToken(token, validationParameters, out _);
         }
     }
 }

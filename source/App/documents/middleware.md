@@ -1,6 +1,10 @@
 # Middleware Documentation
 
-Middleware for Function App's and ASP.NET Core Web API's.
+Middleware for Function App's and ASP.NET Core Web API's:
+
+- [JWT Token Middleware](#jwt-token-middleware)
+- [Actor Middleware](#actor-middleware)
+- [Integration Event Metadata Middleware](#integration-event-metadata-middleware)
 
 ## JWT Token Middleware
 
@@ -23,7 +27,7 @@ Install following packages
 
 And follow the instructions for either Functions or WebApis below. After those steps `ClaimsPrincipal` can now be accessed through `IClaimsPrincipalAccessor`.
 
-#### Functions
+### Functions
 
 Install `Energinet.DataHub.Core.App.FunctionApp`.
 
@@ -37,8 +41,58 @@ Add Middleware to `ConfigureFunctionsWorkerDefaults` as **the first in line** as
 })
 ```
 
-Register in IoC (in example below SimpleInjector is used)
-Note: The following package must be installed
+#### .NET Core Dependency Injection
+
+If using .NET Core Dependency Injection (out-of-box) follow the description in current section.
+
+Create an extension method like:
+
+```c#
+/// <summary>
+/// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
+/// </summary>
+/// <param name="services">ServiceCollection container</param>
+/// <param name="metadataAddress">OpenID Configuration URL used for acquiring metadata</param>
+/// <param name="audience">Audience used for validation of JWT token</param>
+public static IServiceCollection AddJwtTokenSecurity(this IServiceCollection services, string metadataAddress, string audience)
+{
+    services.AddSingleton<ISecurityTokenValidator, JwtSecurityTokenHandler>();
+    services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(_ =>
+        new ConfigurationManager<OpenIdConnectConfiguration>(
+            metadataAddress,
+            new OpenIdConnectConfigurationRetriever()));
+
+    services.AddScoped<IJwtTokenValidator>(sp =>
+        new JwtTokenValidator(
+            sp.GetRequiredService<ILogger<JwtTokenValidator>>(),
+            sp.GetRequiredService<ISecurityTokenValidator>(),
+            sp.GetRequiredService<IConfigurationManager<OpenIdConnectConfiguration>>(),
+            audience));
+
+    services.AddScoped<ClaimsPrincipalContext>();
+    services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
+
+    services.AddScoped<JwtTokenMiddleware>(sp =>
+        new JwtTokenMiddleware(
+            sp.GetRequiredService<ClaimsPrincipalContext>(),
+            sp.GetRequiredService<IJwtTokenValidator>(),
+            _functionNamesToExclude));
+
+    return services;
+}
+```
+
+Use the extension to register in the container like:
+
+```c#
+serviceCollection.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience");
+```
+
+#### SimpleInjector
+
+If using SimpleInjector follow the description in current section.
+
+The following package must be installed
 
 - `Energinet.DataHub.Core.App.FunctionApp.SimpleInjector`
 
@@ -51,11 +105,59 @@ protected override void ConfigureContainer(Container container)
 }
 ```
 
-#### WebApi
+### WebApi
 
-Install the following
+Install `Energinet.DataHub.Core.App.WebApp`.
 
-- `Energinet.DataHub.Core.App.WebApp`.
+#### .NET Core Dependency Injection
+
+If using .NET Core Dependency Injection (out-of-box) follow the description in current section.
+
+Create an extension method like:
+
+```c#
+/// <summary>
+/// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
+/// </summary>
+/// <param name="services">ServiceCollection container</param>
+/// <param name="metadataAddress">OpenID Configuration URL used for acquiring metadata</param>
+/// <param name="audience">Audience used for validation of JWT token</param>
+public static IServiceCollection AddJwtTokenSecurity(this IServiceCollection services, string metadataAddress, string audience)
+{
+    services.AddSingleton<ISecurityTokenValidator, JwtSecurityTokenHandler>();
+    services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(_ =>
+        new ConfigurationManager<OpenIdConnectConfiguration>(
+            metadataAddress,
+            new OpenIdConnectConfigurationRetriever()));
+
+    services.AddScoped<IJwtTokenValidator>(sp =>
+        new JwtTokenValidator(
+            sp.GetRequiredService<ILogger<JwtTokenValidator>>(),
+            sp.GetRequiredService<ISecurityTokenValidator>(),
+            sp.GetRequiredService<IConfigurationManager<OpenIdConnectConfiguration>>(),
+            audience));
+
+    services.AddScoped<ClaimsPrincipalContext>();
+    services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
+
+    services.AddScoped<JwtTokenMiddleware>();
+
+    return services;
+}
+```
+
+Use the extension to register in the container like:
+
+```c#
+services.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience");
+```
+
+#### SimpleInjector
+
+If using SimpleInjector follow the description in current section.
+
+The following package must be installed
+
 - `Energinet.DataHub.Core.App.WebApp.SimpleInjector`
 
 Replace the default middleware factory with the SimpleInjectorMiddlewareFactory:
