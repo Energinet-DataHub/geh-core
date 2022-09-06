@@ -303,7 +303,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var response = await ResourceProviderFixture.AdministrationClient.RuleExistsAsync(
                     topicName,
                     SubscriptionName01,
-                    TopicSubscriptionBuilderExtensions.DefaultSubjectRuleName);
+                    TopicSubscriptionBuilder.DefaultSubjectRuleName);
                 response.Value.Should().BeTrue();
             }
 
@@ -325,7 +325,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var response = await ResourceProviderFixture.AdministrationClient.RuleExistsAsync(
                     topicName,
                     SubscriptionName01,
-                    TopicSubscriptionBuilderExtensions.DefaultSubjectAndToRuleName);
+                    TopicSubscriptionBuilder.DefaultSubjectAndToRuleName);
                 response.Value.Should().BeTrue();
             }
 

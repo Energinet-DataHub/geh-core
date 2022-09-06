@@ -19,27 +19,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 {
     public static class TopicSubscriptionBuilderExtensions
     {
-        public const string DefaultSubjectRuleName = "subject-rule";
-
-        public const string DefaultSubjectAndToRuleName = "subject-to-rule";
-
         public static TopicSubscriptionBuilder SetEnvironmentVariableToSubscriptionName(this TopicSubscriptionBuilder builder, string variable)
         {
             builder.Do(subscriptionProperties => Environment.SetEnvironmentVariable(variable, subscriptionProperties.SubscriptionName));
-
-            return builder;
-        }
-
-        public static TopicSubscriptionBuilder AddSubjectFilter(this TopicSubscriptionBuilder builder, string subject)
-        {
-            builder.CreateRuleOptions = new CreateRuleOptions(DefaultSubjectRuleName, new CorrelationRuleFilter { Subject = subject });
-
-            return builder;
-        }
-
-        public static TopicSubscriptionBuilder AddSubjectAndToFilter(this TopicSubscriptionBuilder builder, string subject, string to)
-        {
-            builder.CreateRuleOptions = new CreateRuleOptions(DefaultSubjectAndToRuleName, new CorrelationRuleFilter { Subject = subject, To = to });
 
             return builder;
         }
