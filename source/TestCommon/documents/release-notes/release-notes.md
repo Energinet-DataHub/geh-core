@@ -1,6 +1,6 @@
 # TestCommon Release notes
 
-## Version 3.3.1
+## Version 3.4.0
 
 - Add a subject filter on Service bus subscriptions [Examples](../servicebusresourceprovider.md#examples)
 
