@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using Azure.Messaging.ServiceBus.Administration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
 {
