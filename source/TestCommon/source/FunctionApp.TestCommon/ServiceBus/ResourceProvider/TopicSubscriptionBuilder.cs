@@ -77,6 +77,21 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         }
 
         /// <summary>
+        /// Add a subscription rule. Can be used to create a Correlation or SQL filter.
+        /// </summary>
+        public TopicSubscriptionBuilder AddRule(CreateRuleOptions ruleOptions)
+        {
+            if (ruleOptions is null)
+            {
+                throw new ArgumentNullException(nameof(ruleOptions));
+            }
+
+            CreateRuleOptions = ruleOptions;
+
+            return this;
+        }
+
+        /// <summary>
         /// Add a correlation filter with <see cref="DefaultSubjectRuleName"/> that will filter on Subject.
         /// </summary>
         public TopicSubscriptionBuilder AddSubjectFilter(string subject)
