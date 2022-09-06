@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks.ServiceLiveEndpointHealthCheck;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -30,6 +34,26 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
         public static IHealthChecksBuilder AddLiveCheck(this IHealthChecksBuilder builder)
         {
             return builder.AddCheck(HealthChecksConstants.LiveHealthCheckName, () => HealthCheckResult.Healthy());
+        }
+
+        public static IHealthChecksBuilder AddServiceLiveHealthCheck(
+            this IHealthChecksBuilder builder,
+            string serviceName,
+            Uri serviceUri,
+            HealthStatus? failureStatus = default,
+            IEnumerable<string>? tags = default,
+            TimeSpan? timeout = default)
+        {
+            return builder.Add(new HealthCheckRegistration(
+                name: serviceName,
+                factory: sp =>
+                {
+                    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+                    return new ServiceLiveHealthCheck(serviceUri, () => httpClientFactory.CreateClient(serviceName));
+                },
+                failureStatus: failureStatus,
+                tags: tags,
+                timeout: timeout));
         }
     }
 }
