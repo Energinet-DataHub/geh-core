@@ -14,7 +14,7 @@ Implementation example:
 ---
 
     serviceCollection.AddScoped<IRequestResponseLogging>(
-    _ => new RequestResponseLoggingBlobStorage(accountName, 
+    _ => new RequestResponseLoggingBlobStorage(connectionString, 
                                                 containerName, 
                                                 ILogger<RequestResponseLoggingBlobStorage>));
 
