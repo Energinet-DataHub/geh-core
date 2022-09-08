@@ -36,24 +36,28 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
             return builder.AddCheck(HealthChecksConstants.LiveHealthCheckName, () => HealthCheckResult.Healthy());
         }
 
-        public static IHealthChecksBuilder AddServiceLiveHealthCheck(
+        /// <summary>
+        /// Add a health check to the "ready" endpoint where the health endpoint of another service can be called.
+        /// </summary>
+        /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
+        /// <param name="serviceName">The name of the backend service to ping.</param>
+        /// <param name="serviceUri">The URL of the service to ping.</param>
+        /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
+        public static IHealthChecksBuilder AddServiceHealthCheck(
             this IHealthChecksBuilder builder,
             string serviceName,
-            Uri serviceUri,
-            HealthStatus? failureStatus = default,
-            IEnumerable<string>? tags = default,
-            TimeSpan? timeout = default)
+            Uri serviceUri)
         {
             return builder.Add(new HealthCheckRegistration(
                 name: serviceName,
                 factory: sp =>
                 {
                     var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-                    return new ServiceLiveHealthCheck(serviceUri, () => httpClientFactory.CreateClient(serviceName));
+                    return new ServiceHealthCheck(serviceUri, () => httpClientFactory.CreateClient(serviceName));
                 },
-                failureStatus: failureStatus,
-                tags: tags,
-                timeout: timeout));
+                failureStatus: HealthStatus.Unhealthy,
+                tags: default,
+                timeout: TimeSpan.FromSeconds(120)));
         }
     }
 }

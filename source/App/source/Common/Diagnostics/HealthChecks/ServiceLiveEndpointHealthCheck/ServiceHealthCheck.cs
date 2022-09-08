@@ -20,12 +20,15 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks.ServiceLiveEndpointHealthCheck
 {
-    public class ServiceLiveHealthCheck : IHealthCheck
+    /// <summary>
+    /// The <see cref="IHealthCheck"/> that can be used for calling the health status of other services.
+    /// </summary>
+    public class ServiceHealthCheck : IHealthCheck
     {
         private readonly Uri _serviceUri;
         private readonly Func<HttpClient> _httpClientFactory;
 
-        public ServiceLiveHealthCheck(Uri serviceUri, Func<HttpClient> httpClientFactory)
+        public ServiceHealthCheck(Uri serviceUri, Func<HttpClient> httpClientFactory)
         {
             _serviceUri = serviceUri ?? throw new ArgumentNullException(nameof(serviceUri));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
@@ -41,11 +44,13 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks.ServiceLive
 
                 using var response = await httpClient.SendAsync(requestMessage, cancellationToken);
 
-                return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+                return response.IsSuccessStatusCode
+                    ? HealthCheckResult.Healthy()
+                    : HealthCheckResult.Unhealthy();
             }
             catch (Exception ex)
             {
-                return new HealthCheckResult(context.Registration.FailureStatus, exception: ex);
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: ex);
             }
         }
     }
