@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -24,15 +24,13 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.json" />
     <Content Remove="_appsettings.sample.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="appsettings.json" />
     <None Include="_appsettings.sample.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -28,6 +28,7 @@ limitations under the License.
     <PackageReference Include="Azure.Monitor.Query" Version="1.1.0" />
     <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="3.3.0" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
@@ -43,6 +44,7 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\ExampleHost.WebApi01\ExampleHost.WebApi01.csproj" />
     <ProjectReference Include="..\ExampleHost.WebApi02\ExampleHost.WebApi02.csproj" />
+    <ProjectReference Include="..\ExampleHost.WebApi03\ExampleHost.WebApi03.csproj" />
   </ItemGroup>
 
   <ItemGroup>

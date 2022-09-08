@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.WebApi.Tests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.WebApi02", "source\ExampleHost.WebApi02\ExampleHost.WebApi02.csproj", "{BF5D73EF-CB11-4B61-836A-1FCC80F28F3E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.WebApi03", "source\ExampleHost.WebApi03\ExampleHost.WebApi03.csproj", "{140FD99A-7635-4383-B2CA-DF8C21A42560}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,6 +122,10 @@ Global
 		{BF5D73EF-CB11-4B61-836A-1FCC80F28F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF5D73EF-CB11-4B61-836A-1FCC80F28F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF5D73EF-CB11-4B61-836A-1FCC80F28F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{140FD99A-7635-4383-B2CA-DF8C21A42560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{140FD99A-7635-4383-B2CA-DF8C21A42560}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{140FD99A-7635-4383-B2CA-DF8C21A42560}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{140FD99A-7635-4383-B2CA-DF8C21A42560}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +147,7 @@ Global
 		{530AAF08-2CEC-47FE-B717-A7A07C7E3195} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
 		{574631A7-E9D0-4F69-9B68-3D88D6EF7698} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
 		{BF5D73EF-CB11-4B61-836A-1FCC80F28F3E} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
+		{140FD99A-7635-4383-B2CA-DF8C21A42560} = {856E0E44-CB7A-4A3F-8243-3B5601B0A553}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97C97DEA-A677-4CDB-919D-DECF30991C7B}
