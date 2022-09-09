@@ -54,7 +54,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests
                 .Given(Request.Create().UsingGet())
                 .RespondWith(Response.Create().WithStatusCode(System.Net.HttpStatusCode.OK));
 
-            var sut = new ServiceHealthCheck(_dependencyServiceUri, () => _serverMock.CreateClient());
+            var sut = new ServiceHealthCheck(_dependentServiceUri, () => _serverMock.CreateClient());
 
             // Act
             var actualResponse = await sut.CheckHealthAsync(new HealthCheckContext(), default);
@@ -71,7 +71,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests
                 .Given(Request.Create().UsingGet())
                 .RespondWith(Response.Create().WithStatusCode(System.Net.HttpStatusCode.ServiceUnavailable));
 
-            var sut = new ServiceHealthCheck(_dependencyServiceUri, () => _serverMock.CreateClient());
+            var sut = new ServiceHealthCheck(_dependentServiceUri, () => _serverMock.CreateClient());
 
             // Act
             var actualResponse = await sut.CheckHealthAsync(new HealthCheckContext(), default);
