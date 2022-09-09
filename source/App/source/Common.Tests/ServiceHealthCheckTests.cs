@@ -28,14 +28,14 @@ namespace Energinet.DataHub.Core.App.Common.Tests
     [UnitTest]
     public class ServiceHealthCheckTests : IAsyncLifetime
     {
-        private Uri _dependencyServiceUri;
+        private Uri _dependentServiceUri;
         private WireMockServer _serverMock;
 
         public Task InitializeAsync()
         {
-            var httpLocalhostServer = "http://localhost:8080/DependencyService";
-            _dependencyServiceUri = new Uri(httpLocalhostServer);
-            _serverMock = WireMockServer.Start(_dependencyServiceUri.Port);
+            var httpLocalhostServer = "http://localhost:8080/DependentService";
+            _dependentServiceUri = new Uri(httpLocalhostServer);
+            _serverMock = WireMockServer.Start(_dependentServiceUri.Port);
             return Task.CompletedTask;
         }
 
