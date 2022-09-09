@@ -18,7 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks.ServiceLiveEndpointHealthCheck
+namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
 {
     /// <summary>
     /// The <see cref="IHealthCheck"/> that can be used for calling the health status of other services.
@@ -46,11 +46,11 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks.ServiceLive
 
                 return response.IsSuccessStatusCode
                     ? HealthCheckResult.Healthy()
-                    : HealthCheckResult.Unhealthy();
+                    : new HealthCheckResult(context.Registration.FailureStatus);
             }
             catch (Exception ex)
             {
-                return new HealthCheckResult(HealthStatus.Unhealthy, exception: ex);
+                return new HealthCheckResult(context.Registration.FailureStatus, exception: ex);
             }
         }
     }

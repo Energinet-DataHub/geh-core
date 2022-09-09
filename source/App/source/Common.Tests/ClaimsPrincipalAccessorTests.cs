@@ -19,11 +19,9 @@ using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Identity;
 using FluentAssertions;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Core.App.Common.Tests
 {
-    [UnitTest]
     public class ClaimsPrincipalAccessorTests
     {
         [Fact]

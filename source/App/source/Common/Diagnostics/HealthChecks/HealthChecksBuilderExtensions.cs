@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks.ServiceLiveEndpointHealthCheck;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -42,11 +41,13 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
         /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
         /// <param name="serviceName">The name of the backend service to ping.</param>
         /// <param name="serviceUri">The URL of the service to ping.</param>
+        /// <param name="tags">A list of tags that can be used for filtering health checks.</param>
         /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
         public static IHealthChecksBuilder AddServiceHealthCheck(
             this IHealthChecksBuilder builder,
             string serviceName,
-            Uri serviceUri)
+            Uri serviceUri,
+            IEnumerable<string>? tags = default)
         {
             return builder.Add(new HealthCheckRegistration(
                 name: serviceName,
@@ -56,8 +57,8 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
                     return new ServiceHealthCheck(serviceUri, () => httpClientFactory.CreateClient(serviceName));
                 },
                 failureStatus: HealthStatus.Unhealthy,
-                tags: default,
-                timeout: TimeSpan.FromSeconds(120)));
+                tags: tags,
+                timeout: default));
         }
     }
 }

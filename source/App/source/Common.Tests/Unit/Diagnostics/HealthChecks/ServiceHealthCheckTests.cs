@@ -14,28 +14,35 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks.ServiceLiveEndpointHealthCheck;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Moq;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
 using Xunit;
-using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.App.Common.Tests
+namespace Energinet.DataHub.Core.App.Common.Tests.Unit.Diagnostics.HealthChecks
 {
-    [UnitTest]
     public class ServiceHealthCheckTests : IAsyncLifetime
     {
         private Uri _dependentServiceUri;
         private WireMockServer _serverMock;
+        private HealthCheckContext _healthCheckContext;
 
         public Task InitializeAsync()
         {
             var httpLocalhostServer = "http://localhost:8080/DependentService";
             _dependentServiceUri = new Uri(httpLocalhostServer);
             _serverMock = WireMockServer.Start(_dependentServiceUri.Port);
+
+            // Configure HealthCheckContext.Registration.FailureStatus
+            _healthCheckContext = new HealthCheckContext
+            {
+                Registration = new HealthCheckRegistration("serviceName", Mock.Of<IHealthCheck>(), HealthStatus.Unhealthy, default),
+            };
+
             return Task.CompletedTask;
         }
 
@@ -57,7 +64,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests
             var sut = new ServiceHealthCheck(_dependentServiceUri, () => _serverMock.CreateClient());
 
             // Act
-            var actualResponse = await sut.CheckHealthAsync(new HealthCheckContext(), default);
+            var actualResponse = await sut.CheckHealthAsync(_healthCheckContext, default);
 
             // Assert
             actualResponse.Status.ToString().Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
@@ -74,7 +81,7 @@ namespace Energinet.DataHub.Core.App.Common.Tests
             var sut = new ServiceHealthCheck(_dependentServiceUri, () => _serverMock.CreateClient());
 
             // Act
-            var actualResponse = await sut.CheckHealthAsync(new HealthCheckContext(), default);
+            var actualResponse = await sut.CheckHealthAsync(_healthCheckContext, default);
 
             // Assert
             actualResponse.Status.ToString().Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Unhealthy));
