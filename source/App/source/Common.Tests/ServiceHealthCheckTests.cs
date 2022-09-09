@@ -12,18 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using Energinet.DataHub.Core.App.Common.Identity;
+using FluentAssertions;
+using Xunit;
+using Xunit.Categories;
 
-namespace ExampleHost.WebApi03.Controllers
+namespace Energinet.DataHub.Core.App.Common.Tests
 {
-    [ApiController]
-    [Route("webapi03/[controller]")]
-    public class WebApi03Controller : ControllerBase
+    [UnitTest]
+    public class ServiceHealthCheckTests
     {
-        [HttpGet("{name}")]
-        public string Get(string name)
+        [Fact]
+        public void Should_return_bla_bla_bla()
         {
-            return "Hello world " + name;
+            // Arrange
+
+            // Act
+
+            // Assert
         }
     }
 }

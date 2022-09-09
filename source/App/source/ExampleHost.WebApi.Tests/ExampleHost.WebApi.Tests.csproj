@@ -44,7 +44,6 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\ExampleHost.WebApi01\ExampleHost.WebApi01.csproj" />
     <ProjectReference Include="..\ExampleHost.WebApi02\ExampleHost.WebApi02.csproj" />
-    <ProjectReference Include="..\ExampleHost.WebApi03\ExampleHost.WebApi03.csproj" />
   </ItemGroup>
 
   <ItemGroup>
