@@ -24,7 +24,6 @@ namespace Energinet.DataHub.Core.App.Common.Parsers.Helpers
         public static Actor? FromDictionaryString(string inputText, string propertyKey)
         {
             if (string.IsNullOrWhiteSpace(inputText)) throw new ArgumentNullException(nameof(inputText));
-
             if (string.IsNullOrWhiteSpace(propertyKey)) throw new ArgumentNullException(nameof(propertyKey));
 
             var inputJsonDocument = JsonDocument.Parse(inputText);
