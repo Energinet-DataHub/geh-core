@@ -39,6 +39,7 @@ namespace Energinet.DataHub.Core.App.Common.Parsers.Helpers
         private static Actor? FromString(string userIdentity)
         {
             if (string.IsNullOrWhiteSpace(userIdentity)) throw new ArgumentNullException(nameof(userIdentity));
+
             return JsonSerializer.Deserialize<Actor>(userIdentity) ?? throw new JsonException(nameof(userIdentity));
         }
     }

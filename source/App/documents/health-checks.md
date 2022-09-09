@@ -44,7 +44,8 @@ After following the guidelines below, the health checks endpoints will be:
     // Health check
     serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
     serviceCollection.AddHealthChecks()
-        .AddLiveCheck();
+        .AddLiveCheck()
+        .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
 
 1) Create a new class file as `Monitor\HealthCheckEndpoint.cs` with the following content:
@@ -105,7 +106,8 @@ After following the guidelines below, the health checks endpoints will be:
    ```cs
     // Health check
     services.AddHealthChecks()
-        .AddLiveCheck();
+        .AddLiveCheck()
+        .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
 
 1) Add the following to a _Configure()_ method in Program.cs:
