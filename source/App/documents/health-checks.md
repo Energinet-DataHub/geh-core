@@ -44,8 +44,7 @@ After following the guidelines below, the health checks endpoints will be:
     // Health check
     serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
     serviceCollection.AddHealthChecks()
-        .AddLiveCheck()
-        .AddServiceHealthCheck("service-name", <url-to-ping>);
+        .AddLiveCheck();
    ```
 
 1) Create a new class file as `Monitor\HealthCheckEndpoint.cs` with the following content:
@@ -79,14 +78,19 @@ After following the guidelines below, the health checks endpoints will be:
 
 See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages. Even though they are implemented for ASP.NET Core, they also work for Azure Functions.
 
+We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services.
+
 1) Add additional health checks after the call to `AddLiveCheck()`. See an example below.
 
    ```cs
     services.AddHealthChecks()
         .AddLiveCheck()
+        // Example where our application has a dependency to a SQL Server database
         .AddSqlServer(
             name: "ChargeDb",
-            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString));
+            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString))
+        // Example where our application has a dependency to another service
+        .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
 
 ## ASP.NET Core Web API
@@ -106,8 +110,7 @@ After following the guidelines below, the health checks endpoints will be:
    ```cs
     // Health check
     services.AddHealthChecks()
-        .AddLiveCheck()
-        .AddServiceHealthCheck("service-name", <url-to-ping>);
+        .AddLiveCheck();
    ```
 
 1) Add the following to a _Configure()_ method in Program.cs:
@@ -127,12 +130,17 @@ After following the guidelines below, the health checks endpoints will be:
 
 See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages.
 
+We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services.
+
 1) Add additional health checks after the call to `AddLiveCheck()`. See an example below.
 
    ```cs
     services.AddHealthChecks()
         .AddLiveCheck()
+        // Example where our application has a dependency to a SQL Server database
         .AddSqlServer(
             name: "ChargeDb",
-            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString));
+            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString))
+        // Example where our application has a dependency to another service
+        .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
