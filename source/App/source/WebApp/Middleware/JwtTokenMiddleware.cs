@@ -55,17 +55,13 @@ namespace Energinet.DataHub.Core.App.WebApp.Middleware
                 return;
             }
 
-            var (isValid, claimsPrincipal) = await _jwtTokenValidator
-                .ValidateTokenAsync(token)
-                .ConfigureAwait(false);
+            var (isValid, claimsPrincipal) = await _jwtTokenValidator.ValidateTokenAsync(token).ConfigureAwait(false);
 
             if (!isValid)
             {
                 HttpContextHelper.SetErrorResponse(context);
                 return;
             }
-
-            context.User = claimsPrincipal!;
 
             _claimsPrincipalContext.ClaimsPrincipal = claimsPrincipal;
 

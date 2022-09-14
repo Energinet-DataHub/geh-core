@@ -17,7 +17,6 @@ limitations under the License.
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>Energinet.DataHub.Core.App.WebApp</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.WebApp</RootNamespace>
@@ -71,6 +70,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Metadata" Version="6.0.8" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
