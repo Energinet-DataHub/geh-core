@@ -62,10 +62,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v8
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@8.2.0
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v8
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@8.2.0
         with:
           USE_AZURE_FUNCTIONS_TOOLS: 'true'
           NODE_VERSION: '16'
@@ -73,7 +73,7 @@ jobs:
           AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v8
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@8.2.0
         with:
           SOLUTION_FILE_PATH: './source/TestCommon/TestCommon.sln'
           CODE_COVERAGE_FLAGS: testcommon
@@ -83,12 +83,12 @@ jobs:
           AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
       - name: Pack TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v8
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@8.2.0
         with:
           PROJECT_PATH: './source/TestCommon/source/TestCommon/TestCommon.csproj'
 
       - name: Pack FunctionApp.TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v8
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@8.2.0
         with:
           PROJECT_PATH: './source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
@@ -102,7 +102,7 @@ jobs:
             .github/workflows/testcommon-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v8
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@8.2.0
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
