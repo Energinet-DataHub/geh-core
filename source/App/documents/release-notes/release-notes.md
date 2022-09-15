@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.1.1
+
+- Pipeline test
+
 ## Version 7.1.0
 
 - Add extension method for calling health endpoints of other services.

@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.4.1
+
+- Pipeline test
+
 ## Version 3.4.0
 
 - Added support for creating filters on Service bus subscriptions [Examples](../servicebusresourceprovider.md#examples)
