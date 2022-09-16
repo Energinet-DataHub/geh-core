@@ -58,11 +58,11 @@ It is possible to combine multiple permissions (OrganizationRead ^ GridAreaWrite
 ```C#
     [HttpPost]
     [Authorize(Permission.OrganizationRead)]
-    [Authorize(Permission.GridAreaWriteRead)]
+    [Authorize(Permission.GridAreaWrite)]
     public async Task<IActionResult> DoExampleAsync()
     {
         ...
     }
 ```
 
-Multiple choice permissions (OrganizationRead | GridAreaWrite) are not supported; neither by the framework, nor the underlying model.
+Multiple choice permissions (OrganizationRead | GridAreaWrite) are not supported; neither by the framework nor the underlying model.
