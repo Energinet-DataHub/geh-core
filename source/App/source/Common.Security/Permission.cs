@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.WebApp.Authorization;
+namespace Energinet.DataHub.Core.App.Common.Security;
 
 public enum Permission
 {

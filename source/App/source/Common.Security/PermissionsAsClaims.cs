@@ -14,9 +14,9 @@
 
 using System.Collections.Generic;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authorization;
+namespace Energinet.DataHub.Core.App.Common.Security;
 
-internal static class PermissionsAsClaims
+public static class PermissionsAsClaims
 {
     public static IReadOnlyDictionary<Permission, string> Lookup { get; } = new Dictionary<Permission, string>
     {

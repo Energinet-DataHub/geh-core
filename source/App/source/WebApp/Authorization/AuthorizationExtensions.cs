@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System;
+using Energinet.DataHub.Core.App.Common.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.App.WebApp.Authorization;
@@ -21,7 +23,9 @@ public static class AuthorizationExtensions
 {
     private const string ScopeClaimType = "scope";
 
-    public static void AddPermissionAuthorization(this IServiceCollection services)
+    public static void AddPermissionAuthorization(
+        this IServiceCollection services,
+        Action<AuthorizationOptions>? configure = default)
     {
         services.AddAuthorization(options =>
         {
@@ -37,6 +41,8 @@ public static class AuthorizationExtensions
                         .RequireClaim(ScopeClaimType, claimValue);
                 });
             }
+
+            configure?.Invoke(options);
         });
     }
 }

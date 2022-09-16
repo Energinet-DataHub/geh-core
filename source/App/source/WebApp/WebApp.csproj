@@ -81,6 +81,7 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\Common.Abstractions\Common.Abstractions.csproj" />
+    <ProjectReference Include="..\Common.Security\Common.Security.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
