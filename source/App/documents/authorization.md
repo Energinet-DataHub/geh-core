@@ -34,7 +34,7 @@ Before enabling authorization, the authentication must be configured first.
 
 Configuring authorization is very similar.
 
-1) Add `UseAuthorization()` adter `UseAuthentication()` to `IApplicationBuilder`, see <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
+1) Add `UseAuthorization()` after `UseAuthentication()` to `IApplicationBuilder`, see <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
 2) Add `AddPermissionAuthorization()` to `IServiceProvider`. This will register the permissions with the framework.
 
 ### Usage
