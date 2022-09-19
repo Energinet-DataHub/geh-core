@@ -16,7 +16,6 @@ using System.Collections.Generic;
 
 namespace Energinet.DataHub.Core.App.Common.Security;
 
-// todo: test that all claims/permissions are represented
 public static class PermissionsAsClaims
 {
     public static IReadOnlyDictionary<Permission, string> Lookup { get; } = new Dictionary<Permission, string>

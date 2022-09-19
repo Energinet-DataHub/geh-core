@@ -12,15 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
+namespace ExampleHost.WebApi03;
 
-namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security;
-
-public sealed class PermissionTests
+public class Program
 {
-    [Fact]
-    public void AFailedTest()
+    protected Program() { }
+
+    public static void Main(string[] args)
     {
-        Assert.False(true);
+        CreateHostBuilder(args).Build().Run();
     }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 }
