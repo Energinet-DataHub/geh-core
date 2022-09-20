@@ -13,43 +13,35 @@
 // limitations under the License.
 
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.App.WebApp.Authentication;
 
 public static class AuthenticationExtensions
 {
-    public static async Task AddJwtBearerAuthenticationAsync(
+    public static void AddJwtBearerAuthentication(
         this IServiceCollection services,
         string metadataAddress,
         string audience)
     {
-        var openIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-            metadataAddress,
-            new OpenIdConnectConfigurationRetriever());
-
-        var openIdConnectConfiguration = await openIdConfigurationManager
-            .GetConfigurationAsync()
-            .ConfigureAwait(false);
-
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+            .AddJwtBearer(options =>
             {
-                ValidateAudience = true,
-                ValidateIssuer = true,
-                ValidateIssuerSigningKey = true,
-                ValidateLifetime = true,
-                RequireSignedTokens = true,
-                ClockSkew = TimeSpan.Zero,
-                ValidAudience = audience,
-                IssuerSigningKeys = openIdConnectConfiguration.SigningKeys,
-                ValidIssuer = openIdConnectConfiguration.Issuer,
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    RequireSignedTokens = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidAudience = audience,
+                };
+
+                options.MetadataAddress = metadataAddress;
             });
     }
 }
