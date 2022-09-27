@@ -43,8 +43,7 @@ public class PermissionController : ControllerBase
     }
 
     [HttpGet("org:read+org:write/{identification}")]
-    [Authorize(UserRoles.Accountant)]
-    [Authorize(UserRoles.Supporter)]
+    [Authorize(UserRoles.Accountant, UserRoles.Supporter)]
     public string GetOrganizationReadWritePermission(string identification)
     {
         return identification;

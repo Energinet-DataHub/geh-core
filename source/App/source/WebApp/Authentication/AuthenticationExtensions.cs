@@ -39,6 +39,7 @@ public static class AuthenticationExtensions
                     RequireSignedTokens = true,
                     ClockSkew = TimeSpan.Zero,
                     ValidAudience = audience,
+                    RoleClaimType = "extension_roles",
                 };
 
                 options.MetadataAddress = metadataAddress;

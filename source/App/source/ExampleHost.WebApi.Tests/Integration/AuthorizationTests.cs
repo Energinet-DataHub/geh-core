@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using Energinet.DataHub.Core.App.Common.Security;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.IdentityModel.Tokens;
@@ -61,7 +62,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken("organization:read"));
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString()));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -96,7 +97,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken("organization:write"));
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -112,7 +113,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken("organization:write"));
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -124,35 +125,35 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithReadClaimInToken_IsForbidden()
+    public async Task CallingApi03Get_OrganizationReadWriteWithReadClaimInToken_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read+org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken("organization:read"));
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString()));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithWriteClaimInToken_IsForbidden()
+    public async Task CallingApi03Get_OrganizationReadWriteWithWriteClaimInToken_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read+org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken("organization:write"));
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -163,7 +164,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read+org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken("organization:read", "organization:write"));
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString(), UserRoles.Supporter.ToString()));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -178,7 +179,7 @@ public sealed class AuthorizationTests
     {
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key"));
         var token = new JwtSecurityToken(
-            claims: claims.Select(x => new Claim("scope", x)),
+            claims: claims.Select(x => new Claim("extension_roles", x)),
             signingCredentials: new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
         var handler = new JwtSecurityTokenHandler();

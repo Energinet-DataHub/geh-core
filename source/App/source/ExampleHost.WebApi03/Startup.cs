@@ -36,6 +36,7 @@ namespace ExampleHost.WebApi03
                     ValidateAudience = false,
                     ValidateLifetime = false,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key")),
+                    RoleClaimType = "extension_roles",
                 });
 
             services.AddControllers();

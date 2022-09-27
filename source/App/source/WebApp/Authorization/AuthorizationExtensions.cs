@@ -21,28 +21,8 @@ namespace Energinet.DataHub.Core.App.WebApp.Authorization;
 
 public static class AuthorizationExtensions
 {
-    private const string ScopeClaimType = "scope";
-
-    public static void AddPermissionAuthorization(
-        this IServiceCollection services,
-        Action<AuthorizationOptions>? configure = default)
+    public static void AddPermissionAuthorization(this IServiceCollection services)
     {
-        services.AddAuthorization(options =>
-        {
-            foreach (var permission in Enum.GetValues<UserRoles>())
-            {
-                var policyName = permission.ToString();
-                var claimValue = UserRolesAsClaims.Lookup[permission];
-
-                options.AddPolicy(policyName, policyBuilder =>
-                {
-                    policyBuilder
-                        .RequireAuthenticatedUser()
-                        .RequireClaim(ScopeClaimType, claimValue);
-                });
-            }
-
-            configure?.Invoke(options);
-        });
+        services.AddAuthorization();
     }
 }
