@@ -23,22 +23,22 @@ public sealed class AuthorizeAttribute : Attribute, IAuthorizeData
 {
     private const string ConfigureUsingCtor = "Use the ctor to select a permission.";
 
-    public AuthorizeAttribute(Permission permission)
+    public AuthorizeAttribute(params UserRoles[] roles)
     {
-        Permission = permission;
+        Roles = roles;
     }
 
-    public Permission Permission { get; }
+    public UserRoles[] Roles { get; }
 
     string? IAuthorizeData.Policy
     {
-        get => Permission.ToString();
+        get => null;
         set => throw new InvalidOperationException(ConfigureUsingCtor);
     }
 
     string? IAuthorizeData.Roles
     {
-        get => null;
+        get => string.Join(",", Roles);
         set => throw new InvalidOperationException(ConfigureUsingCtor);
     }
 

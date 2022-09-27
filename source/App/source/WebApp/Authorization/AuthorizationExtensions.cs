@@ -29,10 +29,10 @@ public static class AuthorizationExtensions
     {
         services.AddAuthorization(options =>
         {
-            foreach (var permission in Enum.GetValues<Permission>())
+            foreach (var permission in Enum.GetValues<UserRoles>())
             {
                 var policyName = permission.ToString();
-                var claimValue = PermissionsAsClaims.Lookup[permission];
+                var claimValue = UserRolesAsClaims.Lookup[permission];
 
                 options.AddPolicy(policyName, policyBuilder =>
                 {

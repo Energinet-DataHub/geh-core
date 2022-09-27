@@ -29,22 +29,22 @@ public class PermissionController : ControllerBase
     }
 
     [HttpGet("org:read/{identification}")]
-    [Authorize(Permission.OrganizationRead)]
+    [Authorize(UserRoles.Accountant)]
     public string GetOrganizationReadPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org:write/{identification}")]
-    [Authorize(Permission.OrganizationWrite)]
+    [Authorize(UserRoles.Supporter)]
     public string GetOrganizationWritePermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org:read+org:write/{identification}")]
-    [Authorize(Permission.OrganizationRead)]
-    [Authorize(Permission.OrganizationWrite)]
+    [Authorize(UserRoles.Accountant)]
+    [Authorize(UserRoles.Supporter)]
     public string GetOrganizationReadWritePermission(string identification)
     {
         return identification;

@@ -24,8 +24,8 @@ public sealed class PermissionsAsClaimsTests
     public void Lookup_AllPermissions_ArePresent()
     {
         // Arrange
-        var target = PermissionsAsClaims.Lookup;
-        var permissions = Enum.GetValues<Permission>();
+        var target = UserRolesAsClaims.Lookup;
+        var permissions = Enum.GetValues<UserRoles>();
 
         // Act + Assert
         foreach (var permission in permissions)
@@ -38,7 +38,7 @@ public sealed class PermissionsAsClaimsTests
     public void Lookup_AllClaims_AreCorrectlyFormatted()
     {
         // Arrange
-        var target = PermissionsAsClaims.Lookup;
+        var target = UserRolesAsClaims.Lookup;
 
         // Act + Assert
         foreach (var claim in target.Values)
