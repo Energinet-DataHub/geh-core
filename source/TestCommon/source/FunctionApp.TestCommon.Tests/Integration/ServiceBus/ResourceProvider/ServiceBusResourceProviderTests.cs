@@ -328,7 +328,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var response = await ResourceProviderFixture.AdministrationClient.RuleExistsAsync(
                     topicName,
                     SubscriptionName01,
-                    TopicSubscriptionBuilder.DefaultSubjectRuleName);
+                    TopicSubscriptionBuilderExtensions.DefaultSubjectRuleName);
                 response.Value.Should().BeTrue();
             }
 
@@ -350,8 +350,33 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 var response = await ResourceProviderFixture.AdministrationClient.RuleExistsAsync(
                     topicName,
                     SubscriptionName01,
-                    TopicSubscriptionBuilder.DefaultSubjectAndToRuleName);
+                    TopicSubscriptionBuilderExtensions.DefaultSubjectAndToRuleName);
                 response.Value.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task When_AddMessageTypeFilter_Then_RuleAdheresToArchitectureDecisionRecord008()
+            {
+                // Arrange
+                var someMessageType = "some-message-type";
+
+                // Act
+                var actualResource = await Sut
+                    .BuildTopic(NamePrefix)
+                    .AddSubscription(SubscriptionName01)
+                    .AddMessageTypeFilter(someMessageType)
+                    .CreateAsync();
+
+                // Assert
+                var topicName = actualResource.Name;
+
+                var rule = await ResourceProviderFixture.AdministrationClient.GetRuleAsync(
+                    topicName,
+                    SubscriptionName01,
+                    TopicSubscriptionBuilderExtensions.MessageTypeRuleName);
+                var filter = (CorrelationRuleFilter)rule.Value.Filter;
+
+                filter.ApplicationProperties["MessageType"].Should().Be(someMessageType);
             }
 
             [Fact]
