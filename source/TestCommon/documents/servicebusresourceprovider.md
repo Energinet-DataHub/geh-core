@@ -84,13 +84,6 @@ var topicResource = await resourceProvider
     .CreateAsync();
 ```
 
-Clean up:
-
-```csharp
-// Delete resources and close any created sender clients.
-await resourceProvider.DisposeAsync();
-```
-
 Example 3 - creating a subscription with a subject filter
 ```csharp
 var topicResource = await resourceProvider
@@ -98,4 +91,20 @@ var topicResource = await resourceProvider
     .AddSubscription("subscription")
     .AddSubjectFilter("message-subject")
     .CreateAsync();
+```
+
+Example 4 - creating a subscription with a message type filter
+```csharp
+var topicResource = await resourceProvider
+    .BuildTopic("topic")
+    .AddSubscription("subscription")
+    .AddMessageTypeFilter("some-message-type")
+    .CreateAsync();
+```
+
+Clean up:
+
+```csharp
+// Delete resources and close any created sender clients.
+await resourceProvider.DisposeAsync();
 ```

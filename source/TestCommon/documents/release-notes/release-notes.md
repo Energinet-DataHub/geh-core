@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 3.5.0
+
+- Added support for creating message type filters on Service bus subscriptions [Examples](../servicebusresourceprovider.md#examples)
+
 ## Version 3.4.0
 
 - Added support for creating filters on Service bus subscriptions [Examples](../servicebusresourceprovider.md#examples)
