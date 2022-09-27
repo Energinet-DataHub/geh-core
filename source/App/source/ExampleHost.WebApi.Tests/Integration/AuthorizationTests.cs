@@ -27,15 +27,15 @@ namespace ExampleHost.WebApi.Tests.Integration;
 /// <summary>
 /// Authorization tests ensuring that the configured permissions are working.
 /// </summary>
-[Collection(nameof(ExampleHostCollectionFixture))]
+[Collection(nameof(AuthorizationHostCollectionFixture))]
 public sealed class AuthorizationTests
 {
-    public AuthorizationTests(ExampleHostFixture fixture)
+    public AuthorizationTests(AuthorizationHostFixture fixture)
     {
         Fixture = fixture;
     }
 
-    private ExampleHostFixture Fixture { get; }
+    private AuthorizationHostFixture Fixture { get; }
 
     [Fact]
     public async Task CallingApi03Get_Anonymous_Succeeds()

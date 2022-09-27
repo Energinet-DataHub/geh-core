@@ -12,14 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.Common.Security;
+using Energinet.DataHub.Core.App.WebApp.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authorization;
+namespace ExampleHost.WebApi04.Controllers;
 
-public static class AuthorizationExtensions
+[ApiController]
+[Route("webapi04/[controller]")]
+public class AuthController : ControllerBase
 {
-    public static void AddPermissionAuthorization(this IServiceCollection services)
+    [HttpGet("anon/{identification}")]
+    public string Get(string identification)
     {
-        services.AddAuthorization();
+        return identification;
+    }
+
+    [HttpGet("auth/{identification}")]
+    [Authorize(UserRoles.Accountant)]
+    public string GetOrganizationReadPermission(string identification)
+    {
+        return identification;
     }
 }

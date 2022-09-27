@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authorization;
-
-public static class AuthorizationExtensions
+namespace ExampleHost.WebApi.Tests.Fixtures
 {
-    public static void AddPermissionAuthorization(this IServiceCollection services)
+    /// <summary>
+    /// A xUnit collection fixture for ensuring tests don't run in parallel.
+    ///
+    /// xUnit documentation of collection fixtures:
+    ///  * https://xunit.net/docs/shared-context#collection-fixture
+    /// </summary>
+    [CollectionDefinition(nameof(AuthorizationHostCollectionFixture))]
+    public class AuthorizationHostCollectionFixture : ICollectionFixture<AuthorizationHostFixture>
     {
-        services.AddAuthorization();
     }
 }

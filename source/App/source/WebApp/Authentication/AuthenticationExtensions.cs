@@ -26,6 +26,9 @@ public static class AuthenticationExtensions
         string metadataAddress,
         string audience)
     {
+        ArgumentNullException.ThrowIfNull(metadataAddress);
+        ArgumentNullException.ThrowIfNull(audience);
+
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

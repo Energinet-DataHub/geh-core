@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
+namespace ExampleHost.WebApi04;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authorization;
-
-public static class AuthorizationExtensions
+public class Program
 {
-    public static void AddPermissionAuthorization(this IServiceCollection services)
+    protected Program() { }
+
+    public static void Main(string[] args)
     {
-        services.AddAuthorization();
+        CreateHostBuilder(args).Build().Run();
     }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 }

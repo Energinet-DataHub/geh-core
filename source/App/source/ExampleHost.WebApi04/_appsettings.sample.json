@@ -1,0 +1,13 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ApplicationInsights": {
+    "EnableAdaptiveSampling": false,
+    "ConnectionString": "<Application Insights Connection String>"
+  }
+}
