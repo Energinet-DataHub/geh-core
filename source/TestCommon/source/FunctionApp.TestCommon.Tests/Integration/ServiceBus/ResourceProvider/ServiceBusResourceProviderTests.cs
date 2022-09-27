@@ -370,6 +370,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Servic
                 // Assert
                 var topicName = actualResource.Name;
 
+                var count = 0;
+                await foreach (var r in ResourceProviderFixture.AdministrationClient.GetRulesAsync(
+                                   topicName,
+                                   SubscriptionName01))
+                {
+                    count++;
+                }
+
+                count.Should().Be(1);
                 var rule = await ResourceProviderFixture.AdministrationClient.GetRuleAsync(
                     topicName,
                     SubscriptionName01,
