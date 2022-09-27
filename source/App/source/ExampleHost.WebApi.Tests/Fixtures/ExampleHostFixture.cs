@@ -25,7 +25,6 @@ namespace ExampleHost.WebApi.Tests.Fixtures
     {
         public ExampleHostFixture()
         {
-            var web03BaseUrl = "http://localhost:5002";
             var web02BaseUrl = "http://localhost:5001";
             var web01BaseUrl = "http://localhost:5000";
 
@@ -33,11 +32,6 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
 
             // We cannot use TestServer as this would not work with Application Insights.
-            Web03Host = WebHost.CreateDefaultBuilder()
-                .UseStartup<WebApi03.Startup>()
-                .UseUrls(web03BaseUrl)
-                .Build();
-
             Web02Host = WebHost.CreateDefaultBuilder()
                 .UseStartup<WebApi02.Startup>()
                 .UseUrls(web02BaseUrl)
@@ -54,17 +48,10 @@ namespace ExampleHost.WebApi.Tests.Fixtures
                 BaseAddress = new Uri(web01BaseUrl),
             };
 
-            Web03HttpClient = new HttpClient
-            {
-                BaseAddress = new Uri(web03BaseUrl),
-            };
-
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         }
 
         public HttpClient Web01HttpClient { get; }
-
-        public HttpClient Web03HttpClient { get; }
 
         public LogsQueryClient LogsQueryClient { get; }
 
@@ -75,13 +62,10 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
         private IWebHost Web02Host { get; }
 
-        private IWebHost Web03Host { get; }
-
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
         public async Task InitializeAsync()
         {
-            await Web03Host.StartAsync();
             await Web02Host.StartAsync();
             await Web01Host.StartAsync();
         }
@@ -91,7 +75,6 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             Web01HttpClient.Dispose();
             await Web01Host.StopAsync();
             await Web02Host.StopAsync();
-            await Web03Host.StopAsync();
         }
     }
 }
