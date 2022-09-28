@@ -68,7 +68,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
         public string Metadata => AuthorizationConfiguration.BackendOpenIdConfigurationUrl;
 
-        public string Audience => IntegrationTestConfiguration.B2CSettings.BackendAppId;
+        public string Audience => AuthorizationConfiguration.BackendApp.AppId;
 
         public HttpClient Web04HttpClient { get; }
 
