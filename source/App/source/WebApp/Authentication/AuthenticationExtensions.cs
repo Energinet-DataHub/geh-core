@@ -34,6 +34,10 @@ public static class AuthenticationExtensions
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
+                var openIdConnectConfiguration = new ConfigurationManager<OpenIdConnectConfiguration>(
+                    metadataAddress,
+                    new OpenIdConnectConfigurationRetriever()).GetConfigurationAsync().Result;
+
                 var tokenParams = options.TokenValidationParameters;
                 tokenParams.ValidateAudience = true;
                 tokenParams.ValidateAudience = true;
@@ -44,10 +48,8 @@ public static class AuthenticationExtensions
                 tokenParams.ClockSkew = TimeSpan.Zero;
                 tokenParams.ValidAudience = audience;
                 tokenParams.RoleClaimType = "extension_roles";
-
-                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                    metadataAddress,
-                    new OpenIdConnectConfigurationRetriever());
+                tokenParams.IssuerSigningKeys = openIdConnectConfiguration.SigningKeys;
+                tokenParams.ValidIssuer = openIdConnectConfiguration.Issuer;
             });
     }
 }
