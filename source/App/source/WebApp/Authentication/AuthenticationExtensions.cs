@@ -15,7 +15,8 @@
 using System;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Energinet.DataHub.Core.App.WebApp.Authentication;
 
@@ -33,19 +34,20 @@ public static class AuthenticationExtensions
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    RequireSignedTokens = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidAudience = audience,
-                    RoleClaimType = "extension_roles",
-                };
+                var tokenParams = options.TokenValidationParameters;
+                tokenParams.ValidateAudience = true;
+                tokenParams.ValidateAudience = true;
+                tokenParams.ValidateIssuer = true;
+                tokenParams.ValidateIssuerSigningKey = true;
+                tokenParams.ValidateLifetime = true;
+                tokenParams.RequireSignedTokens = true;
+                tokenParams.ClockSkew = TimeSpan.Zero;
+                tokenParams.ValidAudience = audience;
+                tokenParams.RoleClaimType = "extension_roles";
 
-                options.MetadataAddress = metadataAddress;
+                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                    metadataAddress,
+                    new OpenIdConnectConfigurationRetriever());
             });
     }
 }
