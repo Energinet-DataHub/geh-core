@@ -16,7 +16,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using Energinet.DataHub.Core.App.Common.Security;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.IdentityModel.Tokens;
@@ -44,7 +43,7 @@ public sealed class AuthenticationTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/auth/anon/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/anon/{requestIdentification}");
         var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
 
         // Assert
@@ -54,5 +53,79 @@ public sealed class AuthenticationTests
         content.Should().Be(requestIdentification);
     }
 
-    // TODO: Write tests...
+    [Fact]
+    public async Task CallingApi04Get_AuthRequiredButNoToken_Unauthorized()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
+        var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task CallingApi04Get_AuthWithToken_Allowed()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
+        request.Headers.Add("Authentication", authenticationHeader);
+        var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Be(requestIdentification);
+    }
+
+    [Fact]
+    public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
+    {
+        // Arrange
+        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/user");
+        request.Headers.Add("Authentication", authenticationHeader);
+        var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        Assert.Equal("E: " + authenticationResult.UniqueId, content);
+    }
+
+    [Fact]
+    public async Task CallingApi04Get_AuthWithFakeToken_Unauthorized()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key"));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var subClaim = new Claim("sub", Guid.NewGuid().ToString());
+
+        var securityToken = new JwtSecurityToken(claims: new[] { subClaim }, signingCredentials: credentials);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.WriteToken(securityToken);
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
+        request.Headers.Add("Authentication", $"Bearer {token}");
+        var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

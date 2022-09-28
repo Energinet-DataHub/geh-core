@@ -20,7 +20,7 @@ namespace ExampleHost.WebApi04.Controllers;
 
 [ApiController]
 [Route("webapi04/[controller]")]
-public class AuthController : ControllerBase
+public class AuthenticationController : ControllerBase
 {
     [HttpGet("anon/{identification}")]
     public string Get(string identification)
@@ -29,9 +29,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("auth/{identification}")]
-    [Authorize(UserRoles.Accountant)]
-    public string GetOrganizationReadPermission(string identification)
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public string GetWithPermission(string identification)
     {
         return identification;
+    }
+
+    [HttpGet("user")]
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public string GetUserWithPermission()
+    {
+        return User.Claims.Single(c => c.Type == "sub").Value;
     }
 }
