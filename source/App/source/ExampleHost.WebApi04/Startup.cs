@@ -38,8 +38,8 @@ namespace ExampleHost.WebApi04
             var metadata = _configuration["metadata"];
             var audience = _configuration["audience"];
 
-            services.AddJwtBearerAuthentication(metadata, audience);
             services.AddControllers();
+            services.AddJwtBearerAuthentication(metadata, audience);
             services.AddApplicationInsightsTelemetry();
         }
 
