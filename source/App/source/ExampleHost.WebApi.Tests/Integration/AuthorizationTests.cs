@@ -157,7 +157,7 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithBothClaimsInToken_IsAllowed()
+    public async Task CallingApi03Get_OrganizationReadWriteWithBothClaimsInToken_OrClaims_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -173,6 +173,41 @@ public sealed class AuthorizationTests
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().Be(requestIdentification);
+    }
+
+    [Fact]
+    public async Task CallingApi03Get_OrganizationReadWriteWithBothClaimsInToken_AndClaims_IsAllowed()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read_and_org:write/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString(), UserRoles.Supporter.ToString()));
+
+        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Be(requestIdentification);
+    }
+
+    [Fact]
+    public async Task CallingApi03Get_OrganizationReadWriteWithOnlyOneClaimsInToken_AndClaims_IsForbidden()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read_and_org:write/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
+
+        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     private static string CreateBearerToken(params string[] claims)

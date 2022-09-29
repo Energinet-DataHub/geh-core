@@ -1,22 +1,22 @@
 # Authorization Documentation
 
-The authorization is based on OAuth scopes granted by an authorization server.
-The granted scopes are placed in a JWT access token within the "scope"-claim.
-Each scope value represents and grants access to a single permission in DataHub.
+The authorization is based on OAuth claims granted by an authorization server.
+The granted claims are placed in a JWT access token within the "extension_roles"-claim.
+Each claim value represents and grants access to a single role in DataHub.
 
-As an example, the payload of an access token giving permissions `OrganizationRead` and `OrganizationWrite` will look as follows.
+As an example, the payload of an access token giving roles `Supporter` and `Accountant` will look as follows.
 
 ```Json
 {
   "sub": "1234567890",
-  "scope": ["organization:read", "organization:write"]
+  "extension_roles": ["Supporter", "Accountant"]
 }
 ```
 
 ## Authorization in Web Apps
 
 Endpoint authorization in web apps is enforced by policy-based authorization (see <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies>).
-Every supported permission is configured as a policy, using the built-in framework to ensure that the user is both authenticated and has the correct claim.
+Every supported permission is configured as a role, using the built-in framework to ensure that the user is both authenticated and has the correct claim.
 Should authorization fail, the endpoint will return 403 Forbidden.
 
 ### Configuration
@@ -42,27 +42,36 @@ Configuring authorization is very similar.
 This package includes an `AuthorizeAttribute` for selecting a supported permission.
 The attribute can be used to annotate Controller classes or individual methods within.
 
-For example, if an endpoint requires 'OrganizationRead' permission, the attribute can be used as follows.
+For example, if an endpoint requires 'Accountant' role, the attribute can be used as follows.
 
 ```C#
     [HttpGet]
-    [Authorize(Permission.OrganizationRead)]
+    [Authorize(UserRoles.Accountant)]
     public async Task<IActionResult> GetExampleAsync()
     {
         ...
     }
 ```
 
-It is possible to combine multiple permissions (OrganizationRead ^ GridAreaWrite), if an endpoint requires both permissions to complete its task.
+It is possible to combine multiple roles (Accountant || Supporter), if an endpoint requires any of the specified roles.
 
 ```C#
     [HttpPost]
-    [Authorize(Permission.OrganizationRead)]
-    [Authorize(Permission.GridAreaWrite)]
+    [Authorize(Permission.Accountant, Permission.Supporter)]
     public async Task<IActionResult> DoExampleAsync()
     {
         ...
     }
 ```
 
-Multiple choice permissions (OrganizationRead | GridAreaWrite) are not supported; neither by the framework nor the underlying model.
+It is possible to combine multiple roles (Accountant && Supporter), if an endpoint requires both of the specified roles.
+
+```C#
+    [HttpPost]
+    [Authorize(Permission.Accountant)]
+    [Authorize(Permission.Supporter)]
+    public async Task<IActionResult> DoExampleAsync()
+    {
+        ...
+    }
+```
