@@ -177,9 +177,11 @@ public sealed class AuthorizationTests
 
     private static string CreateBearerToken(params string[] claims)
     {
+        var extensionClaim = string.Join(',', claims.Select(c => $"\"{c}\""));
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key"));
+
         var token = new JwtSecurityToken(
-            claims: claims.Select(x => new Claim("extension_roles", x)),
+            claims: new[] { new Claim("extension_roles", $"[{extensionClaim}]") },
             signingCredentials: new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
         var handler = new JwtSecurityTokenHandler();

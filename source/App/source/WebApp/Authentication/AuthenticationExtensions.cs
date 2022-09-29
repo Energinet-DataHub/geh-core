@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
@@ -30,6 +31,8 @@ public static class AuthenticationExtensions
         ArgumentNullException.ThrowIfNull(metadataAddress);
         ArgumentNullException.ThrowIfNull(audience);
 
+        services.AddScoped<ExtensionRolesClaimMiddleware>();
+
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -39,7 +42,6 @@ public static class AuthenticationExtensions
                     new OpenIdConnectConfigurationRetriever());
 
                 var tokenParams = options.TokenValidationParameters;
-                tokenParams.ValidateAudience = true;
                 tokenParams.ValidateAudience = true;
                 tokenParams.ValidateIssuer = true;
                 tokenParams.ValidateIssuerSigningKey = true;

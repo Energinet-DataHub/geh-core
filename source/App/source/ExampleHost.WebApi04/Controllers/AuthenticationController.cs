@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Security;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi04.Controllers;
@@ -39,6 +38,6 @@ public class AuthenticationController : ControllerBase
     [Microsoft.AspNetCore.Authorization.Authorize]
     public string GetUserWithPermission()
     {
-        return User.Claims.Single(c => c.Type == "sub").Value;
+        return User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
     }
 }
