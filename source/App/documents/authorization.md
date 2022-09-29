@@ -1,5 +1,7 @@
 # Authorization Documentation
 
+> NOTE: The 'extension_roles' claim is used instead of the proper 'roles'-claim, since App Roles are not supported by B2C Tenant. A side-effect of this is that the claim value is received as a string and not a JSON array.
+
 The authorization is based on OAuth claims granted by an authorization server.
 The granted claims are placed in a JWT access token within the "extension_roles"-claim.
 Each claim value represents and grants access to a single role in DataHub.
@@ -9,14 +11,14 @@ As an example, the payload of an access token giving roles `Supporter` and `Acco
 ```Json
 {
   "sub": "1234567890",
-  "extension_roles": ["Supporter", "Accountant"]
+  "extension_roles": "["Supporter", "Accountant"]"
 }
 ```
 
 ## Authorization in Web Apps
 
-Endpoint authorization in web apps is enforced by policy-based authorization (see <https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies>).
-Every supported permission is configured as a role, using the built-in framework to ensure that the user is both authenticated and has the correct claim.
+Endpoint authorization in web apps is enforced by role-based authorization (see <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles>).
+Every supported role is configured as a claim, using the built-in framework to ensure that the user is both authenticated and has this claim.
 Should authorization fail, the endpoint will return 403 Forbidden.
 
 ### Configuration
@@ -31,6 +33,8 @@ Before enabling authorization, the authentication must be configured first.
     var audience = ...;
     services.AddJwtBearerAuthentication(openIdUrl, audience);
 ```
+
+> NOTE: Because 'extension_roles' is received as a string, add `UseMiddleware<ExtensionRolesClaimMiddleware>()` after `UseAuthentication()`.
 
 Configuring authorization is very similar.
 
@@ -57,7 +61,7 @@ It is possible to combine multiple roles (Accountant || Supporter), if an endpoi
 
 ```C#
     [HttpPost]
-    [Authorize(Permission.Accountant, Permission.Supporter)]
+    [Authorize(UserRoles.Accountant, UserRoles.Supporter)]
     public async Task<IActionResult> DoExampleAsync()
     {
         ...
@@ -68,8 +72,8 @@ It is possible to combine multiple roles (Accountant && Supporter), if an endpoi
 
 ```C#
     [HttpPost]
-    [Authorize(Permission.Accountant)]
-    [Authorize(Permission.Supporter)]
+    [Authorize(UserRoles.Accountant)]
+    [Authorize(UserRoles.Supporter)]
     public async Task<IActionResult> DoExampleAsync()
     {
         ...
