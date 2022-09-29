@@ -24,10 +24,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
     /// </summary>
     public class TopicSubscriptionBuilder : ITopicResourceBuilder
     {
-        public const string DefaultSubjectRuleName = "subject-rule";
-
-        public const string DefaultSubjectAndToRuleName = "subject-to-rule";
-
         internal TopicSubscriptionBuilder(
             TopicResourceBuilder topicResourceBuilder,
             CreateSubscriptionOptions createSubscriptionOptions)
@@ -41,7 +37,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
 
         internal CreateSubscriptionOptions CreateSubscriptionOptions { get; }
 
-        internal CreateRuleOptions CreateRuleOptions { get; private set; }
+        internal CreateRuleOptions CreateRuleOptions { get; set; }
 
         internal IList<Action<SubscriptionProperties>> PostActions { get; }
 
@@ -74,41 +70,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvi
         public Task<TopicResource> CreateAsync()
         {
             return TopicResourceBuilder.CreateAsync();
-        }
-
-        /// <summary>
-        /// Add a subscription rule. Can be used to create a Correlation or SQL filter.
-        /// </summary>
-        public TopicSubscriptionBuilder AddRule(CreateRuleOptions ruleOptions)
-        {
-            if (ruleOptions is null)
-            {
-                throw new ArgumentNullException(nameof(ruleOptions));
-            }
-
-            CreateRuleOptions = ruleOptions;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Add a correlation filter with <see cref="DefaultSubjectRuleName"/> that will filter on Subject.
-        /// </summary>
-        public TopicSubscriptionBuilder AddSubjectFilter(string subject)
-        {
-            CreateRuleOptions = new CreateRuleOptions(DefaultSubjectRuleName, new CorrelationRuleFilter { Subject = subject });
-
-            return this;
-        }
-
-        /// <summary>
-        /// Add a correlation filter with <see cref="DefaultSubjectAndToRuleName"/> that will filter on Subject AND To.
-        /// </summary>
-        public TopicSubscriptionBuilder AddSubjectAndToFilter(string subject, string to)
-        {
-            CreateRuleOptions = new CreateRuleOptions(DefaultSubjectAndToRuleName, new CorrelationRuleFilter { Subject = subject, To = to });
-
-            return this;
         }
     }
 }
