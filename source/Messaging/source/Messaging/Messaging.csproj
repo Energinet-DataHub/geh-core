@@ -69,7 +69,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="2.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="[2.0.0,)" />
     <PackageReference Include="FluentValidation" Version="9.5.4" />
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="NodaTime" Version="3.0.9" />

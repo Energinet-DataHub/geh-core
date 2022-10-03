@@ -126,7 +126,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="2.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="[2.0.0,)" />
   </ItemGroup>
 
 </Project>
