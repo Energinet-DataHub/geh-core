@@ -28,7 +28,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
-    <PackageVersion>2.1.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.1.2$(VersionSuffix)</PackageVersion>
     <Title>Messaging library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -69,7 +69,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="[1.0.7,1.1)" />
+    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="2.1.1" />
     <PackageReference Include="FluentValidation" Version="9.5.4" />
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="NodaTime" Version="3.0.9" />
