@@ -1,5 +1,9 @@
 # Schemas Release notes
 
+## Version 2.1.2
+
+- Updated packages.
+
 ## Version 2.1.1
 
 - Bumped patch version as pipeline file was updated.
