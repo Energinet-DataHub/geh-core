@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 7.2.0
+
+- Add factory `AuthorizedHttpClientFactory` to create a `System.Net.Http.HttpClient`, which will re-apply the authorization header
+  from the current HTTP context.
+
 ## Version 7.1.0
 
 - Add extension method for calling health endpoints of other services.
