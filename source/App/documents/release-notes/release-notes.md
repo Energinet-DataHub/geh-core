@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.1.1
+
+- Bump version as part of pipeline change
+
 ## Version 7.1.0
 
 - Add extension method for calling health endpoints of other services.
@@ -47,7 +51,7 @@
 ## Version 4.0.0
 
 - Update to the namespace for the `FunctionTelemetryScope` middleware.
-- CorrelationIdMiddleware now exposes `CorrelationId` from either a `HTTP-header` or a `ServicebusMessage` user property 
+- CorrelationIdMiddleware now exposes `CorrelationId` from either a `HTTP-header` or a `ServicebusMessage` user property
 
 ## Version 3.0.1
 
