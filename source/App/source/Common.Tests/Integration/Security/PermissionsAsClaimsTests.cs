@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using Energinet.DataHub.Core.App.Common.Security;
 using Xunit;
 
@@ -32,6 +33,30 @@ public sealed class PermissionsAsClaimsTests
         {
             Assert.True(target.ContainsKey(permission));
         }
+    }
+
+    [Fact]
+    public void Lookup_AllKeys_ArePresent()
+    {
+        // Arrange
+        var target = PermissionsAsClaims.Lookup;
+        var permissions = Enum.GetValues<Permission>();
+
+        // Act + Assert
+        foreach (var key in target.Keys)
+        {
+            Assert.Contains(key, permissions);
+        }
+    }
+
+    [Fact]
+    public void Lookup_AllPermissions_AreUnique()
+    {
+        // Arrange
+        var target = PermissionsAsClaims.Lookup;
+
+        // Act + Assert
+        Assert.Equal(target.Values.Distinct(), target.Values);
     }
 
     [Fact]
