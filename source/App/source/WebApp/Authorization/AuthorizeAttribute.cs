@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Energinet.DataHub.Core.App.Common.Security;
 using Microsoft.AspNetCore.Authorization;
 
@@ -39,7 +40,7 @@ public sealed class AuthorizeAttribute : Attribute, IAuthorizeData
 
     string? IAuthorizeData.Roles
     {
-        get => string.Join(",", Permissions);
+        get => string.Join(",", Permissions.Select(p => PermissionsAsClaims.Lookup[p]));
         set => throw new InvalidOperationException(ConfigureUsingCtor);
     }
 

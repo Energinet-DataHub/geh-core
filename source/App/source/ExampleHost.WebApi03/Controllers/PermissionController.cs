@@ -29,29 +29,29 @@ public class PermissionController : ControllerBase
     }
 
     [HttpGet("org/{identification}")]
-    [Authorize(Permission.GridAreas)]
+    [Authorize(Permission.OrganizationView)]
     public string GetOrganizationReadPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("grid/{identification}")]
-    [Authorize(Permission.GridAreas)]
+    [Authorize(Permission.GridAreasManage)]
     public string GetGridAreaPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org_or_grid/{identification}")]
-    [Authorize(Permission.Organization, Permission.GridAreas)]
+    [Authorize(Permission.OrganizationView, Permission.GridAreasManage)]
     public string GetOrganizationOrGridAreasPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org_and_grid/{identification}")]
-    [Authorize(Permission.Organization)]
-    [Authorize(Permission.GridAreas)]
+    [Authorize(Permission.OrganizationView)]
+    [Authorize(Permission.GridAreasManage)]
     public string GetOrganizationAndGridAreasPermission(string identification)
     {
         return identification;

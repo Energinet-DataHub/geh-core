@@ -20,7 +20,8 @@ public static class PermissionsAsClaims
 {
     public static IReadOnlyDictionary<Permission, string> Lookup { get; } = new Dictionary<Permission, string>
     {
-        { Permission.Organization, "organization" },
-        { Permission.GridAreas, "gridarea" },
+        { Permission.OrganizationView, "organization:view" },
+        { Permission.OrganizationManage, "organization:manage" },
+        { Permission.GridAreasManage, "gridareas:manage" },
     };
 }
