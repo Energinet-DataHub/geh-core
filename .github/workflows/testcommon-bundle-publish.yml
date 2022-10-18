@@ -58,7 +58,7 @@ jobs:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
-    environment: CI
+    environment: AzureAuth
 
     steps:
       - name: Checkout repository
