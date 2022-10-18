@@ -28,31 +28,31 @@ public class PermissionController : ControllerBase
         return identification;
     }
 
-    [HttpGet("org:read/{identification}")]
-    [Authorize(UserRoles.Accountant)]
+    [HttpGet("org/{identification}")]
+    [Authorize(Permission.GridAreas)]
     public string GetOrganizationReadPermission(string identification)
     {
         return identification;
     }
 
-    [HttpGet("org:write/{identification}")]
-    [Authorize(UserRoles.Supporter)]
-    public string GetOrganizationWritePermission(string identification)
+    [HttpGet("grid/{identification}")]
+    [Authorize(Permission.GridAreas)]
+    public string GetGridAreaPermission(string identification)
     {
         return identification;
     }
 
-    [HttpGet("org:read+org:write/{identification}")]
-    [Authorize(UserRoles.Accountant, UserRoles.Supporter)]
-    public string GetOrganizationReadWritePermission(string identification)
+    [HttpGet("org_or_grid/{identification}")]
+    [Authorize(Permission.Organization, Permission.GridAreas)]
+    public string GetOrganizationOrGridAreasPermission(string identification)
     {
         return identification;
     }
 
-    [HttpGet("org:read_and_org:write/{identification}")]
-    [Authorize(UserRoles.Supporter)]
-    [Authorize(UserRoles.Accountant)]
-    public string GetOrganizationReadWriteAndPermission(string identification)
+    [HttpGet("org_and_grid/{identification}")]
+    [Authorize(Permission.Organization)]
+    [Authorize(Permission.GridAreas)]
+    public string GetOrganizationAndGridAreasPermission(string identification)
     {
         return identification;
     }

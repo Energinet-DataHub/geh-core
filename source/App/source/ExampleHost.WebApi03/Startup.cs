@@ -14,7 +14,6 @@
 
 using System.Text;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
-using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -27,8 +26,6 @@ public sealed class Startup
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ExtensionRolesClaimMiddleware>();
-
         // The authorization tests need to generate tokens with different claims.
         // The validation of these tokens is suspended in tests. Use AddJwtBearerAuthentication().
         services
@@ -39,7 +36,6 @@ public sealed class Startup
                 ValidateAudience = false,
                 ValidateLifetime = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key")),
-                RoleClaimType = "extension_roles",
             });
 
         services.AddControllers();
@@ -57,7 +53,6 @@ public sealed class Startup
 
         app.UseRouting();
         app.UseAuthentication();
-        app.UseMiddleware<ExtensionRolesClaimMiddleware>();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

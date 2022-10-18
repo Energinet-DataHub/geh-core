@@ -55,14 +55,14 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWithClaimInToken_IsAllowed()
+    public async Task CallingApi03Get_OrganizationWithClaimInToken_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString()));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken());
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -74,13 +74,13 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWithNoClaimInToken_IsForbidden()
+    public async Task CallingApi03Get_OrganizationWithNoClaimInToken_IsForbidden()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
         request.Headers.Add("Authorization", CreateBearerToken());
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
@@ -90,14 +90,14 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWithWrongClaimInToken_IsForbidden()
+    public async Task CallingApi03Get_OrganizationWithWrongClaimInToken_IsForbidden()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreas));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -106,14 +106,14 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationWriteWithClaimInToken_IsAllowed()
+    public async Task CallingApi03Get_GridAreasWithClaimInToken_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/grid/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreas));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -125,14 +125,14 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithReadClaimInToken_IsAllowed()
+    public async Task CallingApi03Get_OrganizationOrGridAreasWithOrgClaimInToken_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read+org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString()));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(Permission.Organization));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -141,14 +141,14 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithWriteClaimInToken_IsAllowed()
+    public async Task CallingApi03Get_OrganizationOrGridAreasWithGridClaimInToken_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read+org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreas));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -157,33 +157,14 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithBothClaimsInToken_OrClaims_IsAllowed()
+    public async Task CallingApi03Get_OrganizationOrGridAreasWithBothClaimsInToken_OrClaims_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read+org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString(), UserRoles.Supporter.ToString()));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithBothClaimsInToken_AndClaims_IsAllowed()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read_and_org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Accountant.ToString(), UserRoles.Supporter.ToString()));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreas, Permission.Organization));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -195,14 +176,33 @@ public sealed class AuthorizationTests
     }
 
     [Fact]
-    public async Task CallingApi03Get_OrganizationReadWriteWithOnlyOneClaimsInToken_AndClaims_IsForbidden()
+    public async Task CallingApi03Get_OrganizationAndGridAreasWithBothClaimsInToken_AndClaims_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org:read_and_org:write/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(UserRoles.Supporter.ToString()));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreas, Permission.Organization));
+
+        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Be(requestIdentification);
+    }
+
+    [Fact]
+    public async Task CallingApi03Get_OrganizationAndGridAreasWithOnlyOneClaimsInToken_AndClaims_IsForbidden()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreas));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -210,13 +210,13 @@ public sealed class AuthorizationTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    private static string CreateBearerToken(params string[] claims)
+    private static string CreateBearerToken(params Permission[] permissions)
     {
-        var extensionClaim = string.Join(',', claims.Select(c => $"\"{c}\""));
+        var extensionClaim = string.Join(',', permissions.Select(p => $"\"{PermissionsAsClaims.Lookup[p]}\""));
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key"));
 
         var token = new JwtSecurityToken(
-            claims: new[] { new Claim("extension_roles", $"[{extensionClaim}]") },
+            claims: new[] { new Claim("roles", $"[{extensionClaim}]") },
             signingCredentials: new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
         var handler = new JwtSecurityTokenHandler();

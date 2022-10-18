@@ -18,19 +18,19 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Integration.Security;
 
-public sealed class UserRolesAsClaimsTests
+public sealed class PermissionsAsClaimsTests
 {
     [Fact]
-    public void Lookup_AllUserRoles_ArePresent()
+    public void Lookup_AllPermissions_ArePresent()
     {
         // Arrange
-        var target = UserRolesAsClaims.Lookup;
-        var userRoles = Enum.GetValues<UserRoles>();
+        var target = PermissionsAsClaims.Lookup;
+        var permissions = Enum.GetValues<Permission>();
 
         // Act + Assert
-        foreach (var userRole in userRoles)
+        foreach (var permission in permissions)
         {
-            Assert.True(target.ContainsKey(userRole));
+            Assert.True(target.ContainsKey(permission));
         }
     }
 
@@ -38,7 +38,7 @@ public sealed class UserRolesAsClaimsTests
     public void Lookup_AllClaims_AreCorrectlyFormatted()
     {
         // Arrange
-        var target = UserRolesAsClaims.Lookup;
+        var target = PermissionsAsClaims.Lookup;
 
         // Act + Assert
         foreach (var claim in target.Values)

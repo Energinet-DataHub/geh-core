@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using Energinet.DataHub.Core.App.Common.Security;
 using Microsoft.AspNetCore.Authorization;
 
@@ -23,12 +24,12 @@ public sealed class AuthorizeAttribute : Attribute, IAuthorizeData
 {
     private const string ConfigureUsingCtor = "Use the ctor to select a permission.";
 
-    public AuthorizeAttribute(params UserRoles[] roles)
+    public AuthorizeAttribute(params Permission[] permissions)
     {
-        Roles = roles;
+        Permissions = permissions;
     }
 
-    public UserRoles[] Roles { get; }
+    public IEnumerable<Permission> Permissions { get; }
 
     string? IAuthorizeData.Policy
     {
@@ -38,7 +39,7 @@ public sealed class AuthorizeAttribute : Attribute, IAuthorizeData
 
     string? IAuthorizeData.Roles
     {
-        get => string.Join(",", Roles);
+        get => string.Join(",", Permissions);
         set => throw new InvalidOperationException(ConfigureUsingCtor);
     }
 

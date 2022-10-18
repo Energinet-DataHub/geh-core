@@ -16,11 +16,11 @@ using System.Collections.Generic;
 
 namespace Energinet.DataHub.Core.App.Common.Security;
 
-public static class UserRolesAsClaims
+public static class PermissionsAsClaims
 {
-    public static IReadOnlyDictionary<UserRoles, string> Lookup { get; } = new Dictionary<UserRoles, string>
+    public static IReadOnlyDictionary<Permission, string> Lookup { get; } = new Dictionary<Permission, string>
     {
-        { UserRoles.Accountant, "Accountant" },
-        { UserRoles.Supporter, "Supporter" },
+        { Permission.Organization, "organization" },
+        { Permission.GridAreas, "gridarea" },
     };
 }

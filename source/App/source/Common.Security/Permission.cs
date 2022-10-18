@@ -15,8 +15,8 @@
 namespace Energinet.DataHub.Core.App.Common.Security;
 
 // todo: this may go in a separate package? is there a good reason for that?
-public enum UserRoles
+public enum Permission
 {
-    Accountant,
-    Supporter,
+    Organization,
+    GridAreas,
 }
