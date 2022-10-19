@@ -17,7 +17,6 @@ limitations under the License.
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>Energinet.DataHub.Core.App.Common.Tests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.Common.Tests</RootNamespace>
