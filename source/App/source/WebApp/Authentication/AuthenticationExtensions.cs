@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
@@ -25,10 +28,10 @@ public static class AuthenticationExtensions
     public static void AddJwtBearerAuthentication(
         this IServiceCollection services,
         string metadataAddress,
-        string audience)
+        Func<IEnumerable<string>, bool> audienceValidator)
     {
         ArgumentNullException.ThrowIfNull(metadataAddress);
-        ArgumentNullException.ThrowIfNull(audience);
+        ArgumentNullException.ThrowIfNull(audienceValidator);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -45,7 +48,11 @@ public static class AuthenticationExtensions
                 tokenParams.ValidateLifetime = true;
                 tokenParams.RequireSignedTokens = true;
                 tokenParams.ClockSkew = TimeSpan.Zero;
-                tokenParams.ValidAudience = audience;
+                tokenParams.AudienceValidator = (audiences, _, _) =>
+                {
+                    var audiencesList = audiences.ToList();
+                    return audiencesList.Any() && audienceValidator(audiencesList);
+                };
             });
     }
 }
