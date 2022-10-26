@@ -48,9 +48,13 @@ public static class AuthenticationExtensions
                 tokenParams.ValidateLifetime = true;
                 tokenParams.RequireSignedTokens = true;
                 tokenParams.ClockSkew = TimeSpan.Zero;
-                tokenParams.AudienceValidator = (audiences, _, _) =>
+                tokenParams.AudienceValidator = (audiences, token, _) =>
                 {
                     var audiencesList = audiences.ToList();
+                    var jwtToken = token as JwtSecurityToken;
+                    var azp = jwtToken?.Claims.SingleOrDefault(x => x.Type == "azp");
+
+                    // Check that it was found
                     return audiencesList.Any() && audienceValidator(audiencesList);
                 };
             });
