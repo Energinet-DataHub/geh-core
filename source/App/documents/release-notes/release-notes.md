@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 7.2.1
+
+- Add support for getting user from token
+- Enables validation of Audience for domains
+
 ## Version 7.2.0
 
 - Add support for authorization in web apps.
