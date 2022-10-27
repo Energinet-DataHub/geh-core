@@ -29,7 +29,14 @@ public class UserActorProviderMiddleware<TUser> : IMiddleware
         {
             var contextAccessor = context.RequestServices.GetRequiredService<IHttpContextAccessor>();
             var userActorProvider = context.RequestServices.GetRequiredService<IUserProvider<TUser>>();
+            var userContext = context.RequestServices.GetRequiredService<IUserContext<TUser>>() as UserContext<TUser>;
             var audience = contextAccessor?.HttpContext?.User.Claims.SingleOrDefault(claim => claim.Type == "aud");
+            if (audience == null)
+            {
+              await next(context).ConfigureAwait(false);
+              return;
+            }
+
             var user = await userActorProvider.ProvideUserAsync(Guid.Parse(audience!.Value));
             if (user == null)
             {
@@ -37,6 +44,7 @@ public class UserActorProviderMiddleware<TUser> : IMiddleware
                 return;
             }
 
+            userContext!.SetCurrentUser(user);
             await next(context).ConfigureAwait(false);
         }
         catch (InvalidOperationException)

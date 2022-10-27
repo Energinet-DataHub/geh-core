@@ -71,7 +71,6 @@ public static class AuthenticationExtensions
                     // then the token MUST have an 'azp' claim.
                     var authorizedParty = jwtToken.Claims.Single(x => x.Type == "azp");
                     return authorizedParty.Value == frontendAppId;
-
                 };
             });
     }

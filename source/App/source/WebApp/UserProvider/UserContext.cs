@@ -19,7 +19,7 @@ public sealed class UserContext<TUser> : IUserContext<TUser>
 {
     private TUser? _currentUser;
 
-    public TUser CurrentUser => _currentUser ?? throw new InvalidOperationException("TODO:");
+    public TUser CurrentUser => _currentUser ?? throw new InvalidOperationException("User has not been set, ensure that all required services and middleware has been registered correctly or that you are not in an anonymous context");
 
     public void SetCurrentUser(TUser user)
     {
@@ -27,7 +27,7 @@ public sealed class UserContext<TUser> : IUserContext<TUser>
 
         if (_currentUser != null)
         {
-            throw new InvalidOperationException("No!");
+            throw new InvalidOperationException("User has already been set, cannot set it again!");
         }
 
         _currentUser = user;
