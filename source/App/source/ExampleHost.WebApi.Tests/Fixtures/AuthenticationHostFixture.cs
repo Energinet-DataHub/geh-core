@@ -46,13 +46,14 @@ namespace ExampleHost.WebApi.Tests.Fixtures
                 environment: B2CEnvironment,
                 new List<string> { SystemOperator });
 
+            var client = AuthorizationConfiguration.ClientApps[SystemOperator];
             BackendAppAuthenticationClient = new B2CAppAuthenticationClient(
                 AuthorizationConfiguration.TenantId,
                 AuthorizationConfiguration.BackendApp,
-                AuthorizationConfiguration.ClientApps[SystemOperator]);
+                client);
 
             var metadataArg = $"--metadata={Metadata}";
-            var audienceArg = $"--audience={Audience}";
+            var audienceArg = $"--audience={client.CredentialSettings.ClientId}";
 
             // We cannot use TestServer as this would not work with Application Insights.
             Web04Host = WebHost.CreateDefaultBuilder(new[] { metadataArg, audienceArg })

@@ -14,24 +14,24 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Middleware.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authentication;
+namespace Energinet.DataHub.Core.App.WebApp.UserProvider;
 
-public class UserActorProviderMiddleware : IMiddleware
+public class UserActorProviderMiddleware<TUser> : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
         {
             var contextAccessor = context.RequestServices.GetRequiredService<IHttpContextAccessor>();
-            var userActorProvider = context.RequestServices.GetRequiredService<UserActorProvider>();
-            var userActorAllowed = context.RequestServices.GetRequiredService<IUserActorAllowed>();
+            var userActorProvider = context.RequestServices.GetRequiredService<IUserProvider<TUser>>();
             var audience = contextAccessor?.HttpContext?.User.Claims.SingleOrDefault(claim => claim.Type == "aud");
-            userActorProvider.SetActorId(Guid.Parse(audience!.Value));
-            if (!userActorAllowed.IsAllowed(userActorProvider.GetExternalActorId()))
+            var user = await userActorProvider.ProvideUserAsync(Guid.Parse(audience!.Value));
+            if (user == null)
             {
                 HttpContextHelper.SetErrorResponse(context);
                 return;
@@ -39,7 +39,7 @@ public class UserActorProviderMiddleware : IMiddleware
 
             await next(context).ConfigureAwait(false);
         }
-        catch (InvalidOperationException e)
+        catch (InvalidOperationException)
         {
             HttpContextHelper.SetErrorResponse(context);
         }

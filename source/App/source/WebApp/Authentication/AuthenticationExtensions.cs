@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using Energinet.DataHub.Core.App.WebApp.UserProvider;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
@@ -40,7 +40,6 @@ public static class AuthenticationExtensions
                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                     metadataAddress,
                     new OpenIdConnectConfigurationRetriever());
-
                 var tokenParams = options.TokenValidationParameters;
                 tokenParams.ValidateAudience = true;
                 tokenParams.ValidateIssuer = true;

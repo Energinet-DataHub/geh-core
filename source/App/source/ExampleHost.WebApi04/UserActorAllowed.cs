@@ -11,21 +11,22 @@
 // // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // // See the License for the specific language governing permissions and
 // // limitations under the License.
-using System;
+using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.UserProvider;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authentication;
+namespace ExampleHost.WebApi04;
 
-public class UserActorProvider : IUserActorProvider
+public class TestUser
 {
-    private Guid _externalActor;
+    public string? Name { get; set; }
 
-    public void SetActorId(Guid id)
-    {
-        _externalActor = id;
-    }
+    public Guid? ExternalId { get; set; }
+}
 
-    public Guid GetExternalActorId()
+public class TestUserProvider : IUserProvider<TestUser>
+{
+    public Task<TestUser> ProvideUserAsync(Guid externalActorId)
     {
-        return _externalActor;
+        return Task.FromResult<TestUser>(new TestUser() { Name = "Test", ExternalId = externalActorId });
     }
 }

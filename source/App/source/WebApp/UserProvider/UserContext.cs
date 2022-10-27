@@ -13,17 +13,23 @@
 // // limitations under the License.
 using System;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authentication;
+namespace Energinet.DataHub.Core.App.WebApp.UserProvider;
 
-/// <summary>
-///     blah
-/// </summary>
-public interface IUserActorAllowed
+public sealed class UserContext<TUser> : IUserContext<TUser>
 {
-    /// <summary>
-    ///     blah
-    /// </summary>
-    /// <param name="externalActorId"></param>
-    /// <returns>Maybe true, maybe false</returns>
-    bool IsAllowed(Guid externalActorId);
+    private TUser? _currentUser;
+
+    public TUser CurrentUser => _currentUser ?? throw new InvalidOperationException("TODO:");
+
+    public void SetCurrentUser(TUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (_currentUser != null)
+        {
+            throw new InvalidOperationException("No!");
+        }
+
+        _currentUser = user;
+    }
 }

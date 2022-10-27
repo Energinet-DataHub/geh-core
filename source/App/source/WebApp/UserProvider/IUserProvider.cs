@@ -12,17 +12,19 @@
 // // See the License for the specific language governing permissions and
 // // limitations under the License.
 using System;
+using System.Threading.Tasks;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authentication;
+namespace Energinet.DataHub.Core.App.WebApp.UserProvider;
 
 /// <summary>
-/// Interface for returning an external Actor Id
+/// TODO: Add summary
 /// </summary>
-public interface IUserActorProvider
+public interface IUserProvider<TUser>
 {
     /// <summary>
-    /// Returns an external actors id
+    /// TODO: Add summary for function
     /// </summary>
-    /// <returns>External actor id</returns>
-    Guid GetExternalActorId();
+    /// <returns><see cref="User"/></returns>
+    public Task<TUser> ProvideUserAsync(Guid externalActorId);
 }
