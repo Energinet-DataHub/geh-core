@@ -15,7 +15,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using Energinet.DataHub.Core.App.WebApp.UserProvider;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
@@ -28,10 +27,10 @@ public static class AuthenticationExtensions
     public static void AddJwtBearerAuthentication(
         this IServiceCollection services,
         string metadataAddress,
-        string audience)
+        string frontendAppId)
     {
         ArgumentNullException.ThrowIfNull(metadataAddress);
-        ArgumentNullException.ThrowIfNull(audience);
+        ArgumentNullException.ThrowIfNull(frontendAppId);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -47,11 +46,32 @@ public static class AuthenticationExtensions
                 tokenParams.ValidateLifetime = true;
                 tokenParams.RequireSignedTokens = true;
                 tokenParams.ClockSkew = TimeSpan.Zero;
-                tokenParams.AudienceValidator = (_, token, _) =>
+                tokenParams.AudienceValidator = (audiences, token, _) =>
                 {
-                    var jwtToken = token as JwtSecurityToken;
-                    var azp = jwtToken?.Claims.SingleOrDefault(x => x.Type == "azp");
-                    return azp?.Value == audience;
+                    if (token is not JwtSecurityToken jwtToken)
+                    {
+                        // Only JWT is supported, deny all other access.
+                        return false;
+                    }
+
+                    var aud = audiences.ToList();
+                    if (aud.Count != 1)
+                    {
+                        // Multiple audiences, should never happen for our access token.
+                        return false;
+                    }
+
+                    if (aud.Contains(frontendAppId))
+                    {
+                        // Access token created for frontend app.
+                        return true;
+                    }
+
+                    // If audience is not the frontend app id, but an external actor id,
+                    // then the token MUST have an 'azp' claim.
+                    var authorizedParty = jwtToken.Claims.Single(x => x.Type == "azp");
+                    return authorizedParty.Value == frontendAppId;
+
                 };
             });
     }
