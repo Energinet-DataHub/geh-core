@@ -2,8 +2,8 @@
 
 ## Version 7.2.1
 
-- Add support for getting user from token
-- Enables validation of Audience for domains
+- Add support for getting user from token in web apps.
+- Updated authorization documentation.
 
 ## Version 7.2.0
 

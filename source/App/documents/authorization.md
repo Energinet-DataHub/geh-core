@@ -13,6 +13,16 @@ As an example, the payload of an access token giving permissions `Organization` 
 }
 ```
 
+## Security
+
+> Each domain must also implement its own domain-specific actor authorization! The framework ensures only that the token is valid and the permissions have been granted. Failure to do so may lead to escalation of privileges.
+
+- DO validate the external actor id in `IUserProvider.ProvideUserAsync`.
+- DO return `null` from `IUserProvider.ProvideUserAsync` as much as possible, e.g. if the external actor id is unknown or irrelevant.
+- DO trust only the external actor id form `IUserContext`.
+- DO treat external actors with same security considerations as if they were separate tenants.
+- DO create a `TUser` implementation that is convenient for your domain.
+
 ## Authorization in Web Apps
 
 Endpoint authorization in web apps is enforced by role-based authorization (see <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles>).
@@ -33,7 +43,7 @@ Before enabling authorization, the authentication must be configured first. This
 
 Configuring authorization is very similar.
 
-- Add `UseAuthorization()` after `UseUserAuthentication()` to `IApplicationBuilder`.
+- Add `UseAuthorization()` after `UseAuthentication()` to `IApplicationBuilder`.
   - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
 - Add `AddPermissionAuthorization()` to `IServiceProvider`.
   - This will register the permissions with the framework.
@@ -42,13 +52,11 @@ Configuring authorization is very similar.
 
 Configuring middleware for obtaining the current user with the current actor.
 
-- Add `UseUserAuthentication<TUser>()` after `UseAuthentication()` to `IApplicationBuilder`.
+- Implement `TUserProvider` and `TUser`.
+- Add `UseUserMiddleware<TUser>()` after `UseAuthorization()` to `IApplicationBuilder`.
   - This enables `UserMiddleware`.
 - Add `AddUserAuthentication<TUser, TUserProvider>()` to `IServiceProvider()`.
   - This registers `UserMiddleware`, `IUserProvider` and `IUserContext`.
-- Implement `TUserProvider` and `TUser`.
-  - `TUserProvider.ProvideUserAsync()` can return a domain-specific `TUser`. This user can later be obtained by dependency injection of `IUserContext<TUser>`.
-  - `TUserProvider.ProvideUserAsync()` **should** return `null` as much as possible, e.g. if the external actor id was not recognized. This provides additional protection in case of misconfiguration.
 
 ### Example Configuration
 
@@ -56,8 +64,8 @@ Configuring middleware for obtaining the current user with the current actor.
 
 ```C#
     app.UseAuthentication();
-    app.UseUserAuthentication<DomainUser>();
     app.UseAuthorization();
+    app.UseUserMiddleware<DomainUser>();
 
     var openIdUrl = ...;
     var frontendAppId = ...;
@@ -68,14 +76,14 @@ Configuring middleware for obtaining the current user with the current actor.
 
 ### Usage
 
-This package includes an `AuthorizeAttribute` for selecting a supported permission.
+This package includes an `AuthorizeUserAttribute` for selecting a supported permission.
 The attribute can be used to annotate Controller classes or individual methods within.
 
 For example, if an endpoint requires 'Organization' permission, the attribute can be used as follows.
 
 ```C#
     [HttpGet]
-    [Authorize(Permission.Organization)]
+    [AuthorizeUser(Permission.Organization)]
     public async Task<IActionResult> GetExampleAsync()
     {
         ...
@@ -86,7 +94,7 @@ It is possible to combine multiple permissions (Organization || GridAreas), if a
 
 ```C#
     [HttpPost]
-    [Authorize(Permission.Organization, Permission.GridAreas)]
+    [AuthorizeUser(Permission.Organization, Permission.GridAreas)]
     public async Task<IActionResult> DoExampleAsync()
     {
         ...
@@ -97,8 +105,8 @@ It is possible to combine multiple permissions (Organization && GridAreas), if a
 
 ```C#
     [HttpPut]
-    [Authorize(Permission.Organization)]
-    [Authorize(Permission.GridAreas)]
+    [AuthorizeUser(Permission.Organization)]
+    [AuthorizeUser(Permission.GridAreas)]
     public async Task<IActionResult> DoExampleAsync()
     {
         ...
