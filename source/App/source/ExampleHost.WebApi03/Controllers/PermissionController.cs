@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi03.Controllers;
@@ -23,35 +24,36 @@ namespace ExampleHost.WebApi03.Controllers;
 public class PermissionController : ControllerBase
 {
     [HttpGet("anon/{identification}")]
+    [AllowAnonymous]
     public string Get(string identification)
     {
         return identification;
     }
 
     [HttpGet("org/{identification}")]
-    [Authorize(Permission.OrganizationView)]
+    [AuthorizeUser(Permission.OrganizationView)]
     public string GetOrganizationReadPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("grid/{identification}")]
-    [Authorize(Permission.GridAreasManage)]
+    [AuthorizeUser(Permission.GridAreasManage)]
     public string GetGridAreaPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org_or_grid/{identification}")]
-    [Authorize(Permission.OrganizationView, Permission.GridAreasManage)]
+    [AuthorizeUser(Permission.OrganizationView, Permission.GridAreasManage)]
     public string GetOrganizationOrGridAreasPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org_and_grid/{identification}")]
-    [Authorize(Permission.OrganizationView)]
-    [Authorize(Permission.GridAreasManage)]
+    [AuthorizeUser(Permission.OrganizationView)]
+    [AuthorizeUser(Permission.GridAreasManage)]
     public string GetOrganizationAndGridAreasPermission(string identification)
     {
         return identification;

@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Claims;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using ExampleHost.WebApi04.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi04.Controllers;
@@ -21,23 +23,31 @@ namespace ExampleHost.WebApi04.Controllers;
 [Route("webapi04/[controller]")]
 public class AuthenticationController : ControllerBase
 {
+    private readonly IUserContext<ExampleDomainUser> _currentUser;
+
+    public AuthenticationController(IUserContext<ExampleDomainUser> currentUser)
+    {
+        _currentUser = currentUser;
+    }
+
     [HttpGet("anon/{identification}")]
+    [AllowAnonymous]
     public string Get(string identification)
     {
         return identification;
     }
 
     [HttpGet("auth/{identification}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public string GetWithPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("user")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public string GetUserWithPermission()
     {
-        return User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        return _currentUser.CurrentUser.UserId.ToString();
     }
 }

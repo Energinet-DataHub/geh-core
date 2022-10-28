@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
+namespace ExampleHost.WebApi04.Security;
+
+public sealed class ExampleDomainUser
 {
-    /// <summary>
-    /// Provides access to current user.
-    /// </summary>
-    public interface IUserContext<TUser>
-        where TUser : class
+    public ExampleDomainUser(Guid userId, Guid externalActorId)
     {
-        /// <summary>
-        /// Get current user.
-        /// </summary>
-        public TUser CurrentUser { get; }
+        UserId = userId;
+        ExternalActorId = externalActorId;
     }
+
+    public Guid UserId { get; }
+
+    public Guid ExternalActorId { get; }
 }

@@ -13,20 +13,25 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
 {
     /// <summary>
-    /// Provides an actor
+    /// Creates a domain-specific representation of the user through the UserMiddleware.
     /// </summary>
-    public interface IUserProvider
+    public interface IUserProvider<TUser>
+        where TUser : class
     {
         /// <summary>
-        /// Provides actor by id
+        /// Creates a domain-specific representation of the user.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns><see cref="User"/></returns>
-        public Task<User> GetUserAsync(Guid userId);
+        /// <param name="userId">The id of the user.</param>
+        /// <param name="externalActorId">The external id of the actor.</param>
+        /// <param name="claims">The claims present in the token.</param>
+        /// <returns>A domain-specific representation of the user; or null.</returns>
+        public Task<TUser?> ProvideUserAsync(Guid userId, Guid externalActorId, IEnumerable<Claim> claims);
     }
 }

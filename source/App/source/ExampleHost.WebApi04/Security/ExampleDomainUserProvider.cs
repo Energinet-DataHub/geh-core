@@ -12,10 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
+using System.Security.Claims;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
-namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
+namespace ExampleHost.WebApi04.Security;
+
+public sealed class ExampleDomainUserProvider : IUserProvider<ExampleDomainUser>
 {
-    public record User(Guid UserId, List<Guid> ActorIds);
+    public Task<ExampleDomainUser?> ProvideUserAsync(
+        Guid userId,
+        Guid externalActorId,
+        IEnumerable<Claim> claims)
+    {
+        return Task.FromResult<ExampleDomainUser?>(new ExampleDomainUser(userId, externalActorId));
+    }
 }
