@@ -53,10 +53,10 @@ namespace ExampleHost.WebApi.Tests.Fixtures
                 client);
 
             var metadataArg = $"--metadata={Metadata}";
-            var audienceArg = $"--audience={client.CredentialSettings.ClientId}";
+            var frontendAppIdArg = $"--appid={client.CredentialSettings.ClientId}";
 
             // We cannot use TestServer as this would not work with Application Insights.
-            Web04Host = WebHost.CreateDefaultBuilder(new[] { metadataArg, audienceArg })
+            Web04Host = WebHost.CreateDefaultBuilder(new[] { metadataArg, frontendAppIdArg })
                 .UseStartup<WebApi04.Startup>()
                 .UseUrls(web04BaseUrl)
                 .Build();
