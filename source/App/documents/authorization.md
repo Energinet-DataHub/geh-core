@@ -19,7 +19,7 @@ As an example, the payload of an access token giving permissions `Organization` 
 
 - DO validate the external actor id in `IUserProvider.ProvideUserAsync`.
 - DO return `null` from `IUserProvider.ProvideUserAsync` as much as possible, e.g. if the external actor id is unknown or irrelevant.
-- DO trust only the external actor id form `IUserContext`.
+- DO trust the external actor id only from `IUserContext`.
 - DO treat external actors with same security considerations as if they were separate tenants.
 - DO create a `TUser` implementation that is convenient for your domain.
 
