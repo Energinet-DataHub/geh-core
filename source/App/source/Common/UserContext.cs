@@ -17,14 +17,23 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
 namespace Energinet.DataHub.Core.App.Common
 {
-    public class UserContext : IUserContext
+    public sealed class UserContext<TUser> : IUserContext<TUser>
+        where TUser : class
     {
-        private User? _currentUser;
+        private TUser? _currentUser;
 
-        public User CurrentUser
+        public TUser CurrentUser => _currentUser ?? throw new InvalidOperationException("User has not been set, ensure that all required services and middleware have been registered correctly and that you are not in an anonymous context.");
+
+        public void SetCurrentUser(TUser user)
         {
-            get => _currentUser ?? throw new InvalidOperationException("Current user is not set.");
-            set => _currentUser = value ?? throw new InvalidOperationException("Cannot set current user to null");
+            ArgumentNullException.ThrowIfNull(user);
+
+            if (_currentUser != null)
+            {
+                throw new InvalidOperationException("User has already been set, cannot set it again!");
+            }
+
+            _currentUser = user;
         }
     }
 }

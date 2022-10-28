@@ -17,11 +17,12 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
     /// <summary>
     /// Provides access to current user.
     /// </summary>
-    public interface IUserContext
+    public interface IUserContext<TUser>
+        where TUser : class
     {
         /// <summary>
         /// Get current user.
         /// </summary>
-        public User CurrentUser { get; set; }
+        public TUser CurrentUser { get; }
     }
 }

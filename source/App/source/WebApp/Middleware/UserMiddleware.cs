@@ -14,58 +14,79 @@
 
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
+using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.WebApp.Middleware.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace Energinet.DataHub.Core.App.WebApp.Middleware
 {
-    public class UserMiddleware : IMiddleware
+    public sealed class UserMiddleware<TUser> : IMiddleware
+        where TUser : class
     {
-        private readonly IClaimsPrincipalAccessor _claimsPrincipalAccessor;
-        private readonly IUserProvider _userProvider;
-        private readonly IUserContext _userContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserProvider<TUser> _userProvider;
+        private readonly UserContext<TUser> _userContext;
 
         public UserMiddleware(
-            IClaimsPrincipalAccessor claimsPrincipalAccessor,
-            IUserProvider userProvider,
-            IUserContext userContext)
+            IHttpContextAccessor httpContextAccessor,
+            IUserProvider<TUser> userProvider,
+            UserContext<TUser> userContext)
         {
-            _claimsPrincipalAccessor = claimsPrincipalAccessor;
+            _httpContextAccessor = httpContextAccessor;
             _userProvider = userProvider;
             _userContext = userContext;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                throw new InvalidOperationException("UserMiddleware running without HttpContext.");
+            }
 
-            var claimsPrincipal = _claimsPrincipalAccessor.GetClaimsPrincipal();
-            if (claimsPrincipal is null)
+            var endpoint = context.GetEndpoint();
+            if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
+            {
+                await next(context).ConfigureAwait(false);
+                return;
+            }
+
+            var claimsPrincipal = httpContext.User;
+            var userId = GetUserId(claimsPrincipal.Claims);
+            var actorId = GetExternalActorId(claimsPrincipal.Claims);
+
+            var user = await _userProvider
+                .ProvideUserAsync(userId, actorId, claimsPrincipal.Claims)
+                .ConfigureAwait(false);
+
+            // Domain did not accept the user; returns 401.
+            if (user == null)
             {
                 HttpContextHelper.SetErrorResponse(context);
                 return;
             }
 
-            var userIdClaim = GetClaim(claimsPrincipal.Claims, ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim?.Value, out var userId))
-            {
-                HttpContextHelper.SetErrorResponse(context);
-                return;
-            }
-
-            _userContext.CurrentUser = await _userProvider.GetUserAsync(userId).ConfigureAwait(false);
-
+            _userContext.SetCurrentUser(user);
             await next(context).ConfigureAwait(false);
         }
 
-        private static Claim? GetClaim(IEnumerable<Claim> claims, string claimType)
+        private static Guid GetUserId(IEnumerable<Claim> claims)
         {
-            return claims.SingleOrDefault(x => x.Type == claimType);
+            var userId = claims.Single(claim => claim.Type == JwtRegisteredClaimNames.Sub).Value;
+            return Guid.Parse(userId);
+        }
+
+        private static Guid GetExternalActorId(IEnumerable<Claim> claims)
+        {
+            var userId = claims.Single(claim => claim.Type == JwtRegisteredClaimNames.Aud).Value;
+            return Guid.Parse(userId);
         }
     }
 }

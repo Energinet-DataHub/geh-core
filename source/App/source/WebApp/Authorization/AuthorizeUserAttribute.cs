@@ -21,11 +21,11 @@ using Microsoft.AspNetCore.Authorization;
 namespace Energinet.DataHub.Core.App.WebApp.Authorization;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-public sealed class AuthorizeAttribute : Attribute, IAuthorizeData
+public sealed class AuthorizeUserAttribute : Attribute, IAuthorizeData
 {
     private const string ConfigureUsingCtor = "Use the ctor to select a permission.";
 
-    public AuthorizeAttribute(params Permission[] permissions)
+    public AuthorizeUserAttribute(params Permission[] permissions)
     {
         Permissions = permissions;
     }

@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using System.IdentityModel.Tokens.Jwt;
-using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
-using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
@@ -56,18 +54,6 @@ namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector
             container.Register<ClaimsPrincipalContext>(Lifestyle.Scoped);
 
             container.Register<JwtTokenMiddleware>(Lifestyle.Scoped);
-        }
-
-        /// <summary>
-        /// Adds registration of UserMiddleware, UserContext and UserProvider.
-        /// </summary>
-        /// <param name="container">Simple Injector Container</param>
-        public static void AddUserContext<TUserProvider>(this Container container)
-            where TUserProvider : IUserProvider
-        {
-            container.Register<UserMiddleware>(Lifestyle.Scoped);
-            container.Register<IUserContext, UserContext>(Lifestyle.Scoped);
-            container.Register(typeof(IUserProvider), typeof(TUserProvider), Lifestyle.Scoped);
         }
     }
 }

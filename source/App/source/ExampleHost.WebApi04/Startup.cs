@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Authentication;
+using ExampleHost.WebApi04.Security;
 
 namespace ExampleHost.WebApi04
 {
@@ -31,10 +32,11 @@ namespace ExampleHost.WebApi04
         public void ConfigureServices(IServiceCollection services)
         {
             var metadata = _configuration["metadata"];
-            var audience = _configuration["audience"];
+            var frontendAppId = _configuration["appid"];
 
             services.AddControllers();
-            services.AddJwtBearerAuthentication(metadata, audience);
+            services.AddJwtBearerAuthentication(metadata, frontendAppId);
+            services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
             services.AddApplicationInsightsTelemetry();
         }
 
@@ -49,6 +51,7 @@ namespace ExampleHost.WebApi04
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseUserMiddleware<ExampleDomainUser>();
 
             app.UseEndpoints(endpoints =>
             {

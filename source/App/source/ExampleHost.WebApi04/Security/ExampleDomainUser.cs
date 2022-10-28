@@ -12,10 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
+namespace ExampleHost.WebApi04.Security;
 
-namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
+public sealed class ExampleDomainUser
 {
-    public record User(Guid UserId, List<Guid> ActorIds);
+    public ExampleDomainUser(Guid userId, Guid externalActorId)
+    {
+        UserId = userId;
+        ExternalActorId = externalActorId;
+    }
+
+    public Guid UserId { get; }
+
+    public Guid ExternalActorId { get; }
 }
