@@ -46,14 +46,13 @@ namespace ExampleHost.WebApi.Tests.Fixtures
                 environment: B2CEnvironment,
                 new List<string> { SystemOperator });
 
-            var client = AuthorizationConfiguration.ClientApps[SystemOperator];
             BackendAppAuthenticationClient = new B2CAppAuthenticationClient(
                 AuthorizationConfiguration.TenantId,
                 AuthorizationConfiguration.BackendApp,
-                client);
+                AuthorizationConfiguration.ClientApps[SystemOperator]);
 
             var metadataArg = $"--metadata={Metadata}";
-            var frontendAppIdArg = $"--appid={client.CredentialSettings.ClientId}";
+            var frontendAppIdArg = $"--appid={FrontendClientId}";
 
             // We cannot use TestServer as this would not work with Application Insights.
             Web04Host = WebHost.CreateDefaultBuilder(new[] { metadataArg, frontendAppIdArg })
@@ -69,7 +68,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
         public string Metadata => AuthorizationConfiguration.BackendOpenIdConfigurationUrl;
 
-        public string Audience => AuthorizationConfiguration.BackendApp.AppId;
+        public string FrontendClientId => BackendAppAuthenticationClient.ClientAppSettings.CredentialSettings.ClientId;
 
         public HttpClient Web04HttpClient { get; }
 
