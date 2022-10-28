@@ -88,6 +88,24 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
+    public async Task CallingApi04Get_AuthWithToken_ButUserIsDenied()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Add("DenyUser", authenticationHeader);
+        var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
     {
         // Arrange

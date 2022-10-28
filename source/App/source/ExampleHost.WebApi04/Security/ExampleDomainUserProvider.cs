@@ -19,11 +19,20 @@ namespace ExampleHost.WebApi04.Security;
 
 public sealed class ExampleDomainUserProvider : IUserProvider<ExampleDomainUser>
 {
+    private IHttpContextAccessor _contextAccessor;
+
+    public ExampleDomainUserProvider(IHttpContextAccessor contextAccessor)
+    {
+        _contextAccessor = contextAccessor;
+    }
+
     public Task<ExampleDomainUser?> ProvideUserAsync(
         Guid userId,
         Guid externalActorId,
         IEnumerable<Claim> claims)
     {
-        return Task.FromResult<ExampleDomainUser?>(new ExampleDomainUser(userId, externalActorId));
+        return _contextAccessor!.HttpContext!.Request.Headers.ContainsKey("DenyUser")
+            ? Task.FromResult<ExampleDomainUser?>(null)
+            : Task.FromResult<ExampleDomainUser?>(new ExampleDomainUser(userId, externalActorId));
     }
 }
