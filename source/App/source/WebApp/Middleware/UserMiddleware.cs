@@ -79,7 +79,7 @@ namespace Energinet.DataHub.Core.App.WebApp.Middleware
 
         private static Guid GetUserId(IEnumerable<Claim> claims)
         {
-            var userId = claims.Single(claim => claim.Type == JwtRegisteredClaimNames.Sub).Value;
+            var userId = claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             return Guid.Parse(userId);
         }
 

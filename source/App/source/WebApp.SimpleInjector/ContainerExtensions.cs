@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Core.App.WebApp.SimpleInjector
             where TUserProvider : class, IUserProvider<TUser>
         {
             container.Register<UserContext<TUser>>(Lifestyle.Scoped);
-            container.Register<IUserContext<TUser>>(() => container.GetRequiredService<UserContext<TUser>>(), Lifestyle.Scoped);
+            container.Register<IUserContext<TUser>>(container.GetRequiredService<UserContext<TUser>>, Lifestyle.Scoped);
             container.Register<IUserProvider<TUser>, TUserProvider>(Lifestyle.Scoped);
             container.Register<UserMiddleware<TUser>>(Lifestyle.Scoped);
         }

@@ -49,8 +49,6 @@ public static class AuthenticationExtensions
         string metadataAddress,
         string frontendAppId)
     {
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
         ArgumentNullException.ThrowIfNull(metadataAddress);
         ArgumentNullException.ThrowIfNull(frontendAppId);
 

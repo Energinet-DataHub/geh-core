@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.3
+
+- Fixed wrong claim names when reading token.
+
 ## Version 7.2.2
 
 - Added SimpleInjector extension for user middleware.
