@@ -2,7 +2,7 @@
 
 ## Version 7.2.2
 
-- Added SimpeleInjector extension for user middleware.
+- Added SimpleInjector extension for user middleware.
 
 ## Version 7.2.1
 
