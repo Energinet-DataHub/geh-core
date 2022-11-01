@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.2
+
+- Added SimpleInjector extension for user middleware.
+
 ## Version 7.2.1
 
 - Add support for getting user from token in web apps.
