@@ -57,27 +57,27 @@ public static class AuthenticationExtensions
     /// Adds JWT Bearer authentication to the Web API.
     /// </summary>
     /// <param name="services">A collection of service descriptors.</param>
-    /// <param name="innerMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
-    /// <param name="outerMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant}/v2.0/.well-known/openid-configuration.</param>
+    /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
+    /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant}/v2.0/.well-known/openid-configuration.</param>
     /// <param name="backendAppId"></param>
     public static void AddJwtBearerAuthentication(
         this IServiceCollection services,
-        string innerMetadataAddress,
-        string outerMetadataAddress,
+        string externalMetadataAddress,
+        string internalMetadataAddress,
         string backendAppId)
     {
-        ArgumentNullException.ThrowIfNull(innerMetadataAddress);
+        ArgumentNullException.ThrowIfNull(externalMetadataAddress);
         ArgumentNullException.ThrowIfNull(backendAppId);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                var tokenValidationParameters = CreateValidationParameters(backendAppId, innerMetadataAddress);
+                var tokenValidationParameters = CreateValidationParameters(backendAppId, externalMetadataAddress);
 
-                if (!string.IsNullOrEmpty(outerMetadataAddress))
+                if (!string.IsNullOrEmpty(internalMetadataAddress))
                 {
-                    options.TokenValidationParameters = CreateValidationParameters(backendAppId, outerMetadataAddress);
+                    options.TokenValidationParameters = CreateValidationParameters(backendAppId, internalMetadataAddress);
                     options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                     {
                         if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
