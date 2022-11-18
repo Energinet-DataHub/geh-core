@@ -27,10 +27,10 @@ namespace ExampleHost.WebApi.Tests.Integration;
 /// <summary>
 /// Authentication tests ensuring that the configured token is validated correctly.
 /// </summary>
-[Collection(nameof(AuthenticationHostCollectionFixture))]
-public sealed class AuthenticationTests
+[Collection(nameof(NestedAuthenticationHostCollectionFixture))]
+public sealed class NestedAuthenticationTests
 {
-    public AuthenticationTests(AuthenticationHostFixture fixture)
+    public NestedAuthenticationTests(NestedAuthenticationHostFixture fixture)
     {
         Fixture = fixture;
     }
@@ -74,7 +74,7 @@ public sealed class AuthenticationTests
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
         var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
-        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
+        var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
@@ -94,7 +94,7 @@ public sealed class AuthenticationTests
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
         var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
-        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
+        var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
@@ -111,7 +111,7 @@ public sealed class AuthenticationTests
     {
         // Arrange
         var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
-        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
+        var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/user");
@@ -146,5 +146,15 @@ public sealed class AuthenticationTests
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    private async Task<string> CreateNestedTokenAsync(AuthenticationResult authenticationResult)
+    {
+        using var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "webapi04/token");
+        tokenRequest.Content = new StringContent(authenticationResult.AccessToken);
+        using var tokenResponse = await Fixture.Web04HttpClient.SendAsync(tokenRequest);
+
+        var authenticationHeader = $"Bearer {await tokenResponse.Content.ReadAsStringAsync()}";
+        return authenticationHeader;
     }
 }

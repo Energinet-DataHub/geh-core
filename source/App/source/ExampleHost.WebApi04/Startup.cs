@@ -31,11 +31,14 @@ namespace ExampleHost.WebApi04
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            var metadata = _configuration["metadata"];
-            var frontendAppId = _configuration["appid"];
+            var innerMetadata = _configuration["innerMetadata"];
+            var outerMetadata = _configuration["outerMetadata"];
+            var audience = _configuration["audience"];
+
+            AuthenticationExtensions.DisableHttpsConfiguration = true;
 
             services.AddControllers();
-            services.AddJwtBearerAuthentication(metadata, frontendAppId);
+            services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
             services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
             services.AddApplicationInsightsTelemetry();
         }

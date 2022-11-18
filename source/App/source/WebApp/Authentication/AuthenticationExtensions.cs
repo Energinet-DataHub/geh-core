@@ -23,11 +23,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.App.WebApp.Authentication;
 
 public static class AuthenticationExtensions
 {
+    private const string InnerTokenClaimType = "token";
+
+    /// <summary>
+    /// Disables HTTPS requirement for OpenId configuration endpoints.
+    /// This property is intended for testing purposes only.
+    /// </summary>
+    public static bool DisableHttpsConfiguration { get; set; }
+
     public static void UseUserMiddleware<TUser>(this IApplicationBuilder builder)
         where TUser : class
     {
@@ -44,57 +53,76 @@ public static class AuthenticationExtensions
         services.AddScoped<UserMiddleware<TUser>>();
     }
 
+    /// <summary>
+    /// Adds JWT Bearer authentication to the Web API.
+    /// </summary>
+    /// <param name="services">A collection of service descriptors.</param>
+    /// <param name="innerMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
+    /// <param name="outerMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant}/v2.0/.well-known/openid-configuration.</param>
+    /// <param name="backendAppId"></param>
     public static void AddJwtBearerAuthentication(
         this IServiceCollection services,
-        string metadataAddress,
-        string frontendAppId)
+        string innerMetadataAddress,
+        string outerMetadataAddress,
+        string backendAppId)
     {
-        ArgumentNullException.ThrowIfNull(metadataAddress);
-        ArgumentNullException.ThrowIfNull(frontendAppId);
+        ArgumentNullException.ThrowIfNull(innerMetadataAddress);
+        ArgumentNullException.ThrowIfNull(backendAppId);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                    metadataAddress,
-                    new OpenIdConnectConfigurationRetriever());
-                var tokenParams = options.TokenValidationParameters;
-                tokenParams.ValidateAudience = true;
-                tokenParams.ValidateIssuer = true;
-                tokenParams.ValidateIssuerSigningKey = true;
-                tokenParams.ValidateLifetime = true;
-                tokenParams.RequireSignedTokens = true;
-                tokenParams.ClockSkew = TimeSpan.Zero;
-                tokenParams.AudienceValidator = (audiences, token, _) =>
+                var tokenValidationParameters = CreateValidationParameters(backendAppId, innerMetadataAddress);
+
+                if (!string.IsNullOrEmpty(outerMetadataAddress))
                 {
-                    if (token is not JwtSecurityToken jwtToken)
+                    options.TokenValidationParameters = CreateValidationParameters(backendAppId, outerMetadataAddress);
+                    options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                     {
-                        // Only JWT is supported, deny all other access.
-                        return false;
-                    }
+                        if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
+                        {
+                            throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
+                        }
 
-                    var aud = audiences.ToList();
-                    if (aud.Count != 1)
-                    {
-                        // Multiple audiences, should never happen for our access token.
-                        return false;
-                    }
-
-                    if (aud.Contains(frontendAppId))
-                    {
-                        // Access token created for frontend app.
-                        return true;
-                    }
-
-                    // If audience is not the frontend app id, but an external actor id,
-                    // then the token MUST have an 'azp' claim.
-                    var authorizedParty = jwtToken
-                        .Claims
-                        .Single(x => x.Type == JwtRegisteredClaimNames.Azp);
-
-                    return authorizedParty.Value == frontendAppId;
-                };
+                        ValidateInnerJwt((JwtSecurityToken)token, tokenValidationParameters);
+                        return issuer;
+                    };
+                }
+                else
+                {
+                    options.TokenValidationParameters = tokenValidationParameters;
+                }
             });
+    }
+
+    private static TokenValidationParameters CreateValidationParameters(
+        string audience,
+        string metadataAddress)
+    {
+        return new TokenValidationParameters
+        {
+            ValidAudience = audience,
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            RequireExpirationTime = true,
+            RequireSignedTokens = true,
+            ClockSkew = TimeSpan.Zero,
+            ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                metadataAddress,
+                new OpenIdConnectConfigurationRetriever(),
+                new HttpDocumentRetriever { RequireHttps = !DisableHttpsConfiguration }),
+        };
+    }
+
+    private static void ValidateInnerJwt(JwtSecurityToken outerToken, TokenValidationParameters tokenValidationParameters)
+    {
+        var innerTokenClaim = outerToken.Claims.Single(claim =>
+            string.Equals(claim.Type, InnerTokenClaimType, StringComparison.OrdinalIgnoreCase));
+
+        var handler = new JwtSecurityTokenHandler();
+        handler.ValidateToken(innerTokenClaim.Value, tokenValidationParameters, out _);
     }
 }
