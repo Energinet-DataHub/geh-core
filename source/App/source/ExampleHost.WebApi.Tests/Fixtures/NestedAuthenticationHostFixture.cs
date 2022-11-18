@@ -17,5 +17,5 @@ namespace ExampleHost.WebApi.Tests.Fixtures;
 public sealed class NestedAuthenticationHostFixture : AuthenticationHostFixture
 {
     public NestedAuthenticationHostFixture()
-        : base(true) { }
+        : base("http://localhost:50031", true) { }
 }

@@ -34,12 +34,10 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         private const string SystemOperator = "endk-tso";
 
         public AuthenticationHostFixture()
-            : this(false) { }
+            : this("http://localhost:5003", false) { }
 
-        protected AuthenticationHostFixture(bool supportNestedTokens)
+        protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
         {
-            var web04BaseUrl = "http://localhost:5003";
-
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
             Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
