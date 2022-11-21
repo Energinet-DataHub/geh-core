@@ -13,7 +13,7 @@ As an example, the payload of an access token giving permissions `Organization` 
 }
 ```
 
-Domains can either validate the token using the provided middleware or use another OIDC approach. The OIDC configuration endpoint is https://app-webapi-markpart-<environment>.azurewebsites.net/v2.0/.well-known/openid-configuration.
+Domains can either validate the token using the provided middleware or use another OIDC approach. The OIDC configuration endpoint is https://app-webapi-markpart-[environment].azurewebsites.net/v2.0/.well-known/openid-configuration.
 
 ## Security
 
