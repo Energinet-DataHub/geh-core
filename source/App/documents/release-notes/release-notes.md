@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.4
+
+- Support for DataHub's own tokens.
+
 ## Version 7.2.3
 
 - Fixed wrong claim names when reading token.

@@ -20,7 +20,7 @@ using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixtures
 {
-    public sealed class AuthenticationHostFixture : IAsyncLifetime
+    public class AuthenticationHostFixture : IAsyncLifetime
     {
         /// <summary>
         /// We can use any of the allowed environments.
@@ -34,9 +34,10 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         private const string SystemOperator = "endk-tso";
 
         public AuthenticationHostFixture()
-        {
-            var web04BaseUrl = "http://localhost:5003";
+            : this("http://localhost:5003", false) { }
 
+        protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
+        {
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
             Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
@@ -51,11 +52,22 @@ namespace ExampleHost.WebApi.Tests.Fixtures
                 AuthorizationConfiguration.BackendApp,
                 AuthorizationConfiguration.ClientApps[SystemOperator]);
 
-            var metadataArg = $"--metadata={Metadata}";
-            var frontendAppIdArg = $"--appid={FrontendClientId}";
+            var innerMetadataArg = $"--innerMetadata={Metadata}";
+            var outerMetadataArg = $"--outerMetadata=";
+            var audienceArg = $"--audience={Audience}";
+
+            if (supportNestedTokens)
+            {
+                outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
+            }
 
             // We cannot use TestServer as this would not work with Application Insights.
-            Web04Host = WebHost.CreateDefaultBuilder(new[] { metadataArg, frontendAppIdArg })
+            Web04Host = WebHost.CreateDefaultBuilder(new[]
+                {
+                    innerMetadataArg,
+                    outerMetadataArg,
+                    audienceArg,
+                })
                 .UseStartup<WebApi04.Startup>()
                 .UseUrls(web04BaseUrl)
                 .Build();
@@ -68,7 +80,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
         public string Metadata => AuthorizationConfiguration.BackendOpenIdConfigurationUrl;
 
-        public string FrontendClientId => BackendAppAuthenticationClient.ClientAppSettings.CredentialSettings.ClientId;
+        public string Audience => AuthorizationConfiguration.BackendApp.AppId;
 
         public HttpClient Web04HttpClient { get; }
 

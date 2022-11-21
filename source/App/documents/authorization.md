@@ -7,17 +7,21 @@ As an example, the payload of an access token giving permissions `Organization` 
 ```Json
 {
   "sub": "<user-id>",
-  "azp": "<frontend-app-id>",
-  "aud": "<external-actor-id>",
+  "azp": "<external-actor-id>",
+  "token": "<access-token-from-AD>",
   "roles": ["organization:view", "gridareas:manage"]
 }
 ```
 
+Domains can either validate the token using the provided middleware or use another OIDC approach. The OIDC configuration endpoint is https://app-webapi-markpart-[environment].azurewebsites.net/v2.0/.well-known/openid-configuration.
+
 ## Security
 
-> Each domain must also implement its own domain-specific actor authorization! The framework ensures only that the token is valid and the permissions have been granted. Failure to do so may lead to escalation of privileges.
+> Each domain must also implement its own domain-specific actor authorization! The middleware ensures only that the token is valid and the permissions have been granted. Failure to do so may lead to escalation of privileges.
 
-- DO validate the external actor id in `IUserProvider.ProvideUserAsync`.
+- DO validate the signature, lifetime, audience and issuer of the token.
+- STRONGLY RECOMMENDED to validate the external token from 'token'-claim. Middleware will do this for you.
+- DO validate the external actor id in the token (for example in `IUserProvider.ProvideUserAsync`).
 - DO return `null` from `IUserProvider.ProvideUserAsync` as much as possible, e.g. if the external actor id is unknown or irrelevant.
 - DO trust the external actor id only from `IUserContext`.
 - DO treat external actors with same security considerations as if they were separate tenants.
@@ -67,9 +71,10 @@ Configuring middleware for obtaining the current user with the current actor.
     app.UseAuthorization();
     app.UseUserMiddleware<DomainUser>();
 
-    var openIdUrl = ...;
-    var frontendAppId = ...;
-    services.AddJwtBearerAuthentication(openIdUrl, frontendAppId);
+    var externalOpenIdUrl = ...;
+    var internalOpenIdUrl = ...;
+    var backendAppId = ...;
+    services.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
     services.AddUserAuthentication<DomainUser, DomainUserProvider>();
     services.AddPermissionAuthorization();
 ```
