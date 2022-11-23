@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
+using Energinet.DataHub.Core.App.Common.Abstractions.Actors;
 
 namespace Energinet.DataHub.Core.App.Common
 {

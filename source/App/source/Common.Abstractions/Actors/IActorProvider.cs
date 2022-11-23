@@ -15,7 +15,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.Core.App.Common.Abstractions.Actor
+namespace Energinet.DataHub.Core.App.Common.Abstractions.Actors
 {
     /// <summary>
     /// Provides an actor

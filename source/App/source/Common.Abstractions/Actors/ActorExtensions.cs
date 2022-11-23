@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-namespace Energinet.DataHub.Core.App.Common.Abstractions.Actor
+namespace Energinet.DataHub.Core.App.Common.Abstractions.Actors
 {
-    public record Actor(Guid ActorId, string IdentificationType, string Identifier, string Roles);
+    public static class ActorExtensions
+    {
+        public static string AsString(this Actor actor)
+        {
+            return System.Text.Json.JsonSerializer.Serialize(actor);
+        }
+    }
 }

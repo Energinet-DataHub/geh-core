@@ -12,21 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.Common.Abstractions.Actor
-{
-    /// <summary>
-    /// Provides an actor
-    /// </summary>
-    public interface IActorContext
-    {
-        /// <summary>
-        /// Get current actor
-        /// </summary>
-        public Actor? CurrentActor { get; set; }
+using System;
 
-        /// <summary>
-        /// Get DataHub as an actor
-        /// </summary>
-        public Actor DataHub { get; }
-    }
+namespace Energinet.DataHub.Core.App.Common.Abstractions.Actors
+{
+    public record Actor(Guid ActorId, string IdentificationType, string Identifier, string Roles);
 }

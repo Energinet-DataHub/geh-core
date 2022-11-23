@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 7.2.5
+
+- Changed Actor namespace to Actors, updated refences
+- Added values to Permission Enums
+
 ## Version 7.2.4
 
 - Support for DataHub's own tokens.
