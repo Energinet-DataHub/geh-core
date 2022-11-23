@@ -1,8 +1,12 @@
 # App Release notes
 
+## Version 7.2.6
+
+- Renamed missed Actor namespace to Actors, updated
+
 ## Version 7.2.5
 
-- Changed Actor namespace to Actors, updated refences
+- Changed Actor namespace to Actors, updated references
 - Added values to Permission Enums
 
 ## Version 7.2.4
