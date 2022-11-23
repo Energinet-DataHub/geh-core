@@ -3,7 +3,6 @@
 ## Version 7.2.6
 
 - Renamed missed Actor namespace to Actors, updated
-- 
 
 ## Version 7.2.5
 
