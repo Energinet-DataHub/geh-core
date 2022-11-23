@@ -14,7 +14,7 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using Energinet.DataHub.Core.App.Common;
-using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
+using Energinet.DataHub.Core.App.Common.Abstractions.Actors;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;

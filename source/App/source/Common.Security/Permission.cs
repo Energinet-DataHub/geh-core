@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Core.App.Common.Security;
 
 public enum Permission
 {
-    OrganizationView,
-    OrganizationManage,
-    GridAreasManage,
+    OrganizationView = 1,
+    OrganizationManage = 2,
+    GridAreasManage = 3,
 }

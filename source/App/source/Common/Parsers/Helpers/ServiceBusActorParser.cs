@@ -15,7 +15,7 @@
 using System;
 using System.Linq;
 using System.Text.Json;
-using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
+using Energinet.DataHub.Core.App.Common.Abstractions.Actors;
 
 namespace Energinet.DataHub.Core.App.Common.Parsers.Helpers
 {
