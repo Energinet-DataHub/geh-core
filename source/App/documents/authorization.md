@@ -120,7 +120,7 @@ It is possible to combine multiple permissions (Organization && GridAreas), if a
 
 ## Adding New Permissions
 
-Permissions used by DataHub are located in the `Permission` enum located in Common.Security-package. The enum functions as the single source of supported permissions.
+`Permission` enum, located in Common.Security-package, contains the permissions used by DataHub. The enum functions as the single source of supported permissions.
 
 Adding or editing permission can be done in three steps:
 
