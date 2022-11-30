@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.7
+
+- Added new permission ActorManage.
+
 ## Version 7.2.6
 
 - Renamed missed Actor namespace to Actors, updated

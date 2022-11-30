@@ -23,5 +23,6 @@ public static class PermissionsAsClaims
         { Permission.OrganizationView, "organization:view" },
         { Permission.OrganizationManage, "organization:manage" },
         { Permission.GridAreasManage, "gridareas:manage" },
+        { Permission.ActorManage, "actor:manage" },
     };
 }

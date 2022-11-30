@@ -19,4 +19,5 @@ public enum Permission
     OrganizationView = 1,
     OrganizationManage = 2,
     GridAreasManage = 3,
+    ActorManage = 5,
 }
