@@ -7,13 +7,13 @@ As an example, the payload of an access token giving permissions `Organization` 
 ```Json
 {
   "sub": "<user-id>",
-  "azp": "<external-actor-id>",
+  "azp": "<actor-id>",
   "token": "<access-token-from-AD>",
   "roles": ["organization:view", "gridareas:manage"]
 }
 ```
 
-Domains can either validate the token using the provided middleware or use another OIDC approach. The OIDC configuration endpoint is https://app-webapi-markpart-[environment].azurewebsites.net/v2.0/.well-known/openid-configuration.
+Domains can either validate the token using the provided middleware or use another OIDC approach. The OIDC configuration endpoint is https://app-webapi-markpart-[environment].azurewebsites.net/.well-known/openid-configuration.
 
 ## Security
 
@@ -21,10 +21,10 @@ Domains can either validate the token using the provided middleware or use anoth
 
 - DO validate the signature, lifetime, audience and issuer of the token.
 - STRONGLY RECOMMENDED to validate the external token from 'token'-claim. Middleware will do this for you.
-- DO validate the external actor id in the token (for example in `IUserProvider.ProvideUserAsync`).
-- DO return `null` from `IUserProvider.ProvideUserAsync` as much as possible, e.g. if the external actor id is unknown or irrelevant.
-- DO trust the external actor id only from `IUserContext`.
-- DO treat external actors with same security considerations as if they were separate tenants.
+- DO validate the actor id in the token (for example in `IUserProvider.ProvideUserAsync`).
+- DO return `null` from `IUserProvider.ProvideUserAsync` as much as possible, e.g. if the actor id is unknown or irrelevant.
+- DO trust the actor id only from `IUserContext`.
+- DO treat actors with same security considerations as if they were separate tenants.
 - DO create a `TUser` implementation that is convenient for your domain.
 
 ## Authorization in Web Apps
@@ -117,3 +117,21 @@ It is possible to combine multiple permissions (Organization && GridAreas), if a
         ...
     }
 ```
+
+## Adding New Permissions
+
+Permissions used by DataHub are located in the `Permission` enum located in Common.Security-package. The enum functions as the single source of supported permissions.
+
+Adding or editing permission can be done in three steps:
+
+1) Add a new permission to `Permission` enum.
+2) Add a claim entry for the permission to `PermissionsAsClaims` dictionary. Use a simple and concise value; the entry will be sent with every token.
+3) Publish the package and update `geh-market-participant` to use it.
+
+The permissions are now available for use. Please be aware of the following caveats:
+
+- Remember to assign the newly added permission to a user role through the UI.
+- It is safe to rename the permissions in the `Permission` enum.
+- It is safe to rename the claim entries, but be aware that user will lose access to the permission until their token expires.
+- Be CAUTIOUS when changing the numeric values of the `Permission` enum.
+- It is NOT SAFE to reuse the numeric values of the `Permission` enum.

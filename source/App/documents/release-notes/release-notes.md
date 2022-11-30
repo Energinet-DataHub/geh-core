@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.8
+
+- Detect whether the user is FAS member.
+
 ## Version 7.2.7
 
 - Added new permission ActorManage.

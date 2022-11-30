@@ -29,9 +29,14 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
         /// Creates a domain-specific representation of the user.
         /// </summary>
         /// <param name="userId">The id of the user.</param>
-        /// <param name="externalActorId">The external id of the actor.</param>
+        /// <param name="actorId">The id of the actor.</param>
+        /// <param name="isFas">Specifies whether the user is member of FAS.</param>
         /// <param name="claims">The claims present in the token.</param>
         /// <returns>A domain-specific representation of the user; or null.</returns>
-        public Task<TUser?> ProvideUserAsync(Guid userId, Guid externalActorId, IEnumerable<Claim> claims);
+        public Task<TUser?> ProvideUserAsync(
+            Guid userId,
+            Guid actorId,
+            bool isFas,
+            IEnumerable<Claim> claims);
     }
 }
