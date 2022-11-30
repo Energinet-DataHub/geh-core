@@ -58,7 +58,7 @@ public static class AuthenticationExtensions
     /// </summary>
     /// <param name="services">A collection of service descriptors.</param>
     /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
-    /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant}/v2.0/.well-known/openid-configuration.</param>
+    /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
     /// <param name="backendAppId"></param>
     public static void AddJwtBearerAuthentication(
         this IServiceCollection services,
