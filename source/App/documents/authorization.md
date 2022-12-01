@@ -9,6 +9,7 @@ As an example, the payload of an access token giving permissions `Organization` 
   "sub": "<user-id>",
   "azp": "<actor-id>",
   "token": "<access-token-from-AD>",
+  "membership": "fas",
   "roles": ["organization:view", "gridareas:manage"]
 }
 ```
