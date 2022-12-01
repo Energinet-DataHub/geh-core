@@ -1,5 +1,6 @@
 # Development notes
 
+TEST 
 Notes regarding the development of [Energinet-DataHub](https://github.com/Energinet-DataHub) NuGet packages, also called libraries. The packages contain reusable types, supporting the development of Energinet DataHub.
 
 ## NuGet package bundle
