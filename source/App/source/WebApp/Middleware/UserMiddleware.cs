@@ -16,11 +16,11 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using Energinet.DataHub.Core.App.WebApp.Middleware.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
@@ -55,7 +55,13 @@ public sealed class UserMiddleware<TUser> : IMiddleware
         }
 
         var endpoint = context.GetEndpoint();
-        if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
+        if (endpoint == null)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return;
+        }
+
+        if (endpoint.Metadata.GetMetadata<IAllowAnonymous>() != null)
         {
             await next(context).ConfigureAwait(false);
             return;
@@ -73,7 +79,7 @@ public sealed class UserMiddleware<TUser> : IMiddleware
         // Domain did not accept the user; returns 401.
         if (user == null)
         {
-            HttpContextHelper.SetErrorResponse(context);
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return;
         }
 
