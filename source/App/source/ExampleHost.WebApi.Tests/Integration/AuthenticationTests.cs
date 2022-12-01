@@ -55,6 +55,19 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
+    public async Task CallingApi04Get_NoEndpoint_Returns404()
+    {
+        // Arrange
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/does_not_exist");
+
+        // Act
+        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task CallingApi04Get_AuthRequiredButNoToken_Unauthorized()
     {
         // Arrange

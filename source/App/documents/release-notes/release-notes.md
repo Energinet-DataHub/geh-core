@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.9
+
+- Skip unknown endpoints in UserMiddleware.
+
 ## Version 7.2.8
 
 - Detect whether the user is FAS member.
