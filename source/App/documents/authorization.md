@@ -127,6 +127,7 @@ Adding or editing permission can be done in three steps:
 1) Add a new permission to `Permission` enum.
 2) Add a claim entry for the permission to `PermissionsAsClaims` dictionary. Use a simple and concise value; the entry will be sent with every token.
 3) Publish the package and update `geh-market-participant` to use it.
+Optional) If the permission is needed to guard features in `greenforce-frontend`, add the claim entry to `libs\dh\shared\feature-authorization\src\lib\permission.ts`.
 
 The permissions are now available for use. Please be aware of the following caveats:
 
