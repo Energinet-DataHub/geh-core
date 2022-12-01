@@ -40,7 +40,7 @@ limitations under the License.
       [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/App/documents/documentation.md)
     </PackageReleaseNotes>
     <!-- PackageDescription:
-      Is shown in GitHub packages "About this package" section,
+      Is shown in GitHub packages "About this package" section, TEST
       and in Visual Studio package manager view.
     -->
     <PackageDescription>
