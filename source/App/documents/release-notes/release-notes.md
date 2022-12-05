@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.10
+
+- Added new permission UsersManage.
+
 ## Version 7.2.9
 
 - Skip unknown endpoints in UserMiddleware.

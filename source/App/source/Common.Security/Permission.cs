@@ -20,4 +20,5 @@ public enum Permission
     OrganizationManage = 2,
     GridAreasManage = 3,
     ActorManage = 4,
+    UsersManage = 5,
 }
