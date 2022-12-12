@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.2.11
+
+- Added new permission UsersView.
+
 ## Version 7.2.10
 
 - Added new permission UsersManage.

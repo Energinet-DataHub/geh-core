@@ -25,5 +25,6 @@ public static class PermissionsAsClaims
         { Permission.GridAreasManage, "gridareas:manage" },
         { Permission.ActorManage, "actor:manage" },
         { Permission.UsersManage, "users:manage" },
+        { Permission.UsersView, "users:view" },
     };
 }
