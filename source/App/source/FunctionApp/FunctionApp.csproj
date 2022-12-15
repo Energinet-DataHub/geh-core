@@ -27,7 +27,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.FunctionApp</PackageId>
-    <PackageVersion>7.2.11$(VersionSuffix)</PackageVersion>
+    <PackageVersion>7.3.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Function App Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -77,8 +77,8 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.8.0" />
-    <PackageReference Include="NodaTime" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.10.0" />
+    <PackageReference Include="NodaTime" Version="3.1.6" />
   </ItemGroup>
 
   <ItemGroup>
