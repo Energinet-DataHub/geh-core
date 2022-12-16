@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 7.3.0
+
+- Updated packages.
+- Removed previous code for user JWT middleware.
+
 ## Version 7.2.11
 
 - Added new permission UsersView.
