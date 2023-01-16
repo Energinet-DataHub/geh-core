@@ -2,7 +2,6 @@ name: License Check CI
 
 on:
   workflow_call:
-    inputs:
 
 jobs:
   check-license-lines:
