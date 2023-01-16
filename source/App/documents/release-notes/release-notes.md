@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.3.1
+
+- Bump version as part of pipeline change
+
 ## Version 7.3.0
 
 - Updated packages.
