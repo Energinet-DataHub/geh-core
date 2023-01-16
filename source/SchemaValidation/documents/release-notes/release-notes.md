@@ -1,5 +1,9 @@
 # Schema Validation Release notes
 
+## Version 2.1.2
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 2.1.1
 
 - Bumped patch version as pipeline file was updated.
