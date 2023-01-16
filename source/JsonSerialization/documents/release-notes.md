@@ -1,5 +1,15 @@
 # JsonSerialization Release Notes
 
+## Version 2.2.0
+
+Add method to `IJsonSerializer`:
+```csharp
+        /// <summary>
+        /// Parse the value representing a single JSON value into an object of the type <typeparam name="T" />.
+        /// </summary>
+        public Task<T> DeserializeAsync<T>(byte[] data);
+```
+
 ## Version 2.1.1
 
 - Bumped patch version as pipeline file was updated.
