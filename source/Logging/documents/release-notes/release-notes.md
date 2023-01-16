@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 2.2.2
+
+- Bumped patch version as pipeline file was updated.
+
 ## Version 2.2.1
 
 - Bumped patch version as pipeline file was updated.
@@ -33,7 +37,7 @@
 
 ## Version 1.2.0
 
-- Changes the way tags are selected and saved with the log. 
+- Changes the way tags are selected and saved with the log.
 - Requests with /monitor/ in Url are skipped because of HealthCheck.
 
 ## Version 1.0.7
@@ -49,7 +53,7 @@
 
 ## Version 1.0.5
 
-- Added logging condition to only run on httpTriggers. 
+- Added logging condition to only run on httpTriggers.
 - Added timers for debugging execution times.
 
 ## Version 1.0.4
@@ -58,7 +62,7 @@
 
 ## Version 1.0.3
 
-- Better naming with subfolder. 
+- Better naming with subfolder.
 - Added jwt token parsing for index tags.
 
 ## Version 1.0.2

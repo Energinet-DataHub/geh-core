@@ -1,5 +1,9 @@
 # JsonSerialization Release Notes
 
+## Version 2.2.1
+
+- Bump version as part of pipeline change
+
 ## Version 2.2.0
 
 Add method to `IJsonSerializer`:
