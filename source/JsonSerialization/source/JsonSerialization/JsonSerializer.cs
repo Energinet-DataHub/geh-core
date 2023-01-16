@@ -34,10 +34,7 @@ namespace Energinet.DataHub.Core.JsonSerialization
 
         public async ValueTask<object> DeserializeAsync(Stream utf8Json, Type returnType)
         {
-            if (utf8Json == null)
-            {
-                throw new ArgumentNullException(nameof(utf8Json));
-            }
+            ArgumentNullException.ThrowIfNull(utf8Json);
 
             var result = await System.Text.Json.JsonSerializer.DeserializeAsync(utf8Json, returnType, _options).ConfigureAwait(false);
 
@@ -51,10 +48,7 @@ namespace Energinet.DataHub.Core.JsonSerialization
 
         public TValue Deserialize<TValue>(string json)
         {
-            if (json == null)
-            {
-                throw new ArgumentNullException(nameof(json));
-            }
+            ArgumentNullException.ThrowIfNull(json);
 
             var result = System.Text.Json.JsonSerializer.Deserialize<TValue>(json, _options);
 
@@ -68,10 +62,7 @@ namespace Energinet.DataHub.Core.JsonSerialization
 
         public object Deserialize(string json, Type returnType)
         {
-            if (json == null)
-            {
-                throw new ArgumentNullException(nameof(json));
-            }
+            ArgumentNullException.ThrowIfNull(json);
 
             var result = System.Text.Json.JsonSerializer.Deserialize(json, returnType, _options);
 
@@ -83,23 +74,26 @@ namespace Energinet.DataHub.Core.JsonSerialization
             return result;
         }
 
+        public async Task<T> DeserializeAsync<T>(byte[] data)
+        {
+            ArgumentNullException.ThrowIfNull(data);
+
+            var stream = new MemoryStream(data);
+            await using (stream.ConfigureAwait(false))
+            {
+                return (T)await DeserializeAsync(stream, typeof(T)).ConfigureAwait(false);
+            }
+        }
+
         public string Serialize<TValue>(TValue value)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
+            ArgumentNullException.ThrowIfNull(value);
             return System.Text.Json.JsonSerializer.Serialize<object>(value, _options);
         }
 
         public Task SerializeAsync<TValue>(Stream stream, TValue value)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
+            ArgumentNullException.ThrowIfNull(value);
             return System.Text.Json.JsonSerializer.SerializeAsync<TValue>(stream, value, _options);
         }
     }

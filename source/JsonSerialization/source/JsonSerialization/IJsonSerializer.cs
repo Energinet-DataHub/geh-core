@@ -88,6 +88,11 @@ namespace Energinet.DataHub.Core.JsonSerialization
         object Deserialize(string json, Type returnType);
 
         /// <summary>
+        /// Parse the value representing a single JSON value into an object of the type <typeparam name="T" />.
+        /// </summary>
+        public Task<T> DeserializeAsync<T>(byte[] data);
+
+        /// <summary>
         /// Convert the provided value into a <see cref="string"/>.
         /// </summary>
         /// <returns>A <see cref="string"/> representation of the value.</returns>
