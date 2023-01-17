@@ -41,7 +41,7 @@ env:
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
   AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-  AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
   # Set value used by 'AzuriteManager'
   AzuriteBlobFolderPath: '${{ github.workspace }}\node_modules\.bin\'
   # Overrides settings in 'functionhost.settings.json'
