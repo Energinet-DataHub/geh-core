@@ -39,7 +39,7 @@ on:
 env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
-  # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
+  # Variables necessary to use Azure resources from automated tests (similar to local use of 'integrationtest.local.settings.json')
   AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
   AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
   # Set value used by 'AzuriteManager'
