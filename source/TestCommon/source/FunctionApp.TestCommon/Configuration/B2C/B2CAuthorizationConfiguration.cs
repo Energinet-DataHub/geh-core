@@ -38,11 +38,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
             var localSettingsJsonFilename = usedForSystemTests
                 ? "systemtest.local.settings.json"
                 : "integrationtest.local.settings.json";
-            var azureSecretsKeyVaultUrlKey = usedForSystemTests
-                ? "AZURE_SYSTEMTESTS_KEYVAULT_URL"
-                : "AZURE_SECRETS_KEYVAULT_URL";
             RootConfiguration = BuildKeyVaultConfigurationRoot(localSettingsJsonFilename);
-            SecretsConfiguration = BuildSecretsKeyVaultConfiguration(RootConfiguration.GetValue<string>(azureSecretsKeyVaultUrlKey));
+            SecretsConfiguration = BuildSecretsKeyVaultConfiguration(RootConfiguration.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL"));
 
             Environment = environment;
             ClientApps = CreateClientApps(clientNames);
