@@ -75,11 +75,10 @@ jobs:
           AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v9
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@xdast-v10 # TODO: Use v10 when released
         with:
           SOLUTION_FILE_PATH: './source/TestCommon/TestCommon.sln'
           CODE_COVERAGE_FLAGS: testcommon
-          AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
