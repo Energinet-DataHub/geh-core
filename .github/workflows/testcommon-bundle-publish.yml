@@ -65,10 +65,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v10
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v9
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v10
         with:
           USE_AZURE_FUNCTIONS_TOOLS: 'true'
           NODE_VERSION: '16'
@@ -85,12 +85,12 @@ jobs:
           AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
       - name: Pack TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
           PROJECT_PATH: './source/TestCommon/source/TestCommon/TestCommon.csproj'
 
       - name: Pack FunctionApp.TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
           PROJECT_PATH: './source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
 
@@ -104,7 +104,7 @@ jobs:
             .github/workflows/testcommon-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v10
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
