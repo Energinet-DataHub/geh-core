@@ -22,4 +22,5 @@ public enum Permission
     ActorManage = 4,
     UsersManage = 5,
     UsersView = 6,
+    UserRoleManage = 7,
 }

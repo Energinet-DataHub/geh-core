@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.3.3
+
+- Added new permission UserRoleManage
+
 ## Version 7.3.2
 
 - Bump version as part of pipeline change
