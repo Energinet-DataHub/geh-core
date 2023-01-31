@@ -26,5 +26,6 @@ public static class PermissionsAsClaims
         { Permission.ActorManage, "actor:manage" },
         { Permission.UsersManage, "users:manage" },
         { Permission.UsersView, "users:view" },
+        { Permission.UserRoleManage, "userrole:manage" },
     };
 }
