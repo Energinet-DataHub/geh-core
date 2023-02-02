@@ -127,10 +127,59 @@ Adding or editing permission can be done in three steps:
 
 1) Add a new permission to `Permission` enum.
 2) Add a claim entry for the permission to `PermissionsAsClaims` dictionary. Use a simple and concise value; the entry will be sent with every token.
-3) Publish the package and update `geh-market-participant` to use it.
-Optional) If the permission is needed to guard features in `greenforce-frontend`, add the claim entry to `libs\dh\shared\feature-authorization\src\lib\permission.ts`.
+3) Publish the package
+4) Create a new branch in `geh-market-participant`, so the next steps can be completed in the same PR
+5) In the new branch, add new entries into the marketpart database to add permissions details and what marketroles this permission is valid for.
+6) Update the package in `geh-market-participant`.
+7) Create a PR in `geh-market-participant` and wait for it to be completed.
+8) (Optional) If the permission is needed to guard features in `greenforce-frontend`, add the claim entry to `libs\dh\shared\feature-authorization\src\lib\permission.ts`.
 
-The permissions are now available for use. Please be aware of the following caveats:
+## Adding permission details to marketpart database
+
+- Create a new branch on the <https://github.com/Energinet-DataHub/geh-market-participant> repository
+- Add a new script to the following folders
+  - `source\Energinet.DataHub.MarketParticipant.ApplyDBMigrationsApp\Scripts\T-001\Seed`
+  - `source\Energinet.DataHub.MarketParticipant.ApplyDBMigrationsApp\Scripts\U-001\Seed`
+  - `source\Energinet.DataHub.MarketParticipant.ApplyDBMigrationsApp\Scripts\U-002\Seed`
+  - `source\Energinet.DataHub.MarketParticipant.ApplyDBMigrationsApp\Scripts\B-001\Seed`
+  - `source\Energinet.DataHub.MarketParticipant.ApplyDBMigrationsApp\Scripts\B-002\Seed`
+  - `source\Energinet.DataHub.MarketParticipant.ApplyDBMigrationsApp\Scripts\LocalDB\`
+- The files follow a specific naming structure, be sure to adhere to the existing files
+  - The format is "YYYYMMDDhhmm Description.sql" (Description can't contain numbers)
+    - YYYY = Year (I.E. 2023)
+    - MM = Month (I.E. 02)
+    - DD = Day (I.E. 25)
+    - hh = Hour (I.E. 18)
+    - mm = Minute (I.E. 42)
+- The file should contain the follwing script
+
+  ```SQL
+  INSERT INTO [dbo].[Permission]
+           ([Id]
+           ,[Description])
+     VALUES
+           (<Id, int,> -- This is the enum value of your new permission I.E. 1,2,3 etc.
+           ,<Description, nvarchar(250),>) -- This is the description of your new permission
+  GO
+
+  INSERT INTO [dbo].[PermissionEicFunction]
+           ([Id]
+           ,[PermissionId]
+           ,[EicFunction])
+     VALUES
+           (<Id, uniqueidentifier,> -- GUID for this entry, just auto generate one
+           ,<PermissionId, int,> -- This is the enum value of your new permission I.E. 1,2,3 etc.
+           ,<EicFunction, int,>) -- This is the enum value of the EIC function I.E. 1,2,3 etc. this permission is linked to
+  GO
+  ```
+
+- Values for the EIC Function enum can be found in `source/Energinet.DataHub.MarketParticipant.Domain/Model/EicFunction.cs`
+- Verify that unit tests are succesfull, there is an integration test, that will ensure that you have added descriptions and marketroles to all permissions.
+  - Note: this only checks for files in the `LocalDB` folder, so you are responsible for ensuring it has been copied to all other folders.
+- Once the files are added, you should create a PR for your branch and once approved and merged, the new permission has been created with all needed information
+
+
+### The permissions are now available for use. Please be aware of the following caveats:
 
 - Remember to assign the newly added permission to a user role through the UI.
 - It is safe to rename the permissions in the `Permission` enum.
