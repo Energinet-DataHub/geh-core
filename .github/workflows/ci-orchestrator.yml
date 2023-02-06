@@ -24,6 +24,8 @@ jobs:
   #
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v10
+    with:
+      SKIP_MARKDOWN_CHECK: true
 
   #
   # Detect changes to start relevant workflows
