@@ -39,7 +39,6 @@ jobs:
   allow_merge:
     runs-on: ubuntu-latest
     needs: [
-      license_check,
       dotnet_solution_ci
     ]
     if: |

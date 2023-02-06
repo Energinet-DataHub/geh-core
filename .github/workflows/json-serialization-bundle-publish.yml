@@ -82,7 +82,6 @@ jobs:
   allow_merge:
     runs-on: ubuntu-latest
     needs: [
-      license_check,
       build_and_publish
     ]
     if: |
