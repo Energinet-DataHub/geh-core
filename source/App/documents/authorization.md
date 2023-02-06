@@ -173,6 +173,7 @@ Adding or editing permission can be done in three steps:
   GO
   ```
 
+- The last part of the script can be repeated for all the EIC Functions this permission should be linked to
 - Values for the EIC Function enum can be found in `source/Energinet.DataHub.MarketParticipant.Domain/Model/EicFunction.cs`
 - Verify that unit tests are succesfull, there is an integration test, that will ensure that you have added descriptions and marketroles to all permissions.
   - Note: this only checks for files in the `LocalDB` folder, so you are responsible for ensuring it has been copied to all other folders.
