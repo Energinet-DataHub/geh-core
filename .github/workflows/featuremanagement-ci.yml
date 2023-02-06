@@ -25,9 +25,6 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  license_check:
-    uses: ./.github/workflows/license-check-ci.yml
-
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v9

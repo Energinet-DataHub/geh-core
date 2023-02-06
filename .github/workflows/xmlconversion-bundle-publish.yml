@@ -37,9 +37,6 @@ env:
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
 
 jobs:
-  license_check:
-    uses: ./.github/workflows/license-check-ci.yml
-
   build_and_publish:
 
     runs-on: windows-2022
