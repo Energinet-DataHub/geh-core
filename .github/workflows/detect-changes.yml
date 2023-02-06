@@ -1,0 +1,105 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Detect changes
+
+# DESCRIPTION:
+# This workflow will determine which categories of jobs should be executed,
+# based on detected changes.
+# It should be used by the 'ci-orchestrator.yml' to detect changes.
+
+on:
+  workflow_call:
+    outputs:
+      app_common:
+        value: ${{ jobs.changes.outputs.app_common }}
+      featuremanagement:
+        value: ${{ jobs.changes.outputs.featuremanagement }}
+      json_serialization:
+        value: ${{ jobs.changes.outputs.json_serialization }}
+      logging:
+        value: ${{ jobs.changes.outputs.logging }}
+      messaging:
+        value: ${{ jobs.changes.outputs.messaging }}
+      schemas:
+        value: ${{ jobs.changes.outputs.schemas }}
+      schemavalidation:
+        value: ${{ jobs.changes.outputs.schemavalidation }}
+      testcommon:
+        value: ${{ jobs.changes.outputs.testcommon }}
+      xmlconversion:
+        value: ${{ jobs.changes.outputs.xmlconversion }}
+
+jobs:
+  changes:
+    name: Determine relevant jobs
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      app_common: ${{ steps.filter.outputs.app_common }}
+      featuremanagement: ${{ steps.filter.outputs.featuremanagement }}
+      json_serialization: ${{ steps.filter.outputs.json_serialization }}
+      logging: ${{ steps.filter.outputs.logging }}
+      messaging: ${{ steps.filter.outputs.messaging }}
+      schemas: ${{ steps.filter.outputs.schemas }}
+      schemavalidation: ${{ steps.filter.outputs.schemavalidation }}
+      testcommon: ${{ steps.filter.outputs.testcommon }}
+      xmlconversion: ${{ steps.filter.outputs.xmlconversion }}
+    steps:
+    # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
+    - name: Checkout repository
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: actions/checkout@v3
+
+    - name: Detect file changes
+      uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          app_common:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/App/**'
+            - '.github/workflows/app-common-bundle-publish.yml'
+          featuremanagement:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/FeatureManagement/**'
+            - '.github/workflows/featuremanagement-ci.yml'
+          json_serialization:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/JsonSerialization/**'
+            - '.github/workflows/json-serialization-bundle-publish.yml'
+          logging:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/Logging/**'
+            - '.github/workflows/logging-bundle-publish.yml'
+          messaging:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/Messaging/**'
+            - '.github/workflows/messaging-bundle-publish.yml'
+          schemas:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/Schemas/**'
+            - '.github/workflows/schemas-bundle-publish.yml'
+          schemavalidation:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/SchemaValidation/**'
+            - '.github/workflows/schemavalidation-bundle-publish.yml'
+          testcommon:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/TestCommon/**'
+            - '.github/workflows/testcommon-bundle-publish.yml'
+          xmlconversion:
+            - '.github/workflows/detect-changes.yml'
+            - 'source/XmlConversion/**'
+            - '.github/workflows/xmlconversion-bundle-publish.yml'
