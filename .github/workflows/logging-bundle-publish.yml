@@ -25,12 +25,7 @@ on:
       - .github/workflows/logging-bundle-publish.yml
   # Build, test, pack
   # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
-  pull_request:
-    branches:
-      - main
-    paths:
-      - source/Logging/**
-      - .github/workflows/logging-bundle-publish.yml
+  workflow_call: {}
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}

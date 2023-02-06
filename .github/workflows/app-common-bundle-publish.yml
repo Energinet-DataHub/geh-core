@@ -31,12 +31,7 @@ on:
       - .github/workflows/app-common-bundle-publish.yml
   # Build, test, pack
   # Executed if App folder or build scripts has changed; including if documentation or tests has changed
-  pull_request:
-    branches:
-      - main
-    paths:
-      - source/App/**
-      - .github/workflows/app-common-bundle-publish.yml
+  workflow_call: {}
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}

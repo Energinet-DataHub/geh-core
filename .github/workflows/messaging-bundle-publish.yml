@@ -28,12 +28,7 @@ on:
       - .github/workflows/messaging-bundle-publish.yml
   # Build, test, pack
   # Executed if Messaging folder or build scripts has changed; including if documentation or tests has changed
-  pull_request:
-    branches:
-      - main
-    paths:
-      - source/Messaging/**
-      - .github/workflows/messaging-bundle-publish.yml
+  workflow_call: {}
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}

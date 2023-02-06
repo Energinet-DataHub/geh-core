@@ -19,12 +19,7 @@ on:
   #
   # Build and test
   # Executed if FeatureManagement folder or build scripts has changed; including if documentation or tests has changed
-  pull_request:
-    branches:
-      - main
-    paths:
-      - source/FeatureManagement/**
-      - .github/workflows/featuremanagement-ci.yml
+  workflow_call: {}
   # Build and test
   # Executed if manually triggered
   workflow_dispatch: {}

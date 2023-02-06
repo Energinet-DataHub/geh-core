@@ -23,12 +23,7 @@ on:
     paths:
       - source/JsonSerialization/source/JsonSerialization/**
       - .github/workflows/json-serialization-bundle-publish.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - source/JsonSerialization/**
-      - .github/workflows/json-serialization-bundle-publish.yml
+  workflow_call: {}
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
