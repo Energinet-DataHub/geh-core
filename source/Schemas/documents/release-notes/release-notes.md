@@ -1,5 +1,9 @@
 # Schemas Release notes
 
+## Version 2.1.4
+
+- Bump version as part of pipeline change.
+
 ## Version 2.1.3
 
 - Bump version as part of pipeline change.

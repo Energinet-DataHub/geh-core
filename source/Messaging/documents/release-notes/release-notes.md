@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 2.1.4
+
+- Bump version as part of pipeline change.
+
 ## Version 2.1.3
 
 - Bumped patch version as pipeline file was updated.
