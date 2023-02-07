@@ -1,5 +1,9 @@
 # Schema Validation Release notes
 
+## Version 2.1.3
+
+- Bump version as part of pipeline change.
+
 ## Version 2.1.2
 
 - Bumped patch version as pipeline file was updated.
@@ -42,17 +46,17 @@ Rename source folder and solution name for easier developer discovery in GitHub 
 
 ## Version 1.0.7
 
- - AdvanceAsync() now reads content to ensure it is properly validated.
- - Workaround of a bug in AdvanceAsync(), where XmlReader could throw an InvalidOperationException for invalid XML.
+- AdvanceAsync() now reads content to ensure it is properly validated.
+- Workaround of a bug in AdvanceAsync(), where XmlReader could throw an InvalidOperationException for invalid XML.
    This only applies to the Reader API - extension methods AsXmlReaderAsync and AsXElementAsync are not affected.
 
 ## Version 1.0.6
 
- - Added ReadValueAsDurationAsync() for xs:duration data types.
+- Added ReadValueAsDurationAsync() for xs:duration data types.
 
 ## Version 1.0.5
 
- - CanReadValue could incorrectly return false when an attribute was preceding the element content.
+- CanReadValue could incorrectly return false when an attribute was preceding the element content.
    This only applies to the Reader API - extension methods AsXmlReaderAsync and AsXElementAsync are not affected.
 
 ## Version 1.0.4

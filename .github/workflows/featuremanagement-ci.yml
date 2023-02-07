@@ -19,20 +19,12 @@ on:
   #
   # Build and test
   # Executed if FeatureManagement folder or build scripts has changed; including if documentation or tests has changed
-  pull_request:
-    branches:
-      - main
-    paths:
-      - source/FeatureManagement/**
-      - .github/workflows/featuremanagement-ci.yml
+  workflow_call: {}
   # Build and test
   # Executed if manually triggered
   workflow_dispatch: {}
 
 jobs:
-  license_check:
-    uses: ./.github/workflows/license-check-ci.yml
-
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v9
@@ -47,7 +39,6 @@ jobs:
   allow_merge:
     runs-on: ubuntu-latest
     needs: [
-      license_check,
       dotnet_solution_ci
     ]
     if: |

@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.0.1
+
+- Bump version as part of pipeline change.
+
 ## Version 4.0.0
 
 - Refactored class `B2CAuthorizationConfiguration` to use setting named `AZURE_B2CSECRETS_KEYVAULT_URL` instead of the variants `AZURE_SYSTEMTESTS_KEYVAULT_URL` and `AZURE_SECRETS_KEYVAULT_URL`.
