@@ -161,7 +161,7 @@ Adding or editing permission can be done in three steps:
      VALUES
            (<Id, int,> -- This is the enum value of your new permission I.E. 1,2,3 etc.
            ,<Description, nvarchar(250),> -- This is the description of your new permission
-           ,<Created, datetimeoffset>) -- The permission created data, used in audit log
+           ,<Created, datetimeoffset>) -- The permission created date, used for history and audit log
   GO
 
   INSERT INTO [dbo].[PermissionEicFunction]
