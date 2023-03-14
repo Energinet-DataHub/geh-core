@@ -18,7 +18,6 @@ using System.Security.Claims;
 using System.Text;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
-using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 

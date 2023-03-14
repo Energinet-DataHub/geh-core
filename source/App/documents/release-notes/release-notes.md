@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.4.0
+
+- Permissions moved to geh-market-participant.
+
 ## Version 7.3.4
 
 - Bump version as part of pipeline change.

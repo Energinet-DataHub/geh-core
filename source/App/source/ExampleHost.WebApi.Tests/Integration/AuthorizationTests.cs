@@ -16,7 +16,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using Energinet.DataHub.Core.App.Common.Security;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +29,9 @@ namespace ExampleHost.WebApi.Tests.Integration;
 [Collection(nameof(AuthorizationHostCollectionFixture))]
 public sealed class AuthorizationTests
 {
+    private const string PermissionOrganizationView = "organization:view";
+    private const string PermissionGridAreasManage = "grid-areas:manage";
+
     public AuthorizationTests(AuthorizationHostFixture fixture)
     {
         Fixture = fixture;
@@ -62,7 +64,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.OrganizationView));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionOrganizationView));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -97,7 +99,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreasManage));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -113,7 +115,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreasManage));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -132,7 +134,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.OrganizationView));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionOrganizationView));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -148,7 +150,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreasManage));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -164,7 +166,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreasManage, Permission.OrganizationView));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage, PermissionOrganizationView));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -183,7 +185,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreasManage, Permission.OrganizationView));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage, PermissionOrganizationView));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -202,7 +204,7 @@ public sealed class AuthorizationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(Permission.GridAreasManage));
+        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -210,13 +212,11 @@ public sealed class AuthorizationTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    private static string CreateBearerToken(params Permission[] permissions)
+    private static string CreateBearerToken(params string[] permissions)
     {
         var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key"));
 
-        var claims = permissions
-            .Select(perm => PermissionsAsClaims.Lookup[perm])
-            .Select(claim => new Claim("roles", claim, "arr"));
+        var claims = permissions.Select(claim => new Claim("roles", claim, "arr"));
 
         var token = new JwtSecurityToken(
             claims: claims,
