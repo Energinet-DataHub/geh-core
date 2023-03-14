@@ -29,7 +29,7 @@ namespace ExampleHost.WebApi.Tests.Integration;
 [Collection(nameof(AuthorizationHostCollectionFixture))]
 public sealed class AuthorizationTests
 {
-    private const string PermissionOrganizationView = "organization:view";
+    private const string PermissionOrganizationView = "organizations:view";
     private const string PermissionGridAreasManage = "grid-areas:manage";
 
     public AuthorizationTests(AuthorizationHostFixture fixture)
