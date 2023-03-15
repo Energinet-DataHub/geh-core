@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Security;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,29 +29,29 @@ public class PermissionController : ControllerBase
     }
 
     [HttpGet("org/{identification}")]
-    [AuthorizeUser(Permission.OrganizationView)]
+    [Authorize(Roles = "organizations:view")]
     public string GetOrganizationReadPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("grid/{identification}")]
-    [AuthorizeUser(Permission.GridAreasManage)]
+    [Authorize(Roles = "grid-areas:manage")]
     public string GetGridAreaPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org_or_grid/{identification}")]
-    [AuthorizeUser(Permission.OrganizationView, Permission.GridAreasManage)]
+    [Authorize(Roles = "organizations:view, grid-areas:manage")]
     public string GetOrganizationOrGridAreasPermission(string identification)
     {
         return identification;
     }
 
     [HttpGet("org_and_grid/{identification}")]
-    [AuthorizeUser(Permission.OrganizationView)]
-    [AuthorizeUser(Permission.GridAreasManage)]
+    [Authorize(Roles = "organizations:view")]
+    [Authorize(Roles = "grid-areas:manage")]
     public string GetOrganizationAndGridAreasPermission(string identification)
     {
         return identification;
