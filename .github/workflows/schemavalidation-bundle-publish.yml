@@ -52,13 +52,13 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: ./source/SchemaValidation/SchemaValidation.sln
-          CODE_COVERAGE_FLAGS: schemavalidation
+          solution_file_path: ./source/SchemaValidation/SchemaValidation.sln
+          code_coverage_flags: schemavalidation
 
       - name: Pack SchemaValidation project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: ./source/SchemaValidation/source/SchemaValidation/SchemaValidation.csproj
+          project_path: ./source/SchemaValidation/source/SchemaValidation/SchemaValidation.csproj
 
       - name: Package content or build has changed
         id: changed-content
@@ -71,10 +71,10 @@ jobs:
       - name: Assert versions of NuGet packages and push them to NuGet.org
         uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v10
         with:
-          PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
-          CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
-          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: source/SchemaValidation/source
+          push_packages: ${{ env.PUSH_PACKAGES }}
+          content_changed: ${{ steps.changed-content.outputs.any_changed }}
+          nuget_token: ${{ secrets.NUGET_TOKEN }}
+          nupkg_recurse_path: source/SchemaValidation/source
 
   #
   # Branch policy status check
