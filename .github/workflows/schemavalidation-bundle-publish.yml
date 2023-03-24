@@ -36,7 +36,6 @@ env:
 
 jobs:
   build_and_publish:
-
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
@@ -53,13 +52,13 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v9
         with:
-          SOLUTION_FILE_PATH: './source/SchemaValidation/SchemaValidation.sln'
+          SOLUTION_FILE_PATH: ./source/SchemaValidation/SchemaValidation.sln
           CODE_COVERAGE_FLAGS: schemavalidation
 
       - name: Pack SchemaValidation project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
         with:
-          PROJECT_PATH: './source/SchemaValidation/source/SchemaValidation/SchemaValidation.csproj'
+          PROJECT_PATH: ./source/SchemaValidation/source/SchemaValidation/SchemaValidation.csproj
 
       - name: Package content or build has changed
         id: changed-content
@@ -75,7 +74,7 @@ jobs:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: 'source/SchemaValidation/source'
+          NUPKG_RECURSE_PATH: source/SchemaValidation/source
 
   #
   # Branch policy status check
@@ -83,9 +82,7 @@ jobs:
 
   allow_merge:
     runs-on: ubuntu-latest
-    needs: [
-      build_and_publish
-    ]
+    needs: [build_and_publish]
     if: |
       always()
     steps:
