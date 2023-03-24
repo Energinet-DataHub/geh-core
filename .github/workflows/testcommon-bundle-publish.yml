@@ -61,29 +61,29 @@ jobs:
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v10
         with:
-          USE_AZURE_FUNCTIONS_TOOLS: "true"
-          NODE_VERSION: "16"
-          AZURITE_VERSION: 3.15.0
-          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: 4.0.3971
+          use_azure_functions_tools: "true"
+          node_version: "16"
+          azurite_version: 3.15.0
+          azure_functions_core_tools_version: 4.0.3971
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: ./source/TestCommon/TestCommon.sln
-          CODE_COVERAGE_FLAGS: testcommon
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+          solution_file_path: ./source/TestCommon/TestCommon.sln
+          code_coverage_flags: testcommon
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_spn_id: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
       - name: Pack TestCommon project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: ./source/TestCommon/source/TestCommon/TestCommon.csproj
+          project_path: ./source/TestCommon/source/TestCommon/TestCommon.csproj
 
       - name: Pack FunctionApp.TestCommon project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: ./source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj
+          project_path: ./source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj
 
       - name: Package content or build has changed
         id: changed-content
@@ -97,10 +97,10 @@ jobs:
       - name: Assert versions of NuGet packages and push them to NuGet.org
         uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v10
         with:
-          PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
-          CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
-          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: source/TestCommon/source
+          push_packages: ${{ env.PUSH_PACKAGES }}
+          content_changed: ${{ steps.changed-content.outputs.any_changed }}
+          nuget_token: ${{ secrets.NUGET_TOKEN }}
+          nupkg_recurse_path: source/TestCommon/source
 
   #
   # Branch policy status check

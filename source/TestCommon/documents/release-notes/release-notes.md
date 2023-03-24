@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.0.2
+
+- No functional change.
+
 ## Version 4.0.1
 
 - Bump version as part of pipeline change.
@@ -110,7 +114,7 @@
 
 - Implemented `FunctionAppHostManager.RestartHostIfChanges(IEnumerable<KeyValuePair<string, string>> environmentVariables)` that only restarts the function app if process environment variables has changed.
 - Extended control of starting an Azure Function App through use of the `FunctionAppHostManager`:
-  - Specify which host log message to await during startup using `FunctionAppHostSettings.HostStartedEvent`.
+    - Specify which host log message to await during startup using `FunctionAppHostSettings.HostStartedEvent`.
 
 ## Version 1.2.0
 
@@ -121,13 +125,13 @@
 ## Version 1.1.0
 
 - Extended control of starting an Azure Function App through use of the `FunctionAppHostManager`:
-  - Specify which functions to load using `FunctionAppHostSettings.Functions`.
-  - Set environment variables for the process using `FunctionAppHostSettings.ProcessEnvironmentVariables`.
-  - Write host process id to output when started, so we know which process to attach debugger to if needed.
+    - Specify which functions to load using `FunctionAppHostSettings.Functions`.
+    - Set environment variables for the process using `FunctionAppHostSettings.ProcessEnvironmentVariables`.
+    - Write host process id to output when started, so we know which process to attach debugger to if needed.
 - Updated default values for `FunctionAppHostSettings` to reduce the necessary settings in  `functionapphost.settings.json`.
 - Implemented `FunctionAppHostManagerExtensions`:
-  - `CheckIfFunctionWasExecuted`
-  - `TriggerFunctionAsync`
+    - `CheckIfFunctionWasExecuted`
+    - `TriggerFunctionAsync`
 
 ## Version 1.0.1
 
