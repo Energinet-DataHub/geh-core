@@ -29,8 +29,8 @@ jobs:
   dotnet_solution_ci:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v9
     with:
-      SOLUTION_FILE_PATH: source/FeatureManagement/FeatureManagement.sln
-      USE_AZURE_FUNCTIONS_TOOLS: true
+      solution_file_path: source/FeatureManagement/FeatureManagement.sln
+      use_azure_functions_tools: true
 
   #
   # Branch policy status check
