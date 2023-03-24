@@ -169,7 +169,7 @@ Using e.g. Visual Studio, we can now install the local NuGet packages to other p
 
    Add NuGet packages as usual, but be sure to select the `LocalNuGet` as `Package source` to see the local packages. If the package is a prerelease we must also ensure to check `Include prerelease`, otherwise it will not show up on the list.
 
-For another walkthrough, see [How to test NuGet packages locally](http://www.stempowski.net/net-core/how-to-test-nuget-packages-locally/).
+For another walkthrough, see [How to test NuGet packages locally](https://dev.to/iamrule/a-guide-on-how-to-test-new-versions-of-your-nuget-packages-locally-1phk).
 
 ## Debugging a released package
 
