@@ -44,9 +44,9 @@ env:
   # Necessary to provide B2C information that allows us to retrieve an access token from automated tests
   AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
   # Set value used by 'AzuriteManager'
-  AzuriteBlobFolderPath: '${{ github.workspace }}\node_modules\.bin\'
+  AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
   # Overrides settings in 'functionhost.settings.json'
-  FunctionAppHostPath: '${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll'
+  FunctionAppHostPath: ${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll
 
 permissions:
   id-token: write
@@ -68,13 +68,13 @@ jobs:
         with:
           USE_AZURE_FUNCTIONS_TOOLS: "true"
           NODE_VERSION: "16"
-          AZURITE_VERSION: "3.15.0"
-          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: "4.0.3971"
+          AZURITE_VERSION: 3.15.0
+          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: 4.0.3971
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: "./source/App/App.sln"
+          SOLUTION_FILE_PATH: ./source/App/App.sln
           CODE_COVERAGE_FLAGS: appcommon
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -83,37 +83,37 @@ jobs:
       - name: Pack Common project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/App/source/Common/Common.csproj"
+          PROJECT_PATH: ./source/App/source/Common/Common.csproj
 
       - name: Pack Common.Abstractions project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/App/source/Common.Abstractions/Common.Abstractions.csproj"
+          PROJECT_PATH: ./source/App/source/Common.Abstractions/Common.Abstractions.csproj
 
       - name: Pack Common.Security project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/App/source/Common.Security/Common.Security.csproj"
+          PROJECT_PATH: ./source/App/source/Common.Security/Common.Security.csproj
 
       - name: Pack FunctionApp project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/App/source/FunctionApp/FunctionApp.csproj"
+          PROJECT_PATH: ./source/App/source/FunctionApp/FunctionApp.csproj
 
       - name: Pack WebApp project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/App/source/WebApp/WebApp.csproj"
+          PROJECT_PATH: ./source/App/source/WebApp/WebApp.csproj
 
       - name: Pack FunctionApp.SimpleInjector project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/App/source/FunctionApp.SimpleInjector/FunctionApp.SimpleInjector.csproj"
+          PROJECT_PATH: ./source/App/source/FunctionApp.SimpleInjector/FunctionApp.SimpleInjector.csproj
 
       - name: Pack WebApp.SimpleInjector project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/App/source/WebApp.SimpleInjector/WebApp.SimpleInjector.csproj"
+          PROJECT_PATH: ./source/App/source/WebApp.SimpleInjector/WebApp.SimpleInjector.csproj
 
       - name: Package content or build has changed
         id: changed-content
@@ -135,7 +135,7 @@ jobs:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: "source/App/source"
+          NUPKG_RECURSE_PATH: source/App/source
 
   #
   # Branch policy status check
