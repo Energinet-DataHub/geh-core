@@ -126,6 +126,7 @@ The `IntegrationTestConfiguration` can be used to retrieve these secrets in inte
 ### Azure AD B2C token retrieval
 
 To support the retrieval of B2C access tokens we have the following classes:
+
 * `B2CAuthorizationConfiguration` can be used to retrieve B2C relevant settings for the U/T environments.
 * `B2CAppAuthenticationClient` can be used to retrieve an access token for a B2C client application that want to access another B2C application.
 

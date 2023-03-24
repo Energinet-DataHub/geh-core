@@ -21,19 +21,19 @@ Should authorization fail, the endpoint will return 403 Forbidden.
 Before enabling authorization, the authentication must be configured first. This ensures that the token is signed, obtained from the correct tenant and that its authorized party is the frontend application.
 
 - Add `UseAuthentication()` to `IApplicationBuilder`.
-  - This will register the built-in authentication middleware.
-  - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
+    - This will register the built-in authentication middleware.
+    - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
 - Add `AddJwtBearerAuthentication()` to `IServiceProvider`.
-  - This will enable verification of and authentication by JWT, configuring the `ClaimsPrincipal`.
+    - This will enable verification of and authentication by JWT, configuring the `ClaimsPrincipal`.
 
 ### Configuration of Authorization
 
 Configuring authorization is very similar.
 
 - Add `UseAuthorization()` after `UseAuthentication()` to `IApplicationBuilder`.
-  - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
+    - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
 - Add `AddPermissionAuthorization()` to `IServiceProvider`.
-  - This will register the permissions with the framework.
+    - This will register the permissions with the framework.
 
 ### Configuration of IUserProvider
 
@@ -41,9 +41,9 @@ Configuring middleware for obtaining the current user with the current actor.
 
 - Implement `TUserProvider` and `TUser`.
 - Add `UseUserMiddleware<TUser>()` after `UseAuthorization()` to `IApplicationBuilder`.
-  - This enables `UserMiddleware`.
+    - This enables `UserMiddleware`.
 - Add `AddUserAuthentication<TUser, TUserProvider>()` to `IServiceProvider()`.
-  - This registers `UserMiddleware`, `IUserProvider` and `IUserContext`.
+    - This registers `UserMiddleware`, `IUserProvider` and `IUserContext`.
 
 ### Example Configuration
 

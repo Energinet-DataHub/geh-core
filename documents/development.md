@@ -121,7 +121,7 @@ The NuGet packages must use [Semantic Versioning](https://semver.org/)
 The version format is:
 `<major>.<minor>.<patch>$(VersionSuffix)`
 
-Packaging a *prerelease* version can be done by ensuring the `$(VersionSuffix)` build variable is set to a value.
+Packaging a _prerelease_ version can be done by ensuring the `$(VersionSuffix)` build variable is set to a value.
 
 The following example will use `-alpha-01` as version suffix:
 
@@ -195,7 +195,7 @@ When a new libray is added to the repository, tracking of code coverage must be 
 
 ``` yml
     - name: <flag-name>
-      paths: 
+      paths:
       - source/<new-folder-name>
 ```
 

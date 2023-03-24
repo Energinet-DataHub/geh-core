@@ -8,8 +8,8 @@ Guidelines on implementing health checks for Azure Function App's and ASP.NET Co
 
 - [Introduction](#introduction)
 - Implementation
-  - [Azure Functions App](#azure-functions-app)
-  - [ASP.NET Core Web API](#aspnet-core-web-api)
+    - [Azure Functions App](#azure-functions-app)
+    - [ASP.NET Core Web API](#aspnet-core-web-api)
 
 ## Introduction
 

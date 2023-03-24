@@ -3,6 +3,7 @@
 Contains a middleware implementation exposing userproperties in accordance with [ADR-008 Message metadata](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md#message-metadata)
 
 ## Supported properties
+
 - [OperationTimestamp](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md#timestamp)
 - [OperationCorrelationId](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md#timestamp)
 - [MessageType](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md#message-version)
@@ -44,6 +45,6 @@ private void ConfigureServices(IServiceCollection serviceCollection)
 {
     serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
     serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
-    serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();  
+    serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
 }
 ```

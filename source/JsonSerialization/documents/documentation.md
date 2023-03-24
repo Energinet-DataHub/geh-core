@@ -6,7 +6,7 @@ This package exists to make it easy for developers of Energinet DataHub 3.0 to h
 
 If a deserialization returns null a `NullReferenceException` will be thrown.
 
-# Getting started
+## Getting started
 
 The package contains a `JsonSerializer`.
 
@@ -14,17 +14,17 @@ The package contains a `JsonSerializer`.
 
 By default the `JsonSerializer` includes a converter for `NodaTime.Instant` serialization and deserialization.
 
-# Registration
+## Registration
 
 **Default options:**
 
-```
+```csharp
 services.AddSingleton<IJsonSerializer, JsonSerializer>();
 ```
 
 **Custom options:**
 
-```
+```csharp
 services.AddSingleton<IJsonSerializer>(x =>
                 {
                     var options = new JsonSerializerOptions();

@@ -1,8 +1,8 @@
 # FunctionTelemetryScopeMiddleware Documentation
 
-Contains a middleware implementation of TelemetryClient to help with handling the TelemetryDependency's. 
+Contains a middleware implementation of TelemetryClient to help with handling the TelemetryDependency's.
 
-For more information on TelemetryClient please visit: https://docs.microsoft.com/en-us/dotnet/api/microsoft.applicationinsights.telemetryclient?view=azure-dotnet
+For more information on TelemetryClient please visit: <https://docs.microsoft.com/en-us/dotnet/api/microsoft.applicationinsights.telemetryclient?view=azure-dotnet>
 
 ## Usage
 
@@ -19,7 +19,7 @@ protected virtual void ConfigureFunctionsWorkerDefaults(IFunctionsWorkerApplicat
 }
 
 private void ConfigureServices(IServiceCollection serviceCollection)
-{    
-    serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();           
+{
+    serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
 }
 ```
