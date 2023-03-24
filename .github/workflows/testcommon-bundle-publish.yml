@@ -35,9 +35,9 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Necessary to manage Azure resources from automated tests
-  AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  AZURE_KEYVAULT_URL: ${{ secrets.azure_keyvault_url }}
   # Necessary to provide B2C information that allows us to retrieve an access token from automated tests
-  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
+  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.azure_b2csecrets_keyvault_url }}
   # Set value used by 'AzuriteManager'
   AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
   # Overrides settings in 'functionhost.settings.json'
@@ -71,9 +71,9 @@ jobs:
         with:
           solution_file_path: ./source/TestCommon/TestCommon.sln
           code_coverage_flags: testcommon
-          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          azure_spn_id: ${{ secrets.AZURE_SPN_ID_OIDC }}
+          azure_tenant_id: ${{ secrets.azure_tenant_id }}
+          azure_subscription_id: ${{ secrets.azure_subscription_id }}
+          azure_spn_id: ${{ secrets.azure_spn_id_oidc }}
 
       - name: Pack TestCommon project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
@@ -99,7 +99,7 @@ jobs:
         with:
           push_packages: ${{ env.PUSH_PACKAGES }}
           content_changed: ${{ steps.changed-content.outputs.any_changed }}
-          nuget_token: ${{ secrets.NUGET_TOKEN }}
+          nuget_token: ${{ secrets.nuget_token }}
           nupkg_recurse_path: source/TestCommon/source
 
   #

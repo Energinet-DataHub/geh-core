@@ -73,7 +73,7 @@ jobs:
         with:
           push_packages: ${{ env.PUSH_PACKAGES }}
           content_changed: ${{ steps.changed-content.outputs.any_changed }}
-          nuget_token: ${{ secrets.NUGET_TOKEN }}
+          nuget_token: ${{ secrets.nuget_token }}
           nupkg_recurse_path: source/SchemaValidation/source
 
   #
