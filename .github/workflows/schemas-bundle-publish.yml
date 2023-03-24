@@ -52,13 +52,13 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: ./source/Schemas/Schemas.sln
-          USE_CODE_COVERAGE: "false"
+          solution_file_path: ./source/Schemas/Schemas.sln
+          use_code_coverage: "false"
 
       - name: Pack Schemas project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: ./source/Schemas/source/Schemas/Schemas.csproj
+          project_path: ./source/Schemas/source/Schemas/Schemas.csproj
 
       - name: Package content or build has changed
         id: changed-content
@@ -71,10 +71,10 @@ jobs:
       - name: Assert versions of NuGet packages and push them to NuGet.org
         uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v10
         with:
-          PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
-          CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
-          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: source/Schemas/source
+          push_packages: ${{ env.PUSH_PACKAGES }}
+          content_changed: ${{ steps.changed-content.outputs.any_changed }}
+          nuget_token: ${{ secrets.NUGET_TOKEN }}
+          nupkg_recurse_path: source/Schemas/source
 
   #
   # Branch policy status check
