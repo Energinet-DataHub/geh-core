@@ -1,5 +1,9 @@
 # JsonSerialization Release Notes
 
+## Version 2.2.3
+
+- No functional change.
+
 ## Version 2.2.2
 
 - Bump version as part of pipeline change.
