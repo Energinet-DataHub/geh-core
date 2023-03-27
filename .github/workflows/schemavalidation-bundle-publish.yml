@@ -62,7 +62,7 @@ jobs:
 
       - name: Package content or build has changed
         id: changed-content
-        uses: tj-actions/changed-files@v17.2
+        uses: tj-actions/changed-files@v35
         with:
           files: |
             source/SchemaValidation/source/SchemaValidation/**/*.*
