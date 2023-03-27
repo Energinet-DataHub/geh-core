@@ -85,6 +85,7 @@ var topicResource = await resourceProvider
 ```
 
 Example 3 - creating a subscription with a subject filter
+
 ```csharp
 var topicResource = await resourceProvider
     .BuildTopic("topic")
@@ -94,6 +95,7 @@ var topicResource = await resourceProvider
 ```
 
 Example 4 - creating a subscription with a message type filter
+
 ```csharp
 var topicResource = await resourceProvider
     .BuildTopic("topic")

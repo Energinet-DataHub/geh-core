@@ -2,10 +2,12 @@
 
 Contains a middleware implementation of exposing the `CorrelationId` from the `FunctionContext` from either a `HttpTrigger` or `ServiceBusTrigger`.
 
-### HttpTrigger
+## HttpTrigger
+
 The CorrelationId is parsed from a http-header named `CorrelationId`
 
-### ServiceBusTrigger
+## ServiceBusTrigger
+
 The CorrelationId is parsed from a user property named `OperationCorrelationId`
 
 ## Usage
@@ -45,6 +47,6 @@ private void ConfigureServices(IServiceCollection serviceCollection)
 {
     serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
     serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
-    serviceCollection.AddScoped<CorrelationIdMiddleware>();           
+    serviceCollection.AddScoped<CorrelationIdMiddleware>();
 }
 ```

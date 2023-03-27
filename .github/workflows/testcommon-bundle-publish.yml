@@ -35,13 +35,13 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Necessary to manage Azure resources from automated tests
-  AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  AZURE_KEYVAULT_URL: ${{ secrets.azure_keyvault_url }}
   # Necessary to provide B2C information that allows us to retrieve an access token from automated tests
-  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
+  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.azure_b2csecrets_keyvault_url }}
   # Set value used by 'AzuriteManager'
-  AzuriteBlobFolderPath: '${{ github.workspace }}\node_modules\.bin\'
+  AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
   # Overrides settings in 'functionhost.settings.json'
-  FunctionAppHostPath: '${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll'
+  FunctionAppHostPath: ${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll
 
 permissions:
   id-token: write
@@ -49,7 +49,6 @@ permissions:
 
 jobs:
   build_and_publish:
-
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
@@ -62,33 +61,33 @@ jobs:
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v10
         with:
-          USE_AZURE_FUNCTIONS_TOOLS: 'true'
-          NODE_VERSION: '16'
-          AZURITE_VERSION: '3.15.0'
-          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
+          use_azure_functions_tools: "true"
+          node_version: "16"
+          azurite_version: 3.15.0
+          azure_functions_core_tools_version: 4.0.3971
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: './source/TestCommon/TestCommon.sln'
-          CODE_COVERAGE_FLAGS: testcommon
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+          solution_file_path: ./source/TestCommon/TestCommon.sln
+          code_coverage_flags: testcommon
+          azure_tenant_id: ${{ secrets.azure_tenant_id }}
+          azure_subscription_id: ${{ secrets.azure_subscription_id }}
+          azure_spn_id: ${{ secrets.azure_spn_id_oidc }}
 
       - name: Pack TestCommon project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: './source/TestCommon/source/TestCommon/TestCommon.csproj'
+          project_path: ./source/TestCommon/source/TestCommon/TestCommon.csproj
 
       - name: Pack FunctionApp.TestCommon project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: './source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj'
+          project_path: ./source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj
 
       - name: Package content or build has changed
         id: changed-content
-        uses: tj-actions/changed-files@v17.2
+        uses: tj-actions/changed-files@v35
         with:
           files: |
             source/TestCommon/source/FunctionApp.TestCommon/**/*.*
@@ -98,10 +97,10 @@ jobs:
       - name: Assert versions of NuGet packages and push them to NuGet.org
         uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v10
         with:
-          PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
-          CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
-          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: 'source/TestCommon/source'
+          push_packages: ${{ env.PUSH_PACKAGES }}
+          content_changed: ${{ steps.changed-content.outputs.any_changed }}
+          nuget_token: ${{ secrets.nuget_token }}
+          nupkg_recurse_path: source/TestCommon/source
 
   #
   # Branch policy status check
@@ -109,9 +108,7 @@ jobs:
 
   allow_merge:
     runs-on: ubuntu-latest
-    needs: [
-      build_and_publish
-    ]
+    needs: [build_and_publish]
     if: |
       always()
     steps:
