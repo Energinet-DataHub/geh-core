@@ -53,11 +53,25 @@ jobs:
         with:
           dotnet_version: 5.0.407
 
-      - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
+      # - name: Build and test solution
+      #   uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
+      #   with:
+      #     solution_file_path: ./source/XmlConversion/XmlConversion.sln
+      #     code_coverage_flags: xmlconversion
+
+      - name: Run tests and publish report
+        shell: pwsh
+        run: |
+          dotnet test ${{ inputs.SOLUTION_FILE_PATH }} --no-build --configuration ${{ inputs.BUILD_CONFIGURATION }} --verbosity normal --logger "trx;logfilename=testResults.trx"
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
+        if: always()
         with:
-          solution_file_path: ./source/XmlConversion/XmlConversion.sln
-          code_coverage_flags: xmlconversion
+          files: |
+            TestResults/**/*.xml
+            TestResults/**/*.trx
+            TestResults/**/*.json
 
       - name: Pack XmlConverter project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
