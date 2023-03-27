@@ -62,7 +62,7 @@ jobs:
       - name: Run tests and publish report
         shell: pwsh
         run: |
-          dotnet test ./source/XmlConversion/XmlConversion.sln --configuration Release --verbosity normal --logger "trx;logfilename=testResults.trx"
+          dotnet test ./source/XmlConversion/XmlConversion.sln --configuration Release --verbosity minimal  --logger "trx;logfilename=testResults.trx"
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
