@@ -205,4 +205,4 @@ When a new libray is added to the repository, tracking of code coverage must be 
   - "source/<new-folder-name>/source/<test-folder-name>.Tests"
 ```
 
-* In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `CODE_COVERAGE_FLAGS`, and assign it the value given to the flag in `codecov.yml`.
+* In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `code_coverage_flags`, and assign it the value given to the flag in `codecov.yml`.
