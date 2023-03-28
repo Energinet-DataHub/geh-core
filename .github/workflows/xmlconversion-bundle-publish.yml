@@ -43,9 +43,9 @@ jobs:
 
     permissions:
       contents: read
-      # issues: read
-      # checks: write
-      # pull-requests: write
+      issues: read
+      checks: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -58,7 +58,7 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@997/publish-test-results
         with:
           solution_file_path: ./source/XmlConversion/XmlConversion.sln
-          # publish_test_report: "true"
+          publish_test_report: "true"
           code_coverage_flags: xmlconversion
 
       - name: Pack XmlConverter project
