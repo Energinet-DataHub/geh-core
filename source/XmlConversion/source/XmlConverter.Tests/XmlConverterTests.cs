@@ -45,7 +45,7 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
         [Fact]
         public void XKBER_Test_Should_Fail()
         {
-            Assert.True(false);
+            Assert.False(true);
         }
 
         [Fact]
