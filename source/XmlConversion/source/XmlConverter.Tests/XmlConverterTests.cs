@@ -43,12 +43,6 @@ namespace Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests
         }
 
         [Fact]
-        public void XKBER_Test_Should_Fail()
-        {
-            Assert.False(true);
-        }
-
-        [Fact]
         public async Task ValidateValuesFromEachElementTest()
         {
             var xmlMapper = new XmlMapper((type) => new MasterDataDocumentXmlMappingConfiguration(), (processType) => "CreateMeteringPoint");
