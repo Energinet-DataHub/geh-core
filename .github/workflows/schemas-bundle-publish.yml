@@ -54,6 +54,7 @@ jobs:
         with:
           solution_file_path: ./source/Schemas/Schemas.sln
           use_code_coverage: "false"
+          publish_test_report: "true"
 
       - name: Pack Schemas project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10

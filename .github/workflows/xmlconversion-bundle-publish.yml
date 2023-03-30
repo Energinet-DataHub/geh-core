@@ -55,7 +55,7 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v10
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@997/publish-test-results
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
           solution_file_path: ./source/XmlConversion/XmlConversion.sln
           publish_test_report: "true"

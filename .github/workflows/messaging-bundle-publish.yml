@@ -57,6 +57,7 @@ jobs:
         with:
           solution_file_path: ./source/Messaging/Messaging.sln
           code_coverage_flags: messaging
+          publish_test_report: "true"
 
       - name: Pack Messaging project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
