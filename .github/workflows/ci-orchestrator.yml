@@ -18,6 +18,9 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+
 jobs:
   #
   # License and Markdown Check
