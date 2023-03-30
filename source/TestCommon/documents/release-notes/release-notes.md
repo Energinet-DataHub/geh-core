@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.0.3
+
+- Add testresults to CI report
+
 ## Version 4.0.2
 
 - No functional change.

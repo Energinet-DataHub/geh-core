@@ -27,7 +27,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.XmlConversion.XmlConverter.Abstractions</PackageId>
-    <PackageVersion>2.1.4$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.1.5$(VersionSuffix)</PackageVersion>
     <Title>XmlConverter Abstractions Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
