@@ -24,6 +24,12 @@ on:
   # Executed if manually triggered
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
 jobs:
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
