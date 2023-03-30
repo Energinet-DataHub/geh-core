@@ -48,13 +48,6 @@ env:
   # Overrides settings in 'functionhost.settings.json'
   FunctionAppHostPath: ${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll
 
-permissions:
-  id-token: write
-  contents: read
-  issues: read
-  checks: write
-  pull-requests: write
-
 jobs:
   build_and_publish:
     runs-on: windows-2022
