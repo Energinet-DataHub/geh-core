@@ -64,10 +64,7 @@ Configuring middleware for obtaining the current user with the current actor.
 
 ### Usage
 
-This package includes an `AuthorizeUserAttribute` for selecting a supported permission.
-The attribute can be used to annotate Controller classes or individual methods within.
-
-For example, if an endpoint requires 'Organization' permission, the attribute can be used as follows.
+The built-in `AuthorizeAttribute` attribute can be used to annotate Controller classes or individual methods within. For example, if an endpoint requires 'organization:view' permission, the attribute can be used as follows.
 
 ```C#
     [HttpGet]
@@ -78,7 +75,7 @@ For example, if an endpoint requires 'Organization' permission, the attribute ca
     }
 ```
 
-It is possible to combine multiple permissions (Organization || GridAreas), if an endpoint requires any of the specified permissions.
+It is possible to combine multiple permissions (organizations:view || grid-areas:manage), if an endpoint requires any of the specified permissions.
 
 ```C#
     [HttpPost]
@@ -89,7 +86,7 @@ It is possible to combine multiple permissions (Organization || GridAreas), if a
     }
 ```
 
-It is possible to combine multiple permissions (Organization && GridAreas), if an endpoint requires both of the specified permissions.
+It is possible to combine multiple permissions (organizations:view && grid-areas:manage), if an endpoint requires both of the specified permissions.
 
 ```C#
     [HttpPut]
