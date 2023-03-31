@@ -1,5 +1,9 @@
 # Schemas Release notes
 
+## Version 2.1.6
+
+- Add testresults to CI report
+
 ## Version 2.1.5
 
 - No functional change.

@@ -37,9 +37,6 @@ jobs:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
-    permissions:
-      contents: read
-
     steps:
       - name: Checkout repository
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v10
@@ -52,6 +49,7 @@ jobs:
         with:
           solution_file_path: ./source/JsonSerialization/JsonSerialization.sln
           code_coverage_flags: jsonserialization
+          publish_test_report: "true"
 
       - name: Pack JsonSerialization project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10

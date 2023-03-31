@@ -41,22 +41,18 @@ jobs:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
-    permissions:
-      contents: read
-
     steps:
       - name: Checkout repository
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v10
 
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v10
-        with:
-          dotnet_version: 5.0.407
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
           solution_file_path: ./source/XmlConversion/XmlConversion.sln
+          publish_test_report: "true"
           code_coverage_flags: xmlconversion
 
       - name: Pack XmlConverter project

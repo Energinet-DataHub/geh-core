@@ -1,5 +1,9 @@
 # JsonSerialization Release Notes
 
+## Version 2.2.4
+
+- Add testresults to CI report
+
 ## Version 2.2.3
 
 - No functional change.

@@ -1,5 +1,9 @@
 # XML Converter Release notes
 
+## Version 2.1.5
+
+- Add testresults to CI report
+
 ## Version 2.1.4
 
 - No functional change.
