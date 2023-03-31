@@ -6,7 +6,6 @@ Request and response stream should be seekable for the middleware to read stream
 
 Implementation example:
 
-
     builder.UseMiddleware<RequestResponseLoggingMiddleware>();
 ---
 
@@ -14,8 +13,8 @@ Implementation example:
 ---
 
     serviceCollection.AddScoped<IRequestResponseLogging>(
-    _ => new RequestResponseLoggingBlobStorage(connectionString, 
-                                                containerName, 
+    _ => new RequestResponseLoggingBlobStorage(connectionString,
+                                                containerName,
                                                 ILogger<RequestResponseLoggingBlobStorage>));
 
 ## App Release notes

@@ -57,49 +57,49 @@ jobs:
       testcommon: ${{ steps.filter.outputs.testcommon }}
       xmlconversion: ${{ steps.filter.outputs.xmlconversion }}
     steps:
-    # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
-    - name: Checkout repository
-      if: ${{ github.event_name != 'pull_request' }}
-      uses: actions/checkout@v3
+      # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
+      - name: Checkout repository
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/checkout@v3
 
-    - name: Detect file changes
-      uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          app_common:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/App/**'
-            - '.github/workflows/app-common-bundle-publish.yml'
-          featuremanagement:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/FeatureManagement/**'
-            - '.github/workflows/featuremanagement-ci.yml'
-          json_serialization:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/JsonSerialization/**'
-            - '.github/workflows/json-serialization-bundle-publish.yml'
-          logging:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/Logging/**'
-            - '.github/workflows/logging-bundle-publish.yml'
-          messaging:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/Messaging/**'
-            - '.github/workflows/messaging-bundle-publish.yml'
-          schemas:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/Schemas/**'
-            - '.github/workflows/schemas-bundle-publish.yml'
-          schemavalidation:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/SchemaValidation/**'
-            - '.github/workflows/schemavalidation-bundle-publish.yml'
-          testcommon:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/TestCommon/**'
-            - '.github/workflows/testcommon-bundle-publish.yml'
-          xmlconversion:
-            - '.github/workflows/detect-changes.yml'
-            - 'source/XmlConversion/**'
-            - '.github/workflows/xmlconversion-bundle-publish.yml'
+      - name: Detect file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            app_common:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/App/**'
+              - '.github/workflows/app-common-bundle-publish.yml'
+            featuremanagement:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/FeatureManagement/**'
+              - '.github/workflows/featuremanagement-ci.yml'
+            json_serialization:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/JsonSerialization/**'
+              - '.github/workflows/json-serialization-bundle-publish.yml'
+            logging:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/Logging/**'
+              - '.github/workflows/logging-bundle-publish.yml'
+            messaging:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/Messaging/**'
+              - '.github/workflows/messaging-bundle-publish.yml'
+            schemas:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/Schemas/**'
+              - '.github/workflows/schemas-bundle-publish.yml'
+            schemavalidation:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/SchemaValidation/**'
+              - '.github/workflows/schemavalidation-bundle-publish.yml'
+            testcommon:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/TestCommon/**'
+              - '.github/workflows/testcommon-bundle-publish.yml'
+            xmlconversion:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/XmlConversion/**'
+              - '.github/workflows/xmlconversion-bundle-publish.yml'

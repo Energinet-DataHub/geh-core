@@ -121,7 +121,7 @@ The NuGet packages must use [Semantic Versioning](https://semver.org/)
 The version format is:
 `<major>.<minor>.<patch>$(VersionSuffix)`
 
-Packaging a *prerelease* version can be done by ensuring the `$(VersionSuffix)` build variable is set to a value.
+Packaging a _prerelease_ version can be done by ensuring the `$(VersionSuffix)` build variable is set to a value.
 
 The following example will use `-alpha-01` as version suffix:
 
@@ -169,7 +169,7 @@ Using e.g. Visual Studio, we can now install the local NuGet packages to other p
 
    Add NuGet packages as usual, but be sure to select the `LocalNuGet` as `Package source` to see the local packages. If the package is a prerelease we must also ensure to check `Include prerelease`, otherwise it will not show up on the list.
 
-For another walkthrough, see [How to test NuGet packages locally](http://www.stempowski.net/net-core/how-to-test-nuget-packages-locally/).
+For another walkthrough, see [How to test NuGet packages locally](https://dev.to/iamrule/a-guide-on-how-to-test-new-versions-of-your-nuget-packages-locally-1phk).
 
 ## Debugging a released package
 
@@ -195,7 +195,7 @@ When a new libray is added to the repository, tracking of code coverage must be 
 
 ``` yml
     - name: <flag-name>
-      paths: 
+      paths:
       - source/<new-folder-name>
 ```
 
@@ -205,4 +205,4 @@ When a new libray is added to the repository, tracking of code coverage must be 
   - "source/<new-folder-name>/source/<test-folder-name>.Tests"
 ```
 
-* In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `CODE_COVERAGE_FLAGS`, and assign it the value given to the flag in `codecov.yml`.
+* In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `code_coverage_flags`, and assign it the value given to the flag in `codecov.yml`.

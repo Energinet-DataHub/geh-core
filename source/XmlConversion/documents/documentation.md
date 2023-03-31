@@ -1,10 +1,10 @@
 # XML Converter Documentation
 
-### Introduction
+## Introduction
 
 A library containing functionality for conversion of CIM XML to C#.
 
-### Usage
+## Usage
 
 Install following packages
 
@@ -54,7 +54,7 @@ public class MasterDataDocumentXmlMappingConfiguration : XmlMappingConfiguration
             .AddProperty(x => x.SpecialProperty, OptionalTranslationMethod, "MarketEvaluationPoint", "anotherXmlNodeName")
             …
     }
-    
+
     private static string OptionalTranslationMethod(XmlElementInfo element)
     {
         return element.SourceValue.ToUpperInvariant() switch
@@ -65,7 +65,7 @@ public class MasterDataDocumentXmlMappingConfiguration : XmlMappingConfiguration
             _ => element.SourceValue,
         };
     }
-} 
+}
 ```
 
 Use XML deserializer as below

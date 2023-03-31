@@ -4,13 +4,13 @@
 
 - [Introduction](#introduction)
 - [Guidelines](#guidelines)
-  - [General principles](#general-principles)
-  - [Document feature flags](#document-feature-flags)
+    - [General principles](#general-principles)
+    - [Document feature flags](#document-feature-flags)
 - Samples
-  - [Disabled flag](./samples.md#disabled-flag)
-  - [Feature flag](./samples.md#feature-flag)
+    - [Disabled flag](./samples.md#disabled-flag)
+    - [Feature flag](./samples.md#feature-flag)
 - Quickstarts
-  - [Feature flag](./quickstarts-feature-flag.md)
+    - [Feature flag](./quickstarts-feature-flag.md)
 
 ## Introduction
 
@@ -37,12 +37,12 @@ It is however possible to have different configurations per environment, which m
 ### General principles
 
 - DO keep the number of active feature flags low in an area at all times.
-  - Aim for having short lived feature flags, and remove them as soon as they are obsolete.
+    - Aim for having short lived feature flags, and remove them as soon as they are obsolete.
 - DO use feature flags to enable/disable functionality at a high level, like:
-  - Enable/disable a function using a *disabled flag*.
-  - Enable/disable a functionality at an application level by using a *feature flag*.
+    - Enable/disable a function using a *disabled flag*.
+    - Enable/disable a functionality at an application level by using a *feature flag*.
 - DO NOT use feature flags to enable/disable functionality at a low level, like:
-  - Enable/disable functionality deep within a component.
+    - Enable/disable functionality deep within a component.
 
 ### Document feature flags
 

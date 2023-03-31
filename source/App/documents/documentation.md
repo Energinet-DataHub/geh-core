@@ -5,12 +5,12 @@ A library containing common functionality for Azure Functions and ASP.Net Core W
 ## Overview
 
 - Extensions
-  - [Application Insights](extensions.md#application-insights)
+    - [Application Insights](extensions.md#application-insights)
 - Middleware
-  - [JWT Token Middleware](middleware.md#jwt-token-middleware)
-  - [Actor Middleware](middleware.md#actor-middleware)
-  - [CorrelationId Middleware](correlationIdMiddleware.md)
-  - [FunctionTelemetryScopeMiddleware](functionTelemetryScopeMiddleware.md)
-  - [IntegrationEventMetadataMiddleware](integrationEventMetadataMiddleware.md)
+    - [JWT Token Middleware](middleware.md#jwt-token-middleware)
+    - [Actor Middleware](middleware.md#actor-middleware)
+    - [CorrelationId Middleware](correlationIdMiddleware.md)
+    - [FunctionTelemetryScopeMiddleware](functionTelemetryScopeMiddleware.md)
+    - [IntegrationEventMetadataMiddleware](integrationEventMetadataMiddleware.md)
 - Health
-  - [Health Checks](health-checks.md)
+    - [Health Checks](health-checks.md)

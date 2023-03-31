@@ -5,7 +5,7 @@
 - [Disabled flag](#disabled-flag)
 - [Feature flag](#feature-flag)
 - [How to guides](#how-to-guides)
-  - [Changing application settings](#changing-application-settings)
+    - [Changing application settings](#changing-application-settings)
 
 ## Disabled flag
 
@@ -24,7 +24,7 @@ See also [Changing application settings](#changing-application-settings)
 This sample shows how we can enable/disable a feature in C# using an app setting.
 
 > The Microsoft Feature Management libraries are usually used with Azure App Configuration, but as we show in the sample they can be used for simple scenarios in isolation. See also [Azure App Configuration - Feature Management](
-https://docs.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management)
+<https://docs.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management>)
 
 Even though we demonstrate how it is possible to use the Microsoft Feature Management libraries in an Azure Function App, the same code and principles should work with other C# applications, like an ASP.NET Core Web API.
 

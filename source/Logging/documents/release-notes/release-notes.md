@@ -1,5 +1,13 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 2.2.5
+
+- Add testresults to CI report
+
+## Version 2.2.4
+
+- No functional change.
+
 ## Version 2.2.3
 
 - Bump version as part of pipeline change.

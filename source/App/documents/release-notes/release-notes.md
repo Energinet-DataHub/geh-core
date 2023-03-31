@@ -1,5 +1,13 @@
 # App Release notes
 
+## Version 7.4.2
+
+- Add testresults to CI report
+
+## Version 7.4.1
+
+- No functional change.
+
 ## Version 7.4.0
 
 - Permissions moved to geh-market-participant.

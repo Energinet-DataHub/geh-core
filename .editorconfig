@@ -52,9 +52,9 @@ indent_size = 2
 [*.{yml,yaml}]
 indent_size = 2
 
-# Powershell files
-[*.ps1]
-indent_size = 2
+# PowerShell files
+[*.{ps1, psm1, psd1}]
+indent_size = 4
 
 # Shell script files
 [*.sh]

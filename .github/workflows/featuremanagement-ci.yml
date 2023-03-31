@@ -27,10 +27,10 @@ on:
 jobs:
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v9
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v10
     with:
-      SOLUTION_FILE_PATH: 'source/FeatureManagement/FeatureManagement.sln'
-      USE_AZURE_FUNCTIONS_TOOLS: true
+      solution_file_path: source/FeatureManagement/FeatureManagement.sln
+      use_azure_functions_tools: true
 
   #
   # Branch policy status check
@@ -38,9 +38,7 @@ jobs:
 
   allow_merge:
     runs-on: ubuntu-latest
-    needs: [
-      dotnet_solution_ci
-    ]
+    needs: [dotnet_solution_ci]
     if: |
       always()
     steps:
