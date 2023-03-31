@@ -20,10 +20,10 @@ on:
 
 permissions:
   id-token: write
-  contents: read
-  issues: read
-  checks: write
-  pull-requests: write
+  contents: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+  issues: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+  checks: write # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+  pull-requests: write # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
 
 jobs:
   #
