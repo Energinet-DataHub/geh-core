@@ -132,10 +132,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             public async Task When_UsingUriAndSharedKeyCredential_Then_CanCreateContainer()
             {
                 // Arrange
-                // Using 'well-known storage account key': https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
+                // Using 'well-known' storage account key: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
+                var wellKnownAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
                 var client = new BlobServiceClient(
-                    serviceUri: new Uri("http://127.0.0.1:10000/devstoreaccount1"),
-                    credential: new StorageSharedKeyCredential("devstoreaccount1", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="),
+                    serviceUri: new Uri("https://localhost:10000/devstoreaccount1"),
+                    credential: new StorageSharedKeyCredential("devstoreaccount1", wellKnownAccountKey),
                     NoRetryOptions);
 
                 // Act
@@ -150,7 +151,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 // Arrange
                 var client = new BlobServiceClient(
-                    serviceUri: new Uri("https://127.0.0.1:10000/devstoreaccount1"),
+                    serviceUri: new Uri("https://localhost:10000/devstoreaccount1"),
                     credential: new DefaultAzureCredential(),
                     NoRetryOptions);
 
