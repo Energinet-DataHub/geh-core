@@ -149,7 +149,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 // Arrange
                 var client = new BlobServiceClient(
-                    serviceUri: new Uri("http://127.0.0.1:10000/devstoreaccount1"),
+                    serviceUri: new Uri("https://127.0.0.1:10000/devstoreaccount1"),
                     credential: new DefaultAzureCredential(),
                     NoRetryOptions);
 
