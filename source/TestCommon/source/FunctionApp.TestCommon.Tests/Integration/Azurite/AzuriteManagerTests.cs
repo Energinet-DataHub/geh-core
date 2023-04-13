@@ -15,6 +15,7 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Identity;
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
@@ -118,6 +119,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: "UseDevelopmentStorage=true",
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_UsingUriAndSharedKeyCredential_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    serviceUri: new Uri("http://127.0.0.1:10000/devstoreaccount1"),
+                    credential: new StorageSharedKeyCredential("devstoreaccount1", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="),
                     NoRetryOptions);
 
                 // Act
