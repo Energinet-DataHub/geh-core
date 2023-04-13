@@ -175,7 +175,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
                 ? azuriteBlobFileName
                 : Path.Combine(azuriteBlobFolderPath, azuriteBlobFileName);
             var azuriteArguments = useOAuth == true
-                ? "--oauth basic --cert C:\\Temp\\azurite_uri\\azurite-cert.pfx --pwd azurite"
+                ? @"--oauth basic --cert .\Azurite\TestCertificate\azurite-cert.pfx --pwd azurite"
                 : string.Empty;
 
             AzuriteProcess = new Process
