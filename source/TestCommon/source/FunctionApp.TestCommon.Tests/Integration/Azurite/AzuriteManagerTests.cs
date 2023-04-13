@@ -19,8 +19,11 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurite
 {
@@ -95,18 +98,25 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
         [Collection(nameof(AzuriteCollectionFixture))]
         public sealed class VerifyAzuriteCanBeUsedWithOAuth : IDisposable
         {
-            public VerifyAzuriteCanBeUsedWithOAuth()
+            public VerifyAzuriteCanBeUsedWithOAuth(ITestOutputHelper testOutputHelper)
             {
                 AzuriteManager = new AzuriteManager();
                 AzuriteManager.StartAzurite(useOAuth: true);
 
                 NoRetryOptions = new BlobClientOptions();
                 NoRetryOptions.Retry.MaxRetries = 0;
+
+                TestLogger = new TestDiagnosticsLogger
+                {
+                    TestOutputHelper = testOutputHelper,
+                };
             }
 
             private AzuriteManager AzuriteManager { get; }
 
             private BlobClientOptions NoRetryOptions { get; }
+
+            private TestDiagnosticsLogger TestLogger { get; }
 
             public void Dispose()
             {
@@ -141,6 +151,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
 
                 // Assert
+                if (exception != null)
+                {
+                    TestLogger.WriteLine($"FULL EXCEPTION: {exception.ToString()}");
+                }
+
                 exception.Should().BeNull();
             }
 
