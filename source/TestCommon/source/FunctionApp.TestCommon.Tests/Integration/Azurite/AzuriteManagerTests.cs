@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
     public class AzuriteManagerTests
     {
         [Collection(nameof(AzuriteCollectionFixture))]
-        public class MakeSureAzuriteCanBeStartedTwice
+        public class VerifyAzuriteCanBeStartedTwice
         {
             [Fact]
             public async Task When_AzuriteProcessIsDisposed_Then_ItCanStartAgain()
@@ -93,12 +93,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
         }
 
         [Collection(nameof(AzuriteCollectionFixture))]
-        public sealed class VerifyBlobContainerClientCanBeUsedWithCredential : IDisposable
+        public sealed class VerifyAzuriteCanBeUsedWithOAuth : IDisposable
         {
-            public VerifyBlobContainerClientCanBeUsedWithCredential()
+            public VerifyAzuriteCanBeUsedWithOAuth()
             {
                 AzuriteManager = new AzuriteManager();
-                ////AzuriteManager.StartAzurite();
+                AzuriteManager.StartAzurite(useOAuth: true);
 
                 NoRetryOptions = new BlobClientOptions();
                 NoRetryOptions.Retry.MaxRetries = 0;
@@ -110,11 +110,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
 
             public void Dispose()
             {
-                ////AzuriteManager.Dispose();
+                AzuriteManager.Dispose();
             }
 
             [Fact]
-            public async Task When_UsingConnectionString_Then_CanCreateContainer()
+            public async Task When_UsingConnectionString_Then_CreateContainerShouldFail()
             {
                 // Arrange
                 var client = new BlobServiceClient(
@@ -125,25 +125,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
 
                 // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_UsingUriAndSharedKeyCredential_Then_CanCreateContainer()
-            {
-                // Arrange
-                // Using 'well-known' storage account key: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
-                var wellKnownAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
-                var client = new BlobServiceClient(
-                    serviceUri: new Uri("https://localhost:10000/devstoreaccount1"),
-                    credential: new StorageSharedKeyCredential("devstoreaccount1", wellKnownAccountKey),
-                    NoRetryOptions);
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
+                exception.Should().NotBeNull();
             }
 
             [Fact]

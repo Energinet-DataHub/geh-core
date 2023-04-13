@@ -33,11 +33,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
     {
         private Process? AzuriteProcess { get; set; }
 
-        public void StartAzurite()
+        /// <summary>
+        /// Start Azurite.
+        /// </summary>
+        /// <param name="useOAuth">If true then start Azurite with OAuth and HTTPS options. When this is enabled then the Uri used by any client must use 'localhost' and not '127.0.0.1'.</param>
+        public void StartAzurite(bool useOAuth = false)
         {
             StopAzureStorageEmulator();
             StopHangingAzuriteProcess();
-            StartAzuriteProcess();
+            StartAzuriteProcess(useOAuth);
         }
 
         public void Dispose()
@@ -162,7 +166,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             return (uint)queryObj["ParentProcessId"];
         }
 
-        private void StartAzuriteProcess()
+        private void StartAzuriteProcess(bool useOAuth)
         {
             // When running locally a folder path is not needed because Azurite is installed globally (-g)
             var azuriteBlobFileName = "azurite-blob.cmd";
@@ -170,12 +174,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             var azuriteBlobFilePath = azuriteBlobFolderPath == null
                 ? azuriteBlobFileName
                 : Path.Combine(azuriteBlobFolderPath, azuriteBlobFileName);
+            var azuriteArguments = useOAuth == true
+                ? "--oauth basic --cert C:\\Temp\\azurite_uri\\azurite-cert.pfx --pwd azurite"
+                : string.Empty;
 
             AzuriteProcess = new Process
             {
                 StartInfo =
                 {
                     FileName = azuriteBlobFilePath,
+                    Arguments = azuriteArguments,
                     RedirectStandardError = true,
                 },
             };
@@ -195,8 +203,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             var hasExited = AzuriteProcess.WaitForExit(1000);
             if (hasExited)
             {
-                var error = AzuriteProcess.StandardError.ReadToEnd();
-                throw new InvalidOperationException($"Azurite failed to start: '{error}'.\nEnsure tests that are using Azurite are not running in parallel (use ICollectionFixture<TestFixture>).\nIf another process is using port 10000 then close that application.\nUse \"Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess\" to find the other process.");
+                var azuriteError = AzuriteProcess.StandardError.ReadToEnd();
+                var errorMessage =
+                    $"Azurite failed to start: '{azuriteError}'." +
+                    $"\nEnsure tests that are using Azurite are not running in parallel (use ICollectionFixture<TestFixture>)." +
+                    $"\nIf another process is using port 10000 then close that application." +
+                    $"\nUse 'Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess' to find the other process.";
+                throw new InvalidOperationException(errorMessage);
             }
         }
     }
