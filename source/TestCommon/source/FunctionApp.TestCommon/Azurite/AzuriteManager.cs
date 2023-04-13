@@ -178,6 +178,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
                 ? @"--oauth basic --cert .\Azurite\TestCertificate\azurite-cert.pfx --pwd azurite"
                 : string.Empty;
 
+            // TODO:
+            // Need to trust the certificate on CI server!!!
+            // See https://stackoverflow.com/questions/57221762/how-to-install-dotnet-dev-certs-certificate-on-a-ci-server/57274470
+            //
+            // Maybe its simpler to allow using "connection string" in development. If we disable use of Shared Access Key
+            // in production then we can ensure than no one will ever use the setting in production; but we can use it in tests.
             AzuriteProcess = new Process
             {
                 StartInfo =
