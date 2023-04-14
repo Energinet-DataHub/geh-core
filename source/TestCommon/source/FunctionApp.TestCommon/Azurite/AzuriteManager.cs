@@ -17,6 +17,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Management;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography.X509Certificates;
+using Fare;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
 {
@@ -177,6 +180,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             var azuriteArguments = useOAuth == true
                 ? @"--oauth basic --cert .\Azurite\TestCertificate\azurite-cert.pfx --pwd azurite"
                 : string.Empty;
+
+            if (useOAuth)
+            {
+                var storeLocation = StoreLocation.CurrentUser;
+                if (Environment.GetEnvironmentVariable("CI") == "true")
+                {
+                    // CI Server
+                    storeLocation = StoreLocation.LocalMachine;
+                }
+
+                using var certificateStore = new X509Store(StoreName.Root, storeLocation);
+                certificateStore.Open(OpenFlags.ReadWrite);
+
+                using var testCertificate = new X509Certificate2(@".\Azurite\TestCertificate\azurite-cert.pfx", "azurite");
+                certificateStore.Add(testCertificate);
+            }
 
             // TODO:
             // Need to trust the certificate on CI server!!!
