@@ -15,13 +15,11 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Identity;
-using Azure.Storage;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Xunit;
 using Xunit.Abstractions;
 

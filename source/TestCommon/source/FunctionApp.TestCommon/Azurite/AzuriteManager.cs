@@ -17,15 +17,19 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Management;
-using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography.X509Certificates;
-using Fare;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
 {
     /// <summary>
     /// Used to start Azurite, which is the storage emulator that replaced Azure Storage Emulator.
     /// Remember to dispose, otherwise the Azurite process wont be stopped.
+    ///
+    /// If we use 'OAuth' a test certificate will be installed on startup:
+    ///  * When exeuted on a GitHub runner: The certificate can be installed silently if the runner is
+    ///    executed as administrator (default).
+    ///  * When executed on any non-Github runner: A dialog will be shown to the user the first time the
+    ///  certificate is installed. The dialog requests the user to accept trusting the test certificate.
     ///
     /// In most cases the AzuriteManager should be used in the FunctionAppFixture:
     /// - Create it in the constructor
@@ -34,6 +38,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
     /// </summary>
     public class AzuriteManager : IDisposable
     {
+        /// <summary>
+        /// Path to the test certificate file, which is added as content to current NuGet package.
+        /// </summary>
+        private const string TestCertificateFilePath = @".\Azurite\TestCertificate\azurite-cert.pfx";
+
+        /// <summary>
+        /// Password to the test certificate file.
+        /// </summary>
+        private const string TestCertificatePassword = "azurite";
+
         private Process? AzuriteProcess { get; set; }
 
         /// <summary>
@@ -171,43 +185,16 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
 
         private void StartAzuriteProcess(bool useOAuth)
         {
-            // When running locally a folder path is not needed because Azurite is installed globally (-g)
-            var azuriteBlobFileName = "azurite-blob.cmd";
-            var azuriteBlobFolderPath = Environment.GetEnvironmentVariable("AzuriteBlobFolderPath");
-            var azuriteBlobFilePath = azuriteBlobFolderPath == null
-                ? azuriteBlobFileName
-                : Path.Combine(azuriteBlobFolderPath, azuriteBlobFileName);
-            var azuriteArguments = useOAuth == true
-                ? @"--oauth basic --cert .\Azurite\TestCertificate\azurite-cert.pfx --pwd azurite"
-                : string.Empty;
+            var azuriteBlobCommandFilePath = GetAzuriteBlobCommandFilePath();
+            var azuriteArguments = GetAzuriteArguments(useOAuth);
 
-            if (useOAuth)
-            {
-                var storeLocation = StoreLocation.CurrentUser;
-                if (Environment.GetEnvironmentVariable("CI") == "true")
-                {
-                    // CI Server
-                    storeLocation = StoreLocation.LocalMachine;
-                }
+            HandleTestCertificateInstallation(useOAuth);
 
-                using var certificateStore = new X509Store(StoreName.Root, storeLocation);
-                certificateStore.Open(OpenFlags.ReadWrite);
-
-                using var testCertificate = new X509Certificate2(@".\Azurite\TestCertificate\azurite-cert.pfx", "azurite");
-                certificateStore.Add(testCertificate);
-            }
-
-            // TODO:
-            // Need to trust the certificate on CI server!!!
-            // See https://stackoverflow.com/questions/57221762/how-to-install-dotnet-dev-certs-certificate-on-a-ci-server/57274470
-            //
-            // Maybe its simpler to allow using "connection string" in development. If we disable use of Shared Access Key
-            // in production then we can ensure than no one will ever use the setting in production; but we can use it in tests.
             AzuriteProcess = new Process
             {
                 StartInfo =
                 {
-                    FileName = azuriteBlobFilePath,
+                    FileName = azuriteBlobCommandFilePath,
                     Arguments = azuriteArguments,
                     RedirectStandardError = true,
                 },
@@ -235,6 +222,52 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
                     $"\nIf another process is using port 10000 then close that application." +
                     $"\nUse 'Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess' to find the other process.";
                 throw new InvalidOperationException(errorMessage);
+            }
+        }
+
+        /// <summary>
+        /// If Azurite is installed globally (-g) a folder path is not needed.
+        /// </summary>
+        private static string GetAzuriteBlobCommandFilePath()
+        {
+            var azuriteBlobFileName = "azurite-blob.cmd";
+            var azuriteBlobFolderPath = Environment.GetEnvironmentVariable("AzuriteBlobFolderPath");
+
+            return azuriteBlobFolderPath == null
+                ? azuriteBlobFileName
+                : Path.Combine(azuriteBlobFolderPath, azuriteBlobFileName);
+        }
+
+        private static string GetAzuriteArguments(bool useOAuth)
+        {
+            return useOAuth == true
+                ? $"--oauth basic --cert {TestCertificateFilePath} --pwd {TestCertificatePassword}"
+                : string.Empty;
+        }
+
+        /// <summary>
+        /// If using OAuth then installs test certificate.
+        /// Supports silent installation on a GitHub runner if executed as administrator.
+        /// </summary>
+        private static void HandleTestCertificateInstallation(bool useOAuth)
+        {
+            if (useOAuth)
+            {
+                // If not executed as administrator we can only install to 'CurrentUser' and this will show a dialog to the user.
+                var storeLocation = StoreLocation.CurrentUser;
+
+                // Determine if executed on a GitHub runner.
+                if (Environment.GetEnvironmentVariable("CI") == "true")
+                {
+                    // If executed as administrator we can install silently to 'LocalMachine'.
+                    storeLocation = StoreLocation.LocalMachine;
+                }
+
+                using var certificateStore = new X509Store(StoreName.Root, storeLocation);
+                certificateStore.Open(OpenFlags.ReadWrite);
+
+                using var testCertificate = new X509Certificate2(TestCertificateFilePath, TestCertificatePassword);
+                certificateStore.Add(testCertificate);
             }
         }
     }
