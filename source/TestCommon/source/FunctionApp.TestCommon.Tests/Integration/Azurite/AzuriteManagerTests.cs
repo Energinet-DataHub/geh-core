@@ -122,7 +122,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_UsingConnectionString_Then_CreateContainerShouldFail()
+            public async Task When_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
             {
                 // Arrange
                 var client = new BlobServiceClient(
@@ -134,6 +134,26 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
 
                 // Assert
                 exception.Should().NotBeNull();
+            }
+
+            [Fact]
+            public async Task When_UsingConnectionString_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    connectionString: "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=https://localhost:10000/devstoreaccount1;",
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                if (exception != null)
+                {
+                    TestLogger.WriteLine($"FULL EXCEPTION: {exception.ToString()}");
+                }
+
+                exception.Should().BeNull();
             }
 
             [Fact]
