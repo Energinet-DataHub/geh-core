@@ -136,12 +136,20 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 exception.Should().NotBeNull();
             }
 
+            /// <summary>
+            /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
+            /// </summary>
             [Fact]
             public async Task When_UsingConnectionString_Then_CanCreateContainer()
             {
                 // Arrange
+                // Uses the well-known storage account name and key.
+                // See: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
+                var wellKnownStorageAccountName = "devstoreaccount1";
+                var wellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+
                 var client = new BlobServiceClient(
-                    connectionString: "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=https://localhost:10000/devstoreaccount1;",
+                    connectionString: $"DefaultEndpointsProtocol=https;AccountName={wellKnownStorageAccountName};AccountKey={wellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/devstoreaccount1;",
                     NoRetryOptions);
 
                 // Act
