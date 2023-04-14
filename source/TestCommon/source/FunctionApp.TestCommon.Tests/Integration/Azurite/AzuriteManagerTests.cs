@@ -148,6 +148,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var wellKnownStorageAccountName = "devstoreaccount1";
                 var wellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
+                // TODO: Expose property on AzuriteManager for "blob connection string"
+                // TODO: Expose property on AzuriteManager for "blob uri"
+
                 var client = new BlobServiceClient(
                     connectionString: $"DefaultEndpointsProtocol=https;AccountName={wellKnownStorageAccountName};AccountKey={wellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/devstoreaccount1;",
                     NoRetryOptions);
