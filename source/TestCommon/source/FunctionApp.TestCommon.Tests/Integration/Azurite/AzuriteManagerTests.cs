@@ -94,27 +94,20 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
         }
 
         [Collection(nameof(AzuriteCollectionFixture))]
-        public sealed class VerifyAzuriteCanBeUsedWithOAuth : IDisposable
+        public sealed class Given_OAuthIsTrue : IDisposable
         {
-            public VerifyAzuriteCanBeUsedWithOAuth(ITestOutputHelper testOutputHelper)
+            public Given_OAuthIsTrue()
             {
                 AzuriteManager = new AzuriteManager(useOAuth: true);
                 AzuriteManager.StartAzurite();
 
                 NoRetryOptions = new BlobClientOptions();
                 NoRetryOptions.Retry.MaxRetries = 0;
-
-                TestLogger = new TestDiagnosticsLogger
-                {
-                    TestOutputHelper = testOutputHelper,
-                };
             }
 
             private AzuriteManager AzuriteManager { get; }
 
             private BlobClientOptions NoRetryOptions { get; }
-
-            private TestDiagnosticsLogger TestLogger { get; }
 
             public void Dispose()
             {
@@ -151,11 +144,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
 
                 // Assert
-                if (exception != null)
-                {
-                    TestLogger.WriteLine($"FULL EXCEPTION: {exception.ToString()}");
-                }
-
                 exception.Should().BeNull();
             }
 
@@ -172,11 +160,66 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
 
                 // Assert
-                if (exception != null)
-                {
-                    TestLogger.WriteLine($"FULL EXCEPTION: {exception.ToString()}");
-                }
+                exception.Should().BeNull();
+            }
 
+            private static Task CreateStorageContainerAsync(BlobServiceClient blobServiceClient)
+            {
+                var containerName = $"Test{Guid.NewGuid()}".ToLower();
+
+                var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                return blobContainerClient.CreateAsync();
+            }
+        }
+
+        [Collection(nameof(AzuriteCollectionFixture))]
+        public sealed class Given_OAuthIsFalse : IDisposable
+        {
+            public Given_OAuthIsFalse()
+            {
+                AzuriteManager = new AzuriteManager();
+                AzuriteManager.StartAzurite();
+
+                NoRetryOptions = new BlobClientOptions();
+                NoRetryOptions.Retry.MaxRetries = 0;
+            }
+
+            private AzuriteManager AzuriteManager { get; }
+
+            private BlobClientOptions NoRetryOptions { get; }
+
+            public void Dispose()
+            {
+                AzuriteManager.Dispose();
+            }
+
+            [Fact]
+            public async Task When_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    connectionString: "UseDevelopmentStorage=true",
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_UsingConnectionString_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
                 exception.Should().BeNull();
             }
 
