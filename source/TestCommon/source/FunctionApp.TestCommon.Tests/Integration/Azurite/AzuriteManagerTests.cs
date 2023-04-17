@@ -98,8 +98,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
         {
             public VerifyAzuriteCanBeUsedWithOAuth(ITestOutputHelper testOutputHelper)
             {
-                AzuriteManager = new AzuriteManager();
-                AzuriteManager.StartAzurite(useOAuth: true);
+                AzuriteManager = new AzuriteManager(useOAuth: true);
+                AzuriteManager.StartAzurite();
 
                 NoRetryOptions = new BlobClientOptions();
                 NoRetryOptions.Retry.MaxRetries = 0;
@@ -143,16 +143,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             public async Task When_UsingConnectionString_Then_CanCreateContainer()
             {
                 // Arrange
-                // Uses the well-known storage account name and key.
-                // See: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
-                var wellKnownStorageAccountName = "devstoreaccount1";
-                var wellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
-
-                // TODO: Expose property on AzuriteManager for "blob connection string"
-                // TODO: Expose property on AzuriteManager for "blob uri"
-
                 var client = new BlobServiceClient(
-                    connectionString: $"DefaultEndpointsProtocol=https;AccountName={wellKnownStorageAccountName};AccountKey={wellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/devstoreaccount1;",
+                    connectionString: AzuriteManager.BlobStorageConnectionString,
                     NoRetryOptions);
 
                 // Act
@@ -172,7 +164,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 // Arrange
                 var client = new BlobServiceClient(
-                    serviceUri: new Uri("https://localhost:10000/devstoreaccount1"),
+                    serviceUri: AzuriteManager.BlobStorageServiceUri,
                     credential: new DefaultAzureCredential(),
                     NoRetryOptions);
 

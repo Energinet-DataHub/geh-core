@@ -26,10 +26,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
     /// Remember to dispose, otherwise the Azurite process wont be stopped.
     ///
     /// If we use 'OAuth' a test certificate will be installed on startup:
-    ///  * When exeuted on a GitHub runner: The certificate can be installed silently if the runner is
+    ///  * When exeuted on a GitHub runner: The certificate will be installed silently if the runner is
     ///    executed as administrator (default).
     ///  * When executed on any non-Github runner: A dialog will be shown to the user the first time the
-    ///  certificate is installed. The dialog requests the user to accept trusting the test certificate.
+    ///    certificate is installed. The dialog requests the user to accept trusting the test certificate.
     ///
     /// In most cases the AzuriteManager should be used in the FunctionAppFixture:
     /// - Create it in the constructor
@@ -38,6 +38,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
     /// </summary>
     public class AzuriteManager : IDisposable
     {
+        // Azurite accepts the well-known storage account name and key.
+        // We can use them to create a valid connection string.
+        // See: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
+        private const string WellKnownStorageAccountName = "devstoreaccount1";
+        private const string WellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+
         /// <summary>
         /// Path to the test certificate file, which is added as content to current NuGet package.
         /// </summary>
@@ -48,17 +54,41 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         /// </summary>
         private const string TestCertificatePassword = "azurite";
 
+        /// <summary>
+        /// Create manager to startup Azurite.
+        /// </summary>
+        public AzuriteManager(bool useOAuth = false)
+        {
+            UseOAuth = useOAuth;
+            BlobStorageConnectionString = BuildBlobStorageConnectionString(UseOAuth);
+            BlobStorageServiceUri = BuildBlobStorageServiceUri(UseOAuth);
+        }
+
+        /// <summary>
+        /// If true then start Azurite with OAuth and HTTPS options.
+        /// </summary>
+        public bool UseOAuth { get; }
+
+        /// <summary>
+        /// Connection string that can be used to connect to Azurite started.
+        /// </summary>
+        public string BlobStorageConnectionString { get; }
+
+        /// <summary>
+        /// Service uri to blob storage when connected to Azurite.
+        /// </summary>
+        public Uri BlobStorageServiceUri { get; }
+
         private Process? AzuriteProcess { get; set; }
 
         /// <summary>
         /// Start Azurite.
         /// </summary>
-        /// <param name="useOAuth">If true then start Azurite with OAuth and HTTPS options. When this is enabled then the Uri used by any client must use 'localhost' and not '127.0.0.1'.</param>
-        public void StartAzurite(bool useOAuth = false)
+        public void StartAzurite()
         {
             StopAzureStorageEmulator();
             StopHangingAzuriteProcess();
-            StartAzuriteProcess(useOAuth);
+            StartAzuriteProcess();
         }
 
         public void Dispose()
@@ -79,6 +109,28 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
                 KillProcessAndChildrenRecursively(AzuriteProcess.Id);
                 AzuriteProcess = null;
             }
+        }
+
+        private static string BuildBlobStorageConnectionString(bool useOAuth)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return $"DefaultEndpointsProtocol=https;AccountName={WellKnownStorageAccountName};AccountKey={WellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/{WellKnownStorageAccountName};";
+            }
+
+            return "UseDevelopmentStorage=true";
+        }
+
+        private static Uri BuildBlobStorageServiceUri(bool useOAuth)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return new Uri($"https://localhost:10000/{WellKnownStorageAccountName}");
+            }
+
+            return new Uri($"http://127.0.0.1:10000/{WellKnownStorageAccountName}");
         }
 
         private static void KillProcessAndChildrenRecursively(int processId)
@@ -183,12 +235,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             return (uint)queryObj["ParentProcessId"];
         }
 
-        private void StartAzuriteProcess(bool useOAuth)
+        private void StartAzuriteProcess()
         {
             var azuriteBlobCommandFilePath = GetAzuriteBlobCommandFilePath();
-            var azuriteArguments = GetAzuriteArguments(useOAuth);
+            var azuriteArguments = GetAzuriteArguments(UseOAuth);
 
-            HandleTestCertificateInstallation(useOAuth);
+            HandleTestCertificateInstallation(UseOAuth);
 
             AzuriteProcess = new Process
             {
