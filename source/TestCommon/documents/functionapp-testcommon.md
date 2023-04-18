@@ -4,7 +4,8 @@ Notes regarding usage of the NuGet package `Energinet.DataHub.Core.FunctionApp.T
 
 The package contains reuseable code to help implementing xUnit integration tests of Energinet DataHub Azure Functions.
 
-> We aim for documenting types using XML documentation comments, so be sure to also look at those.
+To see examples of how to use the components, look at their tests. We aim for
+documenting types using XML documentation comments, so be sure to also look at those.
 
 ## Prerequisites
 
@@ -148,7 +149,7 @@ By following these principles, it becomes easier to orchestrate the full flow of
 
 Currently we have the following managers:
 
-* `AzuriteManager`; this is used to start/stop Azurite (a cross platform storage emulator).
+* `AzuriteManager`; this is used to start/stop Azurite (a cross platform storage emulator). It can be used with or without OAuth. When using OAuth a test certificate will be installed the first time Azurite is started. See also [TestCertificate ReadMe.md](../source/FunctionApp.TestCommon/Azurite/TestCertificate/ReadMe.md).
 * `SqlServerDatabaseManager`; this is used to create/destroy local SQL databases. For each database type we have, we should implement a class that inherits from this manager.
 * `FunctionAppHostManager`; this is used to start/stop an Azure Function using Azure Functions Core Tools. It can be the Azure Function we want to integration test, or just one that we depend on in our integration tests.
 
