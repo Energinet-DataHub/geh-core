@@ -42,6 +42,13 @@ jobs:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
+    # We need to have permissions here to be able to support manually triggering this workflow for releasing a pre-release
+    permissions:
+      contents: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+      issues: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+      checks: write # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+      pull-requests: write # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+
     steps:
       - name: Checkout repository
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v10
