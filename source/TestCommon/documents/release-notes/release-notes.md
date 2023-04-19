@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.1.0
+
+- Extended class `AzuriteManager` to support use of OAuth.
+
 ## Version 4.0.3
 
 - Add testresults to CI report
