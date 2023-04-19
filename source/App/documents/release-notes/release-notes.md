@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.4.3
+
+- No functional change.
+
 ## Version 7.4.2
 
 - Add testresults to CI report
