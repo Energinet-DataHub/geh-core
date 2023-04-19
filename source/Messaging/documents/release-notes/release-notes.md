@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 2.1.7
+
+- No functional change.
+
 ## Version 2.1.6
 
 - Add testresults to CI report
