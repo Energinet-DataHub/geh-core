@@ -1,5 +1,9 @@
 # Schema Validation Release notes
 
+## Version 2.1.6
+
+- No functional change.
+
 ## Version 2.1.5
 
 - Add testresults to CI report
