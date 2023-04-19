@@ -14,18 +14,21 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurite
 {
     public class AzuriteManagerTests
     {
         [Collection(nameof(AzuriteCollectionFixture))]
-        public class MakeSureAzuriteCanBeStartedTwice
+        public class VerifyAzuriteCanBeStartedTwice
         {
             [Fact]
             public async Task When_AzuriteProcessIsDisposed_Then_ItCanStartAgain()
@@ -47,7 +50,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 try
                 {
                     azuriteManagerToStartSecond.StartAzurite();
-                    var exception = await Record.ExceptionAsync(CreateStorageContainer);
+                    var exception = await Record.ExceptionAsync(CreateStorageContainerAsync);
                     exception.Should().BeNull();
                 }
                 finally
@@ -79,7 +82,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 }
             }
 
-            private async Task CreateStorageContainer()
+            private static async Task CreateStorageContainerAsync()
             {
                 var storageConnectionString = "UseDevelopmentStorage=true";
                 var containerName = $"Test{Guid.NewGuid()}".ToLower();
@@ -87,6 +90,145 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var blobServiceClient = new BlobServiceClient(storageConnectionString);
                 var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
                 await blobContainerClient.CreateAsync();
+            }
+        }
+
+        [Collection(nameof(AzuriteCollectionFixture))]
+        public sealed class Given_OAuthIsTrue : IDisposable
+        {
+            public Given_OAuthIsTrue()
+            {
+                AzuriteManager = new AzuriteManager(useOAuth: true);
+                AzuriteManager.StartAzurite();
+
+                NoRetryOptions = new BlobClientOptions();
+                NoRetryOptions.Retry.MaxRetries = 0;
+            }
+
+            private AzuriteManager AzuriteManager { get; }
+
+            private BlobClientOptions NoRetryOptions { get; }
+
+            public void Dispose()
+            {
+                AzuriteManager.Dispose();
+            }
+
+            [Fact]
+            public async Task When_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    connectionString: "UseDevelopmentStorage=true",
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                exception.Should().NotBeNull();
+            }
+
+            /// <summary>
+            /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
+            /// </summary>
+            [Fact]
+            public async Task When_UsingConnectionString_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_UsingHttpsAndTokenCredential_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    serviceUri: AzuriteManager.BlobStorageServiceUri,
+                    credential: new DefaultAzureCredential(),
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            private static Task CreateStorageContainerAsync(BlobServiceClient blobServiceClient)
+            {
+                var containerName = $"Test{Guid.NewGuid()}".ToLower();
+
+                var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                return blobContainerClient.CreateAsync();
+            }
+        }
+
+        [Collection(nameof(AzuriteCollectionFixture))]
+        public sealed class Given_OAuthIsFalse : IDisposable
+        {
+            public Given_OAuthIsFalse()
+            {
+                AzuriteManager = new AzuriteManager();
+                AzuriteManager.StartAzurite();
+
+                NoRetryOptions = new BlobClientOptions();
+                NoRetryOptions.Retry.MaxRetries = 0;
+            }
+
+            private AzuriteManager AzuriteManager { get; }
+
+            private BlobClientOptions NoRetryOptions { get; }
+
+            public void Dispose()
+            {
+                AzuriteManager.Dispose();
+            }
+
+            [Fact]
+            public async Task When_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    connectionString: "UseDevelopmentStorage=true",
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_UsingConnectionString_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new BlobServiceClient(
+                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    NoRetryOptions);
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            private static Task CreateStorageContainerAsync(BlobServiceClient blobServiceClient)
+            {
+                var containerName = $"Test{Guid.NewGuid()}".ToLower();
+
+                var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                return blobContainerClient.CreateAsync();
             }
         }
     }
