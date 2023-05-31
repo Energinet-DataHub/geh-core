@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.1.1
+
+- No functional change.
+
 ## Version 4.1.0
 
 - Extended class `AzuriteManager` to support use of OAuth.
