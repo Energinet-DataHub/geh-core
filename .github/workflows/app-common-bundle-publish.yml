@@ -81,7 +81,7 @@ jobs:
           solution_file_path: ./source/App/App.sln
           code_coverage_flags: appcommon
           azure_tenant_id: ${{ secrets.azure_tenant_id }}
-          azure_subscription_id: ${{ secrets.azure_subscription_id }}
+          azure_subscription_id: ${{ vars.azure_subscription_id }}
           azure_spn_id: ${{ vars.azure_spn_id_oidc }}
           publish_test_report: "true"
 
