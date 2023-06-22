@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
@@ -38,6 +39,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
 
             ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
             B2CSettings = CreateB2CSettings(Configuration);
+            DatabricksWarehouseSettings = CreateDatabricksWarehouseSettings(Configuration);
         }
 
         /// <summary>
@@ -75,6 +77,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         /// </summary>
         public AzureB2CSettings B2CSettings { get; }
 
+        /// <summary>
+        /// Settings necessary for using the Databricks SQL Warehouse.
+        /// </summary>
+        public DatabricksWarehouseSettings DatabricksWarehouseSettings { get; }
+
         private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
         {
             var integrationtestConfiguration = new ConfigurationBuilder()
@@ -111,6 +118,17 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
                 BackendAppId = configuration.GetValue("AZURE-B2C-BACKEND-APP-ID"),
                 BackendServicePrincipalObjectId = configuration.GetValue("AZURE-B2C-BACKEND-SPN-OBJECTID"),
                 BackendAppObjectId = configuration.GetValue("AZURE-B2C-BACKEND-APP-OBJECTID"),
+            };
+        }
+
+        private DatabricksWarehouseSettings CreateDatabricksWarehouseSettings(IConfigurationRoot configuration)
+        {
+            return new DatabricksWarehouseSettings
+            {
+                // We have to build the URL here in code as currently this is also what happens in the infrastructure code (terraform).
+                WorkspaceUrl = $"https://{configuration.GetValue("dbw-playground-workspace-url")}",
+                WorkspaceAccessToken = configuration.GetValue("dbw-playground-workspace-token"),
+                WarehouseId = configuration.GetValue("dbw-sql-endpoint-id"),
             };
         }
     }

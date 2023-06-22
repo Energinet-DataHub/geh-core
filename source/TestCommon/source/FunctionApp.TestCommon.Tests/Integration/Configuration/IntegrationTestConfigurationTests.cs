@@ -23,6 +23,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
     public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
     {
         [Fact]
+        public void Given_IdentityHasAccess_When_DatabricksWarehouseSettings_Then_EachPropertyHasValue()
+        {
+            // Arrange
+
+            // Act
+            var actualValue = Sut.DatabricksWarehouseSettings;
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actualValue.Should().NotBeNull();
+            actualValue.WorkspaceUrl.Should().NotBeNullOrEmpty();
+            actualValue.WorkspaceAccessToken.Should().NotBeNullOrEmpty();
+            actualValue.WarehouseId.Should().NotBeNullOrEmpty();
+        }
+
+        [Fact]
         public void Given_IdentityHasAccess_When_B2CSettings_Then_EachPropertyHasValue()
         {
             // Arrange
