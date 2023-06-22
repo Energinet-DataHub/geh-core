@@ -35,6 +35,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
     /// - Create it in the constructor
     /// - Start it in OnInitializeFunctionAppDependenciesAsync()
     /// - Dispose it in OnDisposeFunctionAppDependenciesAsync()
+    ///
+    /// If Azurite is not installed globally then set the environment variable 'AzuriteFolderPath'
+    /// to the location of the 'azurite.cmd' file.
     /// </summary>
     public class AzuriteManager : IDisposable
     {
@@ -241,7 +244,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
 
         private void StartAzuriteProcess()
         {
-            var azuriteBlobCommandFilePath = GetAzuriteBlobCommandFilePath();
+            var azuriteCommandFilePath = GetAzuriteCommandFilePath();
             var azuriteArguments = GetAzuriteArguments(UseOAuth);
 
             HandleTestCertificateInstallation(UseOAuth);
@@ -250,7 +253,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             {
                 StartInfo =
                 {
-                    FileName = azuriteBlobCommandFilePath,
+                    FileName = azuriteCommandFilePath,
                     Arguments = azuriteArguments,
                     RedirectStandardError = true,
                 },
@@ -284,14 +287,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         /// <summary>
         /// If Azurite is installed globally (-g) a folder path is not needed.
         /// </summary>
-        private static string GetAzuriteBlobCommandFilePath()
+        private static string GetAzuriteCommandFilePath()
         {
-            var azuriteBlobFileName = "azurite-blob.cmd";
-            var azuriteBlobFolderPath = Environment.GetEnvironmentVariable("AzuriteBlobFolderPath");
+            var azuriteFileName = "azurite.cmd";
+            var azuriteFolderPath = Environment.GetEnvironmentVariable("AzuriteFolderPath");
 
-            return azuriteBlobFolderPath == null
-                ? azuriteBlobFileName
-                : Path.Combine(azuriteBlobFolderPath, azuriteBlobFileName);
+            return azuriteFolderPath == null
+                ? azuriteFileName
+                : Path.Combine(azuriteFolderPath, azuriteFileName);
         }
 
         private static string GetAzuriteArguments(bool useOAuth)
