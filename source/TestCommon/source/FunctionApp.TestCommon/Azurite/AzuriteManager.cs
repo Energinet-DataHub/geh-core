@@ -70,7 +70,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         public bool UseOAuth { get; }
 
         /// <summary>
-        /// Connection string that can be used to connect to Azurite started.
+        /// Connection string for connecting to Azurite blob service only.
         /// </summary>
         public string BlobStorageConnectionString { get; }
 
@@ -116,7 +116,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             if (useOAuth)
             {
                 // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return $"DefaultEndpointsProtocol=https;AccountName={WellKnownStorageAccountName};AccountKey={WellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/{WellKnownStorageAccountName};";
+                return
+                    $"DefaultEndpointsProtocol=https;" +
+                    $"AccountName={WellKnownStorageAccountName};" +
+                    $"AccountKey={WellKnownStorageAccountKey};" +
+                    $"BlobEndpoint=https://localhost:10000/{WellKnownStorageAccountName};";
             }
 
             return "UseDevelopmentStorage=true";
