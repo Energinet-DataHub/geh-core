@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.2.0
+
+- Added property `DatabricksWarehouseSettings` to `IntegrationTestConfiguration` to support use of Databricks SQL Warehouse.
+
 ## Version 4.1.1
 
 - No functional change.
