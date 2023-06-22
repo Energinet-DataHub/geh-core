@@ -100,14 +100,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 AzuriteManager = new AzuriteManager(useOAuth: true);
                 AzuriteManager.StartAzurite();
-
-                NoRetryOptions = new BlobClientOptions();
-                NoRetryOptions.Retry.MaxRetries = 0;
             }
 
             private AzuriteManager AzuriteManager { get; }
-
-            private BlobClientOptions NoRetryOptions { get; }
 
             public void Dispose()
             {
@@ -120,7 +115,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: "UseDevelopmentStorage=true",
-                    NoRetryOptions);
+                    CreateNoRetryOptions());
 
                 // Act
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
@@ -138,7 +133,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: AzuriteManager.BlobStorageConnectionString,
-                    NoRetryOptions);
+                    CreateNoRetryOptions());
 
                 // Act
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
@@ -154,21 +149,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var client = new BlobServiceClient(
                     serviceUri: AzuriteManager.BlobStorageServiceUri,
                     credential: new DefaultAzureCredential(),
-                    NoRetryOptions);
+                    CreateNoRetryOptions());
 
                 // Act
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
 
                 // Assert
                 exception.Should().BeNull();
-            }
-
-            private static Task CreateStorageContainerAsync(BlobServiceClient blobServiceClient)
-            {
-                var containerName = $"Test{Guid.NewGuid()}".ToLower();
-
-                var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
-                return blobContainerClient.CreateAsync();
             }
         }
 
@@ -179,14 +166,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 AzuriteManager = new AzuriteManager();
                 AzuriteManager.StartAzurite();
-
-                NoRetryOptions = new BlobClientOptions();
-                NoRetryOptions.Retry.MaxRetries = 0;
             }
 
             private AzuriteManager AzuriteManager { get; }
-
-            private BlobClientOptions NoRetryOptions { get; }
 
             public void Dispose()
             {
@@ -199,7 +181,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: "UseDevelopmentStorage=true",
-                    NoRetryOptions);
+                    CreateNoRetryOptions());
 
                 // Act
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
@@ -214,7 +196,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: AzuriteManager.BlobStorageConnectionString,
-                    NoRetryOptions);
+                    CreateNoRetryOptions());
 
                 // Act
                 var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
@@ -222,14 +204,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Assert
                 exception.Should().BeNull();
             }
+        }
 
-            private static Task CreateStorageContainerAsync(BlobServiceClient blobServiceClient)
-            {
-                var containerName = $"Test{Guid.NewGuid()}".ToLower();
+        private static BlobClientOptions CreateNoRetryOptions()
+        {
+            var retryOptions = new BlobClientOptions();
+            retryOptions.Retry.MaxRetries = 0;
 
-                var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
-                return blobContainerClient.CreateAsync();
-            }
+            return retryOptions;
+        }
+
+        private static Task CreateStorageContainerAsync(BlobServiceClient blobServiceClient)
+        {
+            var containerName = $"Test{Guid.NewGuid()}".ToLower();
+
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            return blobContainerClient.CreateAsync();
         }
     }
 }
