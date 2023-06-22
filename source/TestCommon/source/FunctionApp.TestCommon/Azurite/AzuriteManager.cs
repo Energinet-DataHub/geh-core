@@ -65,6 +65,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             UseOAuth = useOAuth;
             BlobStorageConnectionString = BuildBlobStorageConnectionString(UseOAuth);
             BlobStorageServiceUri = BuildBlobStorageServiceUri(UseOAuth);
+            QueueStorageConnectionString = BuildQueueStorageConnectionString(UseOAuth);
+            QueueStorageServiceUri = BuildQueueStorageServiceUri(UseOAuth);
+            TableStorageConnectionString = BuildTableStorageConnectionString(UseOAuth);
+            TableStorageServiceUri = BuildTableStorageServiceUri(UseOAuth);
         }
 
         /// <summary>
@@ -81,6 +85,26 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         /// Service uri to blob storage when connected to Azurite.
         /// </summary>
         public Uri BlobStorageServiceUri { get; }
+
+        /// <summary>
+        /// Connection string for connecting to Azurite queue service only.
+        /// </summary>
+        public string QueueStorageConnectionString { get; }
+
+        /// <summary>
+        /// Service uri to queue storage when connected to Azurite.
+        /// </summary>
+        public Uri QueueStorageServiceUri { get; }
+
+        /// <summary>
+        /// Connection string for connecting to Azurite table service only.
+        /// </summary>
+        public string TableStorageConnectionString { get; }
+
+        /// <summary>
+        /// Service uri to table storage when connected to Azurite.
+        /// </summary>
+        public Uri TableStorageServiceUri { get; }
 
         private Process? AzuriteProcess { get; set; }
 
@@ -138,6 +162,58 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             }
 
             return new Uri($"http://127.0.0.1:10000/{WellKnownStorageAccountName}");
+        }
+
+        private static string BuildQueueStorageConnectionString(bool useOAuth)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return
+                    $"DefaultEndpointsProtocol=https;" +
+                    $"AccountName={WellKnownStorageAccountName};" +
+                    $"AccountKey={WellKnownStorageAccountKey};" +
+                    $"QueueEndpoint=https://localhost:10001/{WellKnownStorageAccountName};";
+            }
+
+            return "UseDevelopmentStorage=true";
+        }
+
+        private static Uri BuildQueueStorageServiceUri(bool useOAuth)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return new Uri($"https://localhost:10001/{WellKnownStorageAccountName}");
+            }
+
+            return new Uri($"http://127.0.0.1:10001/{WellKnownStorageAccountName}");
+        }
+
+        private static string BuildTableStorageConnectionString(bool useOAuth)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return
+                    $"DefaultEndpointsProtocol=https;" +
+                    $"AccountName={WellKnownStorageAccountName};" +
+                    $"AccountKey={WellKnownStorageAccountKey};" +
+                    $"TableEndpoint=https://localhost:10002/{WellKnownStorageAccountName};";
+            }
+
+            return "UseDevelopmentStorage=true";
+        }
+
+        private static Uri BuildTableStorageServiceUri(bool useOAuth)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return new Uri($"https://localhost:10002/{WellKnownStorageAccountName}");
+            }
+
+            return new Uri($"http://127.0.0.1:10002/{WellKnownStorageAccountName}");
         }
 
         private static void KillProcessAndChildrenRecursively(int processId)
@@ -278,8 +354,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
                 var errorMessage =
                     $"Azurite failed to start: '{azuriteError}'." +
                     $"\nEnsure tests that are using Azurite are not running in parallel (use ICollectionFixture<TestFixture>)." +
-                    $"\nIf another process is using port 10000 then close that application." +
-                    $"\nUse 'Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess' to find the other process.";
+                    $"\nIf another process is using ports 10000, 10001 or 10002 then close that application." +
+                    $"\nE.g. use 'Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess' to find a process that uses port 10000.";
                 throw new InvalidOperationException(errorMessage);
             }
         }
