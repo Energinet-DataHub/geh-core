@@ -16,6 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using Azure.Storage.Queues;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -118,10 +119,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: "UseDevelopmentStorage=true",
-                    CreateNoRetryOptions());
+                    CreateBlobNoRetryOptions());
 
                 // Act
-                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
 
                 // Assert
                 exception.Should().NotBeNull();
@@ -133,10 +134,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: AzuriteManager.BlobStorageConnectionString,
-                    CreateNoRetryOptions());
+                    CreateBlobNoRetryOptions());
 
                 // Act
-                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
 
                 // Assert
                 exception.Should().BeNull();
@@ -149,10 +150,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 var client = new BlobServiceClient(
                     serviceUri: AzuriteManager.BlobStorageServiceUri,
                     credential: new DefaultAzureCredential(),
-                    CreateNoRetryOptions());
+                    CreateBlobNoRetryOptions());
 
                 // Act
-                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
 
                 // Assert
                 exception.Should().BeNull();
@@ -176,37 +177,67 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
+            public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
             {
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: "UseDevelopmentStorage=true",
-                    CreateNoRetryOptions());
+                    CreateBlobNoRetryOptions());
 
                 // Act
-                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
 
                 // Assert
                 exception.Should().BeNull();
             }
 
             [Fact]
-            public async Task When_UsingConnectionString_Then_CanCreateContainer()
+            public async Task When_BlobServiceClient_UsingConnectionString_Then_CanCreateContainer()
             {
                 // Arrange
                 var client = new BlobServiceClient(
                     connectionString: AzuriteManager.BlobStorageConnectionString,
-                    CreateNoRetryOptions());
+                    CreateBlobNoRetryOptions());
 
                 // Act
-                var exception = await Record.ExceptionAsync(() => CreateStorageContainerAsync(client));
+                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new QueueServiceClient(
+                    connectionString: "UseDevelopmentStorage=true",
+                    CreateQueueNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new QueueServiceClient(
+                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    CreateQueueNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
 
                 // Assert
                 exception.Should().BeNull();
             }
         }
 
-        private static BlobClientOptions CreateNoRetryOptions()
+        private static BlobClientOptions CreateBlobNoRetryOptions()
         {
             var retryOptions = new BlobClientOptions();
             retryOptions.Retry.MaxRetries = 0;
@@ -214,12 +245,28 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             return retryOptions;
         }
 
-        private static Task CreateStorageContainerAsync(BlobServiceClient blobServiceClient)
+        private static Task CreateBlobContainerAsync(BlobServiceClient blobServiceClient)
         {
             var containerName = $"Test{Guid.NewGuid()}".ToLower();
 
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
             return blobContainerClient.CreateAsync();
+        }
+
+        private static QueueClientOptions CreateQueueNoRetryOptions()
+        {
+            var retryOptions = new QueueClientOptions();
+            retryOptions.Retry.MaxRetries = 0;
+
+            return retryOptions;
+        }
+
+        private static Task CreateQueueAsync(QueueServiceClient queueServiceClient)
+        {
+            var queueName = $"Test{Guid.NewGuid()}".ToLower();
+
+            var queueClient = queueServiceClient.GetQueueClient(queueName);
+            return queueClient.CreateAsync();
         }
     }
 }
