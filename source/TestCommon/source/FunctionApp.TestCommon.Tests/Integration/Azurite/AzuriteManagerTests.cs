@@ -114,7 +114,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
+            public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
             {
                 // Arrange
                 var client = new BlobServiceClient(
@@ -129,7 +129,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_UsingConnectionString_Then_CanCreateContainer()
+            public async Task When_BlobServiceClient_UsingConnectionString_Then_CanCreateContainer()
             {
                 // Arrange
                 var client = new BlobServiceClient(
@@ -144,7 +144,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_UsingHttpsAndTokenCredential_Then_CanCreateContainer()
+            public async Task When_BlobServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateContainer()
             {
                 // Arrange
                 var client = new BlobServiceClient(
@@ -154,6 +154,52 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
 
                 // Act
                 var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
+            {
+                // Arrange
+                var client = new QueueServiceClient(
+                    connectionString: "UseDevelopmentStorage=true",
+                    CreateQueueNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+                // Assert
+                exception.Should().NotBeNull();
+            }
+
+            [Fact]
+            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new QueueServiceClient(
+                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    CreateQueueNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_QueueServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateContainer()
+            {
+                // Arrange
+                var client = new QueueServiceClient(
+                    serviceUri: AzuriteManager.BlobStorageServiceUri,
+                    credential: new DefaultAzureCredential(),
+                    CreateQueueNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
 
                 // Assert
                 exception.Should().BeNull();
