@@ -93,6 +93,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
         }
 
+        /// <summary>
+        /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
+        /// </summary>
         [Collection(nameof(AzuriteCollectionFixture))]
         public sealed class Given_OAuthIsTrue : IDisposable
         {
@@ -124,9 +127,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 exception.Should().NotBeNull();
             }
 
-            /// <summary>
-            /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
-            /// </summary>
             [Fact]
             public async Task When_UsingConnectionString_Then_CanCreateContainer()
             {
