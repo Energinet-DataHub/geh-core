@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Data.Tables;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
@@ -206,6 +207,52 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Assert
                 exception.Should().BeNull();
             }
+
+            [Fact]
+            public async Task When_TableServiceClient_UseDevelopmentStorageShortcut_Then_CreateTableShouldFail()
+            {
+                // Arrange
+                var client = new TableServiceClient(
+                    connectionString: "UseDevelopmentStorage=true",
+                    CreateTableNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+                // Assert
+                exception.Should().NotBeNull();
+            }
+
+            [Fact]
+            public async Task When_TableServiceClient_UsingConnectionString_Then_CanCreateTable()
+            {
+                // Arrange
+                var client = new TableServiceClient(
+                    connectionString: Fixture.AzuriteManager!.TableStorageConnectionString,
+                    CreateTableNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_TableServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateTable()
+            {
+                // Arrange
+                var client = new TableServiceClient(
+                    endpoint: Fixture.AzuriteManager!.TableStorageServiceUri,
+                    tokenCredential: new DefaultAzureCredential(),
+                    CreateTableNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
         }
 
         /// <summary>
@@ -313,6 +360,22 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
 
             var queueClient = queueServiceClient.GetQueueClient(queueName);
             return queueClient.CreateAsync();
+        }
+
+        private static TableClientOptions CreateTableNoRetryOptions()
+        {
+            var retryOptions = new TableClientOptions();
+            retryOptions.Retry.MaxRetries = 0;
+
+            return retryOptions;
+        }
+
+        private static Task CreateTableAsync(TableServiceClient tableServiceClient)
+        {
+            var tableName = $"Test{Guid.NewGuid().ToString("N")}".ToLower();
+
+            var tableClient = tableServiceClient.GetTableClient(tableName);
+            return tableClient.CreateAsync();
         }
     }
 }
