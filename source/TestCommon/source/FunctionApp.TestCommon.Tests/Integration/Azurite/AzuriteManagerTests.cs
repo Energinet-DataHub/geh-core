@@ -328,6 +328,36 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
                 // Assert
                 exception.Should().BeNull();
             }
+
+            [Fact]
+            public async Task When_TableServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateTable()
+            {
+                // Arrange
+                var client = new TableServiceClient(
+                    connectionString: "UseDevelopmentStorage=true",
+                    CreateTableNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task When_TableServiceClient_UsingConnectionString_Then_CanCreateTable()
+            {
+                // Arrange
+                var client = new TableServiceClient(
+                    connectionString: Fixture.AzuriteManager!.TableStorageConnectionString,
+                    CreateTableNoRetryOptions());
+
+                // Act
+                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+                // Assert
+                exception.Should().BeNull();
+            }
         }
 
         private static BlobClientOptions CreateBlobNoRetryOptions()
