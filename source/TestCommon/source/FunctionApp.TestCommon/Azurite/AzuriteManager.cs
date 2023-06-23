@@ -47,6 +47,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         private const string WellKnownStorageAccountName = "devstoreaccount1";
         private const string WellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
+        private const string ConnectionStringCommonPart = $"DefaultEndpointsProtocol=https;AccountName={WellKnownStorageAccountName};AccountKey={WellKnownStorageAccountKey};";
+
+        private const int BlobServicePort = 10000;
+        private const int QueueServicePort = 10001;
+        private const int TableServicePort = 10002;
+
         /// <summary>
         /// Path to the test certificate file, which is added as content to current NuGet package.
         /// </summary>
@@ -63,18 +69,24 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         public AzuriteManager(bool useOAuth = false)
         {
             UseOAuth = useOAuth;
-            BlobStorageConnectionString = BuildBlobStorageConnectionString(UseOAuth);
-            BlobStorageServiceUri = BuildBlobStorageServiceUri(UseOAuth);
-            QueueStorageConnectionString = BuildQueueStorageConnectionString(UseOAuth);
-            QueueStorageServiceUri = BuildQueueStorageServiceUri(UseOAuth);
-            TableStorageConnectionString = BuildTableStorageConnectionString(UseOAuth);
-            TableStorageServiceUri = BuildTableStorageServiceUri(UseOAuth);
+            FullConnectionString = BuildConnectionString(UseOAuth, useBlob: true, useQueue: true, useTable: true);
+            BlobStorageConnectionString = BuildConnectionString(UseOAuth, useBlob: true);
+            BlobStorageServiceUri = BuildServiceUri(UseOAuth, BlobServicePort);
+            QueueStorageConnectionString = BuildConnectionString(UseOAuth, useQueue: true);
+            QueueStorageServiceUri = BuildServiceUri(UseOAuth, QueueServicePort);
+            TableStorageConnectionString = BuildConnectionString(UseOAuth, useTable: true);
+            TableStorageServiceUri = BuildServiceUri(UseOAuth, TableServicePort);
         }
 
         /// <summary>
         /// If true then start Azurite with OAuth and HTTPS options.
         /// </summary>
         public bool UseOAuth { get; }
+
+        /// <summary>
+        /// Connection string for connecting to all Azurite services (blob, queue, table).
+        /// </summary>
+        public string FullConnectionString { get; }
 
         /// <summary>
         /// Connection string for connecting to Azurite blob service only.
@@ -138,82 +150,29 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             }
         }
 
-        private static string BuildBlobStorageConnectionString(bool useOAuth)
+        private static Uri BuildServiceUri(bool useOAuth, int servicePort)
         {
             if (useOAuth)
             {
                 // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return
-                    $"DefaultEndpointsProtocol=https;" +
-                    $"AccountName={WellKnownStorageAccountName};" +
-                    $"AccountKey={WellKnownStorageAccountKey};" +
-                    $"BlobEndpoint=https://localhost:10000/{WellKnownStorageAccountName};";
+                return new Uri($"https://localhost:{servicePort}/{WellKnownStorageAccountName}");
+            }
+
+            return new Uri($"http://127.0.0.1:{servicePort}/{WellKnownStorageAccountName}");
+        }
+
+        private static string BuildConnectionString(bool useOAuth, bool useBlob = false, bool useQueue = false, bool useTable = false)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return ConnectionStringCommonPart +
+                    (useBlob ? $"BlobEndpoint=https://localhost:{BlobServicePort}/{WellKnownStorageAccountName};" : string.Empty) +
+                    (useQueue ? $"QueueEndpoint=https://localhost:{QueueServicePort}/{WellKnownStorageAccountName};" : string.Empty) +
+                    (useTable ? $"TableEndpoint=https://localhost:{TableServicePort}/{WellKnownStorageAccountName};" : string.Empty);
             }
 
             return "UseDevelopmentStorage=true";
-        }
-
-        private static Uri BuildBlobStorageServiceUri(bool useOAuth)
-        {
-            if (useOAuth)
-            {
-                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return new Uri($"https://localhost:10000/{WellKnownStorageAccountName}");
-            }
-
-            return new Uri($"http://127.0.0.1:10000/{WellKnownStorageAccountName}");
-        }
-
-        private static string BuildQueueStorageConnectionString(bool useOAuth)
-        {
-            if (useOAuth)
-            {
-                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return
-                    $"DefaultEndpointsProtocol=https;" +
-                    $"AccountName={WellKnownStorageAccountName};" +
-                    $"AccountKey={WellKnownStorageAccountKey};" +
-                    $"QueueEndpoint=https://localhost:10001/{WellKnownStorageAccountName};";
-            }
-
-            return "UseDevelopmentStorage=true";
-        }
-
-        private static Uri BuildQueueStorageServiceUri(bool useOAuth)
-        {
-            if (useOAuth)
-            {
-                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return new Uri($"https://localhost:10001/{WellKnownStorageAccountName}");
-            }
-
-            return new Uri($"http://127.0.0.1:10001/{WellKnownStorageAccountName}");
-        }
-
-        private static string BuildTableStorageConnectionString(bool useOAuth)
-        {
-            if (useOAuth)
-            {
-                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return
-                    $"DefaultEndpointsProtocol=https;" +
-                    $"AccountName={WellKnownStorageAccountName};" +
-                    $"AccountKey={WellKnownStorageAccountKey};" +
-                    $"TableEndpoint=https://localhost:10002/{WellKnownStorageAccountName};";
-            }
-
-            return "UseDevelopmentStorage=true";
-        }
-
-        private static Uri BuildTableStorageServiceUri(bool useOAuth)
-        {
-            if (useOAuth)
-            {
-                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return new Uri($"https://localhost:10002/{WellKnownStorageAccountName}");
-            }
-
-            return new Uri($"http://127.0.0.1:10002/{WellKnownStorageAccountName}");
         }
 
         private static void KillProcessAndChildrenRecursively(int processId)
@@ -347,7 +306,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
                 throw new InvalidOperationException($"Remember to install Azurite.\nAzurite failed to start: '{e.Message}'");
             }
 
-            var hasExited = AzuriteProcess.WaitForExit(1000);
+            var hasExited = AzuriteProcess.WaitForExit(1500);
             if (hasExited)
             {
                 var azuriteError = AzuriteProcess.StandardError.ReadToEnd();
