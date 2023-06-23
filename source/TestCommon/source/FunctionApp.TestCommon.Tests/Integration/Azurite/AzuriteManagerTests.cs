@@ -28,7 +28,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
 {
     public class AzuriteManagerTests
     {
-        [Collection(nameof(AzuriteCollectionFixture))]
+        /// <summary>
+        /// Only one Azurite process can be running at the same time.
+        /// But since we have set 'DisableTestParallelization' to 'true'
+        /// no test in current test assembly is executed in parallel,
+        /// and as such we don't have to use collection fixtures here.
+        /// </summary>
         public class VerifyAzuriteCanBeStartedTwice
         {
             [Fact]
@@ -96,22 +101,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
 
         /// <summary>
         /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
+        ///
+        /// We use a class fixture to ensure we can use this same AzuriteManager instance
+        /// for multiple tests, to avoid starting and disposing Azurite many times.
         /// </summary>
-        [Collection(nameof(AzuriteCollectionFixture))]
-        public sealed class Given_OAuthIsTrue : IDisposable
+        public class Given_OAuthIsTrue : IClassFixture<AzuriteManagerFixture>
         {
-            public Given_OAuthIsTrue()
+            public Given_OAuthIsTrue(AzuriteManagerFixture fixture)
             {
-                AzuriteManager = new AzuriteManager(useOAuth: true);
-                AzuriteManager.StartAzurite();
+                Fixture = fixture;
+                Fixture.StartAzuriteOnce(useOAuth: true);
             }
 
-            private AzuriteManager AzuriteManager { get; }
-
-            public void Dispose()
-            {
-                AzuriteManager.Dispose();
-            }
+            private AzuriteManagerFixture Fixture { get; }
 
             [Fact]
             public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
@@ -133,7 +135,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 // Arrange
                 var client = new BlobServiceClient(
-                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    connectionString: Fixture.AzuriteManager!.BlobStorageConnectionString,
                     CreateBlobNoRetryOptions());
 
                 // Act
@@ -148,7 +150,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 // Arrange
                 var client = new BlobServiceClient(
-                    serviceUri: AzuriteManager.BlobStorageServiceUri,
+                    serviceUri: Fixture.AzuriteManager!.BlobStorageServiceUri,
                     credential: new DefaultAzureCredential(),
                     CreateBlobNoRetryOptions());
 
@@ -160,7 +162,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
+            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CreateQueueShouldFail()
             {
                 // Arrange
                 var client = new QueueServiceClient(
@@ -175,11 +177,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateContainer()
+            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateQueue()
             {
                 // Arrange
                 var client = new QueueServiceClient(
-                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    connectionString: Fixture.AzuriteManager!.QueueStorageConnectionString,
                     CreateQueueNoRetryOptions());
 
                 // Act
@@ -190,11 +192,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_QueueServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateContainer()
+            public async Task When_QueueServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateQueue()
             {
                 // Arrange
                 var client = new QueueServiceClient(
-                    serviceUri: AzuriteManager.BlobStorageServiceUri,
+                    serviceUri: Fixture.AzuriteManager!.QueueStorageServiceUri,
                     credential: new DefaultAzureCredential(),
                     CreateQueueNoRetryOptions());
 
@@ -206,21 +208,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
         }
 
-        [Collection(nameof(AzuriteCollectionFixture))]
-        public sealed class Given_OAuthIsFalse : IDisposable
+        /// <summary>
+        /// We use a class fixture to ensure we can use this same AzuriteManager instance
+        /// for multiple tests, to avoid starting and disposing Azurite many times.
+        /// </summary>
+        public class Given_OAuthIsFalse : IClassFixture<AzuriteManagerFixture>
         {
-            public Given_OAuthIsFalse()
+            public Given_OAuthIsFalse(AzuriteManagerFixture fixture)
             {
-                AzuriteManager = new AzuriteManager();
-                AzuriteManager.StartAzurite();
+                Fixture = fixture;
+                Fixture.StartAzuriteOnce(useOAuth: false);
             }
 
-            private AzuriteManager AzuriteManager { get; }
-
-            public void Dispose()
-            {
-                AzuriteManager.Dispose();
-            }
+            private AzuriteManagerFixture Fixture { get; }
 
             [Fact]
             public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
@@ -242,7 +242,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             {
                 // Arrange
                 var client = new BlobServiceClient(
-                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    connectionString: Fixture.AzuriteManager!.BlobStorageConnectionString,
                     CreateBlobNoRetryOptions());
 
                 // Act
@@ -253,7 +253,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
+            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateQueue()
             {
                 // Arrange
                 var client = new QueueServiceClient(
@@ -268,11 +268,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurit
             }
 
             [Fact]
-            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateContainer()
+            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateQueue()
             {
                 // Arrange
                 var client = new QueueServiceClient(
-                    connectionString: AzuriteManager.BlobStorageConnectionString,
+                    connectionString: Fixture.AzuriteManager!.QueueStorageConnectionString,
                     CreateQueueNoRetryOptions());
 
                 // Act
