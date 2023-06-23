@@ -39,7 +39,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
 
             ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
             B2CSettings = CreateB2CSettings(Configuration);
-            DatabricksWarehouseSettings = CreateDatabricksWarehouseSettings(Configuration);
+            DatabricksSettings = CreateDatabricksWarehouseSettings(Configuration);
         }
 
         /// <summary>
@@ -78,9 +78,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         public AzureB2CSettings B2CSettings { get; }
 
         /// <summary>
-        /// Settings necessary for using the Databricks SQL Warehouse.
+        /// Settings necessary for using the Databricks workspace and SQL Warehouse.
         /// </summary>
-        public DatabricksWarehouseSettings DatabricksWarehouseSettings { get; }
+        public DatabricksSettings DatabricksSettings { get; }
 
         private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
         {
@@ -121,9 +121,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             };
         }
 
-        private DatabricksWarehouseSettings CreateDatabricksWarehouseSettings(IConfigurationRoot configuration)
+        private DatabricksSettings CreateDatabricksWarehouseSettings(IConfigurationRoot configuration)
         {
-            return new DatabricksWarehouseSettings
+            return new DatabricksSettings
             {
                 // We have to build the URL here in code as currently this is also what happens in the infrastructure code (terraform).
                 WorkspaceUrl = $"https://{configuration.GetValue("dbw-playground-workspace-url")}",

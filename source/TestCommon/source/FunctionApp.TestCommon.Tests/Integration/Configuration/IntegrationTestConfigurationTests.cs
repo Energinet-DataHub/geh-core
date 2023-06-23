@@ -23,12 +23,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
     public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
     {
         [Fact]
-        public void Given_IdentityHasAccess_When_DatabricksWarehouseSettings_Then_EachPropertyHasValue()
+        public void Given_IdentityHasAccess_When_DatabricksSettings_Then_EachPropertyHasValue()
         {
             // Arrange
 
             // Act
-            var actualValue = Sut.DatabricksWarehouseSettings;
+            var actualValue = Sut.DatabricksSettings;
 
             // Assert
             using var assertionScope = new AssertionScope();

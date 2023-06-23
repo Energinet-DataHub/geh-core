@@ -15,9 +15,9 @@
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
 {
     /// <summary>
-    /// Settings necessary for using the Databricks SQL warehouse.
+    /// Settings necessary for using the Databricks workspace and SQL warehouse.
     /// </summary>
-    public class DatabricksWarehouseSettings
+    public class DatabricksSettings
     {
         /// <summary>
         /// The hostname of the databricks resource.
