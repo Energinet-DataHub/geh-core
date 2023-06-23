@@ -20,10 +20,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
-using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurite
 {
