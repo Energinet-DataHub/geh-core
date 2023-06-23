@@ -39,7 +39,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
 
             ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
             B2CSettings = CreateB2CSettings(Configuration);
-            DatabricksSettings = CreateDatabricksWarehouseSettings(Configuration);
+            DatabricksSettings = CreateDatabricksSettings(Configuration);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             };
         }
 
-        private DatabricksSettings CreateDatabricksWarehouseSettings(IConfigurationRoot configuration)
+        private DatabricksSettings CreateDatabricksSettings(IConfigurationRoot configuration)
         {
             return new DatabricksSettings
             {
