@@ -35,6 +35,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
     /// - Create it in the constructor
     /// - Start it in OnInitializeFunctionAppDependenciesAsync()
     /// - Dispose it in OnDisposeFunctionAppDependenciesAsync()
+    ///
+    /// If Azurite is not installed globally then set the environment variable 'AzuriteFolderPath'
+    /// to the location of the 'azurite.cmd' file.
     /// </summary>
     public class AzuriteManager : IDisposable
     {
@@ -43,6 +46,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         // See: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
         private const string WellKnownStorageAccountName = "devstoreaccount1";
         private const string WellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+
+        private const string ConnectionStringCommonPart = $"DefaultEndpointsProtocol=https;AccountName={WellKnownStorageAccountName};AccountKey={WellKnownStorageAccountKey};";
+
+        private const int BlobServicePort = 10000;
+        private const int QueueServicePort = 10001;
+        private const int TableServicePort = 10002;
 
         /// <summary>
         /// Path to the test certificate file, which is added as content to current NuGet package.
@@ -60,8 +69,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         public AzuriteManager(bool useOAuth = false)
         {
             UseOAuth = useOAuth;
-            BlobStorageConnectionString = BuildBlobStorageConnectionString(UseOAuth);
-            BlobStorageServiceUri = BuildBlobStorageServiceUri(UseOAuth);
+            FullConnectionString = BuildConnectionString(UseOAuth, useBlob: true, useQueue: true, useTable: true);
+            BlobStorageConnectionString = BuildConnectionString(UseOAuth, useBlob: true);
+            BlobStorageServiceUri = BuildServiceUri(UseOAuth, BlobServicePort);
+            QueueStorageConnectionString = BuildConnectionString(UseOAuth, useQueue: true);
+            QueueStorageServiceUri = BuildServiceUri(UseOAuth, QueueServicePort);
+            TableStorageConnectionString = BuildConnectionString(UseOAuth, useTable: true);
+            TableStorageServiceUri = BuildServiceUri(UseOAuth, TableServicePort);
         }
 
         /// <summary>
@@ -70,7 +84,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         public bool UseOAuth { get; }
 
         /// <summary>
-        /// Connection string that can be used to connect to Azurite started.
+        /// Connection string for connecting to all Azurite services (blob, queue, table).
+        /// </summary>
+        public string FullConnectionString { get; }
+
+        /// <summary>
+        /// Connection string for connecting to Azurite blob service only.
         /// </summary>
         public string BlobStorageConnectionString { get; }
 
@@ -78,6 +97,26 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         /// Service uri to blob storage when connected to Azurite.
         /// </summary>
         public Uri BlobStorageServiceUri { get; }
+
+        /// <summary>
+        /// Connection string for connecting to Azurite queue service only.
+        /// </summary>
+        public string QueueStorageConnectionString { get; }
+
+        /// <summary>
+        /// Service uri to queue storage when connected to Azurite.
+        /// </summary>
+        public Uri QueueStorageServiceUri { get; }
+
+        /// <summary>
+        /// Connection string for connecting to Azurite table service only.
+        /// </summary>
+        public string TableStorageConnectionString { get; }
+
+        /// <summary>
+        /// Service uri to table storage when connected to Azurite.
+        /// </summary>
+        public Uri TableStorageServiceUri { get; }
 
         private Process? AzuriteProcess { get; set; }
 
@@ -111,26 +150,29 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             }
         }
 
-        private static string BuildBlobStorageConnectionString(bool useOAuth)
+        private static Uri BuildServiceUri(bool useOAuth, int servicePort)
         {
             if (useOAuth)
             {
                 // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return $"DefaultEndpointsProtocol=https;AccountName={WellKnownStorageAccountName};AccountKey={WellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/{WellKnownStorageAccountName};";
+                return new Uri($"https://localhost:{servicePort}/{WellKnownStorageAccountName}");
+            }
+
+            return new Uri($"http://127.0.0.1:{servicePort}/{WellKnownStorageAccountName}");
+        }
+
+        private static string BuildConnectionString(bool useOAuth, bool useBlob = false, bool useQueue = false, bool useTable = false)
+        {
+            if (useOAuth)
+            {
+                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
+                return ConnectionStringCommonPart +
+                    (useBlob ? $"BlobEndpoint=https://localhost:{BlobServicePort}/{WellKnownStorageAccountName};" : string.Empty) +
+                    (useQueue ? $"QueueEndpoint=https://localhost:{QueueServicePort}/{WellKnownStorageAccountName};" : string.Empty) +
+                    (useTable ? $"TableEndpoint=https://localhost:{TableServicePort}/{WellKnownStorageAccountName};" : string.Empty);
             }
 
             return "UseDevelopmentStorage=true";
-        }
-
-        private static Uri BuildBlobStorageServiceUri(bool useOAuth)
-        {
-            if (useOAuth)
-            {
-                // When using OAuth we must use HTTPS and 'localhost' instead of '127.0.0.1'.
-                return new Uri($"https://localhost:10000/{WellKnownStorageAccountName}");
-            }
-
-            return new Uri($"http://127.0.0.1:10000/{WellKnownStorageAccountName}");
         }
 
         private static void KillProcessAndChildrenRecursively(int processId)
@@ -237,7 +279,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
 
         private void StartAzuriteProcess()
         {
-            var azuriteBlobCommandFilePath = GetAzuriteBlobCommandFilePath();
+            var azuriteCommandFilePath = GetAzuriteCommandFilePath();
             var azuriteArguments = GetAzuriteArguments(UseOAuth);
 
             HandleTestCertificateInstallation(UseOAuth);
@@ -246,7 +288,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
             {
                 StartInfo =
                 {
-                    FileName = azuriteBlobCommandFilePath,
+                    FileName = azuriteCommandFilePath,
                     Arguments = azuriteArguments,
                     RedirectStandardError = true,
                 },
@@ -264,15 +306,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
                 throw new InvalidOperationException($"Remember to install Azurite.\nAzurite failed to start: '{e.Message}'");
             }
 
-            var hasExited = AzuriteProcess.WaitForExit(1000);
+            var hasExited = AzuriteProcess.WaitForExit(1500);
             if (hasExited)
             {
                 var azuriteError = AzuriteProcess.StandardError.ReadToEnd();
                 var errorMessage =
                     $"Azurite failed to start: '{azuriteError}'." +
                     $"\nEnsure tests that are using Azurite are not running in parallel (use ICollectionFixture<TestFixture>)." +
-                    $"\nIf another process is using port 10000 then close that application." +
-                    $"\nUse 'Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess' to find the other process.";
+                    $"\nIf another process is using ports 10000, 10001 or 10002 then close that application." +
+                    $"\nE.g. use 'Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess' to find a process that uses port 10000.";
                 throw new InvalidOperationException(errorMessage);
             }
         }
@@ -280,14 +322,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
         /// <summary>
         /// If Azurite is installed globally (-g) a folder path is not needed.
         /// </summary>
-        private static string GetAzuriteBlobCommandFilePath()
+        private static string GetAzuriteCommandFilePath()
         {
-            var azuriteBlobFileName = "azurite-blob.cmd";
-            var azuriteBlobFolderPath = Environment.GetEnvironmentVariable("AzuriteBlobFolderPath");
+            var azuriteFileName = "azurite.cmd";
+            var azuriteFolderPath = Environment.GetEnvironmentVariable("AzuriteFolderPath");
 
-            return azuriteBlobFolderPath == null
-                ? azuriteBlobFileName
-                : Path.Combine(azuriteBlobFolderPath, azuriteBlobFileName);
+            return azuriteFolderPath == null
+                ? azuriteFileName
+                : Path.Combine(azuriteFolderPath, azuriteFileName);
         }
 
         private static string GetAzuriteArguments(bool useOAuth)
