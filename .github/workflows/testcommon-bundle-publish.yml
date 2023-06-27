@@ -39,7 +39,7 @@ env:
   # Necessary to provide B2C information that allows us to retrieve an access token from automated tests
   AZURE_B2CSECRETS_KEYVAULT_URL: ${{ vars.azure_b2csecrets_keyvault_url }}
   # Set value used by 'AzuriteManager'
-  AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
+  AzuriteFolderPath: ${{ github.workspace }}\node_modules\.bin\
   # Overrides settings in 'functionhost.settings.json'
   FunctionAppHostPath: ${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll
 
@@ -66,9 +66,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v11
         with:
           use_azure_functions_tools: "true"
-          node_version: "16"
-          azurite_version: 3.15.0
-          azure_functions_core_tools_version: 4.0.3971
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v11
