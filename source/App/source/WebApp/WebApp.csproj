@@ -26,7 +26,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.WebApp</PackageId>
-    <PackageVersion>7.4.4$(VersionSuffix)</PackageVersion>
+    <PackageVersion>7.4.5$(VersionSuffix)</PackageVersion>
     <Title>Azure Web App Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
