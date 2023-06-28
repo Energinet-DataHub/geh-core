@@ -27,7 +27,7 @@ on:
 jobs:
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v11
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v12
     with:
       solution_file_path: source/FeatureManagement/FeatureManagement.sln
       use_azure_functions_tools: true
