@@ -31,7 +31,12 @@ jobs:
     with:
       solution_file_path: source/FeatureManagement/FeatureManagement.sln
       use_azure_functions_tools: true
-
+      run_integration_tests: true
+      azure_integrationtest_tenant_id: ${{ vars.azure_tenant_id }}
+      azure_integrationtest_subscription_id: ${{ vars.azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.azure_keyvault_url }}
+      azure_b2csecrets_keyvault_url: ${{ vars.azure_b2csecrets_keyvault_url }}
   #
   # Branch policy status check
   #
