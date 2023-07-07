@@ -1,5 +1,9 @@
 # Schema Validation Release notes
 
+## Version 2.1.8
+
+- No functional change.
+
 ## Version 2.1.7
 
 - No functional change.
