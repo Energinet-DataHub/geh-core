@@ -27,11 +27,7 @@ on:
 jobs:
   # Build and test solution, and publish coverage report
   dotnet_solution_ci:
-<<<<<<< Updated upstream
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v12
-=======
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@12
->>>>>>> Stashed changes
     with:
       solution_file_path: source/FeatureManagement/FeatureManagement.sln
       use_azure_functions_tools: true

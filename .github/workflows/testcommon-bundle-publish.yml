@@ -60,15 +60,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v12
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@12
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v12
         with:
           use_azure_functions_tools: "true"
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@12
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
         with:
           solution_file_path: ./source/TestCommon/TestCommon.sln
           code_coverage_flags: testcommon
@@ -78,12 +78,12 @@ jobs:
           publish_test_report: "true"
 
       - name: Pack TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
         with:
           project_path: ./source/TestCommon/source/TestCommon/TestCommon.csproj
 
       - name: Pack FunctionApp.TestCommon project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
         with:
           project_path: ./source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj
 
@@ -97,7 +97,7 @@ jobs:
             .github/workflows/testcommon-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v12
         with:
           push_packages: ${{ env.PUSH_PACKAGES }}
           content_changed: ${{ steps.changed-content.outputs.any_changed }}
