@@ -2,6 +2,10 @@
 
 ## Version 4.3.1
 
+- Renewed Azurite certificate
+
+## Version 4.3.1
+
 - No functional change
 
 ## Version 4.3.0
