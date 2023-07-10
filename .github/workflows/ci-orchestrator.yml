@@ -23,7 +23,9 @@ jobs:
   # License and Markdown Check
   #
   ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v11
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v12
+    secrets:
+      pat_token: ${{ secrets.PAT_TOKEN_REPO_WORKFLOW }}
 
   #
   # Detect changes to start relevant workflows

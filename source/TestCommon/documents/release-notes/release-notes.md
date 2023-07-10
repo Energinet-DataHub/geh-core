@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.3.2
+
+- Renewed Azurite certificate
+
 ## Version 4.3.1
 
 - No functional change
