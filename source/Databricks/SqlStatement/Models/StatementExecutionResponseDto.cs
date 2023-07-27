@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
-public record StatementExecutionResponseDto(Result Result);
+public record StatementExecutionResponseDto(Status Status, Result Result);

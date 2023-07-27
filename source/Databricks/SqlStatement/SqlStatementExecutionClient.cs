@@ -48,6 +48,12 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
             response.EnsureSuccessStatusCode();
 
             var responseContent = await DeserializeResponseContentAsync(response).ConfigureAwait(false);
+
+            if (responseContent.Status.State != "SUCCEEDED")
+            {
+                throw new Exception($"Unable to get result from Databricks. State: {responseContent.Status.State}");
+            }
+
             var mappedResult = responseContent.Result.DataArray.Select(mapResult).ToList();
 
             return mappedResult;
