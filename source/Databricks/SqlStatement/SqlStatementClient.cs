@@ -18,10 +18,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.SqlStatement.Models;
-using Energinet.DataHub.Core.SqlStatement.Serialization;
+using Energinet.DataHub.Core.Databricks.SqlStatement.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
 
-namespace Energinet.DataHub.Core.SqlStatement
+namespace Energinet.DataHub.Core.Databricks.SqlStatement
 {
     internal class SqlStatementClient : ISqlStatementClient
     {

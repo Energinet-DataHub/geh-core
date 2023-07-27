@@ -12,9 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.SqlStatement.Serialization;
+namespace Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
 
+/// <summary>
+///  This interface is used to deserialize json
+/// </summary>
 public interface IJsonSerializer
 {
+    /// <summary>
+    /// This method deserializes json to a model
+    /// </summary>
+    /// <typeparam name="TValue">Model to deserialize</typeparam>
+    /// <param name="json"></param>
+    /// <returns>The deserialized model</returns>
     TValue Deserialize<TValue>(string json);
 }

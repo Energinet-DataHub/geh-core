@@ -16,8 +16,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.Core.SqlStatement;
+namespace Energinet.DataHub.Core.Databricks.SqlStatement;
 
+/// <summary>
+/// This interface is used to execute sql statements on a Databricks cluster
+/// </summary>
 public interface ISqlStatementClient
 {
     /// <summary>

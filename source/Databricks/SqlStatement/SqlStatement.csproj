@@ -20,8 +20,8 @@ limitations under the License.
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ProjectGuid>{4A5B154A-5248-438C-BD6F-5E71AD3DE6CD}</ProjectGuid>
-    <AssemblyName>Energinet.DataHub.Core.SqlStatement</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.SqlStatement</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.Databricks.SqlStatement</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Databricks.SqlStatement</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

@@ -14,6 +14,6 @@
 
 using System.Collections.Generic;
 
-namespace Energinet.DataHub.Core.SqlStatement.Models;
+namespace Energinet.DataHub.Core.Databricks.SqlStatement.Models;
 
 public record Result(List<List<string>> DataArray);

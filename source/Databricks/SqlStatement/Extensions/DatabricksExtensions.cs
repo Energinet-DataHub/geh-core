@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.Core.SqlStatement.Serialization;
+using Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.SqlStatement.Extensions
+namespace Energinet.DataHub.Core.Databricks.SqlStatement.Extensions
 {
     public static class DatabricksExtensions
     {
