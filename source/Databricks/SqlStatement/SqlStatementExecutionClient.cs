@@ -18,19 +18,19 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.Databricks.SqlStatement.AppSettings;
-using Energinet.DataHub.Core.Databricks.SqlStatement.Models;
-using Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatement
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
 {
-    internal class SqlStatementClient : ISqlStatementClient
+    internal class SqlStatementExecutionClient : ISqlStatementExecutionClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _jsonSerializer;
         private readonly DatabricksOptions _databricksOptions;
 
-        public SqlStatementClient(
+        public SqlStatementExecutionClient(
             IHttpClientFactory httpClientFactory,
             IJsonSerializer jsonSerializer,
             DatabricksOptions databricksOptions)

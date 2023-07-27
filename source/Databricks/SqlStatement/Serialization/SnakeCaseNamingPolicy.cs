@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Core.Databricks.SqlStatement.Extensions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 
 public class SnakeCaseNamingPolicy : JsonNamingPolicy
 {

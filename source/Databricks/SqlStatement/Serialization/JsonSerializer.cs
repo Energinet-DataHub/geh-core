@@ -16,7 +16,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 
 public class JsonSerializer : IJsonSerializer
 {

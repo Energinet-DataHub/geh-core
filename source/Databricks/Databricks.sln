@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-no
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatement", "SqlStatement\SqlStatement.csproj", "{86DF757A-943C-42D7-87B5-2F71495AC5F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution", "SqlStatement\SqlStatementExecution.csproj", "{86DF757A-943C-42D7-87B5-2F71495AC5F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

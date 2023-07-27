@@ -14,7 +14,7 @@
 
 using System.Linq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatement.Extensions;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions;
 
 public static class StringExtensions
 {

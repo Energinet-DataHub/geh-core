@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.Core.Databricks.SqlStatement.AppSettings;
-using Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatement.Extensions
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions
 {
     public static class DatabricksExtensions
     {
@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatement.Extensions
             DatabricksOptions databricksOptions)
         {
             services.AddSingleton(databricksOptions);
-            services.AddScoped<ISqlStatementClient, SqlStatementClient>();
+            services.AddScoped<ISqlStatementExecutionClient, SqlStatementExecutionClient>();
             services.AddScoped<IJsonSerializer, JsonSerializer>();
 
             services.AddHttpClient("DatabricksStatementExecutionApi", client =>

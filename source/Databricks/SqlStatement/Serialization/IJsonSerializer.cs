@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 
 /// <summary>
 ///  This interface is used to deserialize json

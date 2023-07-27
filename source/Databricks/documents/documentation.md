@@ -6,9 +6,9 @@ The SQL statement execution lets you execute SQL statements to Databricks and re
 
 ### Usage
 
-Install `Energinet.DataHub.Core.Databricks.SqlStatement` package.
+Install `Energinet.DataHub.Core.Databricks.SqlStatementExecution` package.
 
-It is necessary to setup [Databricks options](../SqlStatement/AppSettings/DatabricksOptions.cs) for the SQL statement execution to work.
+It is necessary to setup [Databricks options](../SqlStatementExecution/AppSettings/DatabricksOptions.cs) for the SQL statement execution to work.
 
 Example of how to setup the Databricks in `startup.cs`.
 
@@ -28,7 +28,7 @@ Example of how to use the SQL Statement client.
 public async Task<IActionResult> Get()
 {
     var sqlQuery = GenerateQuery();
-    var timeSeries = await _sqlStatementClient.GetAsync(sqlQuery, MapModel).ConfigureAwait(false);
+    var timeSeries = await _sqlStatementExecutionClient.GetAsync(sqlQuery, MapModel).ConfigureAwait(false);
     return Ok(timeSeries);
 }
 

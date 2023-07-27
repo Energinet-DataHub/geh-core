@@ -16,12 +16,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatement;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 /// <summary>
 /// This interface is used to execute sql statements on a Databricks cluster
 /// </summary>
-public interface ISqlStatementClient
+public interface ISqlStatementExecutionClient
 {
     /// <summary>
     /// The method will execute the given sql query and return the result as a list of <typeparamref name="TModel"/>
