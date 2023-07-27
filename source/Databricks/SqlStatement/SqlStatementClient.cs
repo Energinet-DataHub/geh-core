@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.Databricks.SqlStatement.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatement.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatement.Serialization;
 
