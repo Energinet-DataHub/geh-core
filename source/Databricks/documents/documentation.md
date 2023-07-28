@@ -8,8 +8,6 @@ The SQL statement execution lets you execute SQL statements to Databricks and re
 
 Install `Energinet.DataHub.Core.Databricks.SqlStatementExecution` package.
 
-It is necessary to setup [Databricks options](../SqlStatementExecution/AppSettings/DatabricksOptions.cs) for the SQL statement execution to work.
-
 Example of how to setup the Databricks in `startup.cs`.
 
 ```c#
