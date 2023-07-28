@@ -40,9 +40,9 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Necessary to manage Azure resources from automated tests
-  AZURE_KEYVAULT_URL: ${{ vars.azure_keyvault_url }}
+  AZURE_KEYVAULT_URL: https://kv-main-integr-test-002.vault.azure.net/
   # Necessary to provide B2C information that allows us to retrieve an access token from automated tests
-  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ vars.azure_b2csecrets_keyvault_url }}
+  AZURE_B2CSECRETS_KEYVAULT_URL: https://kv-b2c-integr-test-002.vault.azure.net/
   # Set value used by 'AzuriteManager'
   #  Use 'AzuriteBlobFolderPath' for TestCommon version 4.2.0 and lower
   AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
@@ -81,8 +81,8 @@ jobs:
           solution_file_path: ./source/App/App.sln
           code_coverage_flags: appcommon
           azure_tenant_id: ${{ vars.azure_tenant_id }}
-          azure_subscription_id: ${{ vars.azure_subscription_id }}
-          azure_spn_id: ${{ vars.azure_spn_id_oidc }}
+          azure_subscription_id: 93301034-9524-444e-a2fc-ed5610311c7a
+          azure_spn_id: 4027c37a-875f-4f4d-891c-f979e07506b6
           publish_test_report: "true"
 
       - name: Pack Common project
