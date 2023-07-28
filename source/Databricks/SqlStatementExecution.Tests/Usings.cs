@@ -12,6 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-
-public record Status(string State);
+global using FluentAssertions;
+global using Xunit;

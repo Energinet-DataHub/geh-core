@@ -28,8 +28,8 @@ Example of how to use the SQL Statement client.
 public async Task<IActionResult> Get()
 {
     var sqlQuery = GenerateQuery();
-    var timeSeries = await _sqlStatementExecutionClient.GetAsync(sqlQuery, MapModel).ConfigureAwait(false);
-    return Ok(timeSeries);
+    var testData = await _sqlStatementExecutionClient.GetAsync(sqlQuery, MapModel).ConfigureAwait(false);
+    return Ok(testData);
 }
 
 private string GenerateQuery()

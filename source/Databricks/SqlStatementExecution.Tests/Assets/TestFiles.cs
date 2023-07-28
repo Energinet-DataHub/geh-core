@@ -12,6 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Assets;
 
-public record Status(string State);
+public class TestFiles
+{
+    public string TimeSeriesResponse => GetFileAsString("time_series_response.json");
+
+    private string GetFileAsString(string fileName)
+    {
+        var stream = GetFileStream(fileName);
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
+
+    private Stream GetFileStream(string fileName)
+    {
+        var rootNamespace = GetType().Namespace!;
+        return GetType().Assembly.GetManifestResourceStream($"{rootNamespace}.{fileName}");
+    }
+}

@@ -24,7 +24,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
 {
-    internal class SqlStatementExecutionClient : ISqlStatementExecutionClient
+    public class SqlStatementExecutionClient : ISqlStatementExecutionClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _jsonSerializer;
