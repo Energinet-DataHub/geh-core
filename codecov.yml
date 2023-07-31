@@ -23,6 +23,9 @@ flag_management:
     - name: xmlconversion
       paths:
       - source/XmlConversion
+    - name: databricks
+      paths:
+      - source/Databricks
 
 ignore:
   - "source/App/source/Common.Tests"
@@ -35,3 +38,4 @@ ignore:
   - "source/TestCommon/source/FunctionApp.TestCommon.Tests"
   - "source/TestCommon/source/TestCommon.Tests"
   - "source/XmlConversion/source/XmlConverter.Tests"
+  - "source/Databricks/source/SqlStatementExecution.Tests"
