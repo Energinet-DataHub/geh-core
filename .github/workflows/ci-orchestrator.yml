@@ -91,7 +91,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses: ./.github/workflows/databricks-bundle-publish.yml
-    secrets: inherit    
+    secrets: inherit
 
   #
   # Branch policy status check
