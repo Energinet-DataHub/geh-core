@@ -17,7 +17,6 @@ using System.Text;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Assets;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Helpers;
 using Moq;
@@ -30,7 +29,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests
         [AutoData]
         public async Task GetAsync_WhenCalled_ReturnsTimeSeries(
             TestFiles testFiles,
-            JsonSerializer jsonSerializer,
             DatabricksSqlResponseParser databricksSqlResponseParser,
             Mock<IHttpClientFactory> httpClientFactory)
         {
@@ -50,7 +48,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests
             httpClientFactory
                 .Setup(hcf => hcf.CreateClient(It.IsAny<string>()))
                 .Returns(() => new HttpClient(fakeHandler) { BaseAddress = new Uri("https://12345.azuredatabricks.net") });
-            var sut = new SqlStatementExecutionClient(httpClientFactory.Object, jsonSerializer, databricksOptions, databricksSqlResponseParser);
+            var sut = new SqlStatementExecutionClient(httpClientFactory.Object, databricksOptions, databricksSqlResponseParser);
 
             // Act
             var result = await sut.SendSqlStatementAsync("sql query");

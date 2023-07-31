@@ -13,14 +13,11 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
 {
@@ -29,18 +26,15 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
         private const string StatementsEndpointPath = "/api/2.0/sql/statements";
 
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IJsonSerializer _jsonSerializer;
         private readonly DatabricksOptions _databricksOptions;
         private readonly IDatabricksSqlResponseParser _databricksSqlResponseParser;
 
         public SqlStatementExecutionClient(
             IHttpClientFactory httpClientFactory,
-            IJsonSerializer jsonSerializer,
             DatabricksOptions databricksOptions,
             IDatabricksSqlResponseParser databricksSqlResponseParser)
         {
             _httpClientFactory = httpClientFactory;
-            _jsonSerializer = jsonSerializer;
             _databricksOptions = databricksOptions;
             _databricksSqlResponseParser = databricksSqlResponseParser;
         }
@@ -58,8 +52,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                 statement = sqlStatement,
                 warehouse_id = _databricksOptions.WarehouseId,
             };
-            // TODO (JMG): Should we use Polly for retrying?
-            // TODO (JMG): Unit test this method
+
             for (var attempt = 0; attempt < maxAttempts; attempt++)
             {
                 var response = await httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -85,43 +78,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
             }
 
             throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
-        }
-
-        public async Task<List<TModel>> GetAsync<TModel>(string sqlQuery, Func<List<string>, TModel> mapResult)
-        {
-            var client = _httpClientFactory.CreateClient("DatabricksStatementExecutionApi");
-            var request = CreateRequest(sqlQuery);
-            var response = await client.SendAsync(request).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-
-            var responseContent = await DeserializeResponseContentAsync(response).ConfigureAwait(false);
-
-            if (responseContent.Status.State != "SUCCEEDED")
-            {
-                throw new Exception($"Unable to get result from Databricks. State: {responseContent.Status.State}");
-            }
-
-            var mappedResult = responseContent.Result.DataArray.Select(mapResult).ToList();
-
-            return mappedResult;
-        }
-
-        private async Task<StatementExecutionResponseDto> DeserializeResponseContentAsync(HttpResponseMessage response)
-        {
-            var jsonString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return _jsonSerializer.Deserialize<StatementExecutionResponseDto>(jsonString);
-        }
-
-        private HttpRequestMessage CreateRequest(string sqlQuery)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Post, new Uri("/api/2.0/sql/statements", UriKind.Relative));
-            request.Content = JsonContent.Create(new
-            {
-                warehouse_id = _databricksOptions.WarehouseId,
-                statement = sqlQuery,
-            });
-
-            return request;
         }
     }
 }

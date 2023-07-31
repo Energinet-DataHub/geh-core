@@ -14,21 +14,12 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Serialization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Assets;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Helpers;
 
 public class FakeSqlStatementExecutionClient : ISqlStatementExecutionClient
 {
-    public async Task<List<TModel>> GetAsync<TModel>(string sqlQuery, Func<List<string>, TModel> mapResult)
-    {
-        var response = new TestFiles().TimeSeriesResponse;
-        var jsonSerializer = new JsonSerializer();
-        var jsonResponse = await Task.FromResult(jsonSerializer.Deserialize<StatementExecutionResponseDto>(response));
-        return jsonResponse.Result.DataArray.Select(mapResult).ToList();
-    }
-
     public Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
     {
         var response = new TestFiles().TimeSeriesResponse;
