@@ -17,7 +17,7 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ProjectGuid>{8DAD22BC-DA0E-484D-9092-57AE4394DCA0}</ProjectGuid>
     <AssemblyName>Energinet.DataHub.Core.Databricks.SqlStatementExecution</AssemblyName>
