@@ -25,6 +25,6 @@ public interface IDatabricksSqlResponseParser
     /// Parse the response from Databricks SQL.
     /// </summary>
     /// <param name="jsonResponse"></param>
-    /// <returns>A DatabricksSqlRespons</returns>
+    /// <returns>A <see cref="DatabricksSqlResponse"/></returns>
     DatabricksSqlResponse Parse(string jsonResponse);
 }

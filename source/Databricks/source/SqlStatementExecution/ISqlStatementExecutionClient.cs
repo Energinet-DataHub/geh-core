@@ -20,12 +20,12 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 /// <summary>
-/// This interface is used to execute sql statements on a Databricks cluster
+/// This interface is used to execute sql statements on a Databricks warehouse
 /// </summary>
 public interface ISqlStatementExecutionClient
 {
     /// <summary>
-    /// The method will execute the given sql query and return the result as a list of <typeparamref name="TModel"/>
+    /// The method used to send a sql statement to a Databricks warehouse and return the response
     /// </summary>
     /// <param name="sqlStatement"></param>
     /// <returns>A <see cref="DatabricksSqlResponse"/></returns>

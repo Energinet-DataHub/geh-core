@@ -26,8 +26,8 @@ Example of how to use the SQL Statement client.
 public async Task<IActionResult> Get()
 {
     var sqlQuery = GenerateQuery();
-    var testData = await _sqlStatementExecutionClient.GetAsync(sqlQuery, MapModel).ConfigureAwait(false);
-    return Ok(testData);
+    var testData = await _sqlStatementExecutionClient.SendSqlStatementAsync(sqlQuery).ConfigureAwait(false);
+    return Ok(Map(testData));
 }
 
 private string GenerateQuery()
@@ -35,8 +35,9 @@ private string GenerateQuery()
     return $"SELECT column1 FROM database.table";
 }
 
-private static TestModel MapModel(List<string> x)
+private static IEnumerable<TestModel> Map(Table table)
 {
-    return new TestModel(x[0]);
+    return Enumerable.Range(0, table.RowCount)
+        .Select(i => new TestModel(table[i, "column1"],)));
 }
 ```
