@@ -26,18 +26,65 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
 {
     public class SqlStatementExecutionClient : ISqlStatementExecutionClient
     {
+        private const string StatementsEndpointPath = "/api/2.0/sql/statements";
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _jsonSerializer;
         private readonly DatabricksOptions _databricksOptions;
+        private readonly IDatabricksSqlResponseParser _databricksSqlResponseParser;
 
         public SqlStatementExecutionClient(
             IHttpClientFactory httpClientFactory,
             IJsonSerializer jsonSerializer,
-            DatabricksOptions databricksOptions)
+            DatabricksOptions databricksOptions,
+            IDatabricksSqlResponseParser databricksSqlResponseParser)
         {
             _httpClientFactory = httpClientFactory;
             _jsonSerializer = jsonSerializer;
             _databricksOptions = databricksOptions;
+            _databricksSqlResponseParser = databricksSqlResponseParser;
+        }
+
+        public async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
+        {
+            const int timeOutPerAttemptSeconds = 30;
+            const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
+            var httpClient = _httpClientFactory.CreateClient("DatabricksStatementExecutionApi");
+
+            var requestObject = new
+            {
+                on_wait_timeout = "CANCEL",
+                wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
+                statement = sqlStatement,
+                warehouse_id = _databricksOptions.WarehouseId,
+            };
+            // TODO (JMG): Should we use Polly for retrying?
+            // TODO (JMG): Unit test this method
+            for (var attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                var response = await httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
+                }
+
+                var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
+
+                if (databricksSqlResponse.State == "SUCCEEDED")
+                {
+                    return databricksSqlResponse;
+                }
+
+                if (databricksSqlResponse.State != "PENDING")
+                {
+                    throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
+                }
+            }
+
+            throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
         }
 
         public async Task<List<TModel>> GetAsync<TModel>(string sqlQuery, Func<List<string>, TModel> mapResult)

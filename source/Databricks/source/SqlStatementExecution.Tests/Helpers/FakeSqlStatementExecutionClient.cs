@@ -28,4 +28,12 @@ public class FakeSqlStatementExecutionClient : ISqlStatementExecutionClient
         var jsonResponse = await Task.FromResult(jsonSerializer.Deserialize<StatementExecutionResponseDto>(response));
         return jsonResponse.Result.DataArray.Select(mapResult).ToList();
     }
+
+    public Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
+    {
+        var response = new TestFiles().TimeSeriesResponse;
+        var parser = new DatabricksSqlResponseParser();
+        var jsonSerializer = parser.Parse(response);
+        return Task.FromResult(jsonSerializer);
+    }
 }

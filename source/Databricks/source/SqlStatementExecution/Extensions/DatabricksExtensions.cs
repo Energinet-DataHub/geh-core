@@ -28,6 +28,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions
             services.AddSingleton(databricksOptions);
             services.AddScoped<ISqlStatementExecutionClient, SqlStatementExecutionClient>();
             services.AddScoped<IJsonSerializer, JsonSerializer>();
+            services.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
 
             services.AddHttpClient("DatabricksStatementExecutionApi", client =>
             {

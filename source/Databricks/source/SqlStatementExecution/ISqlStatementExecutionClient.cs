@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
@@ -31,4 +32,11 @@ public interface ISqlStatementExecutionClient
     /// <param name="mapResult"></param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     Task<List<TModel>> GetAsync<TModel>(string sqlQuery, Func<List<string>, TModel> mapResult);
+
+    /// <summary>
+    /// The method will execute the given sql query and return the result as a list of <typeparamref name="TModel"/>
+    /// </summary>
+    /// <param name="sqlStatement"></param>
+    /// <returns>A <see cref="DatabricksSqlResponse"/></returns>
+    Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement);
 }

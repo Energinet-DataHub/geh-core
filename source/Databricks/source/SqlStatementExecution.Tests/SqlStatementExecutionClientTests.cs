@@ -31,6 +31,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests
         public async Task GetAsync_WhenCalled_ReturnsTimeSeries(
             TestFiles testFiles,
             JsonSerializer jsonSerializer,
+            DatabricksSqlResponseParser databricksSqlResponseParser,
             Mock<IHttpClientFactory> httpClientFactory)
         {
             // Arrange
@@ -49,38 +50,13 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests
             httpClientFactory
                 .Setup(hcf => hcf.CreateClient(It.IsAny<string>()))
                 .Returns(() => new HttpClient(fakeHandler) { BaseAddress = new Uri("https://12345.azuredatabricks.net") });
-            var sut = new SqlStatementExecutionClient(httpClientFactory.Object, jsonSerializer, databricksOptions);
+            var sut = new SqlStatementExecutionClient(httpClientFactory.Object, jsonSerializer, databricksOptions, databricksSqlResponseParser);
 
             // Act
-            var result = await sut.GetAsync("sql query", TestMapModel);
+            var result = await sut.SendSqlStatementAsync("sql query");
 
             // Assert
-            var actualMeteringPointIds = result.Select(x => x.MeteringPointId).ToList();
-            actualMeteringPointIds.Should().Contain("571313124410187001");
-            actualMeteringPointIds.Should().Contain("571313124410187002");
-            actualMeteringPointIds.Should().Contain("571313124410187003");
-            actualMeteringPointIds.Should().Contain("571313124410187004");
-            actualMeteringPointIds.Should().Contain("571313124410187005");
-            actualMeteringPointIds.Should().Contain("571313124410187006");
-            actualMeteringPointIds.Should().Contain("571313124410187007");
-            actualMeteringPointIds.Should().Contain("571313124410187008");
-            actualMeteringPointIds.Should().Contain("571313124410187009");
-            actualMeteringPointIds.Should().Contain("571313124410187010");
-        }
-
-        private static TestModel TestMapModel(List<string> x)
-        {
-            return new TestModel(x[0]);
-        }
-
-        private class TestModel
-        {
-            public TestModel(string meteringPointId)
-            {
-                MeteringPointId = meteringPointId;
-            }
-
-            public string MeteringPointId { get; }
+            result.Table.RowCount.Should().Be(13);
         }
     }
 }
