@@ -19,7 +19,7 @@ private static void AddDatabricks(IServiceCollection services, IConfiguration co
 }
 ```
 
-Example of how to use the SQL Statement client.
+Example of how to use the SQL Statement Execution client.
 
 ```c#
 [HttpGet]
