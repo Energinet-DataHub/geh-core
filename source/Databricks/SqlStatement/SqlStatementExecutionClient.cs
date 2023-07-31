@@ -71,8 +71,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
             request.Content = JsonContent.Create(new
             {
                 warehouse_id = _databricksOptions.WarehouseId,
-                catalog = "hive_metastore",
-                schema = _databricksOptions.TableName,
                 statement = sqlQuery,
             });
 

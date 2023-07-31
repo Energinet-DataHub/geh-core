@@ -23,8 +23,4 @@ public class DatabricksOptions
     public string Endpoint { get; set; } = string.Empty;
 
     public string WarehouseId { get; set; } = string.Empty;
-
-    public string TableName { get; set; } = string.Empty;
-
-    public string CatalogName { get; set; } = string.Empty;
 }
