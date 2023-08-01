@@ -14,9 +14,10 @@
     <PackageReference Include="AutoFixture.Xunit2" Version="4.18.0" />
     <PackageReference Include="FluentAssertions" Version="6.11.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
     <PackageReference Include="Moq" Version="4.18.4" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.categories" Version="2.0.7" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -28,7 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\time_series_response.json" />
+    <EmbeddedResource Include="Assets\CalculationResult.json" />
+    <EmbeddedResource Include="Assets\CalculationResultChunk.json" />
+    <EmbeddedResource Include="Assets\CalculationResultWithExternalLinks.json" />
+    <EmbeddedResource Include="Assets\ChunkData.json" />
   </ItemGroup>
 
   <ItemGroup>
