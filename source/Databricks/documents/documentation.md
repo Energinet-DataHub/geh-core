@@ -23,21 +23,21 @@ Example of how to use the SQL Statement Execution client.
 
 ```c#
 [HttpGet]
-public async Task<IActionResult> Get()
+public async Task<IActionResult> GetAsync()
 {
     var sqlQuery = GenerateQuery();
-    var testData = await _sqlStatementExecutionClient.SendSqlStatementAsync(sqlQuery).ConfigureAwait(false);
-    return Ok(Map(testData));
+    var resultList = new List<TestModel>();
+
+    await foreach (var row in _sqlStatementClient.ExecuteAsync(sqlQuery)) {
+        var testModel = new TestModel(row["column1"]);
+        resultList.Add(testModel)
+    }
+
+    return Ok(resultList);
 }
 
 private string GenerateQuery()
 {
     return $"SELECT column1 FROM database.table";
-}
-
-private static IEnumerable<TestModel> Map(Table table)
-{
-    return Enumerable.Range(0, table.RowCount)
-        .Select(i => new TestModel(table[i, "column1"],)));
 }
 ```
