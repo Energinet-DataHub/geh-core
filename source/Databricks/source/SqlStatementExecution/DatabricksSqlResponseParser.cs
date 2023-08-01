@@ -12,45 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 {
-    public DatabricksSqlResponse Parse(string jsonResponse)
-    {
-        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
-        var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
-                         throw new InvalidOperationException();
+    private readonly IDatabricksSqlStatusResponseParser _databricksSqlStatusResponseParser;
+    private readonly IDatabricksSqlChunkResponseParser _databricksSqlChunkResponseParser;
+    private readonly IDatabricksSqlChunkDataResponseParser _databricksSqlChunkDataResponseParser;
 
-        var state = GetState(jsonObject);
-        var columnNames = GetColumnNames(jsonObject);
-        var dataArray = GetDataArray(jsonObject);
-        return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
+    public DatabricksSqlResponseParser(
+        IDatabricksSqlStatusResponseParser databricksSqlStatusResponseParser,
+        IDatabricksSqlChunkResponseParser databricksSqlChunkResponseParser,
+        IDatabricksSqlChunkDataResponseParser databricksSqlChunkDataResponseParser)
+    {
+        _databricksSqlStatusResponseParser = databricksSqlStatusResponseParser;
+        _databricksSqlChunkResponseParser = databricksSqlChunkResponseParser;
+        _databricksSqlChunkDataResponseParser = databricksSqlChunkDataResponseParser;
     }
 
-    private static string GetState(JObject responseJsonObject)
+    public DatabricksSqlResponse ParseStatusResponse(string jsonResponse)
     {
-        return responseJsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
+        return _databricksSqlStatusResponseParser.Parse(jsonResponse);
     }
 
-    private static IEnumerable<string> GetColumnNames(JObject responseJsonObject)
+    public DatabricksSqlChunkResponse ParseChunkResponse(string jsonResponse)
     {
-        var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()) ??
-                          throw new InvalidOperationException("Unable to retrieve 'columns' from the responseJsonObject.");
-        return columnNames!;
+        return _databricksSqlChunkResponseParser.Parse(jsonResponse);
     }
 
-    private static IEnumerable<string[]> GetDataArray(JObject responseJsonObject)
+    public TableChunk ParseChunkDataResponse(string jsonResponse, string[] columnNames)
     {
-        var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
-                        throw new InvalidOperationException("Unable to retrieve 'data_array' from the responseJsonObject");
-        return dataArray;
+        return _databricksSqlChunkDataResponseParser.Parse(jsonResponse, columnNames);
     }
 }

@@ -14,24 +14,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
-public class Table
+/// <summary>
+/// Represents a table or a chunk of a table.
+/// Or put in another way, a table with a subset of all the rows of a SQL query.
+/// </summary>
+public class TableChunk
 {
-    private readonly List<string[]> _rows;
     private readonly Dictionary<string, int> _columnIndex;
 
-    public Table(IEnumerable<string> columnNames, IEnumerable<string[]> rows)
+    public TableChunk(string[] columnNames, List<string[]> rows)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
-        _rows = rows.ToList();
+        ColumnNames = columnNames;
+        Rows = rows.AsReadOnly();
     }
 
-    public string this[Index rowIndex, string columnName] => _rows[rowIndex][_columnIndex[columnName]];
+    public string this[Index rowIndex, string columnName] => Rows[rowIndex][_columnIndex[columnName]];
 
-    public IEnumerable<string> this[Index rowIndex] => _rows[rowIndex];
+    public IEnumerable<string> this[Index rowIndex] => Rows[rowIndex];
 
-    public int RowCount => _rows.Count;
+    public int RowCount => Rows.Count;
+
+    public string[] ColumnNames { get; }
+
+    public ReadOnlyCollection<string[]> Rows { get; }
 }

@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Helpers;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public class FakeHttpMessageHandler : DelegatingHandler
+/// <summary>
+/// Representation of the state of a Databricks SQL response.
+/// </summary>
+public enum DatabricksSqlResponseState
 {
-    private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _handlerFunc;
-
-    public FakeHttpMessageHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handlerFunc)
-    {
-        _handlerFunc = handlerFunc;
-    }
-
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        return _handlerFunc(request, cancellationToken);
-    }
+    Failed = 0,
+    Cancelled = 1,
+    Pending = 2,
+    Succeeded = 3,
+    Running = 4,
+    Closed = 5,
 }

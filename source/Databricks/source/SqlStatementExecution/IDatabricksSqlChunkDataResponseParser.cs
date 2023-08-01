@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Assets;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Helpers;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public class FakeSqlStatementExecutionClient : ISqlStatementExecutionClient
+/// <summary>
+/// Parses the response from a Databricks SQL statement execution.
+/// </summary>
+public interface IDatabricksSqlChunkDataResponseParser
 {
-    public Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
-    {
-        var response = new TestFiles().TimeSeriesResponse;
-        var parser = new DatabricksSqlResponseParser();
-        var jsonSerializer = parser.Parse(response);
-        return Task.FromResult(jsonSerializer);
-    }
+    /// <summary>
+    /// Parses the response from a Databricks SQL statement execution.
+    /// </summary>
+    /// <param name="jsonResponse"></param>
+    /// <param name="columnNames"></param>
+    /// <returns>Returns a <see cref="TableChunk"/></returns>
+    TableChunk Parse(string jsonResponse, string[] columnNames);
 }

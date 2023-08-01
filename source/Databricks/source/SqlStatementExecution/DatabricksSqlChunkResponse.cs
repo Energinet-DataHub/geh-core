@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using System;
 
-public class DatabricksOptions
-{
-    public string WorkspaceUrl { get; set; } = string.Empty;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-    public string WorkspaceToken { get; set; } = string.Empty;
-
-    public string WarehouseId { get; set; } = string.Empty;
-}
+public record DatabricksSqlChunkResponse(Uri ExternalLink, string? NextChunkInternalLink);

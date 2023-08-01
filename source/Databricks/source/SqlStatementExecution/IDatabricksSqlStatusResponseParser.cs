@@ -12,6 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public sealed record DatabricksSqlResponse(string State, Table Table);
+/// <summary>
+/// This interface is used to parse the response from the Databricks SQL API.
+/// </summary>
+public interface IDatabricksSqlStatusResponseParser
+{
+    /// <summary>
+    /// Parse the response from the Databricks SQL API.
+    /// </summary>
+    /// <param name="jsonResponse"></param>
+    /// <returns>Returns <see cref="DatabricksSqlResponse"/></returns>
+    DatabricksSqlResponse Parse(string jsonResponse);
+}

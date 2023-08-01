@@ -21,30 +21,18 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions
     public static class DatabricksExtensions
     {
         public static IServiceCollection AddDatabricks(
-            this IServiceCollection services,
+            this IServiceCollection serviceCollection,
             DatabricksOptions databricksOptions)
         {
-            services.AddSingleton(databricksOptions);
-            services.AddScoped<ISqlStatementExecutionClient, SqlStatementExecutionClient>();
-            services.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
+            serviceCollection.AddSingleton(databricksOptions);
+            serviceCollection.AddHttpClient<ISqlStatementClient>();
+            serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
+            serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
+            serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();
+            serviceCollection.AddScoped<IDatabricksSqlChunkResponseParser, DatabricksSqlChunkResponseParser>();
+            serviceCollection.AddScoped<IDatabricksSqlChunkDataResponseParser, DatabricksSqlChunkDataResponseParser>();
 
-            services.AddHttpClient("DatabricksStatementExecutionApi", client =>
-            {
-                client.BaseAddress = CreateUri(databricksOptions);
-                client.DefaultRequestHeaders.Add(
-                    "Authorization",
-                    "Bearer " + databricksOptions.ClusterAccessToken);
-            });
-
-            return services;
-        }
-
-        private static Uri CreateUri(DatabricksOptions databricksOptions)
-        {
-            return new Uri("https://" +
-                           databricksOptions.Instance +
-                           databricksOptions.Endpoint +
-                           databricksOptions.WarehouseId);
+            return serviceCollection;
         }
     }
 }

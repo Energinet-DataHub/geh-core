@@ -12,22 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 /// <summary>
-/// This interface is used to execute sql statements on a Databricks warehouse
+/// This interface is used to parse the chunk response from the Databricks SQL API.
 /// </summary>
-public interface ISqlStatementExecutionClient
+public interface IDatabricksSqlChunkResponseParser
 {
     /// <summary>
-    /// The method used to send a sql statement to a Databricks warehouse and return the response
+    /// Parse the chunk response from the Databricks SQL API.
     /// </summary>
-    /// <param name="sqlStatement"></param>
-    /// <returns>A <see cref="DatabricksSqlResponse"/></returns>
-    Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement);
+    /// <param name="jsonResponse"></param>
+    /// <returns>Returns <see cref="DatabricksSqlChunkResponse"/></returns>
+    DatabricksSqlChunkResponse Parse(string jsonResponse);
+
+    /// <summary>
+    /// Parse the chunk response from the Databricks SQL API.
+    /// </summary>
+    /// <param name="jsonResponse"></param>
+    /// <returns>Returns <see cref="DatabricksSqlChunkResponse"/></returns>
+    DatabricksSqlChunkResponse Parse(JToken jsonResponse);
 }

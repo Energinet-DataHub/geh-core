@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using System.Collections.Generic;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
-public class DatabricksOptions
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+
+/// <summary>
+/// This interface is used to execute SQL statements against Databricks.
+/// </summary>
+public interface ISqlStatementClient
 {
-    public string WorkspaceUrl { get; set; } = string.Empty;
-
-    public string WorkspaceToken { get; set; } = string.Empty;
-
-    public string WarehouseId { get; set; } = string.Empty;
+    /// <summary>
+    /// Get all the rows of a SQL query in as an asynchronous data stream.
+    /// </summary>
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
 }

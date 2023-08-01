@@ -12,13 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
-public class DatabricksOptions
+/// <summary>
+/// This class is optimized to reduce allocations when reading data from the database.
+/// </summary>
+public record SqlResultRow
 {
-    public string WorkspaceUrl { get; set; } = string.Empty;
+    private readonly TableChunk _chunk;
+    private readonly int _index;
 
-    public string WorkspaceToken { get; set; } = string.Empty;
+    public SqlResultRow(TableChunk chunk, int index)
+    {
+        _chunk = chunk;
+        _index = index;
+    }
 
-    public string WarehouseId { get; set; } = string.Empty;
+    public virtual string this[string column] => _chunk[_index, column];
 }
