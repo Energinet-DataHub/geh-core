@@ -22,9 +22,17 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
     {
         public static IServiceCollection AddDatabricks(
             this IServiceCollection serviceCollection,
-            DatabricksOptions databricksOptions)
+            string warehouseId,
+            string workspaceToken,
+            string workspaceUrl)
         {
-            serviceCollection.AddSingleton(databricksOptions);
+            serviceCollection.AddOptions<DatabricksOptions>().Configure(options =>
+            {
+                options.WarehouseId = warehouseId;
+                options.WorkspaceToken = workspaceToken;
+                options.WorkspaceUrl = workspaceUrl;
+            });
+
             serviceCollection.AddHttpClient<ISqlStatementClient>();
             serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
             serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();

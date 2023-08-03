@@ -20,6 +20,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
@@ -29,18 +30,18 @@ public class SqlStatementClient : ISqlStatementClient
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
-    private readonly DatabricksOptions _databricksDatabricksOptions;
+    private readonly IOptions<DatabricksOptions> _options;
     private readonly IDatabricksSqlResponseParser _responseResponseParser;
 
     public SqlStatementClient(
         HttpClient httpClient,
-        DatabricksOptions databricksOptions,
+        IOptions<DatabricksOptions> options,
         IDatabricksSqlResponseParser responseResponseParser)
     {
         _httpClient = httpClient;
-        _databricksDatabricksOptions = databricksOptions;
+        _options = options;
         _responseResponseParser = responseResponseParser;
-        ConfigureHttpClient(_httpClient, _databricksDatabricksOptions);
+        ConfigureHttpClient(_httpClient, _options);
     }
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
@@ -80,7 +81,7 @@ public class SqlStatementClient : ISqlStatementClient
         {
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
-            warehouse_id = _databricksDatabricksOptions.WarehouseId,
+            warehouse_id = _options.Value.WarehouseId,
             disposition = "EXTERNAL_LINKS", // Some results are larger than the maximum allowed 16MB limit, thus we need to use external links
         };
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -139,14 +140,14 @@ public class SqlStatementClient : ISqlStatementClient
         return _responseResponseParser.ParseChunkDataResponse(jsonResponse, columnNames);
     }
 
-    private static void ConfigureHttpClient(HttpClient httpClient, DatabricksOptions options)
+    private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
     {
-        httpClient.BaseAddress = new Uri(options.WorkspaceUrl);
+        httpClient.BaseAddress = new Uri(options.Value.WorkspaceUrl);
         httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
+            new AuthenticationHeaderValue("Bearer", options.Value.WorkspaceToken);
         httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-        httpClient.BaseAddress = new Uri(options.WorkspaceUrl);
+        httpClient.BaseAddress = new Uri(options.Value.WorkspaceUrl);
     }
 }

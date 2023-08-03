@@ -16,16 +16,18 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSe
 
 public class DatabricksOptions
 {
-    public DatabricksOptions(string workspaceUrl, string workspaceToken, string warehouseId)
-    {
-        WorkspaceUrl = workspaceUrl;
-        WorkspaceToken = workspaceToken;
-        WarehouseId = warehouseId;
-    }
+    /// <summary>
+    /// Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net.
+    /// </summary>
+    public string WorkspaceUrl { get; set; } = string.Empty;
 
-    public string WorkspaceUrl { get; }
+    /// <summary>
+    /// The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token.
+    /// </summary>
+    public string WorkspaceToken { get; set; } = string.Empty;
 
-    public string WorkspaceToken { get; }
-
-    public string WarehouseId { get; }
+    /// <summary>
+    /// The databricks warehouse id.
+    /// </summary>
+    public string WarehouseId { get; set; } = string.Empty;
 }

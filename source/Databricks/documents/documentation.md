@@ -2,7 +2,10 @@
 
 ## SQL Statement Execution
 
-The SQL statement execution lets you execute SQL statements to Databricks and returns the result.
+This project contains a client for the Databricks SQL Statement Execution API. The client is a wrapper around the Databricks REST API. The client is used to execute SQL statements on a Databricks cluster.
+
+The implementation uses solely `disposition=EXTERNAL_LINKS` despite that inlining is simpler. This is because inlining has a limit of 16MB, which isn't sufficient for all use cases.
+
 
 ### Usage
 
@@ -12,10 +15,10 @@ Example of how to setup the Databricks in `startup.cs`.
 
 ```c#
 private static void AddDatabricks(IServiceCollection services, IConfiguration configuration)
-{
+{   
     var options = new DatabricksOptions();
     configuration.GetSection("DatabricksOptions").Bind(options);
-    services.AddDatabricks(options);
+    services.AddDatabricks(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
 }
 ```
 

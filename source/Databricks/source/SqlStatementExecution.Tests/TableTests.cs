@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Xunit.Categories;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests;
