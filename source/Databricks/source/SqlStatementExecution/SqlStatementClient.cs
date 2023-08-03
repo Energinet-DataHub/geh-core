@@ -51,6 +51,11 @@ public class SqlStatementClient : ISqlStatementClient
 
         while (chunk != null)
         {
+            if (chunk.ExternalLink == null)
+            {
+                break;
+            }
+
             var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
 
             for (var index = 0; index < data.Rows.Count; index++)
@@ -121,7 +126,7 @@ public class SqlStatementClient : ISqlStatementClient
         return _responseResponseParser.ParseChunkResponse(jsonResponse);
     }
 
-    private async Task<TableChunk> GetChunkDataAsync(Uri externalLink, string[] columnNames)
+    private async Task<TableChunk> GetChunkDataAsync(Uri? externalLink, string[] columnNames)
     {
         var httpClient = new HttpClient();
         var httpResponse = await httpClient.GetAsync(externalLink).ConfigureAwait(false);
