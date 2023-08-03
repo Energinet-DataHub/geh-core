@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 /// <summary>
-/// This interface is used to execute SQL statements against Databricks.
+/// Parses the response from a Databricks SQL statement execution.
 /// </summary>
-public interface ISqlStatementClient
+public interface IDatabricksSqlChunkDataResponseParser
 {
     /// <summary>
-    /// Get all the rows of a SQL query in as an asynchronous data stream.
+    /// Parses the response from a Databricks SQL statement execution.
     /// </summary>
-    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
+    /// <param name="jsonResponse"></param>
+    /// <param name="columnNames"></param>
+    /// <returns>Returns a <see cref="TableChunk"/></returns>
+    TableChunk Parse(string jsonResponse, string[] columnNames);
 }

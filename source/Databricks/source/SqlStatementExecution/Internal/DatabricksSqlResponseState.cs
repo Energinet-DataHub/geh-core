@@ -12,20 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 /// <summary>
-/// Parses the response from a Databricks SQL statement execution.
+/// Representation of the state of a Databricks SQL response.
 /// </summary>
-public interface IDatabricksSqlChunkDataResponseParser
+public enum DatabricksSqlResponseState
 {
-    /// <summary>
-    /// Parses the response from a Databricks SQL statement execution.
-    /// </summary>
-    /// <param name="jsonResponse"></param>
-    /// <param name="columnNames"></param>
-    /// <returns>Returns a <see cref="TableChunk"/></returns>
-    TableChunk Parse(string jsonResponse, string[] columnNames);
+    Failed = 0,
+    Cancelled = 1,
+    Pending = 2,
+    Succeeded = 3,
+    Running = 4,
+    Closed = 5,
 }

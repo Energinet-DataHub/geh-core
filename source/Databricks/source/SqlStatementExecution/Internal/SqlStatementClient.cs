@@ -18,10 +18,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial

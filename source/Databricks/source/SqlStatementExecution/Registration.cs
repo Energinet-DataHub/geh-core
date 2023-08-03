@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
 {
-    public static class DatabricksExtensions
+    public static class Registration
     {
         public static IServiceCollection AddDatabricks(
             this IServiceCollection serviceCollection,

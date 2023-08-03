@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
 /// <summary>
 /// Represents a table or a chunk of a table.

@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
 public class DatabricksSqlResponse
 {

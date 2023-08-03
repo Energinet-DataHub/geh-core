@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests
 {

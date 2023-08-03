@@ -14,11 +14,12 @@
 
 using System;
 using System.Linq;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 public class DatabricksSqlStatusResponseParser : IDatabricksSqlStatusResponseParser
 {

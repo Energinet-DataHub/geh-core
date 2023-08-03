@@ -12,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using System;
 
-/// <summary>
-/// This class is optimized to reduce allocations when reading data from the database.
-/// </summary>
-public record SqlResultRow
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+
+public class DatabricksSqlException : Exception
 {
-    private readonly TableChunk _chunk;
-    private readonly int _index;
-
-    public SqlResultRow(TableChunk chunk, int index)
+    public DatabricksSqlException(string message)
+        : base(message)
     {
-        _chunk = chunk;
-        _index = index;
     }
-
-    public virtual string this[string column] => _chunk[_index, column];
 }

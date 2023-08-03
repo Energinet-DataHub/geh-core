@@ -14,11 +14,11 @@
 
 using System;
 using System.Collections.Generic;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 public class DatabricksSqlChunkDataResponseParser : IDatabricksSqlChunkDataResponseParser
 {

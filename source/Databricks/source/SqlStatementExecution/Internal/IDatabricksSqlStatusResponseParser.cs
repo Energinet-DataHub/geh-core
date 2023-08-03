@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
-public class DatabricksOptions
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+
+/// <summary>
+/// This interface is used to parse the response from the Databricks SQL API.
+/// </summary>
+public interface IDatabricksSqlStatusResponseParser
 {
-    public string WorkspaceUrl { get; set; } = string.Empty;
-
-    public string WorkspaceToken { get; set; } = string.Empty;
-
-    public string WarehouseId { get; set; } = string.Empty;
+    /// <summary>
+    /// Parse the response from the Databricks SQL API.
+    /// </summary>
+    /// <param name="jsonResponse"></param>
+    /// <returns>Returns <see cref="DatabricksSqlResponse"/></returns>
+    DatabricksSqlResponse Parse(string jsonResponse);
 }

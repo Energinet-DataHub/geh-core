@@ -12,17 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 
-/// <summary>
-/// Representation of the state of a Databricks SQL response.
-/// </summary>
-public enum DatabricksSqlResponseState
+public class DatabricksOptions
 {
-    Failed = 0,
-    Cancelled = 1,
-    Pending = 2,
-    Succeeded = 3,
-    Running = 4,
-    Closed = 5,
+    public DatabricksOptions(string workspaceUrl, string workspaceToken, string warehouseId)
+    {
+        WorkspaceUrl = workspaceUrl;
+        WorkspaceToken = workspaceToken;
+        WarehouseId = warehouseId;
+    }
+
+    public string WorkspaceUrl { get; }
+
+    public string WorkspaceToken { get; }
+
+    public string WarehouseId { get; }
 }
