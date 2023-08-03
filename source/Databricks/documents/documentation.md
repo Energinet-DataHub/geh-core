@@ -6,7 +6,6 @@ This project contains a client for the Databricks SQL Statement Execution API. T
 
 The implementation uses solely `disposition=EXTERNAL_LINKS` despite that inlining is simpler. This is because inlining has a limit of 16MB, which isn't sufficient for all use cases.
 
-
 ### Usage
 
 Install `Energinet.DataHub.Core.Databricks.SqlStatementExecution` package.
