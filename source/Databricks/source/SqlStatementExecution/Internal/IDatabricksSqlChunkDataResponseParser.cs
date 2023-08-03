@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 public interface IDatabricksSqlChunkDataResponseParser
 {
     /// <summary>
-    /// Parses the response from a Databricks SQL statement execution.
+    /// Parses the chunk data response from a Databricks SQL statement execution.
     /// </summary>
     /// <param name="jsonResponse"></param>
     /// <param name="columnNames"></param>

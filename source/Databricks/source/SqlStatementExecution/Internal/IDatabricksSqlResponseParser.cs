@@ -30,6 +30,16 @@ public interface IDatabricksSqlResponseParser
 
     /// <summary>
     /// Parse the response Chunk from the Databricks SQL API.
+    ///
+    /// <br></br>Example of chunk response:
+    /// <br></br>{
+    /// <br></br>"row_count": 41667,
+    /// <br></br>"byte_count": 1,
+    /// <br></br>"next_chunk_index": 1,
+    /// <br></br>"next_chunk_internal_link": "a-line",
+    /// <br></br>"external_link": "a-link",
+    /// <br></br>"expiration": "2023-07-04T00:00:00.0000"
+    /// <br></br>}
     /// </summary>
     /// <param name="jsonResponse"></param>
     /// <returns>Returns <see cref="DatabricksSqlChunkResponse"/></returns>
@@ -37,6 +47,9 @@ public interface IDatabricksSqlResponseParser
 
     /// <summary>
     /// Parse the response Chunk Data from the Databricks SQL API.
+    ///
+    /// <br></br>Example of chunk data response:
+    /// <br></br>[["0","some value"], ["1","some value"]]
     /// </summary>
     /// <param name="jsonResponse"></param>
     /// <param name="columnNames"></param>
