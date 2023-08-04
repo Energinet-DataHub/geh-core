@@ -18,8 +18,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Web;
+using Castle.Core.Logging;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
@@ -32,23 +35,29 @@ public class SqlStatementClient : ISqlStatementClient
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
     private readonly IDatabricksSqlResponseParser _responseResponseParser;
+    private readonly ILogger<SqlStatementClient> _logger;
 
     public SqlStatementClient(
         HttpClient httpClient,
         IOptions<DatabricksOptions> options,
-        IDatabricksSqlResponseParser responseResponseParser)
+        IDatabricksSqlResponseParser responseResponseParser,
+        ILogger<SqlStatementClient> logger)
     {
         _httpClient = httpClient;
         _options = options;
         _responseResponseParser = responseResponseParser;
+        _logger = logger;
         ConfigureHttpClient(_httpClient, _options);
     }
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
+        _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
+
         var response = await GetFirstChunkOrNullAsync(sqlStatement).ConfigureAwait(false);
         var columnNames = response.ColumnNames;
         var chunk = response.Chunk;
+        var rowCount = 0;
 
         while (chunk != null)
         {
@@ -62,6 +71,7 @@ public class SqlStatementClient : ISqlStatementClient
             for (var index = 0; index < data.Rows.Count; index++)
             {
                 yield return new SqlResultRow(data, index);
+                rowCount++;
             }
 
             if (chunk.NextChunkInternalLink == null)
@@ -71,6 +81,8 @@ public class SqlStatementClient : ISqlStatementClient
 
             chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
         }
+
+        _logger.LogDebug("SQL statement executed. Rows returned: {RowCount}", rowCount);
     }
 
     private async Task<DatabricksSqlResponse> GetFirstChunkOrNullAsync(string sqlStatement)
@@ -94,8 +106,11 @@ public class SqlStatementClient : ISqlStatementClient
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
 
+        var waitTime = 0;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
+            await Task.Delay(waitTime++).ConfigureAwait(false);
+
             var path = $"{StatementsEndpointPath}/{databricksSqlResponse.StatementId}";
             var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
 
