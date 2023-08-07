@@ -19,7 +19,6 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
-using Castle.Core.Logging;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Microsoft.Extensions.Logging;
@@ -129,7 +128,7 @@ public class SqlStatementClient : ISqlStatementClient
             databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
         }
 
-        if (databricksSqlResponse.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
+        if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
         {
             throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
         }
