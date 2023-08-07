@@ -33,6 +33,8 @@ on:
 env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
+  # Necessary to manage Azure resources from automated tests
+  AZURE_KEYVAULT_URL: ${{ vars.azure_keyvault_url }}
 
 
 jobs:
