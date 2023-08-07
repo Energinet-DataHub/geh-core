@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.4.8
+
+- No functional change.
+
 ## Version 7.4.7
 
 - No functional change.
