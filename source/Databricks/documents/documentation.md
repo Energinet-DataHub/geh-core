@@ -27,7 +27,7 @@ Example of how to use the SQL Statement Execution client.
 [HttpGet]
 public async Task<IActionResult> GetAsync()
 {
-    var sqlQuery = GenerateQuery();
+    var sqlQuery = "SELECT column1 FROM database.table";
     var resultList = new List<TestModel>();
 
     await foreach (var row in _sqlStatementClient.ExecuteAsync(sqlQuery)) {
@@ -36,10 +36,5 @@ public async Task<IActionResult> GetAsync()
     }
 
     return Ok(resultList);
-}
-
-private string GenerateQuery()
-{
-    return $"SELECT column1 FROM database.table";
 }
 ```

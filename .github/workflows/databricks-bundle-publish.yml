@@ -61,6 +61,9 @@ jobs:
         with:
           solution_file_path: ./source/Databricks/Databricks.sln
           code_coverage_flags: databricks
+          azure_tenant_id: ${{ vars.azure_tenant_id }}
+          azure_subscription_id: ${{ vars.azure_subscription_id }}
+          azure_spn_id: ${{ vars.azure_spn_id_oidc }}
           publish_test_report: "true"
 
       - name: Pack SQL Statement Execution project
