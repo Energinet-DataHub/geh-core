@@ -18,7 +18,6 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit.Categories;
 
@@ -28,7 +27,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests;
 public class DatabricksSqlResponseParserTests
 {
     private readonly string _succeededResultJson;
-    private readonly string _resultChunkJson;
     private readonly string _pendingResultJson;
     private readonly string _runningResultJson;
     private readonly string _closedResultJson;
@@ -52,7 +50,6 @@ public class DatabricksSqlResponseParserTests
 
         var chunkStream = EmbeddedResources.GetStream("CalculationResultChunk.json");
         using var chunkReader = new StreamReader(chunkStream);
-        _resultChunkJson = chunkReader.ReadToEnd();
 
         _pendingResultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("PENDING");
         _runningResultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("RUNNING");

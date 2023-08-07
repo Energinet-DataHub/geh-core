@@ -18,7 +18,6 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Builders;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Moq;
-using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests;
 
