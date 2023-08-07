@@ -81,8 +81,8 @@ jobs:
           solution_file_path: ./source/App/App.sln
           code_coverage_flags: appcommon
           azure_tenant_id: ${{ vars.azure_tenant_id }}
-          azure_subscription_id: 93301034-9524-444e-a2fc-ed5610311c7a
-          azure_spn_id: 4027c37a-875f-4f4d-891c-f979e07506b6
+          azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+          azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
           publish_test_report: "true"
 
       - name: Pack Common project
