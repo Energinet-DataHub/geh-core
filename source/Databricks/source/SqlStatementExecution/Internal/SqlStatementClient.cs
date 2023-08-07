@@ -109,6 +109,11 @@ public class SqlStatementClient : ISqlStatementClient
         var waitTime = 1000;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
+            if (waitTime > 600000)
+            {
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+            }
+
             waitTime *= 2;
             await Task.Delay(waitTime).ConfigureAwait(false);
 
@@ -120,6 +125,7 @@ public class SqlStatementClient : ISqlStatementClient
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {httpResponse.StatusCode}");
             }
 
+            jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
         }
 
