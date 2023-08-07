@@ -72,8 +72,6 @@ jobs:
 
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v12
-        with:
-          use_azure_functions_tools: "true"
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
