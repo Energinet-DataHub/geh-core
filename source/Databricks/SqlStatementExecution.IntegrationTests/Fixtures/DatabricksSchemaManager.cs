@@ -50,7 +50,7 @@ public class DatabricksSchemaManager
     public async Task CreateSchemaAsync()
     {
         var sqlStatement = @$"CREATE SCHEMA {SchemaName}";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement);
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class DatabricksSchemaManager
         var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var columnDefinitions = string.Join(", ", columnDefinition.Select(c => $"{c.Key} {c.Value}"));
         var sqlStatement = $@"CREATE TABLE {SchemaName}.{tableName} ({columnDefinitions})";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement);
         return tableName;
     }
 
@@ -77,22 +77,22 @@ public class DatabricksSchemaManager
     {
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
         var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES {values}";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement);
     }
 
     public async Task InsertIntoAsync(string tableName, IEnumerable<string> row)
     {
         var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", row)})";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement);
     }
 
     public async Task DropSchemaAsync()
     {
         var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement);
     }
 
-    private async Task ExecuteSql(string sqlStatement)
+    private async Task ExecuteSqlAsync(string sqlStatement)
     {
         var requestObject = new
         {
