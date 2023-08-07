@@ -26,7 +26,9 @@ public class DatabricksSqlStatusResponseParser : IDatabricksSqlStatusResponsePar
     private readonly ILogger<DatabricksSqlStatusResponseParser> _logger;
     private readonly IDatabricksSqlChunkResponseParser _chunkParser;
 
-    public DatabricksSqlStatusResponseParser(ILogger<DatabricksSqlStatusResponseParser> logger, IDatabricksSqlChunkResponseParser chunkParser)
+    public DatabricksSqlStatusResponseParser(
+        ILogger<DatabricksSqlStatusResponseParser> logger,
+        IDatabricksSqlChunkResponseParser chunkParser)
     {
         _logger = logger;
         _chunkParser = chunkParser;
@@ -34,36 +36,44 @@ public class DatabricksSqlStatusResponseParser : IDatabricksSqlStatusResponsePar
 
     public DatabricksSqlResponse Parse(string jsonResponse)
     {
-        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
+        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None };
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
                          throw new InvalidOperationException();
-        var statementId = GetStatementId(jsonObject);
-        var state = GetState(jsonObject);
-        switch (state)
+
+        try
         {
-            case "PENDING":
-                return DatabricksSqlResponse.CreateAsPending(statementId);
-            case "RUNNING":
-                return DatabricksSqlResponse.CreateAsRunning(statementId);
-            case "CLOSED":
-                return DatabricksSqlResponse.CreateAsClosed(statementId);
-            case "CANCELED":
-                return DatabricksSqlResponse.CreateAsCancelled(statementId);
-            case "FAILED":
-                return DatabricksSqlResponse.CreateAsFailed(statementId);
-            case "SUCCEEDED":
-                var columnNames = GetColumnNames(jsonObject);
-                var chunk = _chunkParser.Parse(GetChunk(jsonObject));
-                return DatabricksSqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
-            default:
-                _logger.LogError("Databricks SQL statement execution failed. Response {JsonResponse}", jsonResponse);
-                throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
+            var statementId = GetStatementId(jsonObject);
+            var state = GetState(jsonObject);
+            switch (state)
+            {
+                case "PENDING":
+                    return DatabricksSqlResponse.CreateAsPending(statementId);
+                case "RUNNING":
+                    return DatabricksSqlResponse.CreateAsRunning(statementId);
+                case "CLOSED":
+                    return DatabricksSqlResponse.CreateAsClosed(statementId);
+                case "CANCELED":
+                    return DatabricksSqlResponse.CreateAsCancelled(statementId);
+                case "FAILED":
+                    return DatabricksSqlResponse.CreateAsFailed(statementId);
+                case "SUCCEEDED":
+                    var columnNames = GetColumnNames(jsonObject);
+                    var chunk = _chunkParser.Parse(GetChunk(jsonObject));
+                    return DatabricksSqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
+                default:
+                    throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Databricks SQL statement execution failed. Response {JsonResponse}", jsonResponse);
+            throw;
         }
     }
 
     private static Guid GetStatementId(JObject responseJsonObject)
     {
-        return responseJsonObject["statement_id"]!.ToObject<Guid>();
+        return responseJsonObject["statement_id"]?.ToObject<Guid>() ?? throw new InvalidOperationException("Unable to retrieve 'statement_id' from the responseJsonObject");
     }
 
     private static string GetState(JObject responseJsonObject)

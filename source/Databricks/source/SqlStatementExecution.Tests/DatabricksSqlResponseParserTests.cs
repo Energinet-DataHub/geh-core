@@ -54,11 +54,11 @@ public class DatabricksSqlResponseParserTests
         using var chunkReader = new StreamReader(chunkStream);
         _resultChunkJson = chunkReader.ReadToEnd();
 
-        _pendingResultJson = CreateResultJson("PENDING");
-        _runningResultJson = CreateResultJson("RUNNING");
-        _closedResultJson = CreateResultJson("CLOSED");
-        _canceledResultJson = CreateResultJson("CANCELED");
-        _failedResultJson = CreateResultJson("FAILED");
+        _pendingResultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("PENDING");
+        _runningResultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("RUNNING");
+        _closedResultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("CLOSED");
+        _canceledResultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("CANCELED");
+        _failedResultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("FAILED");
     }
 
     [Theory]
@@ -176,7 +176,7 @@ public class DatabricksSqlResponseParserTests
         DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
-        var resultJson = CreateResultJson("UNKNOWN");
+        var resultJson = DatabrickSqlResponseStatusHelper.CreateStatusResponse("UNKNOWN");
 
         // Act and assert
         Assert.Throws<DatabricksSqlException>(() => sut.Parse(resultJson));
@@ -224,7 +224,8 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenInvalidJson_ThrowsException(DatabricksSqlStatusResponseParser sut)
+    public void Parse_WhenInvalidJson_ThrowsException(
+        DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         var statementId = new JProperty("statement_id", Guid.NewGuid());
@@ -238,13 +239,29 @@ public class DatabricksSqlResponseParserTests
         Assert.Throws<InvalidOperationException>(() => sut.Parse(jsonString));
     }
 
-    private string CreateResultJson(string state)
+    [Theory]
+    [AutoMoqData]
+    public void Parse_WhenInvalidJsonWithErrorCode_LogsErrorAndThrowsDatabricksSqlException(
+        [Frozen] Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        DatabricksSqlStatusResponseParser sut)
     {
-        var statement = new
-        {
-            statement_id = "01edef23-0d2c-10dd-879b-26b5e97b3796",
-            status = new { state, },
-        };
-        return JsonConvert.SerializeObject(statement, Formatting.Indented);
+        var errorCode = new JProperty("error_code", "NOT_FOUND");
+        var errorMessage = new JProperty("error_message", "Statement not found");
+        var details = new JProperty("details", new JObject(new JProperty("description", "does not exist")));
+        var obj = new JObject(errorCode, errorMessage, details);
+        var jsonString = obj.ToString();
+
+        // Act + Assert
+        Assert.Throws<InvalidOperationException>(() => sut.Parse(jsonString));
+
+        // Assert
+        loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => true),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
     }
 }
