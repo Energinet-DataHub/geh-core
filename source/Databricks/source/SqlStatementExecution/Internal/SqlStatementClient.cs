@@ -106,10 +106,11 @@ public class SqlStatementClient : ISqlStatementClient
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
 
-        var waitTime = 0;
+        var waitTime = 1000;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
-            await Task.Delay(waitTime++).ConfigureAwait(false);
+            waitTime *= 2;
+            await Task.Delay(waitTime).ConfigureAwait(false);
 
             var path = $"{StatementsEndpointPath}/{databricksSqlResponse.StatementId}";
             var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
