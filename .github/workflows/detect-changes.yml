@@ -40,6 +40,8 @@ on:
         value: ${{ jobs.changes.outputs.testcommon }}
       xmlconversion:
         value: ${{ jobs.changes.outputs.xmlconversion }}
+      databricks:
+        value: ${{ jobs.changes.outputs.databricks }}
 
 jobs:
   changes:
@@ -56,6 +58,7 @@ jobs:
       schemavalidation: ${{ steps.filter.outputs.schemavalidation }}
       testcommon: ${{ steps.filter.outputs.testcommon }}
       xmlconversion: ${{ steps.filter.outputs.xmlconversion }}
+      databricks: ${{ steps.filter.outputs.databricks }}
     steps:
       # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
       - name: Checkout repository
@@ -103,3 +106,7 @@ jobs:
               - '.github/workflows/detect-changes.yml'
               - 'source/XmlConversion/**'
               - '.github/workflows/xmlconversion-bundle-publish.yml'
+            databricks:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/Databricks/**'
+              - '.github/workflows/databricks-bundle-publish.yml'
