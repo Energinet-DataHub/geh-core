@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.5.1
+
+- No functional change.
+
 ## Version 7.5.0
 
 Add app hosting functionality:
