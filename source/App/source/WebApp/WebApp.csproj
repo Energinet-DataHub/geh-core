@@ -18,6 +18,7 @@ limitations under the License.
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <WarningsAsErrors>true</WarningsAsErrors>
     <AssemblyName>Energinet.DataHub.Core.App.WebApp</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.WebApp</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
