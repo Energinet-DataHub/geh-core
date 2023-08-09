@@ -18,6 +18,7 @@ limitations under the License.
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <WarningsAsErrors>true</WarningsAsErrors>
     <AssemblyName>Energinet.DataHub.Core.App.WebApp</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.WebApp</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -26,7 +27,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.WebApp</PackageId>
-    <PackageVersion>7.4.8$(VersionSuffix)</PackageVersion>
+    <PackageVersion>7.5.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Web App Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
