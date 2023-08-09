@@ -7,9 +7,10 @@ Add app hosting functionality:
 - Add hosted service `RepeatingTrigger<TService>` that can be used to run a hosted service at a fixed interval.
   The trigger will wait for a certain amount of time since last invocation terminated before starting a new invocation.
 - Health checks of `RepeatingTrigger<TService>` can be added using
-  ```csharp
-  services.AddHealthChecks().AddRepeatingTriggerHealthCheck<MyRepeatingTrigger>(timeoutTimeSpan);
-  ```
+
+```csharp
+services.AddHealthChecks().AddRepeatingTriggerHealthCheck<MyRepeatingTrigger>(timeoutTimeSpan);
+```
 
 ## Version 7.4.7
 
