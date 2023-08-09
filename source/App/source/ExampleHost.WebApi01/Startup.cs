@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using ExampleHost.WebApi01.Common;
 
 namespace ExampleHost.WebApi01
@@ -46,6 +48,14 @@ namespace ExampleHost.WebApi01
                 var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
                 httpClient.BaseAddress = new Uri(baseUrl);
             });
+
+            services.AddHostedService<SomeTrigger>();
+            services.AddScoped<SomeTrigger.SomeWorker>();
+
+            services
+                .AddHealthChecks()
+                .AddLiveCheck()
+                .AddRepeatingTriggerHealthCheck<SomeTrigger>(TimeSpan.FromMilliseconds(500));
         }
 
         /// <summary>
@@ -62,6 +72,8 @@ namespace ExampleHost.WebApi01
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapLiveHealthChecks();
+                endpoints.MapReadyHealthChecks();
             });
         }
     }
