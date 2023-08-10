@@ -51,6 +51,8 @@ public abstract class RepeatingTrigger<TService> : BackgroundService, IRepeating
 
     public DateTimeOffset LastTimeActivityRegistered => _activityTimeStamp;
 
+    protected ILogger Logger => _logger;
+
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(_loggingScope))

@@ -15,8 +15,10 @@
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using ExampleHost.WebApi01;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixtures
@@ -40,6 +42,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             Environment.SetEnvironmentVariable(WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl, web02BaseUrl);
             Web01Host = WebHost.CreateDefaultBuilder()
                 .UseStartup<WebApi01.Startup>()
+                .ConfigureServices(collection => collection.AddSingleton<SomeTrigger.SomeWorker.Thrower>(_ => Thrower))
                 .UseUrls(web01BaseUrl)
                 .Build();
 
@@ -50,6 +53,8 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         }
+
+        public SomeTrigger.SomeWorker.Thrower Thrower { get; } = new();
 
         public HttpClient Web01HttpClient { get; }
 
