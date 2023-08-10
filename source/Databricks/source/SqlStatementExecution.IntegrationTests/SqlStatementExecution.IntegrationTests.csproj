@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\source\SqlStatementExecution\SqlStatementExecution.csproj" />
+    <ProjectReference Include="..\SqlStatementExecution\SqlStatementExecution.csproj" />
   </ItemGroup>
 
   <ItemGroup>
