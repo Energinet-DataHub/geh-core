@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.3.4
+
+- No functional change
+
 ## Version 4.3.3
 
 - Updated Azurite TestCertificate readme file
