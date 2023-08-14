@@ -34,9 +34,9 @@ env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Necessary to manage Azure resources from automated tests
-  AZURE_KEYVAULT_URL: ${{ vars.azure_keyvault_url }}
+  AZURE_KEYVAULT_URL: ${{ vars.integration_test_azure_keyvault_url }}
   # Necessary to provide B2C information that allows us to retrieve an access token from automated tests
-  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ vars.azure_b2csecrets_keyvault_url }}
+  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
   # Set value used by 'AzuriteManager'
   #  Use 'AzuriteBlobFolderPath' for TestCommon version 4.2.0 and lower
   AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
@@ -75,8 +75,8 @@ jobs:
           solution_file_path: ./source/Databricks/Databricks.sln
           code_coverage_flags: databricks
           azure_tenant_id: ${{ vars.azure_tenant_id }}
-          azure_subscription_id: ${{ vars.azure_subscription_id }}
-          azure_spn_id: ${{ vars.azure_spn_id_oidc }}
+          azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+          azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
           publish_test_report: "true"
 
       - name: Pack SQL Statement Execution project
