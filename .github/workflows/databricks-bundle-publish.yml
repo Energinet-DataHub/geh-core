@@ -16,15 +16,15 @@ name: Publish Databricks bundle
 
 on:
   # Build, test, pack and publish release packages
-  # Only executed if SchemaValidation package content or build scripts has changed; not if solution file, documentation or tests has changed
+  # Only executed if Databricks package content or build scripts has changed; not if solution file, documentation or tests has changed
   push:
     branches:
       - main
     paths:
-      - source/Databricks/source/SqlStatementClient/**
+      - source/Databricks/source/SqlStatementExecution/**
       - .github/workflows/databricks-bundle-publish.yml
   # Build, test, pack
-  # Executed if SchemaValidation folder or build scripts has changed; including if documentation or tests has changed
+  # Executed if Databricks folder or build scripts has changed; including if documentation or tests has changed
   workflow_call: {}
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
