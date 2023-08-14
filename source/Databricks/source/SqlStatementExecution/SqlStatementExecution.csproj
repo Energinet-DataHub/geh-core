@@ -64,6 +64,12 @@ limitations under the License.
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
+  <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+  <PropertyGroup>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
