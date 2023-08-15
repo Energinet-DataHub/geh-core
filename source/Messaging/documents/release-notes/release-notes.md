@@ -2,7 +2,7 @@
 
 ## Version 3.0.0
 
-- TODO: dsjfhdasfjg
+- Redesigned messaging library.
 
 ## Version 2.1.9
 
