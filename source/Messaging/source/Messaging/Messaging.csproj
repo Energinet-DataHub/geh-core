@@ -59,7 +59,6 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <!-- Disable warning on your public types/methods for not having added full documentation tags -->
     <NoWarn>$(NoWarn);1591;SA1600</NoWarn>
-    <!-- TODO: How do we want to document. -->
   </PropertyGroup>
 
   <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
