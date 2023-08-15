@@ -46,7 +46,7 @@ internal class OutboxSender : IOutboxSender
         var eventCount = 0;
         var messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
-        await foreach (var @event in _integrationEventProvider.GetAsync().ConfigureAwait(false))
+        await foreach (var @event in _integrationEventProvider.GetAsync().WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -55,7 +55,7 @@ internal class OutboxSender : IOutboxSender
             if (!messageBatch.TryAddMessage(serviceBusMessage))
             {
                 await SendBatchAsync(messageBatch).ConfigureAwait(false);
-                messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
+                messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
                 if (!messageBatch.TryAddMessage(serviceBusMessage))
                 {
@@ -74,7 +74,9 @@ internal class OutboxSender : IOutboxSender
         }
 
         if (eventCount > 0)
+        {
             _logger.LogDebug("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
+        }
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
