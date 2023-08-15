@@ -2,7 +2,9 @@
 
 ## Version 3.0.0
 
-- Redesigned messaging library.
+- New implementation for sending messages via Service Bus using a background service.
+- Includes extension for registration of needed dependencies.
+- This is a breaking change, as the old implementation has been removed.
 
 ## Version 2.1.9
 

@@ -12,7 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{5731DAF9-B9EF-480B-B4B9-585D41EE21BC}"
 	ProjectSection(SolutionItems) = preProject
 		documents\documentation.md = documents\documentation.md
-		documents\transport-protocol.md = documents\transport-protocol.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{7B8A3DCF-D347-4832-8E74-C374E7144421}"
