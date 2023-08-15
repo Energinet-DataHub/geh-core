@@ -22,10 +22,10 @@ internal class ServiceBusSenderProvider : IServiceBusSenderProvider
     private readonly string _topicName;
     private ServiceBusSender? _serviceBusSender;
 
-    public ServiceBusSenderProvider(string serviceBusIntegrationEventWriteConnectionString, string topicName)
+    public ServiceBusSenderProvider(CommunicationSettings options)
     {
-        _serviceBusIntegrationEventWriteConnectionString = serviceBusIntegrationEventWriteConnectionString;
-        _topicName = topicName;
+        _serviceBusIntegrationEventWriteConnectionString = options.ServiceBusIntegrationEventWriteConnectionString;
+        _topicName = options.IntegrationEventTopicName;
     }
 
     public ServiceBusSender Instance

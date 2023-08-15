@@ -25,15 +25,22 @@ public static class Registration
     /// It is the responsibility of the caller to register the dependencies of the
     /// <see cref="IIntegrationEventProvider"/> implementation.
     /// </summary>
+    /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+    /// <param name="settingsFactory"></param>
+    /// <returns>A reference to this instance after the operation has completed.</returns>
     public static IServiceCollection AddCommunication<TIntegrationEventProvider>(
         this IServiceCollection services,
-        string serviceBusIntegrationEventWriteConnectionString,
-        string integrationEventTopicName)
+        Func<IServiceProvider, CommunicationSettings> settingsFactory)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
-        services.AddSingleton<IServiceBusSenderProvider>(
-            _ => new ServiceBusSenderProvider(serviceBusIntegrationEventWriteConnectionString, integrationEventTopicName));
+        services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>(sp =>
+        {
+            var settings = settingsFactory(sp);
+            return new ServiceBusSenderProvider(settings);
+        });
+
         services.AddScoped<IOutboxSender, OutboxSender>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
