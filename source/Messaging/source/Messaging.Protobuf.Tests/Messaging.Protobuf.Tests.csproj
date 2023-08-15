@@ -54,7 +54,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Messaging.Protobuf.Integration.ServiceCollection\Messaging.Protobuf.Integration.ServiceCollection.csproj" />
     <ProjectReference Include="..\Messaging.Protobuf\Messaging.Protobuf.csproj" />
   </ItemGroup>
   <ItemGroup>
