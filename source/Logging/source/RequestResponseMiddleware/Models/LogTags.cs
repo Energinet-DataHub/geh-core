@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Models
             try
             {
                 var jsonQueryCollection = JsonSerializer.Deserialize<Dictionary<string, string>>(queryKeyValue);
-                foreach (var item in jsonQueryCollection)
+                foreach (var item in jsonQueryCollection!)
                 {
                     _queryTags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);
                     _tags.TryAdd(LogDataBuilder.MetaNameFormatter(item.Key), item.Value);

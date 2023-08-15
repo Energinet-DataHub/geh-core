@@ -27,9 +27,9 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Unit.Diagnostics.HealthChecks
 {
     public class ServiceHealthCheckTests : IAsyncLifetime
     {
-        private Uri _dependentServiceUri;
-        private WireMockServer _serverMock;
-        private HealthCheckContext _healthCheckContext;
+        private Uri _dependentServiceUri = null!;
+        private WireMockServer _serverMock = null!;
+        private HealthCheckContext _healthCheckContext = null!;
 
         public Task InitializeAsync()
         {

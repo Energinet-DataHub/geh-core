@@ -17,11 +17,7 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
     <ProjectGuid>{432DA871-1514-423E-B0EB-7F5873CB1E45}</ProjectGuid>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsPackable>false</IsPackable>
 
     <AssemblyName>Energinet.DataHub.Core.App.FunctionApp.Tests</AssemblyName>
@@ -50,13 +46,6 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\FunctionApp\FunctionApp.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>

@@ -168,7 +168,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
                 (ctx, ct) =>
                 {
                     using var masterDbConnection = new SqlConnection(_sqlServerConnectionStringProvider.BuildConnectionStringForDatabaseName("master"));
+#pragma warning disable CA2100 // SQL query does not contain user input and is thus vulnerable
                     using var command = new SqlCommand(createDatabaseCommandText, masterDbConnection);
+#pragma warning restore CA2100
                     masterDbConnection.Open();
                     try
                     {

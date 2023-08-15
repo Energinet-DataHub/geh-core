@@ -16,12 +16,8 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
     <AssemblyName>Energinet.DataHub.Core.App.WebApp.SimpleInjector</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.WebApp.SimpleInjector</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -17,13 +17,9 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
     <ProjectGuid>{5EAEA68C-424C-40A2-B68B-C5FAEB02BD6B}</ProjectGuid>
     <AssemblyName>Energinet.DataHub.Core.SchemaValidation</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.SchemaValidation</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

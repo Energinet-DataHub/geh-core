@@ -38,7 +38,7 @@ namespace ExampleHost.WebApi04
             AuthenticationExtensions.DisableHttpsConfiguration = true;
 
             services.AddControllers();
-            services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
+            services.AddJwtBearerAuthentication(innerMetadata!, outerMetadata!, audience!);
             services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
             services.AddApplicationInsightsTelemetry();
         }

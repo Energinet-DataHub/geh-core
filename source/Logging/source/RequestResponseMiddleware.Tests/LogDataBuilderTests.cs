@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Microsoft.Azure.Functions.Worker.Http;
 using Xunit;
@@ -105,7 +103,7 @@ namespace RequestResponseMiddleware.Tests
             functionContext.FunctionContextMock.Setup(e => e.InvocationId).Returns(Guid.NewGuid().ToString);
             functionContext.FunctionDefinitionMock.Setup(e => e.Name).Returns("TestName");
 
-            var inputData = new Dictionary<string, object>(System.StringComparer.OrdinalIgnoreCase)
+            var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Headers", "{\"Authorization\":\"Bearer ey?????\"}" },
                 { "Query", "{ \"Saved\": \"SavedValue\" }" },
@@ -147,7 +145,7 @@ namespace RequestResponseMiddleware.Tests
             functionContext.FunctionContextMock.Setup(e => e.InvocationId).Returns(Guid.NewGuid().ToString);
             functionContext.FunctionDefinitionMock.Setup(e => e.Name).Returns("TestName");
 
-            var inputData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var inputData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Headers", "{\"Authorization\":\"Bearer ey?????\"}" },
                 { "Query", queryJsonString },

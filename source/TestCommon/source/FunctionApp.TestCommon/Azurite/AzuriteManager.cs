@@ -14,6 +14,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Management;
@@ -39,6 +40,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite
     /// If Azurite is not installed globally then set the environment variable 'AzuriteFolderPath'
     /// to the location of the 'azurite.cmd' file.
     /// </summary>
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "This is accepted to only work on windows.")]
     public class AzuriteManager : IDisposable
     {
         // Azurite accepts the well-known storage account name and key.

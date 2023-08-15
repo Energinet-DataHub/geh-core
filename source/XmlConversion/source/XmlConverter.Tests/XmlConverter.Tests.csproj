@@ -16,13 +16,9 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
     <AssemblyName>Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.XmlConversion.XmlConverter.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

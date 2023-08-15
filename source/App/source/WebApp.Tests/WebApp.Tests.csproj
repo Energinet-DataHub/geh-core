@@ -16,13 +16,8 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-      <TargetFramework>net7.0</TargetFramework>
-      <LangVersion>10</LangVersion>
-      <Nullable>enable</Nullable>
-      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
       <AssemblyName>Energinet.DataHub.Core.App.Hosting.Tests</AssemblyName>
       <RootNamespace>Energinet.DataHub.Core.App.Hosting.Tests</RootNamespace>
-      <GenerateDocumentationFile>true</GenerateDocumentationFile>
       <IsPackable>false</IsPackable>
     </PropertyGroup>
 

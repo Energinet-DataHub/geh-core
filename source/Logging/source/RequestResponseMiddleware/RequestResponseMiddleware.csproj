@@ -17,9 +17,6 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
     <RootNamespace>Energinet.DataHub.Core.Logging.RequestResponseMiddleware</RootNamespace>
     <AssemblyName>Energinet.DataHub.Core.Logging.RequestResponseMiddleware</AssemblyName>
   </PropertyGroup>

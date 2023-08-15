@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +29,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
     /// </summary>
     public abstract class FunctionAppFixture : IAsyncLifetime
     {
+        private readonly FunctionAppHostSettings _hostSettings;
+
         protected FunctionAppFixture()
         {
             TestLogger = new TestDiagnosticsLogger();
@@ -39,9 +38,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
             HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
             HostStartupLog = new List<string>();
 
-            var hostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-            OnConfigureHostSettings(hostSettings);
-            HostManager = new FunctionAppHostManager(hostSettings, TestLogger);
+            _hostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
+            HostManager = new FunctionAppHostManager(_hostSettings, TestLogger);
         }
 
         public FunctionAppHostManager HostManager { get; }
@@ -54,6 +52,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon
 
         public async Task InitializeAsync()
         {
+            OnConfigureHostSettings(_hostSettings);
             OnConfigureEnvironment();
 
             var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
