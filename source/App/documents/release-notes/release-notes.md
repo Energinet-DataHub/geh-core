@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 7.5.3
+
+- No functional change.
+
 ## Version 7.5.2
 
 - No functional change.
