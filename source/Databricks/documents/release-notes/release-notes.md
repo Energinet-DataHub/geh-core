@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 1.0.3
+
+- No functional change.
+
 ## Version 1.0.2
 
 - No functional change.
