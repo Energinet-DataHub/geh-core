@@ -206,3 +206,64 @@ When a new libray is added to the repository, tracking of code coverage must be 
 ```
 
 * In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `code_coverage_flags`, and assign it the value given to the flag in `codecov.yml`.
+
+
+## Project file
+
+When a new package is added to the repository, it is important that the project file has the necessary properties for the new package.
+
+Example of what project properties that should be set:
+
+``` xml
+  <PropertyGroup>
+    <PackageId>Energinet.DataHub.Core.(library_name).(package_name)</PackageId>
+    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+    <Title>insert_title</Title>
+    <Company>Energinet-DataHub</Company>
+    <Authors>Energinet-DataHub</Authors>
+    <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
+    <!-- PackageReleaseNotes:
+      Is shown in Azure DevOps artifacts Release Notes section.
+    -->
+    <PackageReleaseNotes>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/documentation.md)
+    </PackageReleaseNotes>
+    <!-- PackageDescription:
+      Is shown in GitHub packages "About this package" section,
+      and in Visual Studio package manager view.
+    -->
+    <PackageDescription>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/documentation.md)
+    </PackageDescription>
+    <Description>package_description</Description>
+    <PackageTags>energinet;datahub</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <!-- Disable warning on your public types/methods for not having added full documentation tags -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+```
+
+### SourceLink
+
+We use `SourceLink` to allow debugging.
+
+Install nuget package: `Microsoft.SourceLink.GitHub`
+
+Add the following properties in the project file:
+
+``` xml
+  <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+  <PropertyGroup>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+```
