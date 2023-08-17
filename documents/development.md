@@ -207,7 +207,6 @@ When a new libray is added to the repository, tracking of code coverage must be 
 
 * In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `code_coverage_flags`, and assign it the value given to the flag in `codecov.yml`.
 
-
 ## Project file
 
 When a new package is added to the repository, it is important that the project file has the necessary properties for the new package.
