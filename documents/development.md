@@ -2,6 +2,15 @@
 
 Notes regarding the development of [Energinet-DataHub](https://github.com/Energinet-DataHub) NuGet packages, also called libraries. The packages contain reusable types, supporting the development of Energinet DataHub.
 
+## Table of contents
+
+1. [NuGet package bundle](#nuget-package-bundle)
+1. [Multiple NuGet packages in mono repository](#multiple-nuget-packages-in-mono-repository)
+1. [Preparations for a new release](#preparations-for-a-new-release)
+1. [Testing a package locally](#testing-a-package-locally)
+1. [Debugging a released package](#debugging-a-released-package)
+1. [Developing a new package bundle](#developing-a-new-package-bundle)
+
 ## NuGet package bundle
 
 In the following we will use the term _NuGet package bundle_ when referring to a group of related NuGet packages, between which we want to use project references during development of the packages, and NuGet package references when they are published.
@@ -75,31 +84,6 @@ Here is an example of the package folder structure using the existing `TestCommo
             └───MyNewPackage
             └───MyNewPackage.Tests
 ```
-
-### Dependencies, build and publish
-
-Projects within a bundle must use _Project References_ when depending on each other. When doing so, developers must be careful, and seriously consider the best modularization of code into projects, and the impact it has on dependencies.
-
-However, preferable only packages that has changes are actually published, and hence requires an updated version. If only the tests, or `*.md` files for a package has changes, then the package should not have to be published.
-
-### Common project configuration
-
-All packages must start with `Energinet.DataHub.Core` in their output name, namespace and package id.
-
-Consider using shorter project file names and folders (see TestCommon example), and instead ensure to set the full names using project properties:
-
-``` xml
-  <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Core.MyPackageName</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.MyPackageName</RootNamespace>
-    ...
-    <PackageId>Energinet.DataHub.Core.MyPackageName</PackageId>
-  </PropertyGroup>
-```
-
-### XML documentation
-
-In all packages we should aim for documenting types using [XML documentation comments](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/).
 
 ## Preparations for a new release
 
@@ -187,7 +171,34 @@ Unchecking "Enable Just My Code" will cause the download and load of lots of sym
 
 If you have "Enable Just My Code" checked then, when you step into code, you will get a dialog asking if you want to download the source. It is possible to set breakpoints in the downloaded source as well.
 
-## CodeCov
+## Developing a new package bundle
+
+### Dependencies, build and publish
+
+Projects within a bundle must use _Project References_ when depending on each other. When doing so, developers must be careful, and seriously consider the best modularization of code into projects, and the impact it has on dependencies.
+
+However, preferable only packages that has changes are actually published, and hence requires an updated version. If only the tests, or `*.md` files for a package has changes, then the package should not have to be published.
+
+### Common project configuration
+
+All packages must start with `Energinet.DataHub.Core` in their output name, namespace and package id.
+
+Consider using shorter project file names and folders (see TestCommon example), and instead ensure to set the full names using project properties:
+
+``` xml
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Core.MyPackageName</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.MyPackageName</RootNamespace>
+    ...
+    <PackageId>Energinet.DataHub.Core.MyPackageName</PackageId>
+  </PropertyGroup>
+```
+
+### XML documentation
+
+In all packages we should aim for documenting types using [XML documentation comments](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/).
+
+### CodeCov
 
 When a new libray is added to the repository, tracking of code coverage must be enabled. To do so, follow the steps below:
 
@@ -206,3 +217,63 @@ When a new libray is added to the repository, tracking of code coverage must be 
 ```
 
 * In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `code_coverage_flags`, and assign it the value given to the flag in `codecov.yml`.
+
+### Project file
+
+When a new package is added to the repository, it is important that the project file has the necessary properties for the new package.
+
+Example of what project properties that should be set:
+
+``` xml
+  <PropertyGroup>
+    <PackageId>Energinet.DataHub.Core.(library_name).(package_name)</PackageId>
+    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+    <Title>insert_title</Title>
+    <Company>Energinet-DataHub</Company>
+    <Authors>Energinet-DataHub</Authors>
+    <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
+    <!-- PackageReleaseNotes:
+      Is shown in Azure DevOps artifacts Release Notes section.
+    -->
+    <PackageReleaseNotes>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/documentation.md)
+    </PackageReleaseNotes>
+    <!-- PackageDescription:
+      Is shown in GitHub packages "About this package" section,
+      and in Visual Studio package manager view.
+    -->
+    <PackageDescription>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/(library_name)/documents/documentation.md)
+    </PackageDescription>
+    <Description>package_description</Description>
+    <PackageTags>energinet;datahub</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <!-- Disable warning on your public types/methods for not having added full documentation tags -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+```
+
+### SourceLink
+
+We use `SourceLink` to allow debugging.
+
+Install nuget package: `Microsoft.SourceLink.GitHub`
+
+Add the following properties in the project file:
+
+``` xml
+  <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+  <PropertyGroup>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+```
