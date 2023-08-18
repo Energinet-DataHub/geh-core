@@ -17,7 +17,7 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
 {
     public async IAsyncEnumerable<IntegrationEvent> GetAsync()
     {
-        var personeIntegrationEvent = new IntegrationEvent(
+        yield return new IntegrationEvent(
             Guid.NewGuid(),
             nameof(UserCreated),
             1,
