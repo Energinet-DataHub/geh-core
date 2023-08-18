@@ -109,7 +109,7 @@ public sealed class ServiceBusFunction
 }
 ```
 
-### From a hosted BackgroundService
+### BackgroundService
 
 When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code registering the worker, also needs to be run.
 
