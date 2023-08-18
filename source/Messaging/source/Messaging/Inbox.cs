@@ -29,7 +29,7 @@ internal sealed class Inbox : IInbox
 
     public async Task HandleAsync(RawServiceBusMessage message)
     {
-        if (await _integrationEventHandler.ShouldHandleAsync(message.Subject))
+        if (_integrationEventHandler.ShouldHandle(message.Subject))
         {
             var integrationEvent = _integrationEventFactory.Create(message);
             await _integrationEventHandler.HandleAsync(integrationEvent).ConfigureAwait(false);

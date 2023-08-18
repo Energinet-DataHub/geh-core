@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
-
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
 /// <summary>
@@ -23,7 +21,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// </summary>
 public interface IIntegrationEventHandler
 {
-    Task<bool> ShouldHandleAsync(string eventName);
+    bool ShouldHandle(string eventName);
 
     Task HandleAsync(IntegrationEvent integrationEvent);
 }

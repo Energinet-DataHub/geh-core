@@ -26,6 +26,7 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
                 FirstName = "John",
                 LastName = "Doe"
             });
+        // make sure to commit changes, after yield, as the event has now been dispatched
     }
 }
 
@@ -49,12 +50,12 @@ an implementation is shown below.
 ```csharp
 public sealed class IntegrationEventHandler : IIntegrationEventHandler
 {
-    public Task<bool> ShouldHandleAsync(string eventName)
+    public bool ShouldHandle(string eventName)
     {
-        return Task.FromResult(
+        return 
             eventName is
                 nameof(ActorCreated) or
-                nameof(UserCreated));
+                nameof(UserCreated);
     }
 
     public async Task HandleAsync(IntegrationEvent integrationEvent)
@@ -85,7 +86,7 @@ services.AddInbox<IntegrationEventHandler>(new[]
 ### ServiceBusTrigger function
 
 When using a ServiceBusTrigger function to handle integration events, the IInbox dependency needs to be injected into the function and called in the manner shown below.
-The IInbox ensures deserialization of the protobuf message and calls the IIntegrationEventHandler implementation if it meets the criteria defined in the ShouldHandleAsync method.
+The IInbox ensures deserialization of the protobuf message and calls the IIntegrationEventHandler implementation if it meets the criteria defined in the ShouldHandle method.
 
 ```csharp
 // MessageBusTrigger function
