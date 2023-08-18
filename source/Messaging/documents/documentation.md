@@ -62,10 +62,10 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
         switch (integrationEvent.Message)
         {
             case ActorCreated actorCreated:
-                await Console.Out.WriteLineAsync($"Handle ActorCreated {actorCreated.Name}");
+                // handle actorCreated
                 break;
             case UserCreated userCreated:
-                await Console.Out.WriteLineAsync($"Handle UserCreated {userCreated.FirstName} {userCreated.LastName}");
+                // handle userCreated
                 break;
         }
     }
@@ -83,8 +83,10 @@ services.AddInbox<IntegrationEventHandler>(new[]
 ```
 
 ### ServiceBusTrigger function
+
 When using a ServiceBusTrigger function to handle integration events, the IInbox dependency needs to be injected into the function and called in the manner shown below.
 The IInbox ensures deserialization of the protobuf message and calls the IIntegrationEventHandler implementation if it meets the criteria defined in the ShouldHandleAsync method.
+
 ```csharp
 // MessageBusTrigger function
 public sealed class ServiceBusFunction
@@ -108,7 +110,9 @@ public sealed class ServiceBusFunction
 ```
 
 ### From a hosted BackgroundService
+
 When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code registering the worker, also needs to be run.
+
 ```csharp
 services
     .AddInboxWorker(_ => new InboxWorkerSettings

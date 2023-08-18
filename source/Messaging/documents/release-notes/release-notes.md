@@ -1,6 +1,7 @@
 # Messaging Release notes
 
 ## Version 3.1.0
+
 - Support for receiving messages from Service Bus using a background service or Service Bus trigger.
 
 ## Version 3.0.0
