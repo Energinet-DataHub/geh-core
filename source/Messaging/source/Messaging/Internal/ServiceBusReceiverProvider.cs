@@ -16,17 +16,19 @@ using Azure.Messaging.ServiceBus;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
-internal sealed class ServiceBusSenderProvider : IServiceBusSenderProvider
+internal sealed class ServiceBusReceiverProvider : IServiceBusReceiverProvider
 {
     private readonly string _serviceBusIntegrationEventWriteConnectionString;
     private readonly string _topicName;
-    private ServiceBusSender? _serviceBusSender;
+    private readonly string _subscriptionName;
+    private ServiceBusReceiver? _serviceBusSender;
 
-    public ServiceBusSenderProvider(OutboxWorkerSettings options)
+    public ServiceBusReceiverProvider(InboxWorkerSettings options)
     {
-        _serviceBusIntegrationEventWriteConnectionString = options.ServiceBusIntegrationEventWriteConnectionString;
-        _topicName = options.IntegrationEventTopicName;
+        _serviceBusIntegrationEventWriteConnectionString = options.ServiceBusConnectionString;
+        _topicName = options.TopicName;
+        _subscriptionName = options.SubscriptionName;
     }
 
-    public ServiceBusSender Instance => _serviceBusSender ??= new ServiceBusClient(_serviceBusIntegrationEventWriteConnectionString).CreateSender(_topicName);
+    public ServiceBusReceiver Instance => _serviceBusSender ??= new ServiceBusClient(_serviceBusIntegrationEventWriteConnectionString).CreateReceiver(_topicName, _subscriptionName);
 }

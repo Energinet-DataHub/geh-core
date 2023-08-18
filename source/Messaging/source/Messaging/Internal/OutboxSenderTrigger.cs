@@ -20,14 +20,13 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
-internal class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
+internal sealed class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 {
-    private const int DelayInSecondsBeforeNextExecution = 10;
-
     public OutboxSenderTrigger(
+        OutboxWorkerSettings settings,
         IServiceProvider serviceProvider,
         ILogger<OutboxSenderTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
+        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(settings.HostedServiceExecutionDelayMs))
     {
     }
 

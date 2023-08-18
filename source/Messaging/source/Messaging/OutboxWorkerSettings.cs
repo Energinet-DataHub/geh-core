@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// <summary>
 /// Settings for the communication with the Service Bus.
 /// </summary>
-public sealed class CommunicationSettings
+public sealed class OutboxWorkerSettings
 {
     /// <summary>
     /// The connection string for the Service Bus.
@@ -28,4 +28,9 @@ public sealed class CommunicationSettings
     /// The name of the topic to send integration events to.
     /// </summary>
     public string IntegrationEventTopicName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Delay in milliseconds between each execution of the hosted service.
+    /// </summary>
+    public int HostedServiceExecutionDelayMs { get; set; } = 10000;
 }

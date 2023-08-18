@@ -12,14 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.WebApp.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
-/// <summary>
-/// Creates a <see cref="ServiceBusMessage"/> instance from an <see cref="IntegrationEvent"/>
-/// </summary>
-internal interface IServiceBusMessageFactory
+internal sealed class InboxReceiverTrigger : RepeatingTrigger<IInboxReceiver>
 {
-    ServiceBusMessage Create(IntegrationEvent @event);
+    public InboxReceiverTrigger(
+        InboxWorkerSettings settings,
+        IServiceProvider serviceProvider,
+        ILogger<InboxReceiverTrigger> logger)
+        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(settings.HostedServiceExecutionDelayMs))
+    {
+    }
+
+    protected override Task ExecuteAsync(IInboxReceiver scopedService, CancellationToken cancellationToken, Action isAliveCallback)
+    {
+        return scopedService.ReceiveAsync(cancellationToken);
+    }
 }

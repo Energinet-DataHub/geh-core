@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
-internal class OutboxSender : IOutboxSender
+internal sealed class OutboxSender : IOutboxSender
 {
     private readonly IIntegrationEventProvider _integrationEventProvider;
     private readonly IServiceBusSenderProvider _senderProvider;

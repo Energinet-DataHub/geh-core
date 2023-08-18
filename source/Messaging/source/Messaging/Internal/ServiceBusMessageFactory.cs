@@ -17,7 +17,7 @@ using Google.Protobuf;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
-internal class ServiceBusMessageFactory : IServiceBusMessageFactory
+internal sealed class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     public ServiceBusMessage Create(IntegrationEvent @event)
     {

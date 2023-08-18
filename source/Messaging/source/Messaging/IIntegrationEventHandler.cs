@@ -17,11 +17,13 @@ using Energinet.DataHub.Core.Messaging.Communication.Internal;
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
 /// <summary>
-/// In order to use the outbox functionality of this library and to publish integration events an implementation of this interface is required.
+/// In order to use the `Communication` library to publish integration events an implementation of this interface is required.
 /// The implementation is responsible for creating or fetching integration events (likely from a database)
 /// and subsequently commit state changes.
 /// </summary>
-public interface IIntegrationEventProvider
+public interface IIntegrationEventHandler
 {
-    IAsyncEnumerable<IntegrationEvent> GetAsync();
+    Task<bool> ShouldHandleAsync(string eventName);
+
+    Task HandleAsync(IntegrationEvent integrationEvent);
 }
