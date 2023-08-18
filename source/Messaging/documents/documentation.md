@@ -52,10 +52,9 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
 {
     public bool ShouldHandle(string eventName)
     {
-        return 
-            eventName is
-                nameof(ActorCreated) or
-                nameof(UserCreated);
+        return eventName is
+            nameof(ActorCreated) or
+            nameof(UserCreated);
     }
 
     public async Task HandleAsync(IntegrationEvent integrationEvent)
