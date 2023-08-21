@@ -108,6 +108,11 @@ public class SqlStatementClient : ISqlStatementClient
         var waitTime = 1000;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
+            _logger.LogDebug(
+                "Databricks SQL response received with state: {State} for statement ID: {StatementId}",
+                databricksSqlResponse.State,
+                databricksSqlResponse.StatementId);
+
             if (waitTime > 600000)
             {
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
