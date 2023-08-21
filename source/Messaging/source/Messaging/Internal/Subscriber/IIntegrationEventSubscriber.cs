@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
 /// <summary>
 /// Receives and handles service bus messages
 /// </summary>
-internal interface IInboxReceiver
+internal interface IIntegrationEventSubscriber
 {
     Task ReceiveAsync(CancellationToken cancellationToken);
 }

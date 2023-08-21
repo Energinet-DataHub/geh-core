@@ -13,22 +13,29 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Hosting;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
-internal sealed class InboxReceiverTrigger : RepeatingTrigger<IInboxReceiver>
+/// <summary>
+/// The sender runs as a background service
+/// </summary>
+internal sealed class PublisherTrigger : RepeatingTrigger<IIntegrationEventPublisher>
 {
-    public InboxReceiverTrigger(
-        InboxWorkerSettings settings,
+    public PublisherTrigger(
+        PublisherWorkerSettings settings,
         IServiceProvider serviceProvider,
-        ILogger<InboxReceiverTrigger> logger)
+        ILogger<PublisherTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromMilliseconds(settings.HostedServiceExecutionDelayMs))
     {
     }
 
-    protected override Task ExecuteAsync(IInboxReceiver scopedService, CancellationToken cancellationToken, Action isAliveCallback)
+    protected override async Task ExecuteAsync(
+        IIntegrationEventPublisher integrationEventPublisher,
+        CancellationToken cancellationToken,
+        Action isAliveCallback)
     {
-        return scopedService.ReceiveAsync(cancellationToken);
+        await integrationEventPublisher.PublishAsync(cancellationToken).ConfigureAwait(false);
     }
 }

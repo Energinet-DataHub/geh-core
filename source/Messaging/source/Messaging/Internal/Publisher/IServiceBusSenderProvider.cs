@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Azure.Messaging.ServiceBus;
 
-/// <summary>
-/// Creates a <see cref="IntegrationEvent"/> instance from a <see cref="RawServiceBusMessage"/>
-/// </summary>
-internal interface IIntegrationEventFactory
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
+
+internal interface IServiceBusSenderProvider
 {
-    IntegrationEvent Create(RawServiceBusMessage message);
+    ServiceBusSender Instance { get; }
 }

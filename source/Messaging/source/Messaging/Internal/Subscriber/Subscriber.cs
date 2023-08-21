@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 
-internal sealed class Inbox : IInbox
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
+
+internal sealed class Subscriber : ISubscriber
 {
     private readonly IIntegrationEventFactory _integrationEventFactory;
     private readonly IIntegrationEventHandler _integrationEventHandler;
 
-    public Inbox(IIntegrationEventFactory integrationEventFactory, IIntegrationEventHandler integrationEventHandler)
+    public Subscriber(IIntegrationEventFactory integrationEventFactory, IIntegrationEventHandler integrationEventHandler)
     {
         _integrationEventFactory = integrationEventFactory;
         _integrationEventHandler = integrationEventHandler;
     }
 
-    public async Task HandleAsync(RawServiceBusMessage message)
+    public async Task HandleAsync(IntegrationEventServiceBusMessage message)
     {
         if (_integrationEventHandler.ShouldHandle(message.Subject))
         {

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
 /// <summary>
-/// Provides a <see cref="ServiceBusReceiver"/> instance
+/// In order to use the publishing functionality of this library and to publish integration events an implementation of this interface is required.
+/// The implementation is responsible for creating or fetching integration events (likely from a database)
+/// and subsequently commit state changes.
 /// </summary>
-internal interface IServiceBusReceiverProvider
+public interface IIntegrationEventProvider
 {
-    ServiceBusReceiver Instance { get; }
+    IAsyncEnumerable<IntegrationEvent> GetAsync();
 }

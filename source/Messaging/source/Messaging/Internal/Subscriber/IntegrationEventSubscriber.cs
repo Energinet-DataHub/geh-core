@@ -12,26 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
-internal sealed class InboxReceiver : IInboxReceiver
+internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
 {
     private readonly int _maxMessageDeliveryCount;
     private readonly IServiceBusReceiverProvider _serviceBusReceiverProvider;
-    private readonly IInbox _inbox;
-    private readonly ILogger<InboxReceiver> _logger;
+    private readonly ISubscriber _subscriber;
+    private readonly ILogger<IntegrationEventSubscriber> _logger;
 
-    public InboxReceiver(
-        InboxWorkerSettings inboxWorkerSettings,
+    public IntegrationEventSubscriber(
+        SubscriberWorkerSettings subscriberWorkerSettings,
         IServiceBusReceiverProvider serviceBusReceiverProvider,
-        IInbox inbox,
-        ILogger<InboxReceiver> logger)
+        ISubscriber subscriber,
+        ILogger<IntegrationEventSubscriber> logger)
     {
-        _maxMessageDeliveryCount = inboxWorkerSettings.MaxMessageDeliveryCount;
+        _maxMessageDeliveryCount = subscriberWorkerSettings.MaxMessageDeliveryCount;
         _serviceBusReceiverProvider = serviceBusReceiverProvider;
-        _inbox = inbox;
+        _subscriber = subscriber;
         _logger = logger;
     }
 
@@ -41,13 +42,13 @@ internal sealed class InboxReceiver : IInboxReceiver
         {
             try
             {
-                var rawServiceBusMessage = new RawServiceBusMessage(
+                var rawServiceBusMessage = new IntegrationEventServiceBusMessage(
                     Guid.Parse(message.MessageId),
                     message.Subject,
                     message.ApplicationProperties,
                     new BinaryData(message.Body.ToArray()));
 
-                await _inbox.HandleAsync(rawServiceBusMessage).ConfigureAwait(false);
+                await _subscriber.HandleAsync(rawServiceBusMessage).ConfigureAwait(false);
                 await _serviceBusReceiverProvider.Instance.CompleteMessageAsync(message, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)

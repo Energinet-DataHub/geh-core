@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 
 /// <summary>
 /// Settings for the communication with the Service Bus.
 /// </summary>
-public sealed class InboxWorkerSettings
+public sealed class SubscriberWorkerSettings
 {
     /// <summary>
     /// The connection string for the Service Bus.

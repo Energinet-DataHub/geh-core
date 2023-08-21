@@ -14,25 +14,26 @@
 
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
-internal sealed class OutboxSender : IOutboxSender
+internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher
 {
     private readonly IIntegrationEventProvider _integrationEventProvider;
     private readonly IServiceBusSenderProvider _senderProvider;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly ILogger _logger;
 
-    public OutboxSender(
+    public IntegrationEventPublisher(
         IIntegrationEventProvider integrationEventProvider,
         IServiceBusSenderProvider senderProvider,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        ILogger<OutboxSender> logger)
+        ILogger<IntegrationEventPublisher> logger)
     {
         _integrationEventProvider = integrationEventProvider;
         _senderProvider = senderProvider;
@@ -40,7 +41,7 @@ internal sealed class OutboxSender : IOutboxSender
         _logger = logger;
     }
 
-    public async Task SendAsync(CancellationToken cancellationToken)
+    public async Task PublishAsync(CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
@@ -70,7 +71,7 @@ internal sealed class OutboxSender : IOutboxSender
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to send messages from outbox");
+            _logger.LogError(e, "Failed to publish messages");
         }
 
         if (eventCount > 0)

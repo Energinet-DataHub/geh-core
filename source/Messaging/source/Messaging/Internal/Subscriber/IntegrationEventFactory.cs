@@ -14,7 +14,7 @@
 
 using Google.Protobuf.Reflection;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
 internal sealed class IntegrationEventFactory : IIntegrationEventFactory
 {
@@ -25,7 +25,7 @@ internal sealed class IntegrationEventFactory : IIntegrationEventFactory
         _descriptors = descriptors;
     }
 
-    public IntegrationEvent Create(RawServiceBusMessage message)
+    public IntegrationEvent Create(IntegrationEventServiceBusMessage message)
     {
         var descriptor = _descriptors.FirstOrDefault(x => x.Name == message.Subject);
 

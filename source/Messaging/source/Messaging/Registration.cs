@@ -13,7 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Google.Protobuf.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,86 +26,86 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 public static class Registration
 {
     /// <summary>
-    /// Method for registering outbox worker.
+    /// Method for registering publisher worker.
     /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventProvider"/> implementation.
     /// </summary>
     /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <param name="settingsFactory">Factory resolving the <see cref="OutboxWorkerSettings"/></param>
+    /// <param name="settingsFactory">Factory resolving the <see cref="PublisherWorkerSettings"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddOutboxWorker<TIntegrationEventProvider>(
+    public static IServiceCollection AddPublisherWorker<TIntegrationEventProvider>(
         this IServiceCollection services,
-        Func<IServiceProvider, OutboxWorkerSettings> settingsFactory)
+        Func<IServiceProvider, PublisherWorkerSettings> settingsFactory)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>(
             sp => new ServiceBusSenderProvider(settingsFactory(sp)));
 
-        services.AddScoped<IOutboxSender, OutboxSender>();
+        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        services.AddHostedService<OutboxSenderTrigger>(
-            sp => new OutboxSenderTrigger(
+        services.AddHostedService<PublisherTrigger>(
+            sp => new PublisherTrigger(
                 settingsFactory(sp),
                 sp.GetRequiredService<IServiceProvider>(),
-                sp.GetRequiredService<ILogger<OutboxSenderTrigger>>()));
+                sp.GetRequiredService<ILogger<PublisherTrigger>>()));
 
         services
             .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<OutboxSenderTrigger>(TimeSpan.FromMinutes(1));
+            .AddRepeatingTriggerHealthCheck<PublisherTrigger>(TimeSpan.FromMinutes(1));
 
         return services;
     }
 
     /// <summary>
-    /// Method for registering inbox worker.
+    /// Method for registering subscriber.
     /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventHandler"/> implementation.
     /// </summary>
     /// <typeparam name="TIntegrationEventHandler">The type of the service to use for outbound events.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
     /// <param name="messageDescriptors">List of known <see cref="MessageDescriptor"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddInbox<TIntegrationEventHandler>(
+    public static IServiceCollection AddSubscriber<TIntegrationEventHandler>(
         this IServiceCollection services,
         IEnumerable<MessageDescriptor> messageDescriptors)
         where TIntegrationEventHandler : class, IIntegrationEventHandler
     {
         services.AddScoped<IIntegrationEventHandler, TIntegrationEventHandler>();
         services.AddScoped<IIntegrationEventFactory>(_ => new IntegrationEventFactory(messageDescriptors.ToList()));
-        services.AddScoped<IInbox, Inbox>();
+        services.AddScoped<ISubscriber, Internal.Subscriber.Subscriber>();
         return services;
     }
 
     /// <summary>
-    /// Method for registering inbox worker.
+    /// Method for registering subscriber worker.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <param name="settingsFactory">Factory resolving the <see cref="InboxWorkerSettings"/></param>
+    /// <param name="settingsFactory">Factory resolving the <see cref="SubscriberWorkerSettings"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddInboxWorker(
+    public static IServiceCollection AddSubscriberWorker(
         this IServiceCollection services,
-        Func<IServiceProvider, InboxWorkerSettings> settingsFactory)
+        Func<IServiceProvider, SubscriberWorkerSettings> settingsFactory)
     {
         services.AddSingleton<IServiceBusReceiverProvider, ServiceBusReceiverProvider>(
             sp => new ServiceBusReceiverProvider(settingsFactory(sp)));
 
-        services.AddScoped<IInboxReceiver>(
-            sp => new InboxReceiver(
+        services.AddScoped<IIntegrationEventSubscriber>(
+            sp => new IntegrationEventSubscriber(
                 settingsFactory(sp),
                 sp.GetRequiredService<IServiceBusReceiverProvider>(),
-                sp.GetRequiredService<IInbox>(),
-                sp.GetRequiredService<ILogger<InboxReceiver>>()));
+                sp.GetRequiredService<ISubscriber>(),
+                sp.GetRequiredService<ILogger<IntegrationEventSubscriber>>()));
 
-        services.AddHostedService<InboxReceiverTrigger>(
-            sp => new InboxReceiverTrigger(
+        services.AddHostedService<SubscriberTrigger>(
+            sp => new SubscriberTrigger(
                 settingsFactory(sp),
                 sp.GetRequiredService<IServiceProvider>(),
-                sp.GetRequiredService<ILogger<InboxReceiverTrigger>>()));
+                sp.GetRequiredService<ILogger<SubscriberTrigger>>()));
 
         services
             .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<InboxReceiverTrigger>(TimeSpan.FromMinutes(1));
+            .AddRepeatingTriggerHealthCheck<SubscriberTrigger>(TimeSpan.FromMinutes(1));
 
         return services;
     }

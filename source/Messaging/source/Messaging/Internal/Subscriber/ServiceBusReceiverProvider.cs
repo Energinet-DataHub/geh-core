@@ -13,20 +13,23 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
-internal sealed class ServiceBusSenderProvider : IServiceBusSenderProvider
+internal sealed class ServiceBusReceiverProvider : IServiceBusReceiverProvider
 {
     private readonly string _serviceBusIntegrationEventWriteConnectionString;
     private readonly string _topicName;
-    private ServiceBusSender? _serviceBusSender;
+    private readonly string _subscriptionName;
+    private ServiceBusReceiver? _serviceBusSender;
 
-    public ServiceBusSenderProvider(OutboxWorkerSettings options)
+    public ServiceBusReceiverProvider(SubscriberWorkerSettings options)
     {
-        _serviceBusIntegrationEventWriteConnectionString = options.ServiceBusIntegrationEventWriteConnectionString;
-        _topicName = options.IntegrationEventTopicName;
+        _serviceBusIntegrationEventWriteConnectionString = options.ServiceBusConnectionString;
+        _topicName = options.TopicName;
+        _subscriptionName = options.SubscriptionName;
     }
 
-    public ServiceBusSender Instance => _serviceBusSender ??= new ServiceBusClient(_serviceBusIntegrationEventWriteConnectionString).CreateSender(_topicName);
+    public ServiceBusReceiver Instance => _serviceBusSender ??= new ServiceBusClient(_serviceBusIntegrationEventWriteConnectionString).CreateReceiver(_topicName, _subscriptionName);
 }

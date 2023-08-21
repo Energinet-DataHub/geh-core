@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
 internal sealed class ServiceBusMessageFactory : IServiceBusMessageFactory
 {

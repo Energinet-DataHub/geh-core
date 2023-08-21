@@ -17,9 +17,9 @@ using System.Text.Json;
 
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
-public sealed class RawServiceBusMessage
+public sealed class IntegrationEventServiceBusMessage
 {
-    internal RawServiceBusMessage(Guid messageId, string subject, IReadOnlyDictionary<string, object> applicationProperties, BinaryData body)
+    internal IntegrationEventServiceBusMessage(Guid messageId, string subject, IReadOnlyDictionary<string, object> applicationProperties, BinaryData body)
     {
         MessageId = messageId;
         Subject = subject;
@@ -35,11 +35,11 @@ public sealed class RawServiceBusMessage
 
     public BinaryData Body { get; }
 
-    public static RawServiceBusMessage Create(byte[] message, IReadOnlyDictionary<string, object> bindingData)
+    public static IntegrationEventServiceBusMessage Create(byte[] message, IReadOnlyDictionary<string, object> bindingData)
     {
         var applicationPropertiesString = bindingData["ApplicationProperties"] as string ?? throw new InvalidOperationException("Subject is null");
         var applicationProperties = JsonSerializer.Deserialize<Dictionary<string, object>>(applicationPropertiesString) ?? throw new InvalidOperationException("Could not deserialize ApplicationProperties");
-        return new RawServiceBusMessage(
+        return new IntegrationEventServiceBusMessage(
             Guid.Parse(bindingData["MessageId"] as string ?? throw new InvalidOperationException("MessageId is null")),
             bindingData["Subject"] as string ?? throw new InvalidOperationException("Subject is null"),
             new ReadOnlyDictionary<string, object>(applicationProperties),

@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
-internal interface IOutboxSender
+/// <summary>
+/// Creates a <see cref="IntegrationEvent"/> instance from a <see cref="IntegrationEventServiceBusMessage"/>
+/// </summary>
+internal interface IIntegrationEventFactory
 {
-    Task SendAsync(CancellationToken cancellationToken);
+    IntegrationEvent Create(IntegrationEventServiceBusMessage message);
 }

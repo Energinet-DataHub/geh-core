@@ -17,9 +17,9 @@ public record IntegrationEvent(
 
 The package is still work in progress.
 
-## Outbox
+## Publishing
 
-The outbox functionality is responsible for dispatching integration events to the ServiceBus.
+The publishing functionality is responsible for dispatching integration events to the ServiceBus.
 It does this using a hosted worker that polls the IIntegrationEventProvider for new integration events.
 The IIntegrationEventProvider implementation is the responsibility of the package consumer.
 
@@ -29,7 +29,7 @@ Below code shows an example of an IIntegrationEventProvider implementation and h
 // IIntegrationEventProvider implementation
 public sealed class IntegrationEventProvider : IIntegrationEventProvider
 {
-    public IntegrationEventProvider(OutboxDbContext dbContext)
+    public IntegrationEventProvider(DbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -58,7 +58,7 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
 }
 
 // Registration of dependencies
-services.AddOutboxWorker<IntegrationEventProvider>(_ => new OutboxWorkerSettings
+services.AddPublisherWorker<IntegrationEventProvider>(_ => new PublisherWorkerSettings
 {
     ServiceBusIntegrationEventWriteConnectionString = "Endpoint=sb://...",
     IntegrationEventTopicName = "topic-...",
@@ -66,10 +66,10 @@ services.AddOutboxWorker<IntegrationEventProvider>(_ => new OutboxWorkerSettings
 });
 ```
 
-## Inbox
+## Subscribing
 
-Inbox functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
-The inbox functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
+Subscribing functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
+The subscribing functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
 In both cases the IIntegrationEventHandler implementation is needed. An example of an IIIntegrationEventHandler implementation is shown below. 
 
 ```csharp
@@ -98,12 +98,12 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
 ```
 
 The `ShouldHandle` function is used to determine if the IIntegrationEventHandler implementation should handle the IntegrationEvent.
-This function is called by the package internals, and only if it returns true, the `HandleAsync` method is called.
+This function is called by the package internals, and only if it returns true, the `HandleAsync` method is called. If it returns false, the IntegrationEvent is marked completed and ignored.
 
 Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation needs to be registered as a dependency using the code below.
 
 ```csharp
-services.AddInbox<IntegrationEventHandler>(new[]
+services.AddSubscriber<IntegrationEventHandler>(new[]
 {
     ActorCreated.Descriptor,
     UserCreated.Descriptor,
@@ -114,17 +114,17 @@ In order to deserialize protobuf messages, the package needs to know the descrip
 
 ### ServiceBusTrigger
 
-When using a ServiceBusTrigger to handle integration events, the IInbox dependency needs to be injected into the function and called in the manner shown below.
+When using a ServiceBusTrigger to handle integration events, the ISubscriber dependency needs to be injected into the function and called in the manner shown below.
 
 ```csharp
 // MessageBusTrigger function
 public sealed class ServiceBusFunction
 {
-    private readonly IInbox _inbox;
+    private readonly ISubscriber _subscriber;
 
-    public ServiceBusFunction(IInbox inbox)
+    public ServiceBusFunction(ISubscriber subscriber)
     {
-        _inbox = inbox;
+        _subscriber = subscriber;
     }
 
     [Function("ServiceBusFunction")]
@@ -133,7 +133,7 @@ public sealed class ServiceBusFunction
         byte[] message,
         FunctionContext context)
     {
-        await _inbox.HandleAsync(RawServiceBusMessage.Create(message, context.BindingContext.BindingData!));
+        await _subscriber.HandleAsync(IntegrationEventServiceBusMessage.Create(message, context.BindingContext.BindingData!));
     }
 }
 ```
@@ -144,7 +144,7 @@ When used as a hosted BackgroundService, in addition to the registration of the 
 
 ```csharp
 services
-    .AddInboxWorker(_ => new InboxWorkerSettings
+    .AddSubscriberWorker(_ => new SubscriberWorkerSettings
     {
         ServiceBusConnectionString = "Endpoint=sb://...",
         TopicName = "topic-...",
