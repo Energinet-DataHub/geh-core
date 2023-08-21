@@ -3,30 +3,57 @@
 This package is intended for communication between different domains using ServiceBus.
 The package ensures reliable message processing and delivery.
 
-The package is still work in progress.
+The package operates on the type IntegrationEvent, which wraps a protobuf message.
 
-## Usage of outbox
-
-Below code shows an example of an IItegrationEventProvider implementation and how to register the dependencies.
-End result will be a hosted worker polling the IntegrationEventProvider for new integration events and dispatching them
-via ServiceBus.
+The IntegrationEvent is defined as follows:
 
 ```csharp
-// Implement IIntegrationEventProvider to provide integration events
+public record IntegrationEvent(
+    Guid EventIdentification,
+    string EventName,
+    int EventMinorVersion,
+    IMessage Message);
+```
+
+The package is still work in progress.
+
+## Outbox
+
+The outbox functionality is responsible for dispatching integration events to the ServiceBus.
+It does this using a hosted worker that polls the IIntegrationEventProvider for new integration events.
+The IIntegrationEventProvider implementation is the responsibility of the package consumer.
+
+Below code shows an example of an IIntegrationEventProvider implementation and how to register the dependencies using the package provided extension.
+
+```csharp
+// IIntegrationEventProvider implementation
 public sealed class IntegrationEventProvider : IIntegrationEventProvider
 {
+    public IntegrationEventProvider(OutboxDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+    
     public async IAsyncEnumerable<IntegrationEvent> GetAsync()
     {
-        yield return new IntegrationEvent(
-            Guid.NewGuid(),
-            nameof(UserCreated),
-            1,
-            new UserCreated
-            {
-                FirstName = "John",
-                LastName = "Doe"
-            });
-        // make sure to commit changes, after yield, as the event has now been dispatched
+        var events = await _dbContext
+            .Events
+            .Where(x => x.DispatchedAt == null)
+            .ToListAsync();
+        
+        foreach (var e in events)
+        {
+            yield return new IntegrationEvent(
+                e.Id,
+                e.EventName,
+                e.Version,
+                e.Payload);
+            
+            e.DispatchedAt = DateTime.UtcNow;
+            
+            _dbContext.Events.Update(e);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
 
@@ -39,13 +66,11 @@ services.AddOutboxWorker<IntegrationEventProvider>(_ => new OutboxWorkerSettings
 });
 ```
 
-UserCreated is a protobuf message defined in the same project as the IntegrationEventProvider.
+## Inbox
 
-## Usage of inbox
-
-Inbox functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
-In both cases an IntegrationEventHandler implementation is needed to handle the integration events. An example of such
-an implementation is shown below.
+Inbox functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
+The inbox functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
+In both cases the IIntegrationEventHandler implementation is needed. An example of an IIIntegrationEventHandler implementation is shown below. 
 
 ```csharp
 public sealed class IntegrationEventHandler : IIntegrationEventHandler
@@ -72,7 +97,10 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
 }
 ```
 
-In both cases the IIntegrationEventHandler implementation needs to be registered as a dependency using the below code.
+The `ShouldHandle` function is used to determine if the IIntegrationEventHandler implementation should handle the IntegrationEvent.
+This function is called by the package internals, and only if it returns true, the `HandleAsync` method is called.
+
+Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation needs to be registered as a dependency using the code below.
 
 ```csharp
 services.AddInbox<IntegrationEventHandler>(new[]
@@ -82,10 +110,11 @@ services.AddInbox<IntegrationEventHandler>(new[]
 });
 ```
 
-### ServiceBusTrigger function
+In order to deserialize protobuf messages, the package needs to know the descriptors of expected messages. In the example above, we expect messages of type ActorCreated and UserCreated.
 
-When using a ServiceBusTrigger function to handle integration events, the IInbox dependency needs to be injected into the function and called in the manner shown below.
-The IInbox ensures deserialization of the protobuf message and calls the IIntegrationEventHandler implementation if it meets the criteria defined in the ShouldHandle method.
+### ServiceBusTrigger
+
+When using a ServiceBusTrigger to handle integration events, the IInbox dependency needs to be injected into the function and called in the manner shown below.
 
 ```csharp
 // MessageBusTrigger function
@@ -111,7 +140,7 @@ public sealed class ServiceBusFunction
 
 ### BackgroundService
 
-When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code registering the worker, also needs to be run.
+When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code, registering the worker, is also needed.
 
 ```csharp
 services
