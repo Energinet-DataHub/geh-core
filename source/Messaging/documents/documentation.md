@@ -70,7 +70,7 @@ services.AddPublisherWorker<IntegrationEventProvider>(_ => new PublisherWorkerSe
 
 Subscribing functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
 The subscribing functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
-In both cases the IIntegrationEventHandler implementation is needed. An example of an IIIntegrationEventHandler implementation is shown below. 
+In both cases the IIntegrationEventHandler implementation is needed. An example of an IIIntegrationEventHandler implementation is shown below.
 
 ```csharp
 public sealed class IntegrationEventHandler : IIntegrationEventHandler
