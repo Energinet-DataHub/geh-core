@@ -104,15 +104,11 @@ public class SqlStatementClient : ISqlStatementClient
 
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+        LogDatabricksSqlResponse(databricksSqlResponse);
 
         var waitTime = 1000;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
-            _logger.LogDebug(
-                "Databricks SQL response received with state: {State} for statement ID: {StatementId}",
-                databricksSqlResponse.State,
-                databricksSqlResponse.StatementId);
-
             if (waitTime > 600000)
             {
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
@@ -131,6 +127,7 @@ public class SqlStatementClient : ISqlStatementClient
 
             jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+            LogDatabricksSqlResponse(databricksSqlResponse);
         }
 
         if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
@@ -175,5 +172,13 @@ public class SqlStatementClient : ISqlStatementClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
         httpClient.BaseAddress = new Uri(options.Value.WorkspaceUrl);
+    }
+
+    private void LogDatabricksSqlResponse(DatabricksSqlResponse response)
+    {
+        _logger.LogDebug(
+            "Databricks SQL response received with state: {State} for statement ID: {StatementId}",
+            response.State,
+            response.StatementId);
     }
 }
