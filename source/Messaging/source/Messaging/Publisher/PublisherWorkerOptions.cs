@@ -17,15 +17,10 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 /// <summary>
 /// Settings for the communication with the Service Bus.
 /// </summary>
-public sealed class PublisherSettings
+public sealed class PublisherWorkerOptions
 {
     /// <summary>
-    /// The connection string for the Service Bus.
+    /// Delay in milliseconds between each execution of the hosted service.
     /// </summary>
-    public string ServiceBusIntegrationEventWriteConnectionString { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The name of the topic to send integration events to.
-    /// </summary>
-    public string IntegrationEventTopicName { get; set; } = string.Empty;
+    public int HostedServiceExecutionDelayMs { get; set; } = 10000;
 }

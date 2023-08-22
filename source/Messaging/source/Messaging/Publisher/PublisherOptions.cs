@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
 /// <summary>
 /// Settings for the communication with the Service Bus.
 /// </summary>
-public sealed class SubscriberWorkerSettings
+public sealed class PublisherOptions
 {
     /// <summary>
     /// The connection string for the Service Bus.
@@ -25,22 +25,7 @@ public sealed class SubscriberWorkerSettings
     public string ServiceBusConnectionString { get; set; } = string.Empty;
 
     /// <summary>
-    /// The name of the topic from where to receive integration events.
+    /// The name of the topic to send integration events to.
     /// </summary>
     public string TopicName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The name of the subscription.
-    /// </summary>
-    public string SubscriptionName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Delay in milliseconds between each execution of the hosted service.
-    /// </summary>
-    public int HostedServiceExecutionDelayMs { get; set; } = 10;
-
-    /// <summary>
-    /// Maximum number of concurrent messages to receive.
-    /// </summary>
-    public int MaxMessageDeliveryCount { get; set; } = 10;
 }

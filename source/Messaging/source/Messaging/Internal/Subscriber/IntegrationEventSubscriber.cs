@@ -14,23 +14,24 @@
 
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
 internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
 {
-    private readonly int _maxMessageDeliveryCount;
+    private readonly IOptions<SubscriberWorkerOptions> _options;
     private readonly IServiceBusReceiverProvider _serviceBusReceiverProvider;
     private readonly ISubscriber _subscriber;
     private readonly ILogger<IntegrationEventSubscriber> _logger;
 
     public IntegrationEventSubscriber(
-        SubscriberWorkerSettings subscriberWorkerSettings,
+        IOptions<SubscriberWorkerOptions> options,
         IServiceBusReceiverProvider serviceBusReceiverProvider,
         ISubscriber subscriber,
         ILogger<IntegrationEventSubscriber> logger)
     {
-        _maxMessageDeliveryCount = subscriberWorkerSettings.MaxMessageDeliveryCount;
+        _options = options;
         _serviceBusReceiverProvider = serviceBusReceiverProvider;
         _subscriber = subscriber;
         _logger = logger;
@@ -38,7 +39,7 @@ internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
 
     public async Task ReceiveAsync(CancellationToken cancellationToken)
     {
-        foreach (var message in await _serviceBusReceiverProvider.Instance.ReceiveMessagesAsync(_maxMessageDeliveryCount, cancellationToken: cancellationToken).ConfigureAwait(false))
+        foreach (var message in await _serviceBusReceiverProvider.Instance.ReceiveMessagesAsync(_options.Value.MaxMessageDeliveryCount, cancellationToken: cancellationToken).ConfigureAwait(false))
         {
             try
             {
@@ -53,7 +54,7 @@ internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
             }
             catch (Exception e)
             {
-                // TODO: Retry/Deadletter when?
+                // TODO: Retry logic
                 await _serviceBusReceiverProvider.Instance.DeadLetterMessageAsync(message, cancellationToken: cancellationToken).ConfigureAwait(false);
                 _logger.LogError(e, "Failed to process message {MessageId}", message.MessageId);
             }

@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Google.Protobuf.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
@@ -31,16 +32,13 @@ public static class Registration
     /// </summary>
     /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <param name="settingsFactory">Factory resolving the <see cref="PublisherSettings"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddPublisher<TIntegrationEventProvider>(
-        this IServiceCollection services,
-        Func<IServiceProvider, PublisherSettings> settingsFactory)
+    public static IServiceCollection AddPublisher<TIntegrationEventProvider>(this IServiceCollection services)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>(
-            sp => new ServiceBusSenderProvider(settingsFactory(sp)));
+            sp => new ServiceBusSenderProvider(sp.GetRequiredService<IOptions<PublisherOptions>>()));
 
         services.AddScoped<IPublisher, Internal.Publisher.Publisher>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
@@ -52,15 +50,12 @@ public static class Registration
     /// Method for registering publisher worker.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <param name="settingsFactory">Factory resolving the <see cref="PublisherWorkerSettings"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddPublisherWorker(
-        this IServiceCollection services,
-        Func<IServiceProvider, PublisherWorkerSettings> settingsFactory)
+    public static IServiceCollection AddPublisherWorker(this IServiceCollection services)
     {
         services.AddHostedService<PublisherTrigger>(
             sp => new PublisherTrigger(
-                settingsFactory(sp),
+                sp.GetRequiredService<IOptions<PublisherWorkerOptions>>(),
                 sp.GetRequiredService<IServiceProvider>(),
                 sp.GetRequiredService<ILogger<PublisherTrigger>>()));
 
@@ -79,9 +74,7 @@ public static class Registration
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
     /// <param name="messageDescriptors">List of known <see cref="MessageDescriptor"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddSubscriber<TIntegrationEventHandler>(
-        this IServiceCollection services,
-        IEnumerable<MessageDescriptor> messageDescriptors)
+    public static IServiceCollection AddSubscriber<TIntegrationEventHandler>(this IServiceCollection services, IEnumerable<MessageDescriptor> messageDescriptors)
         where TIntegrationEventHandler : class, IIntegrationEventHandler
     {
         services.AddScoped<IIntegrationEventHandler, TIntegrationEventHandler>();
@@ -94,25 +87,22 @@ public static class Registration
     /// Method for registering subscriber worker.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <param name="settingsFactory">Factory resolving the <see cref="SubscriberWorkerSettings"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddSubscriberWorker(
-        this IServiceCollection services,
-        Func<IServiceProvider, SubscriberWorkerSettings> settingsFactory)
+    public static IServiceCollection AddSubscriberWorker(this IServiceCollection services)
     {
         services.AddSingleton<IServiceBusReceiverProvider, ServiceBusReceiverProvider>(
-            sp => new ServiceBusReceiverProvider(settingsFactory(sp)));
+            sp => new ServiceBusReceiverProvider(sp.GetRequiredService<IOptions<SubscriberWorkerOptions>>()));
 
         services.AddScoped<IIntegrationEventSubscriber>(
             sp => new IntegrationEventSubscriber(
-                settingsFactory(sp),
+                sp.GetRequiredService<IOptions<SubscriberWorkerOptions>>(),
                 sp.GetRequiredService<IServiceBusReceiverProvider>(),
                 sp.GetRequiredService<ISubscriber>(),
                 sp.GetRequiredService<ILogger<IntegrationEventSubscriber>>()));
 
         services.AddHostedService<SubscriberTrigger>(
             sp => new SubscriberTrigger(
-                settingsFactory(sp),
+                sp.GetRequiredService<IOptions<SubscriberWorkerOptions>>(),
                 sp.GetRequiredService<IServiceProvider>(),
                 sp.GetRequiredService<ILogger<SubscriberTrigger>>()));
 

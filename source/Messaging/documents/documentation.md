@@ -57,11 +57,8 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
 }
 
 // Registration of dependencies
-services.AddPublisher<IntegrationEventProvider>(_ => new PublisherSettings
-{
-    ServiceBusIntegrationEventWriteConnectionString = "Endpoint=sb://...",
-    IntegrationEventTopicName = "topic-...",
-});
+services.Configure<PublisherOptions>(builder.Configuration.GetSection(nameof(PublisherOptions)));
+services.AddPublisher<IntegrationEventProvider>();
 ```
 
 ### Manual
@@ -74,10 +71,8 @@ Simply inject IPublisher and call the PublishAsync method, which will then call 
 When using the hosted BackgroundService, in addition to the registration of the IIntegrationEventProvider implementation shown above, the below code, registering the worker, is also needed.
 
 ```csharp
-services.AddPublisherWorker(_ => new PublisherWorkerSettings
-{
-    HostedServiceExecutionDelayMs = 1000,
-});
+services.Configure<PublisherWorkerOptions>(builder.Configuration.GetSection(nameof(PublisherWorkerOptions)));
+services.AddPublisherWorker();
 ```
 
 ## Subscribing
@@ -157,14 +152,6 @@ public sealed class ServiceBusFunction
 When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code, registering the worker, is also needed.
 
 ```csharp
-services
-    .AddSubscriberWorker(_ => new SubscriberWorkerSettings
-    {
-        ServiceBusConnectionString = "Endpoint=sb://...",
-        TopicName = "topic-...",
-        SubscriptionName = "subscription-...",
-        HostedServiceExecutionDelayMs = 1000,
-        MaxMessageDeliveryCount = 1000
-    });
-
+services.Configure<SubscriberWorkerOptions>(builder.Configuration.GetSection(nameof(SubscriberWorkerOptions)));
+services.AddSubscriberWorker();
 ```

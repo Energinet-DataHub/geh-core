@@ -15,16 +15,17 @@
 using Energinet.DataHub.Core.App.WebApp.Hosting;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
 internal sealed class SubscriberTrigger : RepeatingTrigger<IIntegrationEventSubscriber>
 {
     public SubscriberTrigger(
-        SubscriberWorkerSettings settings,
+        IOptions<SubscriberWorkerOptions> options,
         IServiceProvider serviceProvider,
         ILogger<SubscriberTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(settings.HostedServiceExecutionDelayMs))
+        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(options.Value.HostedServiceExecutionDelayMs))
     {
     }
 

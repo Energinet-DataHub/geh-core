@@ -14,20 +14,21 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
 internal sealed class ServiceBusSenderProvider : IServiceBusSenderProvider
 {
-    private readonly string _serviceBusIntegrationEventWriteConnectionString;
-    private readonly string _topicName;
+    private readonly IOptions<PublisherOptions> _options;
     private ServiceBusSender? _serviceBusSender;
 
-    public ServiceBusSenderProvider(PublisherSettings options)
+    public ServiceBusSenderProvider(IOptions<PublisherOptions> options)
     {
-        _serviceBusIntegrationEventWriteConnectionString = options.ServiceBusIntegrationEventWriteConnectionString;
-        _topicName = options.IntegrationEventTopicName;
+        _options = options;
     }
 
-    public ServiceBusSender Instance => _serviceBusSender ??= new ServiceBusClient(_serviceBusIntegrationEventWriteConnectionString).CreateSender(_topicName);
+    public ServiceBusSender Instance
+        => _serviceBusSender ??= new ServiceBusClient(_options.Value.ServiceBusConnectionString)
+            .CreateSender(_options.Value.TopicName);
 }

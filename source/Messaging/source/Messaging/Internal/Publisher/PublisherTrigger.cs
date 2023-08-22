@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.WebApp.Hosting;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
@@ -24,10 +25,10 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 internal sealed class PublisherTrigger : RepeatingTrigger<IPublisher>
 {
     public PublisherTrigger(
-        PublisherWorkerSettings settings,
+        IOptions<PublisherWorkerOptions> options,
         IServiceProvider serviceProvider,
         ILogger<PublisherTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(settings.HostedServiceExecutionDelayMs))
+        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(options.Value.HostedServiceExecutionDelayMs))
     {
     }
 
