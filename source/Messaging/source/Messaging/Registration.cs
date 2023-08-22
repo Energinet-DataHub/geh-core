@@ -26,25 +26,38 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 public static class Registration
 {
     /// <summary>
-    /// Method for registering publisher worker.
+    /// Method for registering publisher.
     /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventProvider"/> implementation.
     /// </summary>
     /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <param name="settingsFactory">Factory resolving the <see cref="PublisherWorkerSettings"/></param>
+    /// <param name="settingsFactory">Factory resolving the <see cref="PublisherSettings"/></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddPublisherWorker<TIntegrationEventProvider>(
+    public static IServiceCollection AddPublisher<TIntegrationEventProvider>(
         this IServiceCollection services,
-        Func<IServiceProvider, PublisherWorkerSettings> settingsFactory)
+        Func<IServiceProvider, PublisherSettings> settingsFactory)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>(
             sp => new ServiceBusSenderProvider(settingsFactory(sp)));
 
-        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+        services.AddScoped<IPublisher, Internal.Publisher.Publisher>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
+        return services;
+    }
+
+    /// <summary>
+    /// Method for registering publisher worker.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+    /// <param name="settingsFactory">Factory resolving the <see cref="PublisherWorkerSettings"/></param>
+    /// <returns>A reference to this instance after the operation has completed.</returns>
+    public static IServiceCollection AddPublisherWorker(
+        this IServiceCollection services,
+        Func<IServiceProvider, PublisherWorkerSettings> settingsFactory)
+    {
         services.AddHostedService<PublisherTrigger>(
             sp => new PublisherTrigger(
                 settingsFactory(sp),

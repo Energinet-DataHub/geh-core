@@ -12,9 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
+namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
-internal interface IIntegrationEventPublisher
+/// <summary>
+/// Settings for the communication with the Service Bus.
+/// </summary>
+public sealed class PublisherSettings
 {
-    Task PublishAsync(CancellationToken cancellationToken);
+    /// <summary>
+    /// The connection string for the Service Bus.
+    /// </summary>
+    public string ServiceBusIntegrationEventWriteConnectionString { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The name of the topic to send integration events to.
+    /// </summary>
+    public string IntegrationEventTopicName { get; set; } = string.Empty;
 }

@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
-internal sealed class PublisherTrigger : RepeatingTrigger<IIntegrationEventPublisher>
+internal sealed class PublisherTrigger : RepeatingTrigger<IPublisher>
 {
     public PublisherTrigger(
         PublisherWorkerSettings settings,
@@ -32,10 +32,10 @@ internal sealed class PublisherTrigger : RepeatingTrigger<IIntegrationEventPubli
     }
 
     protected override async Task ExecuteAsync(
-        IIntegrationEventPublisher integrationEventPublisher,
+        IPublisher publisher,
         CancellationToken cancellationToken,
         Action isAliveCallback)
     {
-        await integrationEventPublisher.PublishAsync(cancellationToken).ConfigureAwait(false);
+        await publisher.PublishAsync(cancellationToken).ConfigureAwait(false);
     }
 }

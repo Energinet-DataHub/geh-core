@@ -22,18 +22,18 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
-internal sealed class IntegrationEventPublisher : IIntegrationEventPublisher
+internal sealed class Publisher : IPublisher
 {
     private readonly IIntegrationEventProvider _integrationEventProvider;
     private readonly IServiceBusSenderProvider _senderProvider;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly ILogger _logger;
 
-    public IntegrationEventPublisher(
+    public Publisher(
         IIntegrationEventProvider integrationEventProvider,
         IServiceBusSenderProvider senderProvider,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        ILogger<IntegrationEventPublisher> logger)
+        ILogger<Publisher> logger)
     {
         _integrationEventProvider = integrationEventProvider;
         _senderProvider = senderProvider;

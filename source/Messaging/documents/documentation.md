@@ -19,11 +19,10 @@ The package is still work in progress.
 
 ## Publishing
 
-The publishing functionality is responsible for dispatching integration events to the ServiceBus.
-It does this using a hosted worker that polls the IIntegrationEventProvider for new integration events.
-The IIntegrationEventProvider implementation is the responsibility of the package consumer.
+The publishing functionality is responsible for publishing integration events. It can be used manually or through a hosted service.
+Regardless of which "mode" is used, the IIntegrationEventProvider implementation has to be implemented.
 
-Below code shows an example of an IIntegrationEventProvider implementation and how to register the dependencies using the package provided extension.
+Below code shows an example of an IIntegrationEventProvider implementation as well as the registration.
 
 ```csharp
 // IIntegrationEventProvider implementation
@@ -58,10 +57,25 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
 }
 
 // Registration of dependencies
-services.AddPublisherWorker<IntegrationEventProvider>(_ => new PublisherWorkerSettings
+services.AddPublisher<IntegrationEventProvider>(_ => new PublisherSettings
 {
     ServiceBusIntegrationEventWriteConnectionString = "Endpoint=sb://...",
     IntegrationEventTopicName = "topic-...",
+});
+```
+
+### Manual
+
+When publishing manually, the above IIntegrationEventProvider implementation and registration is enough to start publishing integration events.
+Simply inject IPublisher and call the PublishAsync method, which will then call the IIntegrationEventProvider implementation, and dispatch the returned integration events.
+
+### BackgroundService
+
+When using the hosted BackgroundService, in addition to the registration of the IIntegrationEventProvider implementation shown above, the below code, registering the worker, is also needed.
+
+```csharp
+services.AddPublisherWorker(_ => new PublisherWorkerSettings
+{
     HostedServiceExecutionDelayMs = 1000,
 });
 ```

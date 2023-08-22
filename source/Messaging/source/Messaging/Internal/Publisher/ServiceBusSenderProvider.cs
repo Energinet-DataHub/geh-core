@@ -23,7 +23,7 @@ internal sealed class ServiceBusSenderProvider : IServiceBusSenderProvider
     private readonly string _topicName;
     private ServiceBusSender? _serviceBusSender;
 
-    public ServiceBusSenderProvider(PublisherWorkerSettings options)
+    public ServiceBusSenderProvider(PublisherSettings options)
     {
         _serviceBusIntegrationEventWriteConnectionString = options.ServiceBusIntegrationEventWriteConnectionString;
         _topicName = options.IntegrationEventTopicName;
