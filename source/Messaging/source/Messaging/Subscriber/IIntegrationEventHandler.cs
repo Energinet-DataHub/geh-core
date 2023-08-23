@@ -21,7 +21,5 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 /// </summary>
 public interface IIntegrationEventHandler
 {
-    bool ShouldHandle(string eventName);
-
     Task HandleAsync(IntegrationEvent integrationEvent);
 }

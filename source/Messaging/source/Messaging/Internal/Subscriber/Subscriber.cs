@@ -29,9 +29,8 @@ internal sealed class Subscriber : ISubscriber
 
     public async Task HandleAsync(IntegrationEventServiceBusMessage message)
     {
-        if (_integrationEventHandler.ShouldHandle(message.Subject))
+        if (_integrationEventFactory.TryCreate(message, out var integrationEvent))
         {
-            var integrationEvent = _integrationEventFactory.Create(message);
             await _integrationEventHandler.HandleAsync(integrationEvent).ConfigureAwait(false);
         }
     }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using Google.Protobuf.Reflection;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
@@ -39,5 +40,20 @@ internal sealed class IntegrationEventFactory : IIntegrationEventFactory
             message.Subject,
             message.ApplicationProperties["EventMinorVersion"] as int? ?? 0,
             descriptor.Parser.ParseFrom(message.Body));
+    }
+
+    public bool TryCreate(IntegrationEventServiceBusMessage message, [NotNullWhen(true)] out IntegrationEvent? integrationEvent)
+    {
+        var descriptor = _descriptors.FirstOrDefault(x => x.Name == message.Subject);
+
+        integrationEvent = descriptor is not null
+            ? new IntegrationEvent(
+                message.MessageId,
+                message.Subject,
+                message.ApplicationProperties["EventMinorVersion"] as int? ?? 0,
+                descriptor.Parser.ParseFrom(message.Body))
+            : null;
+
+        return integrationEvent is not null;
     }
 }

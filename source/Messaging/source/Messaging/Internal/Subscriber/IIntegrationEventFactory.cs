@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
 /// <summary>
@@ -19,5 +21,5 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 /// </summary>
 internal interface IIntegrationEventFactory
 {
-    IntegrationEvent Create(IntegrationEventServiceBusMessage message);
+    bool TryCreate(IntegrationEventServiceBusMessage message, [NotNullWhen(true)] out IntegrationEvent? integrationEvent);
 }

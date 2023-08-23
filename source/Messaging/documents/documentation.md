@@ -50,7 +50,6 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
             
             e.DispatchedAt = DateTime.UtcNow;
             
-            _dbContext.Events.Update(e);
             await _dbContext.SaveChangesAsync();
         }
     }
@@ -105,11 +104,8 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
     }
 }
 ```
-
-The `ShouldHandle` function is used to determine if the IIntegrationEventHandler implementation should handle the IntegrationEvent.
-This function is called by the package internals, and only if it returns true, the `HandleAsync` method is called. If it returns false, the IntegrationEvent is marked completed and ignored.
-
 Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation needs to be registered as a dependency using the code below.
+The descriptors are used to deserialize the event as well as filtering unwanted messages.
 
 ```csharp
 services.AddSubscriber<IntegrationEventHandler>(new[]
