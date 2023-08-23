@@ -32,9 +32,6 @@
     </PackageReference>
   </ItemGroup>
 
-
-
-
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
     <PackageVersion>3.1.0$(VersionSuffix)</PackageVersion>
