@@ -26,22 +26,6 @@ internal sealed class IntegrationEventFactory : IIntegrationEventFactory
         _descriptors = descriptors;
     }
 
-    public IntegrationEvent Create(IntegrationEventServiceBusMessage message)
-    {
-        var descriptor = _descriptors.FirstOrDefault(x => x.Name == message.Subject);
-
-        if (descriptor is null)
-        {
-            throw new InvalidOperationException($"Could not find descriptor for message {message.Subject}");
-        }
-
-        return new IntegrationEvent(
-            message.MessageId,
-            message.Subject,
-            message.ApplicationProperties["EventMinorVersion"] as int? ?? 0,
-            descriptor.Parser.ParseFrom(message.Body));
-    }
-
     public bool TryCreate(IntegrationEventServiceBusMessage message, [NotNullWhen(true)] out IntegrationEvent? integrationEvent)
     {
         var descriptor = _descriptors.FirstOrDefault(x => x.Name == message.Subject);
