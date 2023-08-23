@@ -19,5 +19,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 /// </summary>
 internal interface IIntegrationEventSubscriber
 {
-    Task ReceiveAsync(CancellationToken cancellationToken);
+    Task StartAsync(CancellationToken cancellationToken);
+
+    Task StopAsync(CancellationToken cancellationToken);
 }

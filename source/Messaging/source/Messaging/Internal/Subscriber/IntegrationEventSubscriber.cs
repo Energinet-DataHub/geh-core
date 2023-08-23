@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,43 +22,69 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
 {
     private readonly IOptions<SubscriberWorkerOptions> _options;
-    private readonly IServiceBusReceiverProvider _serviceBusReceiverProvider;
+    private readonly IServiceBusProcessorFactory _serviceBusProcessorFactory;
     private readonly ISubscriber _subscriber;
     private readonly ILogger<IntegrationEventSubscriber> _logger;
+    private ServiceBusProcessor? _processor;
 
     public IntegrationEventSubscriber(
         IOptions<SubscriberWorkerOptions> options,
-        IServiceBusReceiverProvider serviceBusReceiverProvider,
+        IServiceBusProcessorFactory serviceBusProcessorFactory,
         ISubscriber subscriber,
         ILogger<IntegrationEventSubscriber> logger)
     {
         _options = options;
-        _serviceBusReceiverProvider = serviceBusReceiverProvider;
+        _serviceBusProcessorFactory = serviceBusProcessorFactory;
         _subscriber = subscriber;
         _logger = logger;
     }
 
-    public async Task ReceiveAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        foreach (var message in await _serviceBusReceiverProvider.Instance.ReceiveMessagesAsync(_options.Value.MaxMessageDeliveryCount, cancellationToken: cancellationToken).ConfigureAwait(false))
+        if (_processor is not null)
         {
-            try
-            {
-                var rawServiceBusMessage = new IntegrationEventServiceBusMessage(
-                    Guid.Parse(message.MessageId),
-                    message.Subject,
-                    message.ApplicationProperties,
-                    new BinaryData(message.Body.ToArray()));
-
-                await _subscriber.HandleAsync(rawServiceBusMessage).ConfigureAwait(false);
-                await _serviceBusReceiverProvider.Instance.CompleteMessageAsync(message, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                // TODO: Retry logic
-                await _serviceBusReceiverProvider.Instance.DeadLetterMessageAsync(message, cancellationToken: cancellationToken).ConfigureAwait(false);
-                _logger.LogError(e, "Failed to process message {MessageId}", message.MessageId);
-            }
+            throw new InvalidOperationException($"This {nameof(IIntegrationEventSubscriber)} is already running");
         }
+
+        _processor = _serviceBusProcessorFactory.CreateProcessor(_options.Value.TopicName, _options.Value.SubscriptionName);
+
+        _processor.ProcessMessageAsync += OnMessageReceivedAsync;
+        _processor.ProcessErrorAsync += OnMessageErrorAsync;
+
+        await _processor.StartProcessingAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_processor is null)
+        {
+            return;
+        }
+
+        await _processor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
+
+        _processor.ProcessMessageAsync -= OnMessageReceivedAsync;
+        _processor.ProcessErrorAsync -= OnMessageErrorAsync;
+
+        await _processor.DisposeAsync().ConfigureAwait(false);
+        _processor = null;
+    }
+
+    private async Task OnMessageReceivedAsync(ProcessMessageEventArgs args)
+    {
+        var rawServiceBusMessage = new IntegrationEventServiceBusMessage(
+            Guid.Parse(args.Message.MessageId),
+            args.Message.Subject,
+            args.Message.ApplicationProperties,
+            new BinaryData(args.Message.Body.ToArray()));
+
+        await _subscriber.HandleAsync(rawServiceBusMessage).ConfigureAwait(false);
+        await args.CompleteMessageAsync(args.Message, args.CancellationToken).ConfigureAwait(false);
+    }
+
+    private Task OnMessageErrorAsync(ProcessErrorEventArgs args)
+    {
+        _logger.LogError(args.Exception, "Failed to process message {MessageId}", args.Identifier);
+        return Task.CompletedTask;
     }
 }

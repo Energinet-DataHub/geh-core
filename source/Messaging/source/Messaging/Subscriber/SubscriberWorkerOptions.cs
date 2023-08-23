@@ -35,12 +35,7 @@ public sealed class SubscriberWorkerOptions
     public string SubscriptionName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Delay in milliseconds between each execution of the hosted service.
+    /// Maximum number of concurrent calls to the message handler.
     /// </summary>
-    public int HostedServiceExecutionDelayMs { get; set; } = 10;
-
-    /// <summary>
-    /// Maximum number of concurrent messages to receive.
-    /// </summary>
-    public int MaxMessageDeliveryCount { get; set; } = 10;
+    public int MaxConcurrentCalls { get; set; } = 3;
 }

@@ -19,8 +19,6 @@ using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Google.Protobuf.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
@@ -36,13 +34,10 @@ public static class Registration
     public static IServiceCollection AddPublisher<TIntegrationEventProvider>(this IServiceCollection services)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
+        services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>();
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
-        services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>(
-            sp => new ServiceBusSenderProvider(sp.GetRequiredService<IOptions<PublisherOptions>>()));
-
         services.AddScoped<IPublisher, Internal.Publisher.Publisher>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
-
         return services;
     }
 
@@ -53,11 +48,7 @@ public static class Registration
     /// <returns>A reference to this instance after the operation has completed.</returns>
     public static IServiceCollection AddPublisherWorker(this IServiceCollection services)
     {
-        services.AddHostedService<PublisherTrigger>(
-            sp => new PublisherTrigger(
-                sp.GetRequiredService<IOptions<PublisherWorkerOptions>>(),
-                sp.GetRequiredService<IServiceProvider>(),
-                sp.GetRequiredService<ILogger<PublisherTrigger>>()));
+        services.AddHostedService<PublisherTrigger>();
 
         services
             .AddHealthChecks()
@@ -90,26 +81,9 @@ public static class Registration
     /// <returns>A reference to this instance after the operation has completed.</returns>
     public static IServiceCollection AddSubscriberWorker(this IServiceCollection services)
     {
-        services.AddSingleton<IServiceBusReceiverProvider, ServiceBusReceiverProvider>(
-            sp => new ServiceBusReceiverProvider(sp.GetRequiredService<IOptions<SubscriberWorkerOptions>>()));
-
-        services.AddScoped<IIntegrationEventSubscriber>(
-            sp => new IntegrationEventSubscriber(
-                sp.GetRequiredService<IOptions<SubscriberWorkerOptions>>(),
-                sp.GetRequiredService<IServiceBusReceiverProvider>(),
-                sp.GetRequiredService<ISubscriber>(),
-                sp.GetRequiredService<ILogger<IntegrationEventSubscriber>>()));
-
-        services.AddHostedService<SubscriberTrigger>(
-            sp => new SubscriberTrigger(
-                sp.GetRequiredService<IOptions<SubscriberWorkerOptions>>(),
-                sp.GetRequiredService<IServiceProvider>(),
-                sp.GetRequiredService<ILogger<SubscriberTrigger>>()));
-
-        services
-            .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<SubscriberTrigger>(TimeSpan.FromMinutes(1));
-
+        services.AddSingleton<IServiceBusProcessorFactory, ServiceBusProcessorFactory>();
+        services.AddScoped<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
+        services.AddHostedService<SubscriberTrigger>(sp => new SubscriberTrigger(sp));
         return services;
     }
 }

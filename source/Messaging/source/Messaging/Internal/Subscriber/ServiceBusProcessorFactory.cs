@@ -18,17 +18,33 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
-internal sealed class ServiceBusReceiverProvider : IServiceBusReceiverProvider
+internal sealed class ServiceBusProcessorFactory : IServiceBusProcessorFactory, IAsyncDisposable
 {
     private readonly IOptions<SubscriberWorkerOptions> _options;
-    private ServiceBusReceiver? _serviceBusSender;
 
-    public ServiceBusReceiverProvider(IOptions<SubscriberWorkerOptions> options)
+    private ServiceBusClient? _serviceBusClient;
+
+    public ServiceBusProcessorFactory(IOptions<SubscriberWorkerOptions> options)
     {
         _options = options;
     }
 
-    public ServiceBusReceiver Instance =>
-        _serviceBusSender ??= new ServiceBusClient(_options.Value.ServiceBusConnectionString)
-            .CreateReceiver(_options.Value.TopicName, _options.Value.SubscriptionName);
+    public ServiceBusProcessor CreateProcessor(string topicName, string subscriptionName)
+    {
+        _serviceBusClient ??= new ServiceBusClient(_options.Value.ServiceBusConnectionString);
+        return _serviceBusClient.CreateProcessor(topicName, subscriptionName, new ServiceBusProcessorOptions
+        {
+            ReceiveMode = ServiceBusReceiveMode.PeekLock,
+            MaxConcurrentCalls = _options.Value.MaxConcurrentCalls,
+        });
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_serviceBusClient != null)
+        {
+            await _serviceBusClient.DisposeAsync();
+            _serviceBusClient = null;
+        }
+    }
 }

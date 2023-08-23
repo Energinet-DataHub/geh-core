@@ -16,10 +16,7 @@ using Azure.Messaging.ServiceBus;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
-/// <summary>
-/// Provides a <see cref="ServiceBusReceiver"/> instance
-/// </summary>
-internal interface IServiceBusReceiverProvider
+internal interface IServiceBusProcessorFactory
 {
-    ServiceBusReceiver Instance { get; }
+    ServiceBusProcessor CreateProcessor(string topicName, string subscriptionName);
 }

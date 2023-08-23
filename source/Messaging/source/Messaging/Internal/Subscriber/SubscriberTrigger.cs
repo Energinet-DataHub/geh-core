@@ -12,25 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.WebApp.Hosting;
-using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
-internal sealed class SubscriberTrigger : RepeatingTrigger<IIntegrationEventSubscriber>
+internal sealed class SubscriberTrigger : IHostedService
 {
-    public SubscriberTrigger(
-        IOptions<SubscriberWorkerOptions> options,
-        IServiceProvider serviceProvider,
-        ILogger<SubscriberTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(options.Value.HostedServiceExecutionDelayMs))
+    private readonly IServiceProvider _serviceProvider;
+    private IIntegrationEventSubscriber? _eventSubscriber;
+    private IServiceScope? _scope;
+
+    public SubscriberTrigger(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
     }
 
-    protected override Task ExecuteAsync(IIntegrationEventSubscriber scopedService, CancellationToken cancellationToken, Action isAliveCallback)
+    public Task StartAsync(CancellationToken stoppingToken)
     {
-        return scopedService.ReceiveAsync(cancellationToken);
+        if (_eventSubscriber is not null)
+        {
+            throw new InvalidOperationException($"This {nameof(SubscriberTrigger)} is already running");
+        }
+
+        _scope = _serviceProvider.CreateScope();
+        _eventSubscriber = _scope.ServiceProvider.GetRequiredService<IIntegrationEventSubscriber>();
+        return _eventSubscriber.StartAsync(stoppingToken);
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_eventSubscriber is null)
+        {
+            return;
+        }
+
+        await _eventSubscriber.StopAsync(cancellationToken).ConfigureAwait(false);
+        _scope!.Dispose();
+        _eventSubscriber = null;
+        _scope = null;
     }
 }
