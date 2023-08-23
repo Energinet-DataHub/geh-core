@@ -72,13 +72,13 @@ internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
 
     private async Task OnMessageReceivedAsync(ProcessMessageEventArgs args)
     {
-        var rawServiceBusMessage = new IntegrationEventServiceBusMessage(
+        var integrationEventServiceBusMessage = new IntegrationEventServiceBusMessage(
             Guid.Parse(args.Message.MessageId),
             args.Message.Subject,
             args.Message.ApplicationProperties,
             new BinaryData(args.Message.Body.ToArray()));
 
-        await _subscriber.HandleAsync(rawServiceBusMessage).ConfigureAwait(false);
+        await _subscriber.HandleAsync(integrationEventServiceBusMessage).ConfigureAwait(false);
         await args.CompleteMessageAsync(args.Message, args.CancellationToken).ConfigureAwait(false);
     }
 
