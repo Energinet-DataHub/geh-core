@@ -82,8 +82,8 @@ public static class Registration
     public static IServiceCollection AddSubscriberWorker(this IServiceCollection services)
     {
         services.AddSingleton<IServiceBusProcessorFactory, ServiceBusProcessorFactory>();
-        services.AddScoped<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
-        services.AddHostedService<SubscriberTrigger>(sp => new SubscriberTrigger(sp));
+        services.AddSingleton<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
+        services.AddHostedService<SubscriberTrigger>();
         return services;
     }
 }

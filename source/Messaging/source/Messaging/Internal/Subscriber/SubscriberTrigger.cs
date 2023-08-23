@@ -12,44 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
 internal sealed class SubscriberTrigger : IHostedService
 {
-    private readonly IServiceProvider _serviceProvider;
-    private IIntegrationEventSubscriber? _eventSubscriber;
-    private IServiceScope? _scope;
+    private readonly IIntegrationEventSubscriber _eventSubscriber;
 
-    public SubscriberTrigger(IServiceProvider serviceProvider)
+    public SubscriberTrigger(IIntegrationEventSubscriber eventSubscriber)
     {
-        _serviceProvider = serviceProvider;
+        _eventSubscriber = eventSubscriber;
     }
 
     public Task StartAsync(CancellationToken stoppingToken)
     {
-        if (_eventSubscriber is not null)
-        {
-            throw new InvalidOperationException($"This {nameof(SubscriberTrigger)} is already running");
-        }
-
-        _scope = _serviceProvider.CreateScope();
-        _eventSubscriber = _scope.ServiceProvider.GetRequiredService<IIntegrationEventSubscriber>();
         return _eventSubscriber.StartAsync(stoppingToken);
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
-        if (_eventSubscriber is null)
-        {
-            return;
-        }
-
-        await _eventSubscriber.StopAsync(cancellationToken).ConfigureAwait(false);
-        _scope!.Dispose();
-        _eventSubscriber = null;
-        _scope = null;
+        return _eventSubscriber.StopAsync(cancellationToken);
     }
 }

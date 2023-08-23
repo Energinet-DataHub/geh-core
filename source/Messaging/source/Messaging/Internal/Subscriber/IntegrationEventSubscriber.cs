@@ -14,6 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -23,19 +24,19 @@ internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
 {
     private readonly IOptions<SubscriberWorkerOptions> _options;
     private readonly IServiceBusProcessorFactory _serviceBusProcessorFactory;
-    private readonly ISubscriber _subscriber;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<IntegrationEventSubscriber> _logger;
     private ServiceBusProcessor? _processor;
 
     public IntegrationEventSubscriber(
         IOptions<SubscriberWorkerOptions> options,
         IServiceBusProcessorFactory serviceBusProcessorFactory,
-        ISubscriber subscriber,
+        IServiceProvider serviceProvider,
         ILogger<IntegrationEventSubscriber> logger)
     {
         _options = options;
         _serviceBusProcessorFactory = serviceBusProcessorFactory;
-        _subscriber = subscriber;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -78,7 +79,12 @@ internal sealed class IntegrationEventSubscriber : IIntegrationEventSubscriber
             args.Message.ApplicationProperties,
             new BinaryData(args.Message.Body.ToArray()));
 
-        await _subscriber.HandleAsync(integrationEventServiceBusMessage).ConfigureAwait(false);
+        using (var scope = _serviceProvider.CreateScope())
+        {
+            var subscriber = scope.ServiceProvider.GetRequiredService<ISubscriber>();
+            await subscriber.HandleAsync(integrationEventServiceBusMessage).ConfigureAwait(false);
+        }
+
         await args.CompleteMessageAsync(args.Message, args.CancellationToken).ConfigureAwait(false);
     }
 
