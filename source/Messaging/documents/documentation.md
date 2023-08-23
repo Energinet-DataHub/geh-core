@@ -104,6 +104,7 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
     }
 }
 ```
+
 Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation needs to be registered as a dependency using the code below.
 The descriptors are used to deserialize the event as well as filtering unwanted messages.
 
