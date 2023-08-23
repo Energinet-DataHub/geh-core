@@ -104,6 +104,7 @@ public class SqlStatementClient : ISqlStatementClient
 
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+        LogDatabricksSqlResponseState(databricksSqlResponse);
 
         var waitTime = 1000;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
@@ -126,6 +127,7 @@ public class SqlStatementClient : ISqlStatementClient
 
             jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+            LogDatabricksSqlResponseState(databricksSqlResponse);
         }
 
         if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
@@ -170,5 +172,13 @@ public class SqlStatementClient : ISqlStatementClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
         httpClient.BaseAddress = new Uri(options.Value.WorkspaceUrl);
+    }
+
+    private void LogDatabricksSqlResponseState(DatabricksSqlResponse response)
+    {
+        _logger.LogDebug(
+            "Databricks SQL response received with state: {State} for statement ID: {StatementId}",
+            response.State,
+            response.StatementId);
     }
 }
