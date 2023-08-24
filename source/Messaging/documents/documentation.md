@@ -83,13 +83,6 @@ In both cases the IIntegrationEventHandler implementation is needed. An example 
 ```csharp
 public sealed class IntegrationEventHandler : IIntegrationEventHandler
 {
-    public bool ShouldHandle(string eventName)
-    {
-        return eventName is
-            nameof(ActorCreated) or
-            nameof(UserCreated);
-    }
-
     public async Task HandleAsync(IntegrationEvent integrationEvent)
     {
         switch (integrationEvent.Message)
@@ -106,7 +99,6 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
 ```
 
 Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation needs to be registered as a dependency using the code below.
-The descriptors are used to deserialize the event as well as filtering unwanted messages.
 
 ```csharp
 services.AddSubscriber<IntegrationEventHandler>(new[]
@@ -116,7 +108,7 @@ services.AddSubscriber<IntegrationEventHandler>(new[]
 });
 ```
 
-In order to deserialize protobuf messages, the package needs to know the descriptors of expected messages. In the example above, we expect messages of type ActorCreated and UserCreated.
+The descriptors are used to deserialize the event as well as filtering unwanted messages. In the example above, we expect messages of type ActorCreated and UserCreated.
 
 ### ServiceBusTrigger
 
