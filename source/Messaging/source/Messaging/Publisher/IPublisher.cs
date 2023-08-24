@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
-
-internal interface IServiceBusMessageFactory
+public interface IPublisher
 {
-    ServiceBusMessage Create(IntegrationEvent @event);
+    Task PublishAsync(CancellationToken cancellationToken);
 }

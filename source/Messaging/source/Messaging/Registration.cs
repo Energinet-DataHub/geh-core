@@ -13,7 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using Google.Protobuf.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Messaging.Communication;
@@ -21,40 +25,65 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 public static class Registration
 {
     /// <summary>
-    /// Method for registering the communication library.
-    /// It is the responsibility of the caller to register the dependencies of the
-    /// <see cref="IIntegrationEventProvider"/> implementation.
+    /// Method for registering publisher.
+    /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventProvider"/> implementation.
     /// </summary>
     /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <param name="settingsFactory"></param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddCommunication<TIntegrationEventProvider>(
-        this IServiceCollection services,
-        Func<IServiceProvider, CommunicationSettings> settingsFactory)
+    public static IServiceCollection AddPublisher<TIntegrationEventProvider>(this IServiceCollection services)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
+        services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>();
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
-        services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>(sp =>
-        {
-            var settings = settingsFactory(sp);
-            return new ServiceBusSenderProvider(settings);
-        });
-
-        services.AddScoped<IOutboxSender, OutboxSender>();
+        services.AddScoped<IPublisher, Internal.Publisher.Publisher>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+        return services;
+    }
 
-        RegisterHostedServices(services);
+    /// <summary>
+    /// Method for registering publisher worker.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+    /// <returns>A reference to this instance after the operation has completed.</returns>
+    public static IServiceCollection AddPublisherWorker(this IServiceCollection services)
+    {
+        services.AddHostedService<PublisherTrigger>();
+
+        services
+            .AddHealthChecks()
+            .AddRepeatingTriggerHealthCheck<PublisherTrigger>(TimeSpan.FromMinutes(1));
 
         return services;
     }
 
-    private static void RegisterHostedServices(IServiceCollection services)
+    /// <summary>
+    /// Method for registering subscriber.
+    /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventHandler"/> implementation.
+    /// </summary>
+    /// <typeparam name="TIntegrationEventHandler">The type of the service to use for outbound events.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+    /// <param name="messageDescriptors">List of known <see cref="MessageDescriptor"/></param>
+    /// <returns>A reference to this instance after the operation has completed.</returns>
+    public static IServiceCollection AddSubscriber<TIntegrationEventHandler>(this IServiceCollection services, IEnumerable<MessageDescriptor> messageDescriptors)
+        where TIntegrationEventHandler : class, IIntegrationEventHandler
     {
-        services.AddHostedService<OutboxSenderTrigger>();
+        services.AddScoped<IIntegrationEventHandler, TIntegrationEventHandler>();
+        services.AddScoped<IIntegrationEventFactory>(_ => new IntegrationEventFactory(messageDescriptors.ToList()));
+        services.AddScoped<ISubscriber, Internal.Subscriber.Subscriber>();
+        return services;
+    }
 
-        services
-            .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<OutboxSenderTrigger>(TimeSpan.FromMinutes(1));
+    /// <summary>
+    /// Method for registering subscriber worker.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+    /// <returns>A reference to this instance after the operation has completed.</returns>
+    public static IServiceCollection AddSubscriberWorker(this IServiceCollection services)
+    {
+        services.AddSingleton<IServiceBusProcessorFactory, ServiceBusProcessorFactory>();
+        services.AddSingleton<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
+        services.AddHostedService<SubscriberTrigger>();
+        return services;
     }
 }

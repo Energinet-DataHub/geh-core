@@ -12,20 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 
 /// <summary>
 /// Settings for the communication with the Service Bus.
 /// </summary>
-public sealed class CommunicationSettings
+public sealed class SubscriberWorkerOptions
 {
     /// <summary>
     /// The connection string for the Service Bus.
     /// </summary>
-    public string ServiceBusIntegrationEventWriteConnectionString { get; set; } = string.Empty;
+    public string ServiceBusConnectionString { get; set; } = string.Empty;
 
     /// <summary>
-    /// The name of the topic to send integration events to.
+    /// The name of the topic from where to receive integration events.
     /// </summary>
-    public string IntegrationEventTopicName { get; set; } = string.Empty;
+    public string TopicName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The name of the subscription.
+    /// </summary>
+    public string SubscriptionName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Maximum number of concurrent calls to the message handler.
+    /// </summary>
+    public int MaxConcurrentCalls { get; set; } = 3;
 }

@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
-
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
 /// <summary>
-/// In order to use the `Communication` library to publish integration events an implementation of this interface is required.
-/// The implementation is responsible for creating or fetching integration events (likely from a database)
-/// and subsequently commit state changes.
+/// Settings for the communication with the Service Bus.
 /// </summary>
-public interface IIntegrationEventProvider
+public sealed class PublisherWorkerOptions
 {
-    IAsyncEnumerable<IntegrationEvent> GetAsync();
+    /// <summary>
+    /// Delay in milliseconds between each execution of the hosted service.
+    /// </summary>
+    public int HostedServiceExecutionDelayMs { get; set; } = 10000;
 }

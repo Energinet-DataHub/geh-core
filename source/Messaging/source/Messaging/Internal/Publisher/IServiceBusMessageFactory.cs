@@ -14,9 +14,12 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
-internal interface IServiceBusSenderProvider
+/// <summary>
+/// Creates a <see cref="ServiceBusMessage"/> instance from an <see cref="IntegrationEvent"/>
+/// </summary>
+internal interface IServiceBusMessageFactory
 {
-    ServiceBusSender Instance { get; }
+    ServiceBusMessage Create(IntegrationEvent @event);
 }

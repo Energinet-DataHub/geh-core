@@ -13,23 +13,22 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Google.Protobuf;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
-internal class ServiceBusMessageFactory : IServiceBusMessageFactory
+internal sealed class ServiceBusSenderProvider : IServiceBusSenderProvider
 {
-    public ServiceBusMessage Create(IntegrationEvent @event)
+    private readonly IOptions<PublisherOptions> _options;
+    private ServiceBusSender? _serviceBusSender;
+
+    public ServiceBusSenderProvider(IOptions<PublisherOptions> options)
     {
-        var serviceBusMessage = new ServiceBusMessage
-        {
-            Body = new BinaryData(@event.Message.ToByteArray()),
-            Subject = @event.EventName,
-            MessageId = @event.EventIdentification.ToString(),
-        };
-
-        serviceBusMessage.ApplicationProperties.Add("EventMinorVersion", @event.EventMinorVersion);
-
-        return serviceBusMessage;
+        _options = options;
     }
+
+    public ServiceBusSender Instance
+        => _serviceBusSender ??= new ServiceBusClient(_options.Value.ServiceBusConnectionString)
+            .CreateSender(_options.Value.TopicName);
 }

@@ -13,29 +13,30 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Hosting;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
-internal class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
+internal sealed class PublisherTrigger : RepeatingTrigger<IPublisher>
 {
-    private const int DelayInSecondsBeforeNextExecution = 10;
-
-    public OutboxSenderTrigger(
+    public PublisherTrigger(
+        IOptions<PublisherWorkerOptions> options,
         IServiceProvider serviceProvider,
-        ILogger<OutboxSenderTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
+        ILogger<PublisherTrigger> logger)
+        : base(serviceProvider, logger, TimeSpan.FromMilliseconds(options.Value.HostedServiceExecutionDelayMs))
     {
     }
 
     protected override async Task ExecuteAsync(
-        IOutboxSender outboxSender,
+        IPublisher publisher,
         CancellationToken cancellationToken,
         Action isAliveCallback)
     {
-        await outboxSender.SendAsync(cancellationToken).ConfigureAwait(false);
+        await publisher.PublishAsync(cancellationToken).ConfigureAwait(false);
     }
 }
