@@ -13,10 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.WebApp.Hosting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
@@ -28,10 +31,10 @@ public class RepeatingTriggerHealthCheck<TRepeatingTrigger> : IHealthCheck
     private readonly IOptions<RepeatingTriggerHealthCheckOptions<TRepeatingTrigger>> _options;
 
     public RepeatingTriggerHealthCheck(
-        TRepeatingTrigger repeatingTrigger,
+        IEnumerable<IHostedService> hostedServices,
         IOptions<RepeatingTriggerHealthCheckOptions<TRepeatingTrigger>> options)
     {
-        _repeatingTrigger = repeatingTrigger;
+        _repeatingTrigger = hostedServices.OfType<TRepeatingTrigger>().Single();
         _options = options;
     }
 

@@ -1,5 +1,17 @@
 # App Release notes
 
+## Version 7.5.3
+
+- No functional change.
+
+## Version 7.5.2
+
+- No functional change.
+
+## Version 7.5.1
+
+Bug fixing `RepeatingTrigger<TService>` including related health checks.
+
 ## Version 7.5.0
 
 Add app hosting functionality:

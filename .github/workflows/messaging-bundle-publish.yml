@@ -22,9 +22,6 @@ on:
       - main
     paths:
       - source/Messaging/source/Messaging/**
-      - source/Messaging/source/Messaging.Integration.ServiceCollection/**
-      - source/Messaging/source/Messaging.Protobuf/**
-      - source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/**
       - .github/workflows/messaging-bundle-publish.yml
   # Build, test, pack
   # Executed if Messaging folder or build scripts has changed; including if documentation or tests has changed
@@ -68,30 +65,12 @@ jobs:
         with:
           project_path: ./source/Messaging/source/Messaging/Messaging.csproj
 
-      - name: Pack Messaging.Integration.ServiceCollection project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
-        with:
-          project_path: ./source/Messaging/source/Messaging.Integration.ServiceCollection/Messaging.Integration.ServiceCollection.csproj
-
-      - name: Pack Messaging.Protobuf project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
-        with:
-          project_path: ./source/Messaging/source/Messaging.Protobuf/Messaging.Protobuf.csproj
-
-      - name: Pack Messaging.Protobuf.Integration.ServiceCollection project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
-        with:
-          project_path: ./source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/Messaging.Protobuf.Integration.ServiceCollection.csproj
-
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v35
         with:
           files: |
             source/Messaging/source/Messaging/**/*.*
-            source/Messaging/source/Messaging.Integration.ServiceCollection/**/*.*
-            source/Messaging/source/Messaging.Protobuf/**/*.*
-            source/Messaging/source/Messaging.Protobuf.Integration.ServiceCollection/**/*.*
             .github/workflows/messaging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
