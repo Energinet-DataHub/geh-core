@@ -31,10 +31,10 @@ namespace ExampleHost.FunctionApp.Tests.Integration
     /// Tests that documents and prooves how we should setup and configure our
     /// Azure Function App's (host's) so they behave as we expect.
     /// </summary>
-    [Collection(nameof(ExampleHostCollectionFixture))]
-    public class ExampleHostTests : IAsyncLifetime
+    [Collection(nameof(ExampleHostsCollectionFixture))]
+    public class ExampleHostsFlowTests : IAsyncLifetime
     {
-        public ExampleHostTests(ExampleHostFixture fixture, ITestOutputHelper testOutputHelper)
+        public ExampleHostsFlowTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
         {
             Fixture = fixture;
             Fixture.SetTestOutputHelper(testOutputHelper);
@@ -43,7 +43,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration
             Fixture.App02HostManager.ClearHostLog();
         }
 
-        private ExampleHostFixture Fixture { get; }
+        private ExampleHostsFixture Fixture { get; }
 
         public Task InitializeAsync()
         {

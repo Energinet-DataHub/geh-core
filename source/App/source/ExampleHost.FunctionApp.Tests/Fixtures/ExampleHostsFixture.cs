@@ -29,9 +29,9 @@ namespace ExampleHost.FunctionApp.Tests.Fixtures
     /// <summary>
     /// Support testing flows between multiple Function App hosts.
     /// </summary>
-    public class ExampleHostFixture : IAsyncLifetime
+    public class ExampleHostsFixture : IAsyncLifetime
     {
-        public ExampleHostFixture()
+        public ExampleHostsFixture()
         {
             TestLogger = new TestDiagnosticsLogger();
 

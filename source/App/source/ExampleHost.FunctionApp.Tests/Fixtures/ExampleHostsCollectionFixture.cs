@@ -22,8 +22,8 @@ namespace ExampleHost.FunctionApp.Tests.Fixtures
     /// xUnit documentation of collection fixtures:
     ///  * https://xunit.net/docs/shared-context#collection-fixture
     /// </summary>
-    [CollectionDefinition(nameof(ExampleHostCollectionFixture))]
-    public class ExampleHostCollectionFixture : ICollectionFixture<ExampleHostFixture>
+    [CollectionDefinition(nameof(ExampleHostsCollectionFixture))]
+    public class ExampleHostsCollectionFixture : ICollectionFixture<ExampleHostsFixture>
     {
     }
 }
