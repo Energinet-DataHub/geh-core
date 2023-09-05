@@ -33,7 +33,38 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
 
         public async Task<HttpResponseData> HandleAsync(HttpRequestData httpRequest, string endpoint)
         {
+            var predicate = DeterminePredicateFromEndpoint(endpoint);
+            if (predicate == null)
+            {
+                return httpRequest.CreateResponse(HttpStatusCode.NotFound);
+            }
+            else
+            {
+                var result = await HealthCheckService.CheckHealthAsync(predicate).ConfigureAwait(false);
+
+                var httpResponse = httpRequest.CreateResponse();
+                httpResponse.StatusCode = result.Status == HealthStatus.Healthy
+                    ? HttpStatusCode.OK
+                    : HttpStatusCode.ServiceUnavailable;
+
+                await ResponseWriterAsync(httpResponse, result).ConfigureAwait(false);
+
+                return httpResponse;
+            }
+        }
+
+        private static async Task ResponseWriterAsync(HttpResponseData httpResponse, HealthReport result)
+        {
+            httpResponse.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+            var healthStatus = Enum.GetName(typeof(HealthStatus), result.Status);
+            await httpResponse.WriteStringAsync(healthStatus!).ConfigureAwait(false);
+        }
+
+        private static Func<HealthCheckRegistration, bool>? DeterminePredicateFromEndpoint(string endpoint)
+        {
             Func<HealthCheckRegistration, bool>? predicate = null;
+
             if (string.Compare(endpoint, "live", ignoreCase: true) == 0)
             {
                 predicate = r => r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
@@ -44,27 +75,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
                 predicate = r => !r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
             }
 
-            var httpResponse = httpRequest.CreateResponse();
-
-            if (predicate == null)
-            {
-                httpResponse.StatusCode = HttpStatusCode.NotFound;
-            }
-            else
-            {
-                var result = await HealthCheckService.CheckHealthAsync(predicate).ConfigureAwait(false);
-
-                httpResponse.StatusCode = result.Status == HealthStatus.Healthy
-                    ? HttpStatusCode.OK
-                    : HttpStatusCode.ServiceUnavailable;
-
-                httpResponse.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-
-                var healthStatus = Enum.GetName(typeof(HealthStatus), result.Status);
-                await httpResponse.WriteStringAsync(healthStatus!).ConfigureAwait(false);
-            }
-
-            return httpResponse;
+            return predicate;
         }
     }
 }
