@@ -15,6 +15,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Azure;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -53,11 +54,13 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
             {
                 var result = await HealthCheckService.CheckHealthAsync(predicate).ConfigureAwait(false);
 
-                httpResponse.StatusCode = result.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy
+                httpResponse.StatusCode = result.Status == HealthStatus.Healthy
                     ? HttpStatusCode.OK
                     : HttpStatusCode.ServiceUnavailable;
 
-                var healthStatus = Enum.GetName(typeof(Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus), result.Status);
+                httpResponse.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                var healthStatus = Enum.GetName(typeof(HealthStatus), result.Status);
                 await httpResponse.WriteStringAsync(healthStatus!).ConfigureAwait(false);
             }
 

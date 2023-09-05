@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using ExampleHost.FunctionApp01.Common;
@@ -50,6 +52,11 @@ var host = new HostBuilder()
             var topicName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventTopicName);
             return serviceBusClient.CreateSender(topicName);
         });
+
+        // Health check
+        services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
+        services.AddHealthChecks()
+            .AddLiveCheck();
     })
     .Build();
 
