@@ -14,7 +14,9 @@
 
 using System.Net;
 using System.Threading.Tasks;
+using AutoFixture;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Hosting.Tests.Fixtures;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
@@ -25,34 +27,20 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
 {
     public class HealthCheckEndpointRouteBuilderExtensionsTests
+        : IClassFixture<HealthChecksFixture>
     {
+        private readonly HealthChecksFixture _fixture;
+
+        public HealthCheckEndpointRouteBuilderExtensionsTests(HealthChecksFixture fixture)
+        {
+            _fixture = fixture;
+        }
+
         [Fact]
         public async Task CallingLive_Should_ReturnOKAndHealthy()
         {
-            // Arrange
-            var webHostBuilder = new WebHostBuilder()
-            .ConfigureServices(services =>
-            {
-                services.AddRouting();
-
-                services.AddHealthChecks()
-                    .AddLiveCheck();
-            })
-            .Configure(app =>
-            {
-                app.UseRouting();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapLiveHealthChecks();
-                    endpoints.MapReadyHealthChecks();
-                });
-            });
-
-            using var server = new TestServer(webHostBuilder);
-
             // Act
-            using var actualResponse = await server.CreateRequest("/monitor/live").GetAsync();
+            using var actualResponse = await _fixture.HttpClient.GetAsync("/monitor/live");
 
             // Assert
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -64,30 +52,8 @@ namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
         [Fact]
         public async Task CallingReady_Should_ReturnOKAndHealthy()
         {
-            // Arrange
-            var webHostBuilder = new WebHostBuilder()
-            .ConfigureServices(services =>
-            {
-                services.AddRouting();
-
-                services.AddHealthChecks()
-                    .AddLiveCheck();
-            })
-            .Configure(app =>
-            {
-                app.UseRouting();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapLiveHealthChecks();
-                    endpoints.MapReadyHealthChecks();
-                });
-            });
-
-            using var server = new TestServer(webHostBuilder);
-
             // Act
-            using var actualResponse = await server.CreateRequest("/monitor/ready").GetAsync();
+            using var actualResponse = await _fixture.HttpClient.GetAsync("/monitor/live");
 
             // Assert
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
