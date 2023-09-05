@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -37,7 +38,11 @@ namespace Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks
             return endpoints
                 .MapHealthChecks(
                     HealthChecksConstants.LiveHealthCheckEndpointRoute,
-                    new HealthCheckOptions { Predicate = r => r.Name.Equals(HealthChecksConstants.LiveHealthCheckName) })
+                    new HealthCheckOptions
+                    {
+                        Predicate = r => r.Name.Equals(HealthChecksConstants.LiveHealthCheckName),
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                    })
                 .WithMetadata(new AllowAnonymousAttribute());
         }
 
@@ -53,7 +58,11 @@ namespace Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks
             return endpoints
                 .MapHealthChecks(
                     HealthChecksConstants.ReadyHealthCheckEndpointRoute,
-                    new HealthCheckOptions { Predicate = r => !r.Name.Equals(HealthChecksConstants.LiveHealthCheckName) })
+                    new HealthCheckOptions
+                    {
+                        Predicate = r => !r.Name.Equals(HealthChecksConstants.LiveHealthCheckName),
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                    })
                 .WithMetadata(new AllowAnonymousAttribute());
         }
     }

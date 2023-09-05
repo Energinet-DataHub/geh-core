@@ -40,10 +40,10 @@ namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
             using var assertionScope = new AssertionScope();
 
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("text/plain");
+            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
             var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Be("Healthy");
+            content.Should().StartWith("{\"status\":\"Healthy\"");
         }
 
         [Fact]
@@ -56,10 +56,10 @@ namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
             using var assertionScope = new AssertionScope();
 
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("text/plain");
+            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
             var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Be("Healthy");
+            content.Should().StartWith("{\"status\":\"Healthy\"");
         }
     }
 }
