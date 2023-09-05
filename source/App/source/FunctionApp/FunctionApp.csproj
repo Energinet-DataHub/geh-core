@@ -67,7 +67,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Core" Version="7.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Core" Version="6.0.5" />
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.1.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
