@@ -16,6 +16,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Hosting.Tests.Fixtures;
 using FluentAssertions;
+using FluentAssertions.Execution;
 
 namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
 {
@@ -30,26 +31,32 @@ namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
         }
 
         [Fact]
-        public async Task CallingLive_Should_ReturnOKAndHealthy()
+        public async Task CallingLive_Should_ReturnOKAndExpectedContent()
         {
             // Act
             using var actualResponse = await _fixture.HttpClient.GetAsync("/monitor/live");
 
             // Assert
+            using var assertionScope = new AssertionScope();
+
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("text/plain");
 
             var content = await actualResponse.Content.ReadAsStringAsync();
             content.Should().Be("Healthy");
         }
 
         [Fact]
-        public async Task CallingReady_Should_ReturnOKAndHealthy()
+        public async Task CallingReady_Should_ReturnOKAndExpectedContent()
         {
             // Act
             using var actualResponse = await _fixture.HttpClient.GetAsync("/monitor/live");
 
             // Assert
+            using var assertionScope = new AssertionScope();
+
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("text/plain");
 
             var content = await actualResponse.Content.ReadAsStringAsync();
             content.Should().Be("Healthy");
