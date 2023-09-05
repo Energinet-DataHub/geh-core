@@ -40,24 +40,35 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
 
         public async Task<HttpResponseData> HandleAsync(HttpRequestData httpRequest, string endpoint)
         {
-            var predicate = DeterminePredicateFromEndpoint(endpoint);
+            Func<HealthCheckRegistration, bool>? predicate = null;
+            if (string.Compare(endpoint, "live", ignoreCase: true) == 0)
+            {
+                predicate = r => r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
+            }
+
+            if (string.Compare(endpoint, "ready", ignoreCase: true) == 0)
+            {
+                predicate = r => !r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
+            }
+
+            var httpResponse = httpRequest.CreateResponse();
+
             if (predicate == null)
             {
-                return httpRequest.CreateResponse(HttpStatusCode.NotFound);
+                httpResponse.StatusCode = HttpStatusCode.NotFound;
             }
             else
             {
-                var report = await HealthCheckService.CheckHealthAsync(predicate).ConfigureAwait(false);
+                var result = await HealthCheckService.CheckHealthAsync(predicate).ConfigureAwait(false);
 
-                var httpResponse = httpRequest.CreateResponse();
-                httpResponse.StatusCode = report.Status == HealthStatus.Healthy
+                httpResponse.StatusCode = result.Status == HealthStatus.Healthy
                     ? HttpStatusCode.OK
                     : HttpStatusCode.ServiceUnavailable;
 
-                await WriteUICompatibleResponseAsync(httpResponse, report).ConfigureAwait(false);
-
-                return httpResponse;
+                await WriteUICompatibleResponseAsync(httpResponse, result).ConfigureAwait(false);
             }
+
+            return httpResponse;
         }
 
         /// <summary>
@@ -72,23 +83,6 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
 #pragma warning restore SA1305 // Field names should not use Hungarian notation
 
             await JsonSerializer.SerializeAsync(httpResponse.Body, uiReport, JsonOptions).ConfigureAwait(false);
-        }
-
-        private static Func<HealthCheckRegistration, bool>? DeterminePredicateFromEndpoint(string endpoint)
-        {
-            Func<HealthCheckRegistration, bool>? predicate = null;
-
-            if (string.Compare(endpoint, "live", ignoreCase: true) == 0)
-            {
-                predicate = r => r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
-            }
-
-            if (string.Compare(endpoint, "ready", ignoreCase: true) == 0)
-            {
-                predicate = r => !r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
-            }
-
-            return predicate;
         }
 
         private static JsonSerializerOptions CreateJsonOptions()
