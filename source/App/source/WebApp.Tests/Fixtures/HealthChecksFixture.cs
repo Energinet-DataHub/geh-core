@@ -13,13 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.Hosting.Tests.Fixtures;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -45,7 +41,7 @@ namespace Energinet.DataHub.Core.App.Hosting.Tests.Fixtures
             _server.Dispose();
         }
 
-        private IWebHostBuilder CreateWebHostBuilder()
+        private static IWebHostBuilder CreateWebHostBuilder()
         {
             return new WebHostBuilder()
                 .ConfigureServices(services =>
