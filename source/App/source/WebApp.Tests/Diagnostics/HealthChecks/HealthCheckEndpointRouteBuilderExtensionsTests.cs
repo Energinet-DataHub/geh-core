@@ -30,27 +30,16 @@ namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
             _fixture = fixture;
         }
 
-        [Fact]
-        public async Task CallingLive_Should_ReturnOKAndExpectedContent()
+        /// <summary>
+        /// Verify the response contains JSON in a format that the Health Checks UI supports.
+        /// </summary>
+        [Theory]
+        [InlineData("live")]
+        [InlineData("ready")]
+        public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
         {
             // Act
-            using var actualResponse = await _fixture.HttpClient.GetAsync("/monitor/live");
-
-            // Assert
-            using var assertionScope = new AssertionScope();
-
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().StartWith("{\"status\":\"Healthy\"");
-        }
-
-        [Fact]
-        public async Task CallingReady_Should_ReturnOKAndExpectedContent()
-        {
-            // Act
-            using var actualResponse = await _fixture.HttpClient.GetAsync("/monitor/live");
+            using var actualResponse = await _fixture.HttpClient.GetAsync($"/monitor/{healthCheckEndpoint}");
 
             // Assert
             using var assertionScope = new AssertionScope();
