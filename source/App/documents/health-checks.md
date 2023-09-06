@@ -26,6 +26,10 @@ The **readiness** check should validate that the application can reach critical 
 
 The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readiness_ check as this could cause an endless loop.
 
+### Health Checks UI compatible response
+
+The health checks returns a response that is compatible with the use of the [Health Checks UI](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#HealthCheckUI). This is a JSON format that allows callers to drill down into each specific health check and determine its status.
+
 ## Azure Functions App
 
 After following the guidelines below, the health checks endpoints will be:
