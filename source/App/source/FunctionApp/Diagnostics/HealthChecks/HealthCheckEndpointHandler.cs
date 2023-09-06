@@ -14,8 +14,13 @@
 
 using System;
 using System.Net;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using HealthChecks.UI.Core;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -26,13 +31,39 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
         public HealthCheckEndpointHandler(HealthCheckService healthCheckService)
         {
             HealthCheckService = healthCheckService;
+            JsonOptions = CreateJsonOptions();
         }
 
         private HealthCheckService HealthCheckService { get; }
 
+        private JsonSerializerOptions JsonOptions { get; }
+
         public async Task<HttpResponseData> HandleAsync(HttpRequestData httpRequest, string endpoint)
         {
+            var predicate = DeterminePredicateFromEndpoint(endpoint);
+            if (predicate == null)
+            {
+                return httpRequest.CreateResponse(HttpStatusCode.NotFound);
+            }
+            else
+            {
+                var result = await HealthCheckService.CheckHealthAsync(predicate).ConfigureAwait(false);
+
+                var httpResponse = httpRequest.CreateResponse();
+                httpResponse.StatusCode = result.Status == HealthStatus.Healthy
+                    ? HttpStatusCode.OK
+                    : HttpStatusCode.ServiceUnavailable;
+
+                await WriteUICompatibleResponseAsync(httpResponse, result).ConfigureAwait(false);
+
+                return httpResponse;
+            }
+        }
+
+        private static Func<HealthCheckRegistration, bool>? DeterminePredicateFromEndpoint(string endpoint)
+        {
             Func<HealthCheckRegistration, bool>? predicate = null;
+
             if (string.Compare(endpoint, "live", ignoreCase: true) == 0)
             {
                 predicate = r => r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
@@ -43,25 +74,53 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
                 predicate = r => !r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
             }
 
-            var httpResponse = httpRequest.CreateResponse();
+            return predicate;
+        }
 
-            if (predicate == null)
+        /// <summary>
+        /// Write response compatible with the Health Checks UI.
+        /// </summary>
+        private async Task WriteUICompatibleResponseAsync(HttpResponseData httpResponse, HealthReport report)
+        {
+            httpResponse.Headers.Add("Content-Type", "application/json; charset=utf-8");
+
+#pragma warning disable SA1305 // Field names should not use Hungarian notation
+            var uiReport = UIHealthReport.CreateFrom(report);
+#pragma warning restore SA1305 // Field names should not use Hungarian notation
+
+            await JsonSerializer.SerializeAsync(httpResponse.Body, uiReport, JsonOptions).ConfigureAwait(false);
+        }
+
+        private static JsonSerializerOptions CreateJsonOptions()
+        {
+            var options = new JsonSerializerOptions
             {
-                httpResponse.StatusCode = HttpStatusCode.NotFound;
-            }
-            else
+                AllowTrailingCommas = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            };
+
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            // for compatibility with older UI versions ( <3.0 ) we arrange
+            // timespan serialization as s
+            options.Converters.Add(new TimeSpanConverter());
+
+            return options;
+        }
+
+        private class TimeSpanConverter : JsonConverter<TimeSpan>
+        {
+            public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                var result = await HealthCheckService.CheckHealthAsync(predicate).ConfigureAwait(false);
-
-                httpResponse.StatusCode = result.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy
-                    ? HttpStatusCode.OK
-                    : HttpStatusCode.ServiceUnavailable;
-
-                var healthStatus = Enum.GetName(typeof(Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus), result.Status);
-                await httpResponse.WriteStringAsync(healthStatus!).ConfigureAwait(false);
+                return default;
             }
 
-            return httpResponse;
+            public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Energinet.DataHub.Core.App.Hosting.Tests.Hosting;
+namespace Energinet.DataHub.Core.App.WebApp.Tests.Hosting;
 
 public class RepeatingTriggerTests
 {

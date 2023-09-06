@@ -59,12 +59,12 @@ namespace ExampleHost.WebApi.Tests.Integration
         /// Test that health of repeating trigger hosted service is reported correctly.
         /// </summary>
         [Theory]
-        [InlineData(true, HttpStatusCode.OK, "Healthy")]
-        [InlineData(false, HttpStatusCode.ServiceUnavailable, "Unhealthy")]
+        [InlineData(true, HttpStatusCode.OK, "SomeTrigger is healthy.")]
+        [InlineData(false, HttpStatusCode.ServiceUnavailable, "SomeTrigger is not healthy.")]
         public async Task CallingHealthReady_Should_ReturnExpected(
             bool isHealthy,
             HttpStatusCode expectedStatusCode,
-            string expectedResponseContent)
+            string expectedResponseContain)
         {
             // Arrange
             Fixture.Thrower.IsThrowing = !isHealthy;
@@ -78,7 +78,7 @@ namespace ExampleHost.WebApi.Tests.Integration
             actualResponse.StatusCode.Should().Be(expectedStatusCode);
 
             var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Be(expectedResponseContent);
+            content.Should().Contain(expectedResponseContain);
         }
 
         /// <summary>

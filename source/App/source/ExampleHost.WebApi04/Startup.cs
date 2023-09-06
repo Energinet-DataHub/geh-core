@@ -31,9 +31,9 @@ namespace ExampleHost.WebApi04
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            var innerMetadata = _configuration["innerMetadata"];
-            var outerMetadata = _configuration["outerMetadata"];
-            var audience = _configuration["audience"];
+            var innerMetadata = _configuration["innerMetadata"]!;
+            var outerMetadata = _configuration["outerMetadata"]!;
+            var audience = _configuration["audience"]!;
 
             AuthenticationExtensions.DisableHttpsConfiguration = true;
 
