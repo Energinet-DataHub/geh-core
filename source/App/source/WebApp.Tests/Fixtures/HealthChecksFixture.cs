@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.App.Hosting.Tests.Fixtures
+namespace Energinet.DataHub.Core.App.WebApp.Tests.Fixtures
 {
     public sealed class HealthChecksFixture : IDisposable
     {

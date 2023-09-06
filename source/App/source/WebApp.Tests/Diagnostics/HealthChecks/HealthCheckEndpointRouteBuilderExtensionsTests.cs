@@ -14,11 +14,11 @@
 
 using System.Net;
 using System.Threading.Tasks;
-using Energinet.DataHub.Core.App.Hosting.Tests.Fixtures;
+using Energinet.DataHub.Core.App.WebApp.Tests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 
-namespace Energinet.DataHub.Core.App.Hosting.Tests.Diagnostics.HealthChecks
+namespace Energinet.DataHub.Core.App.WebApp.Tests.Diagnostics.HealthChecks
 {
     public class HealthCheckEndpointRouteBuilderExtensionsTests
         : IClassFixture<HealthChecksFixture>

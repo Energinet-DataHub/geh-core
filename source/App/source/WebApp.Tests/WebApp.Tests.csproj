@@ -20,8 +20,8 @@ limitations under the License.
       <LangVersion>10</LangVersion>
       <Nullable>enable</Nullable>
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-      <AssemblyName>Energinet.DataHub.Core.App.Hosting.Tests</AssemblyName>
-      <RootNamespace>Energinet.DataHub.Core.App.Hosting.Tests</RootNamespace>
+      <AssemblyName>Energinet.DataHub.Core.App.WebApp.Tests</AssemblyName>
+      <RootNamespace>Energinet.DataHub.Core.App.WebApp.Tests</RootNamespace>
       <GenerateDocumentationFile>true</GenerateDocumentationFile>
       <IsPackable>false</IsPackable>
     </PropertyGroup>
