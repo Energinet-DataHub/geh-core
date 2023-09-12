@@ -18,6 +18,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.Logging.LoggingScopeMiddleware.Internal;
 
+/// <summary>
+/// Middleware for setting up the root logging scope for ASP.NET Core request logging.
+/// IMPORTANT: This middleware must be registered before any other middleware that uses logging.
+/// </summary>
 public class FunctionLoggingScopeMiddleware : IFunctionsWorkerMiddleware
 {
     private readonly ILogger _logger;
