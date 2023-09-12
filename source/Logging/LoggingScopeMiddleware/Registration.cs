@@ -22,11 +22,17 @@ namespace Energinet.DataHub.Core.Logging.LoggingScopeMiddleware;
 
 public static class Registration
 {
-    public static IServiceCollection AddLoggingScope(this IServiceCollection services, string domain)
+    public static IServiceCollection AddHttpLoggingScope(this IServiceCollection services, string domain)
     {
-        services.AddSingleton<RootLoggingScope>(_ => new RootLoggingScope(domain));
-        services.AddScoped<LoggingScope>();
+        RegisterLoggingScope(services, domain);
         services.AddScoped<HttpLoggingScopeMiddleware>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddFunctionLoggingScope(this IServiceCollection services, string domain)
+    {
+        RegisterLoggingScope(services, domain);
         services.AddScoped<FunctionLoggingScopeMiddleware>();
 
         return services;
@@ -42,5 +48,11 @@ public static class Registration
     public static IFunctionsWorkerApplicationBuilder UseLoggingScope(this IFunctionsWorkerApplicationBuilder builder)
     {
         return builder.UseMiddleware<FunctionLoggingScopeMiddleware>();
+    }
+
+    private static void RegisterLoggingScope(IServiceCollection services, string domain)
+    {
+        services.AddSingleton<RootLoggingScope>(_ => new RootLoggingScope(domain));
+        services.AddScoped<LoggingScope>();
     }
 }
