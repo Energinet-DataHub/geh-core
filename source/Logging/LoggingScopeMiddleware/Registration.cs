@@ -40,9 +40,7 @@ public static class Registration
 
     public static IApplicationBuilder UseLoggingScope(this IApplicationBuilder app)
     {
-        app.UseMiddleware<HttpLoggingScopeMiddleware>();
-
-        return app;
+        return app.UseMiddleware<HttpLoggingScopeMiddleware>();
     }
 
     public static IFunctionsWorkerApplicationBuilder UseLoggingScope(this IFunctionsWorkerApplicationBuilder builder)
