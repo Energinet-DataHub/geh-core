@@ -1,23 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{7E2287D0-6CEF-416D-8108-A72F6870B5E4}"
-ProjectSection(SolutionItems) = preProject
-	documents\documentation.md = documents\documentation.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		documents\documentation.md = documents\documentation.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{1025F137-D850-4219-8324-BCB752F05F4F}"
-ProjectSection(SolutionItems) = preProject
-	documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{FEB7B6EB-BCF7-4A95-8F5B-F0D85485A239}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestResponseMiddleware", "source\RequestResponseMiddleware\RequestResponseMiddleware.csproj", "{FD85596E-C2B0-413F-B73B-6E64FEC9EC67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestResponseMiddleware", "source\RequestResponseMiddleware\RequestResponseMiddleware.csproj", "{FD85596E-C2B0-413F-B73B-6E64FEC9EC67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestResponseMiddleware.Tests", "source\RequestResponseMiddleware.Tests\RequestResponseMiddleware.Tests.csproj", "{596C7401-1FAC-4B1F-B77F-A71AABBAE417}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestResponseMiddleware.Tests", "source\RequestResponseMiddleware.Tests\RequestResponseMiddleware.Tests.csproj", "{596C7401-1FAC-4B1F-B77F-A71AABBAE417}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingScopeMiddleware", "LoggingScopeMiddleware\LoggingScopeMiddleware.csproj", "{DC009F79-0BD6-4BBB-AFF0-4518763973DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,14 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1025F137-D850-4219-8324-BCB752F05F4F} = {7E2287D0-6CEF-416D-8108-A72F6870B5E4}
-		{FD85596E-C2B0-413F-B73B-6E64FEC9EC67} = {FEB7B6EB-BCF7-4A95-8F5B-F0D85485A239}
-		{596C7401-1FAC-4B1F-B77F-A71AABBAE417} = {FEB7B6EB-BCF7-4A95-8F5B-F0D85485A239}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FD85596E-C2B0-413F-B73B-6E64FEC9EC67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -61,5 +55,26 @@ Global
 		{596C7401-1FAC-4B1F-B77F-A71AABBAE417}.Release|x64.Build.0 = Release|Any CPU
 		{596C7401-1FAC-4B1F-B77F-A71AABBAE417}.Release|x86.ActiveCfg = Release|Any CPU
 		{596C7401-1FAC-4B1F-B77F-A71AABBAE417}.Release|x86.Build.0 = Release|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Debug|x64.Build.0 = Debug|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Debug|x86.Build.0 = Debug|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Release|x64.ActiveCfg = Release|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Release|x64.Build.0 = Release|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Release|x86.ActiveCfg = Release|Any CPU
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1025F137-D850-4219-8324-BCB752F05F4F} = {7E2287D0-6CEF-416D-8108-A72F6870B5E4}
+		{FD85596E-C2B0-413F-B73B-6E64FEC9EC67} = {FEB7B6EB-BCF7-4A95-8F5B-F0D85485A239}
+		{596C7401-1FAC-4B1F-B77F-A71AABBAE417} = {FEB7B6EB-BCF7-4A95-8F5B-F0D85485A239}
+		{DC009F79-0BD6-4BBB-AFF0-4518763973DC} = {FEB7B6EB-BCF7-4A95-8F5B-F0D85485A239}
 	EndGlobalSection
 EndGlobal

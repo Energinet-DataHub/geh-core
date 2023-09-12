@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Energinet.DataHub.Core.Logging.LoggingScopeMiddleware</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.Logging.LoggingScopeMiddleware</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Energinet.DataHub.Core.Logging.LoggingScopeMiddleware</PackageId>
+    <PackageVersion>3.0.0$(VersionSuffix)</PackageVersion>
+    <Title>Logging Scope Middleware</Title>
+    <Company>Energinet-DataHub</Company>
+    <Authors>Energinet-DataHub</Authors>
+    <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Energinet-DataHub/geh-core</RepositoryUrl>
+    <!-- PackageReleaseNotes:
+      Is shown in Azure DevOps artifacts Release Notes section.
+    -->
+    <PackageReleaseNotes>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/documentation.md)
+    </PackageReleaseNotes>
+    <!-- PackageDescription:
+      Is shown in GitHub packages "About this package" section,
+      and in Visual Studio package manager view.
+    -->
+    <PackageDescription>
+      [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/documentation.md)
+    </PackageDescription>
+    <Description>Logging scope middleware to align logging.</Description>
+    <PackageTags>energinet;datahub</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <!-- Disable warning on your public types/methods for not having added full documentation tags -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+  <PropertyGroup>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Core" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
