@@ -31,37 +31,37 @@ Install `Energinet.DataHub.Core.Logging.LoggingScopeMiddleware` package.
 
 **Registration for Function app:**
 
-```c#
-public static IHost ConfigureApplication()
-{
-    var host = new HostBuilder()
-        .ConfigureFunctionsWorkerDefaults(ConfigureWorker)
-        .ConfigureServices(ConfigureServices)
-        .Build();
-    return host;
-}
+    ```c#
+    public static IHost ConfigureApplication()
+    {
+        var host = new HostBuilder()
+            .ConfigureFunctionsWorkerDefaults(ConfigureWorker)
+            .ConfigureServices(ConfigureServices)
+            .Build();
+        return host;
+    }
 
-private static void ConfigureWorker(IFunctionsWorkerApplicationBuilder builder)
-{
-    builder.UseLoggingScope();
-}
+    private static void ConfigureWorker(IFunctionsWorkerApplicationBuilder builder)
+    {
+        builder.UseLoggingScope();
+    }
 
-private static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
-{
-    serviceCollection.AddFunctionLoggingScope("domain-name");
-}
-```
+    private static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddFunctionLoggingScope("domain-name");
+    }
+    ```
 
 **Registration for Web app:**
 
-```c#
-public void ConfigureServices(IServiceCollection serviceCollection)
-{
-    serviceCollection.AddHttpLoggingScope("domain-name");
-}
-
-public void Configure(IApplicationBuilder app)
-{
-    app.UseLoggingScope();
-}
-```
+    ```c#
+    public void ConfigureServices(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddHttpLoggingScope("domain-name");
+    }
+    
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseLoggingScope();
+    }
+    ```
