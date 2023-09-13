@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
+
 namespace Energinet.DataHub.Core.Logging.LoggingScopeMiddleware.Internal;
 
 /// <summary>
 /// Logging scope intended to be used for any logging scope in the system for aligning logging.
 /// </summary>
-public class LoggingScope : Dictionary<string, object>
+public class LoggingScope : ConcurrentDictionary<string, object>
 {
 }

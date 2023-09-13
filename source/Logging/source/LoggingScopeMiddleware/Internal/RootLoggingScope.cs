@@ -25,9 +25,9 @@ public class RootLoggingScope : LoggingScope
 {
     public RootLoggingScope(string domain)
     {
-        Add("Domain", domain);
+        TryAdd("Domain", domain);
         // Always log the application entry assembly in order to be able to identify the release
         // and/or source code origin of the deployed code writing the log entry.
-        Add("ApplicationEntry", Assembly.GetEntryAssembly()?.FullName ?? "Unknown");
+        TryAdd("ApplicationEntry", Assembly.GetEntryAssembly()?.FullName ?? "Unknown");
     }
 }

@@ -51,6 +51,5 @@ public static class Registration
     private static void RegisterLoggingScope(IServiceCollection services, string domain)
     {
         services.AddSingleton<RootLoggingScope>(_ => new RootLoggingScope(domain));
-        services.AddScoped<LoggingScope>();
     }
 }
