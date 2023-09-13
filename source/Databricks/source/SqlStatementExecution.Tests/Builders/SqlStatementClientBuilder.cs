@@ -42,6 +42,7 @@ public class SqlStatementClientBuilder
     {
         var handlerMock = new HttpMessageHandlerMock(_responseMessages);
         var client = new HttpClient(handlerMock);
+        client.BaseAddress = new Uri("https://foo.com");
         var options = new Mock<IOptions<DatabricksOptions>>();
         options.Setup(o => o.Value).Returns(new DatabricksOptions
         {
