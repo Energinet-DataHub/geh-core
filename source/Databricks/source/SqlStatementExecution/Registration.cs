@@ -33,7 +33,13 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                 options.WorkspaceUrl = workspaceUrl;
             });
 
-            serviceCollection.AddHttpClient<ISqlStatementClient>();
+            serviceCollection.AddHttpClient<ISqlStatementClient>(client => {
+                client.BaseAddress = new Uri(workspaceUrl);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", workspaceToken);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            });
             serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
             serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
             serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();
