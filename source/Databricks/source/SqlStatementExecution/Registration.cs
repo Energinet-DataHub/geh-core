@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +35,8 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                 options.WorkspaceUrl = workspaceUrl;
             });
 
-            serviceCollection.AddHttpClient<ISqlStatementClient>(client => {
+            serviceCollection.AddHttpClient<ISqlStatementClient>(client =>
+            {
                 client.BaseAddress = new Uri(workspaceUrl);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", workspaceToken);
                 client.DefaultRequestHeaders.Accept.Clear();
