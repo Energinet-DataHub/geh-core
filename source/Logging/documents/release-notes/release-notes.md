@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 2.3.1
+
+- No functional change.
+
 ## Version 2.3.0
 
 - Added new LoggingScopeMiddleware package  

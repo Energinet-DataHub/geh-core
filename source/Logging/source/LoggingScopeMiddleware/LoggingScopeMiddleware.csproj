@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Logging.LoggingScopeMiddleware</PackageId>
-    <PackageVersion>2.3.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.3.1$(VersionSuffix)</PackageVersion>
     <Title>Logging Scope Middleware</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
