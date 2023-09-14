@@ -68,7 +68,7 @@ jobs:
       - name: Pack LoggingScopeMiddleware project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
         with:
-          project_path: ./source/Logging/source/LoggingScopeMiddleware/LoggingScopeMiddleware.csproj        
+          project_path: ./source/Logging/source/LoggingScopeMiddleware/LoggingScopeMiddleware.csproj
 
       - name: Package content or build has changed
         id: changed-content
