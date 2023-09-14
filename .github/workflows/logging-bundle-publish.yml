@@ -22,6 +22,7 @@ on:
       - main
     paths:
       - source/Logging/source/RequestResponseMiddleware/**
+      - source/Logging/source/LoggingScopeMiddleware/**
       - .github/workflows/logging-bundle-publish.yml
   # Build, test, pack
   # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
