@@ -1,6 +1,6 @@
 # Logging Middleware for Request and Response Release notes
 
-## Version 3.0.0
+## Version 2.3.0
 
 - Added new LoggingScopeMiddleware package  
     - Added HttpLoggingScopeMiddleware
