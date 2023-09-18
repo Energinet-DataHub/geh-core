@@ -12,16 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace RequestResponseMiddleware.Tests
-{
-    public class LocalLog
-    {
-        public string LogName { get; set; }
-
-        public string Body { get; set; }
-
-        public Dictionary<string, string> MetaData { get; set; }
-    }
-}
+[assembly: InternalsVisibleTo("Logging.Tests")]
