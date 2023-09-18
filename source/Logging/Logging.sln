@@ -15,13 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-no
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{FEB7B6EB-BCF7-4A95-8F5B-F0D85485A239}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestResponseMiddleware", "source\RequestResponseMiddleware\RequestResponseMiddleware.csproj", "{FD85596E-C2B0-413F-B73B-6E64FEC9EC67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging", "source\Logging\Logging.csproj", "{FD85596E-C2B0-413F-B73B-6E64FEC9EC67}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestResponseMiddleware.Tests", "source\RequestResponseMiddleware.Tests\RequestResponseMiddleware.Tests.csproj", "{596C7401-1FAC-4B1F-B77F-A71AABBAE417}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging.Tests", "source\Logging.Tests\Logging.Tests.csproj", "{596C7401-1FAC-4B1F-B77F-A71AABBAE417}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingScopeMiddleware", "source\LoggingScopeMiddleware\LoggingScopeMiddleware.csproj", "{DC009F79-0BD6-4BBB-AFF0-4518763973DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingMiddleware", "source\LoggingMiddleware\LoggingMiddleware.csproj", "{DC009F79-0BD6-4BBB-AFF0-4518763973DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingScopeMiddleware.Tests", "source\LoggingScopeMiddleware.Tests\LoggingScopeMiddleware.Tests.csproj", "{CCD881FD-FA20-4C57-B580-16E4E6E29A82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingMiddleware.Tests", "source\LoggingMiddleware.Tests\LoggingMiddleware.Tests.csproj", "{CCD881FD-FA20-4C57-B580-16E4E6E29A82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

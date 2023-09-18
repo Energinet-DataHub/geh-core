@@ -14,7 +14,7 @@
 
 using System.Reflection;
 
-namespace Energinet.DataHub.Core.Logging.LoggingScopeMiddleware.Internal;
+namespace Energinet.DataHub.Core.Logging;
 
 /// <summary>
 /// Root logging scope intended to be used as the first scope in the logging scope hierarchy.

@@ -1,5 +1,14 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 3.0.0
+
+Removed content of package `Energinet.DataHub.Core.Logging`.
+The content was unused and a lot of it did not fit a `Logging` package.
+
+Moved `LoggingScope` and `RootLoggingScope` to package `Energinet.DataHub.Core.Logging`.
+
+
+
 ## Version 2.3.1
 
 - No functional change.

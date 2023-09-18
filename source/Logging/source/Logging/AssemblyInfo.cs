@@ -14,4 +14,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("RequestResponseMiddleware.Tests")]
+[assembly: InternalsVisibleTo("Logging.Tests")]

@@ -13,29 +13,35 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Core.Logging.LoggingScopeMiddleware.Internal;
+using Energinet.DataHub.Core.Logging;
+using Energinet.DataHub.Core.Logging.LoggingMiddleware.Internal;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace LoggingScopeMiddleware.Tests;
+namespace LoggingMiddleware.Tests;
 
-public class HttpLoggingScopeMiddlewareTests
+public class FunctionLoggingScopeMiddlewareTests
 {
     [Fact]
-    public async Task InvokeAsync_ShouldSetKeysAndValues()
+    public async Task Invoke_ShouldSetKeysAndValues()
     {
         // Arrange
         var domain = "testing-domain";
-        var mockedLogger = new Mock<ILogger<HttpLoggingScopeMiddleware>>();
+        var mockedLogger = new Mock<ILogger<FunctionLoggingScopeMiddleware>>();
         var mockedRootLoggingScope = new RootLoggingScope(domain);
-        var httpContext = new DefaultHttpContext();
-        var next = new RequestDelegate(context => Task.CompletedTask);
-        var sut = new HttpLoggingScopeMiddleware(mockedLogger.Object, mockedRootLoggingScope);
+        var next = new FunctionExecutionDelegate(context =>
+        {
+            mockedLogger.Object.LogInformation("test");
+            return Task.CompletedTask;
+        });
+        var mockedFunctionContext = new Mock<FunctionContext>();
+        var sut = new FunctionLoggingScopeMiddleware(mockedLogger.Object, mockedRootLoggingScope);
 
         // Act
-        await sut.InvokeAsync(httpContext, next);
+        await sut.Invoke(mockedFunctionContext.Object, next);
 
         // Assert
         var expectedApplicationEntry = Assembly.GetEntryAssembly()?.FullName;
