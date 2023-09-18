@@ -7,7 +7,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>LoggingMiddleware.Tests</RootNamespace>
+    <RootNamespace>Energinet.DataHub.Core.Logging.LoggingMiddleware.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
