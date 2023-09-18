@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 1.0.5
+
+- Configuration of HttpClient is moved to registration.
+
 ## Version 1.0.4
 
 - No functional change.
