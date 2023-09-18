@@ -22,6 +22,7 @@ on:
       - main
     paths:
       - source/Logging/source/RequestResponseMiddleware/**
+      - source/Logging/source/LoggingScopeMiddleware/**
       - .github/workflows/logging-bundle-publish.yml
   # Build, test, pack
   # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
@@ -65,12 +66,18 @@ jobs:
         with:
           project_path: ./source/Logging/source/RequestResponseMiddleware/RequestResponseMiddleware.csproj
 
+      - name: Pack LoggingScopeMiddleware project
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        with:
+          project_path: ./source/Logging/source/LoggingScopeMiddleware/LoggingScopeMiddleware.csproj
+
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v35
         with:
           files: |
             source/Logging/source/RequestResponseMiddleware/**/*.*
+            source/Logging/source/LoggingScopeMiddleware/**/*.*
             .github/workflows/logging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org

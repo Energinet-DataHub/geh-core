@@ -32,6 +32,7 @@ ignore:
   - "source/App/source/FunctionApp.Tests"
   - "source/JsonSerialization/source/JsonSerialization.Tests"
   - "source/Logging/source/RequestResponseMiddleware.Tests"
+  - "source/Logging/source/LoggingScopeMiddleware.Tests"
   - "source/Messaging/source/Messaging.Protobuf.Tests"
   - "source/Messaging/source/Messaging.Tests"
   - "source/SchemaValidation/source/SchemaValidation.Tests"
