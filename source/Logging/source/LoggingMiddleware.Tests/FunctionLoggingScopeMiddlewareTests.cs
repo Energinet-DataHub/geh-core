@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Core.Logging;
 using Energinet.DataHub.Core.Logging.LoggingMiddleware.Internal;
 using FluentAssertions;
 using Microsoft.Azure.Functions.Worker;
@@ -21,7 +20,7 @@ using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace LoggingMiddleware.Tests;
+namespace Energinet.DataHub.Core.Logging.LoggingMiddleware.Tests;
 
 public class FunctionLoggingScopeMiddlewareTests
 {

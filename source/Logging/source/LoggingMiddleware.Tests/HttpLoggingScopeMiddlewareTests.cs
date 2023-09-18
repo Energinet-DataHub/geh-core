@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Core.Logging;
 using Energinet.DataHub.Core.Logging.LoggingMiddleware.Internal;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace LoggingMiddleware.Tests;
+namespace Energinet.DataHub.Core.Logging.LoggingMiddleware.Tests;
 
 public class HttpLoggingScopeMiddlewareTests
 {
