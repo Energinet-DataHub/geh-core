@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+
+    <RootNamespace>Energinet.DataHub.Core.Logging.LoggingMiddleware.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LoggingScopeMiddleware\LoggingScopeMiddleware.csproj" />
+    <ProjectReference Include="..\LoggingMiddleware\LoggingMiddleware.csproj" />
   </ItemGroup>
 
 </Project>
