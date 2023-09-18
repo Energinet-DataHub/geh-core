@@ -43,7 +43,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             });
-            serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
             serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
             serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();
             serviceCollection.AddScoped<IDatabricksSqlChunkResponseParser, DatabricksSqlChunkResponseParser>();
