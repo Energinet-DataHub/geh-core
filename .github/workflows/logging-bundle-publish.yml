@@ -21,8 +21,8 @@ on:
     branches:
       - main
     paths:
-      - source/Logging/source/RequestResponseMiddleware/**
-      - source/Logging/source/LoggingScopeMiddleware/**
+      - source/Logging/source/Logging/**
+      - source/Logging/source/LoggingMiddleware/**
       - .github/workflows/logging-bundle-publish.yml
   # Build, test, pack
   # Executed if Validation folder or build scripts has changed; including if documentation or tests has changed
@@ -61,23 +61,23 @@ jobs:
           code_coverage_flags: logging
           publish_test_report: "true"
 
-      - name: Pack RequestResponseMiddleware project
+      - name: Pack Logging project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
         with:
-          project_path: ./source/Logging/source/RequestResponseMiddleware/RequestResponseMiddleware.csproj
+          project_path: ./source/Logging/source/Logging/Logging.csproj
 
-      - name: Pack LoggingScopeMiddleware project
+      - name: Pack LoggingMiddleware project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
         with:
-          project_path: ./source/Logging/source/LoggingScopeMiddleware/LoggingScopeMiddleware.csproj
+          project_path: ./source/Logging/source/LoggingMiddleware/LoggingMiddleware.csproj
 
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v35
         with:
           files: |
-            source/Logging/source/RequestResponseMiddleware/**/*.*
-            source/Logging/source/LoggingScopeMiddleware/**/*.*
+            source/Logging/source/Logging/**/*.*
+            source/Logging/source/LoggingMiddleware/**/*.*
             .github/workflows/logging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org

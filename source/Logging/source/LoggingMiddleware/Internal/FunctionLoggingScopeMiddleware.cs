@@ -12,27 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.Logging.LoggingScopeMiddleware.Internal;
+namespace Energinet.DataHub.Core.Logging.LoggingMiddleware.Internal;
 
 /// <summary>
 /// Middleware for setting up the root logging scope for ASP.NET Core request logging.
 /// IMPORTANT: This middleware must be registered before any other middleware that uses logging.
 /// </summary>
-public class HttpLoggingScopeMiddleware : IMiddleware
+public class FunctionLoggingScopeMiddleware : IFunctionsWorkerMiddleware
 {
     private readonly ILogger _logger;
     private readonly RootLoggingScope _rootLoggingScope;
 
-    public HttpLoggingScopeMiddleware(ILogger<HttpLoggingScopeMiddleware> logger, RootLoggingScope rootLoggingScope)
+    public FunctionLoggingScopeMiddleware(ILogger<FunctionLoggingScopeMiddleware> logger, RootLoggingScope rootLoggingScope)
     {
         _logger = logger;
         _rootLoggingScope = rootLoggingScope;
     }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
         using (_logger.BeginScope(_rootLoggingScope))
         {

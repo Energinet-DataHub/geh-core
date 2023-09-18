@@ -23,7 +23,7 @@ Implementation example:
 
 - Bumped patch version as pipeline file was updated.
 
-## LoggingScopeMiddleware
+## LoggingMiddleware
 
 Middleware that adds logging scope to the request. It it supported for both Function app and Web app.
 
@@ -31,7 +31,7 @@ The behavior is specific for Application Insight logging provider. It adds custo
 
 ### Usage
 
-Install `Energinet.DataHub.Core.Logging.LoggingScopeMiddleware` package.
+Install `Energinet.DataHub.Core.Logging.LoggingMiddleware` package.
 
 **Registration for Function app:**
 

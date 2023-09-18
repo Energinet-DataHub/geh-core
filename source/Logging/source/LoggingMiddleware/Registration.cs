@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Logging.LoggingScopeMiddleware.Internal;
+using Energinet.DataHub.Core.Logging.LoggingMiddleware.Internal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Energinet.DataHub.Core.Logging.LoggingScopeMiddleware;
+namespace Energinet.DataHub.Core.Logging.LoggingMiddleware;
 
 public static class Registration
 {

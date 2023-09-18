@@ -4,14 +4,14 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Energinet.DataHub.Core.Logging.LoggingScopeMiddleware</RootNamespace>
-    <AssemblyName>Energinet.DataHub.Core.Logging.LoggingScopeMiddleware</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Logging.LoggingMiddleware</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.Logging.LoggingMiddleware</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Energinet.DataHub.Core.Logging.LoggingScopeMiddleware</PackageId>
-    <PackageVersion>2.3.1$(VersionSuffix)</PackageVersion>
-    <Title>Logging Scope Middleware</Title>
+    <PackageId>Energinet.DataHub.Core.Logging.LoggingMiddleware</PackageId>
+    <PackageVersion>3.0.0$(VersionSuffix)</PackageVersion>
+    <Title>Logging Middleware</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
     <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
@@ -31,7 +31,7 @@
       [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/release-notes/release-notes.md)
       [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/Logging/documents/documentation.md)
     </PackageDescription>
-    <Description>Logging scope middleware to align logging.</Description>
+    <Description>Logging middleware to align logging.</Description>
     <PackageTags>energinet;datahub</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -61,6 +61,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Logging\Logging.csproj" />
   </ItemGroup>
 
 </Project>
