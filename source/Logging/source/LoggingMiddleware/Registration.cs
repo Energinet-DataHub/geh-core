@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace Energinet.DataHub.Core.Logging.LoggingMiddleware;
 
@@ -46,6 +48,27 @@ public static class Registration
     public static IFunctionsWorkerApplicationBuilder UseLoggingScope(this IFunctionsWorkerApplicationBuilder builder)
     {
         return builder.UseMiddleware<FunctionLoggingScopeMiddleware>();
+    }
+
+    /// <summary>
+    /// By default, the Application Insights SDK adds a logging filter that instructs the logger to capture only warnings and more severe logs.
+    ///
+    /// Ref: https://learn.microsoft.com/da-dk/azure/azure-functions/dotnet-isolated-process-guide#application-insights
+    /// </summary>
+    public static ILoggingBuilder SetApplicationInsightLogLevel(this ILoggingBuilder builder, LogLevel minimumLevel = LogLevel.Information)
+    {
+        builder.Services.Configure<LoggerFilterOptions>(options =>
+        {
+            var defaultRule = options.Rules.FirstOrDefault(rule => rule.ProviderName == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
+            if (defaultRule is not null)
+            {
+                options.Rules.Remove(defaultRule);
+            }
+
+            options.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, minimumLevel);
+        });
+
+        return builder;
     }
 
     private static void RegisterLoggingScope(IServiceCollection services, string domain)
