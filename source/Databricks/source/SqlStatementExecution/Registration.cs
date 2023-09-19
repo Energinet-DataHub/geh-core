@@ -23,11 +23,12 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
 {
     public static class Registration
     {
-        public static IServiceCollection AddDatabricks(
+        public static IServiceCollection AddDatabricks<T>(
             this IServiceCollection serviceCollection,
             string warehouseId,
             string workspaceToken,
             string workspaceUrl)
+            where T : class, ISqlStatementClient
         {
             serviceCollection.AddOptions<DatabricksOptions>().Configure(options =>
             {
@@ -36,8 +37,8 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                 options.WorkspaceUrl = workspaceUrl;
             });
 
-            serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
-            serviceCollection.AddHttpClient<HttpClient>(client =>
+            serviceCollection.AddScoped<ISqlStatementClient, T>();
+            serviceCollection.AddHttpClient<ISqlStatementClient, T>(client =>
             {
                 client.BaseAddress = new Uri(workspaceUrl);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", workspaceToken);
@@ -51,6 +52,15 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
             serviceCollection.AddScoped<IDatabricksSqlChunkDataResponseParser, DatabricksSqlChunkDataResponseParser>();
 
             return serviceCollection;
+        }
+
+        public static IServiceCollection AddDatabricks(
+            this IServiceCollection serviceCollection,
+            string warehouseId,
+            string workspaceToken,
+            string workspaceUrl)
+        {
+            return AddDatabricks<SqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
         }
     }
 }
