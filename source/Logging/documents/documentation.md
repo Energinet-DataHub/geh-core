@@ -41,6 +41,7 @@ Install `Energinet.DataHub.Core.Logging.LoggingMiddleware` package.
         var host = new HostBuilder()
             .ConfigureFunctionsWorkerDefaults(ConfigureWorker)
             .ConfigureServices(ConfigureServices)
+            .ConfigureLogging(ConfigureLogging)
             .Build();
         return host;
     }
@@ -53,6 +54,11 @@ Install `Energinet.DataHub.Core.Logging.LoggingMiddleware` package.
     private static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
     {
         serviceCollection.AddFunctionLoggingScope("domain-name");
+    }
+
+    private static void ConfigureLogging(ILoggingBuilder builder)
+    {
+        builder.SetApplicationInsightLogLevel();
     }
     ```
 
