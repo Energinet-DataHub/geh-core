@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
@@ -46,6 +45,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             });
+
             serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
             serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();
             serviceCollection.AddScoped<IDatabricksSqlChunkResponseParser, DatabricksSqlChunkResponseParser>();
