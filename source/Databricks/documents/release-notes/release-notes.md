@@ -2,7 +2,7 @@
 
 ## Version 1.0.5
 
-- Configuration of HttpClient is moved to registration.
+- Configuration of HttpClient is moved to Dependency Injection
 
 ## Version 1.0.4
 

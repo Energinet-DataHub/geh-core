@@ -18,12 +18,48 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection
 {
-    public static class Registration
+    public static class SqlStatementExecutionExtensions
     {
-        public static IServiceCollection AddDatabricks<T>(
+        /// <summary>
+        /// Adds Databricks SqlStatementExecution to the service collection
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="warehouseId"></param>
+        /// <param name="workspaceToken"></param>
+        /// <param name="workspaceUrl"></param>
+        /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
+        [Obsolete("Use 'AddSqlStatementExecution'")]
+        public static IServiceCollection AddDatabricks(
             this IServiceCollection serviceCollection,
+            string warehouseId,
+            string workspaceToken,
+            string workspaceUrl)
+        {
+            return AddSqlStatementExecutionInner<SqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
+        }
+
+        /// <summary>
+        /// Adds Databricks SqlStatementExecution to the service collection
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="warehouseId"></param>
+        /// <param name="workspaceToken"></param>
+        /// <param name="workspaceUrl"></param>
+        /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
+        public static IServiceCollection AddSqlStatementExecution<T>(
+            this IServiceCollection serviceCollection,
+            string warehouseId,
+            string workspaceToken,
+            string workspaceUrl)
+            where T : class, ISqlStatementClient
+        {
+            return AddSqlStatementExecutionInner<T>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
+        }
+
+        private static IServiceCollection AddSqlStatementExecutionInner<T>(
+            IServiceCollection serviceCollection,
             string warehouseId,
             string workspaceToken,
             string workspaceUrl)
@@ -52,15 +88,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
             serviceCollection.AddScoped<IDatabricksSqlChunkDataResponseParser, DatabricksSqlChunkDataResponseParser>();
 
             return serviceCollection;
-        }
-
-        public static IServiceCollection AddDatabricks(
-            this IServiceCollection serviceCollection,
-            string warehouseId,
-            string workspaceToken,
-            string workspaceUrl)
-        {
-            return AddDatabricks<SqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
         }
     }
 }
