@@ -14,7 +14,7 @@ The bundle contains the following packages:
 
 The packages contain types commonly used by domain teams when implementing Azure Function App's and Web App's.
 
-> Also read the general [development.md](../../../documents/development.md) as is contains information that is relevant for all NuGet package bundles.
+> Also read the general [development.md](../../../docs/development.md) as is contains information that is relevant for all NuGet package bundles.
 
 ## Setup local environment
 

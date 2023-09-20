@@ -9,7 +9,7 @@ The bundle contains the following packages:
 
 The packages contain reusable types, supporting the development and test of Energinet DataHub components.
 
-> Also read the general [development.md](../../../documents/development.md) as is contains information that is relevant for all NuGet package bundles.
+> Also read the general [development.md](../../../docs/development.md) as is contains information that is relevant for all NuGet package bundles.
 
 ## Setup local environment
 

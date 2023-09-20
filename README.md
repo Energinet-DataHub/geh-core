@@ -85,4 +85,4 @@ The same goes for VS project properties that could cause breaking changes that w
 
 ## Development
 
-For details on package bundle organization and development see [development.md](./documents/development.md).
+For details on package bundle organization and development see [development.md](./docs/development.md).
