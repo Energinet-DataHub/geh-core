@@ -87,10 +87,6 @@ jobs:
               - '.github/workflows/detect-changes.yml'
               - 'source/Messaging/**'
               - '.github/workflows/messaging-bundle-publish.yml'
-            schemas:
-              - '.github/workflows/detect-changes.yml'
-              - 'source/Schemas/**'
-              - '.github/workflows/schemas-bundle-publish.yml'
             testcommon:
               - '.github/workflows/detect-changes.yml'
               - 'source/TestCommon/**'
