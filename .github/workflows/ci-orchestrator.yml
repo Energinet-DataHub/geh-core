@@ -63,12 +63,6 @@ jobs:
     uses: ./.github/workflows/messaging-bundle-publish.yml
     secrets: inherit
 
-  schemavalidation:
-    needs: changes
-    if: ${{ needs.changes.outputs.schemavalidation == 'true' }}
-    uses: ./.github/workflows/schemavalidation-bundle-publish.yml
-    secrets: inherit
-
   testcommon:
     needs: changes
     if: ${{ needs.changes.outputs.testcommon == 'true' }}
@@ -95,7 +89,6 @@ jobs:
         json_serialization,
         logging,
         messaging,
-        schemavalidation,
         testcommon,
         databricks,
       ]
