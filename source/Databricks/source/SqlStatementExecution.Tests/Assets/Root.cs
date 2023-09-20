@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Assets;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Assets;
 
 internal class Root
 {
