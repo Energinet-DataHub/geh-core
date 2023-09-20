@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
@@ -46,7 +45,6 @@ public class SqlStatementClient : ISqlStatementClient
         _options = options;
         _responseResponseParser = responseResponseParser;
         _logger = logger;
-        ConfigureHttpClient(_httpClient, _options);
     }
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
@@ -161,17 +159,6 @@ public class SqlStatementClient : ISqlStatementClient
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
         return _responseResponseParser.ParseChunkDataResponse(jsonResponse, columnNames);
-    }
-
-    private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
-    {
-        httpClient.BaseAddress = new Uri(options.Value.WorkspaceUrl);
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", options.Value.WorkspaceToken);
-        httpClient.DefaultRequestHeaders.Accept.Clear();
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-        httpClient.BaseAddress = new Uri(options.Value.WorkspaceUrl);
     }
 
     private void LogDatabricksSqlResponseState(DatabricksSqlResponse response)

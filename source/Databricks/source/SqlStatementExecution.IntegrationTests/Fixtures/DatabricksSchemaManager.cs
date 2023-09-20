@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -28,20 +27,19 @@ public class DatabricksSchemaManager
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
 
-    public DatabricksSchemaManager(DatabricksSettings settings, string schemaPrefix)
+    public DatabricksSchemaManager(DatabricksOptions databricksOptions, string schemaPrefix)
     {
-        Settings = settings
-            ?? throw new ArgumentNullException(nameof(settings));
+        DatabricksOptions = databricksOptions ?? throw new ArgumentNullException(nameof(databricksOptions));
 
-        _httpClient = CreateHttpClient(Settings);
+        _httpClient = HttpClientFactory.CreateHttpClient(DatabricksOptions);
         SchemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
     }
 
+    public string SchemaName { get; }
+
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
-    public DatabricksSettings Settings { get; }
-
-    public string SchemaName { get; }
+    private DatabricksOptions DatabricksOptions { get; }
 
     /// <summary>
     /// Create schema (formerly known as database).
@@ -99,7 +97,7 @@ public class DatabricksSchemaManager
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
             statement = sqlStatement,
-            warehouse_id = Settings.WarehouseId,
+            warehouse_id = DatabricksOptions.WarehouseId,
         };
         var httpResponse = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
@@ -118,24 +116,5 @@ public class DatabricksSchemaManager
         {
             throw new DatabricksSqlException($"Failed to execute SQL statement: {sqlStatement}. Response: {jsonResponse}");
         }
-    }
-
-    private static HttpClient CreateHttpClient(DatabricksSettings settings)
-    {
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(settings.WorkspaceUrl),
-        };
-
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", settings.WorkspaceAccessToken);
-
-        httpClient.DefaultRequestHeaders.Accept.Clear();
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-
-        httpClient.BaseAddress = new Uri(settings.WorkspaceUrl);
-
-        return httpClient;
     }
 }
