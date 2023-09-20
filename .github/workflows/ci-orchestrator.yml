@@ -89,8 +89,6 @@ jobs:
         json_serialization,
         logging,
         messaging,
-        schemas,
-        schemavalidation,
         testcommon,
         databricks,
       ]
