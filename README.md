@@ -71,13 +71,13 @@ Contains notes and documentation stored in `*.md` files.
 
 ### Folder: source/
 
-Each [NuGet package bundles](./docs/development.md#nuget-package-bundle) should have one root folder within the `source` folder. Package bundles should locate any documentation apart from `README.md` in a `docs` folder within their own "root" folder.
+Each [NuGet package bundles](./docs/development.md#nuget-package-bundle) should have one root folder within the `source` folder. For organization within each package bundle, see [Organization of packages](./docs/development.md).
 
-Any configuration files (e.g. `stylecop.json`) shared by *all* VS projects must be located in the `source` folder.
+Any configuration files (e.g. `stylecop.json`) shared by _all_ VS projects must be located in the `source` folder.
 
 #### File: Directory.Build.props
 
-VS project properties that we want to set on *all* VS projects must be defined in the `Directory.Build.props`.
+VS project properties that we want to set on _all_ VS projects must be defined in the `Directory.Build.props`.
 
 Never put NuGet package dependencies (except the style cop analyzers dependency) in this file, keep them in each VS project.
 
