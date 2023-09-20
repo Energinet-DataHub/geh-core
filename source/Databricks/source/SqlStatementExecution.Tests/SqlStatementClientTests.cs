@@ -15,11 +15,11 @@
 using System.Net;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Builders;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Builders;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Moq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
 public class SqlStatementClientTests
 {

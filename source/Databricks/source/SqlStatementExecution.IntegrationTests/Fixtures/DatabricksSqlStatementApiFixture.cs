@@ -26,8 +26,8 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     public DatabricksSqlStatementApiFixture()
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
-        DatabricksSchemaManager = new DatabricksSchemaManager(integrationTestConfiguration.DatabricksSettings, "wholesale");
-        DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksSchemaManager);
+        DatabricksOptionsMock = CreateDatabricksOptionsMock(integrationTestConfiguration.DatabricksSettings);
+        DatabricksSchemaManager = new DatabricksSchemaManager(DatabricksOptionsMock.Object.Value, "wholesale");
     }
 
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
@@ -44,11 +44,15 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public SqlStatementClient CreateSqlStatementClient(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock, Mock<ILogger<SqlStatementClient>> loggerMock2)
+    public SqlStatementClient CreateSqlStatementClient(
+        DatabricksOptions databricksOptions,
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<SqlStatementClient>> loggerMock2)
     {
         var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
+
         var sqlStatementClient = new SqlStatementClient(
-            new HttpClient(),
+            HttpClientFactory.CreateHttpClient(databricksOptions),
             DatabricksOptionsMock.Object,
             new DatabricksSqlResponseParser(
                 new DatabricksSqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
@@ -58,16 +62,16 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return sqlStatementClient;
     }
 
-    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSchemaManager databricksSchemaManager)
+    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSettings databricksSettings)
     {
         var databricksOptionsMock = new Mock<IOptions<DatabricksOptions>>();
         databricksOptionsMock
             .Setup(o => o.Value)
             .Returns(new DatabricksOptions
             {
-                WorkspaceUrl = databricksSchemaManager.Settings.WorkspaceUrl,
-                WorkspaceToken = databricksSchemaManager.Settings.WorkspaceAccessToken,
-                WarehouseId = databricksSchemaManager.Settings.WarehouseId,
+                WorkspaceUrl = databricksSettings.WorkspaceUrl,
+                WorkspaceToken = databricksSettings.WorkspaceAccessToken,
+                WarehouseId = databricksSettings.WarehouseId,
             });
 
         return databricksOptionsMock;
