@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Builders;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
@@ -29,8 +30,18 @@ public class SqlStatementClientTests
     private readonly string _cancelled;
     private readonly string _pending;
 
+    private readonly string _calculationResultJson;
+    private readonly string _calculationResultChunkJson;
+    private readonly string _calculationResultWithExternalLinks;
+    private readonly string _chunkData;
+
     public SqlStatementClientTests()
     {
+        _calculationResultJson = GetJsonFromFile("CalculationResult.json");
+        _calculationResultChunkJson = GetJsonFromFile("CalculationResultChunk.json");
+        _calculationResultWithExternalLinks = GetJsonFromFile("CalculationResultWithExternalLinks.json");
+        _chunkData = GetJsonFromFile("ChunkData.json");
+
         _running = DatabrickSqlResponseStatusHelper.CreateStatusResponse("RUNNING");
         _failed = DatabrickSqlResponseStatusHelper.CreateStatusResponse("FAILED");
         _closed = DatabrickSqlResponseStatusHelper.CreateStatusResponse("CLOSED");
@@ -214,5 +225,40 @@ public class SqlStatementClientTests
 
         // Act and assert
         await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ExecuteAsync_WhenMultipleChunks_GetAllChunks(
+        SqlStatementClientBuilder builder)
+    {
+        // Arrange
+        var mockedLogger = new Mock<ILogger<DatabricksSqlStatusResponseParser>>();
+        var parser = new DatabricksSqlResponseParser(
+            new DatabricksSqlStatusResponseParser(
+                mockedLogger.Object,
+                new DatabricksSqlChunkResponseParser()),
+            new DatabricksSqlChunkResponseParser(),
+            new DatabricksSqlChunkDataResponseParser());
+
+        var sut = builder
+            .AddHttpClientResponse(_calculationResultWithExternalLinks)
+            .AddHttpClientResponse(_chunkData)
+            .AddHttpClientResponse(_calculationResultChunkJson)
+            .UseParser(parser)
+            .Build();
+
+        // Act
+        var result = await sut.ExecuteAsync("some sql").ToListAsync();
+
+        // Assert
+        Assert.Equal(5, result.Count);
+    }
+
+    private string GetJsonFromFile(string fileName)
+    {
+        var stream = EmbeddedResources.GetStream(fileName);
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
 }
