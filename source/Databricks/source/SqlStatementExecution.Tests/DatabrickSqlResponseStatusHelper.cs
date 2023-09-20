@@ -14,7 +14,7 @@
 
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
 public static class DatabrickSqlResponseStatusHelper
 {

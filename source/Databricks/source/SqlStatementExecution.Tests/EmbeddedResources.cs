@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests.Assets;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Assets;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecutionTests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
 // TODO BJM: Copied from other project. Can we share instead? Possibly in Test.Core?
 public static class EmbeddedResources
