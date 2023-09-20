@@ -87,10 +87,6 @@ jobs:
               - '.github/workflows/detect-changes.yml'
               - 'source/Messaging/**'
               - '.github/workflows/messaging-bundle-publish.yml'
-            schemavalidation:
-              - '.github/workflows/detect-changes.yml'
-              - 'source/SchemaValidation/**'
-              - '.github/workflows/schemavalidation-bundle-publish.yml'
             testcommon:
               - '.github/workflows/detect-changes.yml'
               - 'source/TestCommon/**'
