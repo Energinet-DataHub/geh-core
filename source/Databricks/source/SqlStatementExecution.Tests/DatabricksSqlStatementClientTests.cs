@@ -22,7 +22,7 @@ using Moq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
-public class SqlStatementClientTests
+public class DatabricksSqlStatementClientTests
 {
     private readonly string _running;
     private readonly string _failed;
@@ -34,7 +34,7 @@ public class SqlStatementClientTests
     private readonly string _calculationResultWithExternalLinks;
     private readonly string _chunkData;
 
-    public SqlStatementClientTests()
+    public DatabricksSqlStatementClientTests()
     {
         _calculationResultChunkJson = GetJsonFromFile("CalculationResultChunk.json");
         _calculationResultWithExternalLinks = GetJsonFromFile("CalculationResultWithExternalLinks.json");
