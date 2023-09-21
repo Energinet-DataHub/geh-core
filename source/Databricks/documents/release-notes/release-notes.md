@@ -2,7 +2,7 @@
 
 ## Version 2.0.0
 
-- Changed HttpClient configuration.
+- Changed ServiceCollection extension.
 - Changed `ISqlStatementClient.cs` to `IDatabricksSqlStatementClient`
 
 ## Version 1.1.0
