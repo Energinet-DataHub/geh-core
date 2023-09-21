@@ -61,5 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Jobs\Jobs.csproj" />
   </ItemGroup>
 </Project>
