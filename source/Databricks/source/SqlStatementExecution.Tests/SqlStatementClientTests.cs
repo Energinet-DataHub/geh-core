@@ -243,7 +243,7 @@ public class SqlStatementClientTests
 
         var sut = builder
             .AddHttpClientResponse(_calculationResultWithExternalLinks)
-            .AddHttpClientResponse(_chunkData)
+            .AddExternalHttpClientResponse(_chunkData)
             .AddHttpClientResponse(_calculationResultChunkJson)
             .UseParser(parser)
             .Build();

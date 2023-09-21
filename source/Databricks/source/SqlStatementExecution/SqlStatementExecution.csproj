@@ -30,7 +30,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Databricks.SqlStatementExecution</PackageId>
-    <PackageVersion>1.1.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.0.0$(VersionSuffix)</PackageVersion>
     <Title>Databricks SQL Statement Execution</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -82,6 +82,12 @@ limitations under the License.
     <PackageReference Include="Polly" Version="7.2.4" />
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

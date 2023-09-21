@@ -16,6 +16,7 @@ using System;
 using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection
@@ -44,11 +45,41 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         /// Adds Databricks SqlStatementExecution to the service collection
         /// </summary>
         /// <param name="serviceCollection"></param>
+        /// <param name="databricksOptions"></param>
+        /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
+        public static IServiceCollection AddSqlStatementExecution(
+            this IServiceCollection serviceCollection,
+            DatabricksOptions databricksOptions)
+        {
+            return AddSqlStatementExecutionInner<SqlStatementClient>(serviceCollection, databricksOptions.WarehouseId, databricksOptions.WorkspaceToken, databricksOptions.WorkspaceUrl);
+        }
+
+        /// <summary>
+        /// Adds Databricks SqlStatementExecution to the service collection
+        /// </summary>
+        /// <param name="serviceCollection"></param>
         /// <param name="warehouseId"></param>
         /// <param name="workspaceToken"></param>
         /// <param name="workspaceUrl"></param>
         /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        public static IServiceCollection AddSqlStatementExecution<T>(
+        public static IServiceCollection AddSqlStatementExecution(
+            this IServiceCollection serviceCollection,
+            string warehouseId,
+            string workspaceToken,
+            string workspaceUrl)
+        {
+            return AddSqlStatementExecutionInner<SqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
+        }
+
+        /// <summary>
+        /// Adds Databricks SqlStatementExecution to the service collection
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="warehouseId"></param>
+        /// <param name="workspaceToken"></param>
+        /// <param name="workspaceUrl"></param>
+        /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
+        internal static IServiceCollection AddSqlStatementExecution<T>(
             this IServiceCollection serviceCollection,
             string warehouseId,
             string workspaceToken,
@@ -73,14 +104,17 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             });
 
             serviceCollection.AddScoped<ISqlStatementClient, T>();
-            serviceCollection.AddHttpClient<ISqlStatementClient, T>(client =>
-            {
-                client.BaseAddress = new Uri(workspaceUrl);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", workspaceToken);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-            });
+
+            serviceCollection.AddHttpClient(
+                HttpClientNameConstants.Databricks,
+                client =>
+                {
+                    client.BaseAddress = new Uri(workspaceUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", workspaceToken);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+                });
 
             serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
             serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();

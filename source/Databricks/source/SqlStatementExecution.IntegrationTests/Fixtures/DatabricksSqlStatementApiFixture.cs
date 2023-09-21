@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -46,13 +47,17 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     public SqlStatementClient CreateSqlStatementClient(
         DatabricksOptions databricksOptions,
+        Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<ILogger<SqlStatementClient>> loggerMock2)
     {
         var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
 
+        httpClientFactory.Setup(f => f.CreateClient(HttpClientNameConstants.Databricks))
+            .Returns(HttpClientFactory.CreateHttpClient(databricksOptions));
+
         var sqlStatementClient = new SqlStatementClient(
-            HttpClientFactory.CreateHttpClient(databricksOptions),
+            httpClientFactory.Object,
             DatabricksOptionsMock.Object,
             new DatabricksSqlResponseParser(
                 new DatabricksSqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),

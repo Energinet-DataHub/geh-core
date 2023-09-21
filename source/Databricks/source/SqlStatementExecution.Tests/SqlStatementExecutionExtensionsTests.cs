@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,7 @@ public class SqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddDatabricks(warehouseId, workspaceToken, workspaceUri);
+        services.AddSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
@@ -62,6 +63,27 @@ public class SqlStatementExecutionExtensionsTests
         var spyClient = client.Should().BeOfType<SpySqlStatementClient>().Subject;
         spyClient.WorkspaceUriIs(new Uri(workspaceUri)).Should().BeTrue();
         spyClient.WorkspaceTokenIs(workspaceToken).Should().BeTrue();
+    }
+
+    [Fact]
+    public void AddSqlStatementExecution_Should_ReturnConfiguredExternalHttpClient()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        const string workspaceUri = "https://foo.com";
+        const string workspaceToken = "bar";
+        const string warehouseId = "baz";
+
+        // Act
+        services.AddSqlStatementExecution<SpySqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Assert
+        var client = serviceProvider.GetRequiredService<ISqlStatementClient>();
+
+        using var assertionScope = new AssertionScope();
+        var spyClient = client.Should().BeOfType<SpySqlStatementClient>().Subject;
+        spyClient.ExternalClientIsConfigured().Should().BeTrue();
     }
 
     [Fact]
@@ -119,10 +141,12 @@ public class SqlStatementExecutionExtensionsTests
     private sealed class SpySqlStatementClient : ISqlStatementClient
     {
         private readonly HttpClient _client;
+        private readonly HttpClient _externalClient;
 
-        public SpySqlStatementClient(HttpClient client)
+        public SpySqlStatementClient(IHttpClientFactory httpClientFactory)
         {
-            _client = client;
+            _client = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
+            _externalClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
         }
 
         public IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
@@ -141,6 +165,12 @@ public class SqlStatementExecutionExtensionsTests
                 _client.DefaultRequestHeaders.Authorization?.Parameter != null &&
                 _client.DefaultRequestHeaders.Authorization?.Scheme == "Bearer" &&
                 _client.DefaultRequestHeaders.Authorization.Parameter.EndsWith(workspaceToken);
+        }
+
+        public bool ExternalClientIsConfigured()
+        {
+            return _externalClient.BaseAddress == default &&
+                   _externalClient.DefaultRequestHeaders.Authorization == null;
         }
     }
 }

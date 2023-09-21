@@ -19,6 +19,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,20 +32,22 @@ public class SqlStatementClient : ISqlStatementClient
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
+    private readonly HttpClient _externalHttpClient;
     private readonly IOptions<DatabricksOptions> _options;
     private readonly IDatabricksSqlResponseParser _responseResponseParser;
     private readonly ILogger<SqlStatementClient> _logger;
 
     public SqlStatementClient(
-        HttpClient httpClient,
+        IHttpClientFactory httpClientFactory,
         IOptions<DatabricksOptions> options,
         IDatabricksSqlResponseParser responseResponseParser,
         ILogger<SqlStatementClient> logger)
     {
-        _httpClient = httpClient;
         _options = options;
         _responseResponseParser = responseResponseParser;
         _logger = logger;
+        _httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
+        _externalHttpClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
     }
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
@@ -150,7 +153,7 @@ public class SqlStatementClient : ISqlStatementClient
 
     private async Task<TableChunk> GetChunkDataAsync(Uri? externalLink, string[] columnNames)
     {
-        var httpResponse = await _httpClient.GetAsync(externalLink).ConfigureAwait(false);
+        var httpResponse = await _externalHttpClient.GetAsync(externalLink).ConfigureAwait(false);
         if (!httpResponse.IsSuccessStatusCode)
         {
             throw new DatabricksSqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");

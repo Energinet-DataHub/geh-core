@@ -18,6 +18,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SqlStatementExecution.IntegrationTests.Fixtures;
+using HttpClientFactory = SqlStatementExecution.IntegrationTests.Fixtures.HttpClientFactory;
 
 namespace SqlStatementExecution.IntegrationTests;
 
@@ -52,6 +53,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
+        Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
         Mock<ILogger<SqlStatementClient>> sqlStatementClientLoggerMock)
     {
@@ -59,6 +61,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         var tableName = await CreateResultTableWithTwoRowsAsync();
         var sut = _fixture.CreateSqlStatementClient(
             _fixture.DatabricksOptionsMock.Object.Value,
+            httpClientFactory,
             databricksSqlStatusResponseParserLoggerMock,
             sqlStatementClientLoggerMock);
 
@@ -74,6 +77,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(
+        Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
         Mock<ILogger<SqlStatementClient>> sqlStatementClientLoggerMock)
     {
@@ -81,6 +85,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         const int expectedRowCount = 100;
         var sut = _fixture.CreateSqlStatementClient(
             _fixture.DatabricksOptionsMock.Object.Value,
+            httpClientFactory,
             databricksSqlStatusResponseParserLoggerMock,
             sqlStatementClientLoggerMock);
 
