@@ -37,10 +37,10 @@ public class SqlStatementExecutionExtensionsTests
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var client = serviceProvider.GetRequiredService<ISqlStatementClient>();
+        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
 
         using var assertionScope = new AssertionScope();
-        client.Should().BeOfType<SqlStatementClient>();
+        client.Should().BeOfType<DatabricksSqlStatementClient>();
     }
 
     [Fact]
@@ -53,14 +53,14 @@ public class SqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution<SpySqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
+        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var client = serviceProvider.GetRequiredService<ISqlStatementClient>();
+        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
 
         using var assertionScope = new AssertionScope();
-        var spyClient = client.Should().BeOfType<SpySqlStatementClient>().Subject;
+        var spyClient = client.Should().BeOfType<SpyDatabricksSqlStatementClient>().Subject;
         spyClient.WorkspaceUriIs(new Uri(workspaceUri)).Should().BeTrue();
         spyClient.WorkspaceTokenIs(workspaceToken).Should().BeTrue();
     }
@@ -75,14 +75,14 @@ public class SqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution<SpySqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
+        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var client = serviceProvider.GetRequiredService<ISqlStatementClient>();
+        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
 
         using var assertionScope = new AssertionScope();
-        var spyClient = client.Should().BeOfType<SpySqlStatementClient>().Subject;
+        var spyClient = client.Should().BeOfType<SpyDatabricksSqlStatementClient>().Subject;
         spyClient.ExternalClientIsConfigured().Should().BeTrue();
     }
 
@@ -96,11 +96,11 @@ public class SqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution<SpySqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
+        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var client = serviceProvider.GetService<ISqlStatementClient>();
+        var client = serviceProvider.GetService<IDatabricksSqlStatementClient>();
         client.Should().NotBeNull();
     }
 
@@ -114,7 +114,7 @@ public class SqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution<SpySqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
+        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
         services.AddTransient<DependOnHttpClient>();
         var serviceProvider = services.BuildServiceProvider();
 
@@ -138,12 +138,12 @@ public class SqlStatementExecutionExtensionsTests
         }
     }
 
-    private sealed class SpySqlStatementClient : ISqlStatementClient
+    private sealed class SpyDatabricksSqlStatementClient : IDatabricksSqlStatementClient
     {
         private readonly HttpClient _client;
         private readonly HttpClient _externalClient;
 
-        public SpySqlStatementClient(IHttpClientFactory httpClientFactory)
+        public SpyDatabricksSqlStatementClient(IHttpClientFactory httpClientFactory)
         {
             _client = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
             _externalClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);

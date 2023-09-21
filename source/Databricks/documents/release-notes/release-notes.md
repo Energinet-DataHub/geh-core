@@ -1,8 +1,9 @@
 # Databricks Release Notes
 
-## Version 1.1.1
+## Version 2.0.0
 
-- No functional change.
+- Changed HttpClient configuration.
+- Changed `ISqlStatementClient.cs` to `IDatabricksSqlStatementClient`
 
 ## Version 1.1.0
 

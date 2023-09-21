@@ -28,20 +28,20 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
-public class SqlStatementClient : ISqlStatementClient
+public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly HttpClient _externalHttpClient;
     private readonly IOptions<DatabricksOptions> _options;
     private readonly IDatabricksSqlResponseParser _responseResponseParser;
-    private readonly ILogger<SqlStatementClient> _logger;
+    private readonly ILogger<DatabricksSqlStatementClient> _logger;
 
-    public SqlStatementClient(
+    public DatabricksSqlStatementClient(
         IHttpClientFactory httpClientFactory,
         IOptions<DatabricksOptions> options,
         IDatabricksSqlResponseParser responseResponseParser,
-        ILogger<SqlStatementClient> logger)
+        ILogger<DatabricksSqlStatementClient> logger)
     {
         _options = options;
         _responseResponseParser = responseResponseParser;

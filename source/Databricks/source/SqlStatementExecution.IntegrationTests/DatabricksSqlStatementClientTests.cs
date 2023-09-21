@@ -18,7 +18,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SqlStatementExecution.IntegrationTests.Fixtures;
-using HttpClientFactory = SqlStatementExecution.IntegrationTests.Fixtures.HttpClientFactory;
 
 namespace SqlStatementExecution.IntegrationTests;
 
@@ -29,11 +28,11 @@ namespace SqlStatementExecution.IntegrationTests;
 ///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.
 ///      Use 'DisposeAsync()' to drop any created schema.
 /// </summary>
-public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
+public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
-    public SqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
+    public DatabricksSqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
     }
@@ -55,7 +54,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
         Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
-        Mock<ILogger<SqlStatementClient>> sqlStatementClientLoggerMock)
+        Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
     {
         // Arrange
         var tableName = await CreateResultTableWithTwoRowsAsync();
@@ -79,7 +78,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(
         Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
-        Mock<ILogger<SqlStatementClient>> sqlStatementClientLoggerMock)
+        Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
     {
         // Arrange
         const int expectedRowCount = 100;

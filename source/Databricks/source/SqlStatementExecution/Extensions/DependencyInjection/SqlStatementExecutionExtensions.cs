@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             string workspaceToken,
             string workspaceUrl)
         {
-            return AddSqlStatementExecutionInner<SqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
+            return AddSqlStatementExecutionInner<DatabricksSqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             this IServiceCollection serviceCollection,
             DatabricksOptions databricksOptions)
         {
-            return AddSqlStatementExecutionInner<SqlStatementClient>(serviceCollection, databricksOptions.WarehouseId, databricksOptions.WorkspaceToken, databricksOptions.WorkspaceUrl);
+            return AddSqlStatementExecutionInner<DatabricksSqlStatementClient>(serviceCollection, databricksOptions.WarehouseId, databricksOptions.WorkspaceToken, databricksOptions.WorkspaceUrl);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             string workspaceToken,
             string workspaceUrl)
         {
-            return AddSqlStatementExecutionInner<SqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
+            return AddSqlStatementExecutionInner<DatabricksSqlStatementClient>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             string warehouseId,
             string workspaceToken,
             string workspaceUrl)
-            where T : class, ISqlStatementClient
+            where T : class, IDatabricksSqlStatementClient
         {
             return AddSqlStatementExecutionInner<T>(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
         }
@@ -94,7 +94,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             string warehouseId,
             string workspaceToken,
             string workspaceUrl)
-            where T : class, ISqlStatementClient
+            where T : class, IDatabricksSqlStatementClient
         {
             serviceCollection.AddOptions<DatabricksOptions>().Configure(options =>
             {
@@ -103,7 +103,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
                 options.WorkspaceUrl = workspaceUrl;
             });
 
-            serviceCollection.AddScoped<ISqlStatementClient, T>();
+            serviceCollection.AddScoped<IDatabricksSqlStatementClient, T>();
 
             serviceCollection.AddHttpClient(
                 HttpClientNameConstants.Databricks,

@@ -45,18 +45,18 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public SqlStatementClient CreateSqlStatementClient(
+    public DatabricksSqlStatementClient CreateSqlStatementClient(
         DatabricksOptions databricksOptions,
         Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<ILogger<SqlStatementClient>> loggerMock2)
+        Mock<ILogger<DatabricksSqlStatementClient>> loggerMock2)
     {
         var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
 
         httpClientFactory.Setup(f => f.CreateClient(HttpClientNameConstants.Databricks))
             .Returns(HttpClientFactory.CreateHttpClient(databricksOptions));
 
-        var sqlStatementClient = new SqlStatementClient(
+        var sqlStatementClient = new DatabricksSqlStatementClient(
             httpClientFactory.Object,
             DatabricksOptionsMock.Object,
             new DatabricksSqlResponseParser(

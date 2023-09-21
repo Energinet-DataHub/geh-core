@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 /// <summary>
 /// This interface is used to execute SQL statements against Databricks.
 /// </summary>
-public interface ISqlStatementClient
+public interface IDatabricksSqlStatementClient
 {
     /// <summary>
     /// Get all the rows of a SQL query in as an asynchronous data stream.

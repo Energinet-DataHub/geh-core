@@ -22,7 +22,7 @@ using Moq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
-public class SqlStatementClientTests
+public class DatabricksSqlStatementClientTests
 {
     private readonly string _running;
     private readonly string _failed;
@@ -30,14 +30,12 @@ public class SqlStatementClientTests
     private readonly string _cancelled;
     private readonly string _pending;
 
-    private readonly string _calculationResultJson;
     private readonly string _calculationResultChunkJson;
     private readonly string _calculationResultWithExternalLinks;
     private readonly string _chunkData;
 
-    public SqlStatementClientTests()
+    public DatabricksSqlStatementClientTests()
     {
-        _calculationResultJson = GetJsonFromFile("CalculationResult.json");
         _calculationResultChunkJson = GetJsonFromFile("CalculationResultChunk.json");
         _calculationResultWithExternalLinks = GetJsonFromFile("CalculationResultWithExternalLinks.json");
         _chunkData = GetJsonFromFile("ChunkData.json");
@@ -54,7 +52,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenFirstRunningThenStatementFails_ThrowsDatabricksSqlException(
         Guid statementId,
         Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
@@ -78,7 +76,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenFirstRunningThenStatementIsClosed_ThrowsDatabricksSqlException(
         Guid statementId,
         Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
@@ -102,7 +100,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenFirstRunningThenStatementIsCancelled_ThrowsDatabricksSqlException(
         Guid statementId,
         Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
@@ -126,7 +124,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenFirstPendingThenStatementFails_ThrowsDatabricksSqlException(
         Guid statementId,
         Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
@@ -150,7 +148,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenFirstPendingThenStatementIsClosed_ThrowsDatabricksSqlException(
         Guid statementId,
         Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
@@ -174,7 +172,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenFirstPendingThenStatementIsCancelled_ThrowsDatabricksSqlException(
         Guid statementId,
         Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
@@ -195,7 +193,7 @@ public class SqlStatementClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteAsync_WhenHttpRequestFails_ThrowsDatabricksSqlException(SqlStatementClientBuilder builder)
+    public async Task ExecuteAsync_WhenHttpRequestFails_ThrowsDatabricksSqlException(DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         var sut = builder
@@ -211,7 +209,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenSecondHttpRequestFails_ThrowsDatabricksSqlException(
         Guid statementId,
         Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
@@ -230,7 +228,7 @@ public class SqlStatementClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenMultipleChunks_GetAllChunks(
-        SqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         var mockedLogger = new Mock<ILogger<DatabricksSqlStatusResponseParser>>();

@@ -22,31 +22,31 @@ using Moq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Builders;
 
-public class SqlStatementClientBuilder
+public class DatabricksSqlStatementClientBuilder
 {
     private readonly List<HttpResponseMessage> _responseMessages = new();
     private readonly List<HttpResponseMessage> _externalResponseMessages = new();
     private IDatabricksSqlResponseParser? _parser;
 
-    public SqlStatementClientBuilder AddHttpClientResponse(string content, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
+    public DatabricksSqlStatementClientBuilder AddHttpClientResponse(string content, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
     {
         _responseMessages.Add(new HttpResponseMessage(httpStatusCode) { Content = new StringContent(content), });
         return this;
     }
 
-    public SqlStatementClientBuilder AddExternalHttpClientResponse(string content, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
+    public DatabricksSqlStatementClientBuilder AddExternalHttpClientResponse(string content, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
     {
         _externalResponseMessages.Add(new HttpResponseMessage(httpStatusCode) { Content = new StringContent(content), });
         return this;
     }
 
-    public SqlStatementClientBuilder UseParser(IDatabricksSqlResponseParser parser)
+    public DatabricksSqlStatementClientBuilder UseParser(IDatabricksSqlResponseParser parser)
     {
         _parser = parser;
         return this;
     }
 
-    public SqlStatementClient Build()
+    public DatabricksSqlStatementClient Build()
     {
         var httpClientFactory = new Mock<IHttpClientFactory>();
 
@@ -59,8 +59,8 @@ public class SqlStatementClientBuilder
             WorkspaceUrl = "https://foo.com",
         });
         var parser = _parser ?? new Mock<IDatabricksSqlResponseParser>().Object;
-        var logger = new Mock<ILogger<SqlStatementClient>>();
-        return new SqlStatementClient(httpClientFactory.Object, options.Object, parser, logger.Object);
+        var logger = new Mock<ILogger<DatabricksSqlStatementClient>>();
+        return new DatabricksSqlStatementClient(httpClientFactory.Object, options.Object, parser, logger.Object);
     }
 
     private void SetupHttpClient(Mock<IHttpClientFactory> httpClientFactory, List<HttpResponseMessage> responseMessages, string clientName)
