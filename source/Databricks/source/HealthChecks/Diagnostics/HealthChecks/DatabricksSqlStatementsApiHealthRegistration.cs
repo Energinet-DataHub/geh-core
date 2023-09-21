@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net.Http.Headers;
+using Energinet.DataHub.Core.Databricks.AppSettings;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
@@ -34,15 +35,15 @@ public class DatabricksSqlStatementsApiHealthRegistration : IHealthCheck
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
-        if (_options.DATABRICKS_HEALTH_CHECK_START_HOUR.Hour <= currentHour && currentHour <= _options.DATABRICKS_HEALTH_CHECK_END_HOUR.Hour)
+        if (_options.DatabricksHealthCheckStartHour.Hour <= currentHour && currentHour <= _options.DatabricksHealthCheckEndHour.Hour)
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
+            httpClient.BaseAddress = new Uri(_options.WorkspaceUrl);
             httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _options.DATABRICKS_WORKSPACE_TOKEN);
+                new AuthenticationHeaderValue("Bearer", _options.WorkspaceToken);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
-            var url = $"{_options.DATABRICKS_WORKSPACE_URL}/api/2.0/sql/warehouses/{_options.DATABRICKS_WAREHOUSE_ID}";
+            httpClient.BaseAddress = new Uri(_options.WorkspaceUrl);
+            var url = $"{_options.WorkspaceUrl}/api/2.0/sql/warehouses/{_options.WarehouseId}";
             var response = await httpClient
                 .GetAsync(url, cancellationToken)
                 .ConfigureAwait(false);

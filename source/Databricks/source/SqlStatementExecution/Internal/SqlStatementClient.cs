@@ -18,7 +18,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
+using Energinet.DataHub.Core.Databricks.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

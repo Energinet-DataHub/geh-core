@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
+namespace Energinet.DataHub.Core.Databricks.AppSettings;
 
 public class DatabricksOptions
 {
@@ -30,4 +30,16 @@ public class DatabricksOptions
     /// The databricks warehouse id.
     /// </summary>
     public string WarehouseId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Defines the hour of the day when the health check DataLake should start.
+    /// The default value is 6:00 AM.
+    /// </summary>
+    public TimeOnly DatabricksHealthCheckStartHour { get; set; } = new(6, 0);
+
+    /// <summary>
+    /// Defines the hour of the day when the health check towards DataLake should end.
+    /// The default value is 8:00 PM.
+    /// </summary>
+    public TimeOnly DatabricksHealthCheckEndHour { get; set; } = new(20, 0);
 }

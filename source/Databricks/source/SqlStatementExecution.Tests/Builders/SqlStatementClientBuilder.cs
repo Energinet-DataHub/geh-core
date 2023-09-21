@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.Databricks.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;

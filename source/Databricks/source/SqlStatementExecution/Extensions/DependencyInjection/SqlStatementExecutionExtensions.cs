@@ -14,8 +14,8 @@
 
 using System;
 using System.Net.Http.Headers;
+using Energinet.DataHub.Core.Databricks.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection

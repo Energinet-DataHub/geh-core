@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.Extensions.DependencyInjection;
@@ -26,36 +25,12 @@ public static class HealthCheckExtensions
         string workspaceToken,
         string workspaceUrl)
     {
-        return AddSqlStatementExecutionInner(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
-    }
-
-    private static IServiceCollection AddSqlStatementExecutionInner(
-        IServiceCollection serviceCollection,
-        string warehouseId,
-        string workspaceToken,
-        string workspaceUrl)
-    {
         serviceCollection.AddOptions<DatabricksOptions>().Configure(options =>
         {
             options.WarehouseId = warehouseId;
             options.WorkspaceToken = workspaceToken;
             options.WorkspaceUrl = workspaceUrl;
         });
-
-        serviceCollection.AddScoped<ISqlStatementClient, T>();
-        serviceCollection.AddHttpClient<ISqlStatementClient, T>(client =>
-        {
-            client.BaseAddress = new Uri(workspaceUrl);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", workspaceToken);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-        });
-
-        serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
-        serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();
-        serviceCollection.AddScoped<IDatabricksSqlChunkResponseParser, DatabricksSqlChunkResponseParser>();
-        serviceCollection.AddScoped<IDatabricksSqlChunkDataResponseParser, DatabricksSqlChunkDataResponseParser>();
 
         return serviceCollection;
     }
