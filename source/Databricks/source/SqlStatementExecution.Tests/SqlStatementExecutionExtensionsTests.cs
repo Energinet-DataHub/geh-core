@@ -24,6 +24,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 public class SqlStatementExecutionExtensionsTests
 {
     [Fact]
+    [Obsolete]
     public void Deprecate_AddDatabricks_Should_ReturnSqlStatementClient()
     {
         // Arrange
@@ -33,7 +34,7 @@ public class SqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
+        services.AddDatabricks(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
