@@ -32,7 +32,9 @@ public class SqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
+#pragma warning disable CS0618 // Expected to be obsolete, but we want to test it anyway
         services.AddDatabricks(warehouseId, workspaceToken, workspaceUri);
+#pragma warning restore CS0618 // Expected to be obsolete, but we want to test it anyway
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert

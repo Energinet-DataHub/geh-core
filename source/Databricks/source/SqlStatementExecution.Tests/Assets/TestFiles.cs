@@ -28,6 +28,6 @@ public class TestFiles
     private Stream GetFileStream(string fileName)
     {
         var rootNamespace = GetType().Namespace!;
-        return GetType().Assembly.GetManifestResourceStream($"{rootNamespace}.{fileName}");
+        return GetType().Assembly.GetManifestResourceStream($"{rootNamespace}.{fileName}")!;
     }
 }
