@@ -176,7 +176,7 @@ public class SqlResponseParserTests
         var resultJson = SqlResponseStatusHelper.CreateStatusResponse("UNKNOWN");
 
         // Act and assert
-        Assert.Throws<SqlException>(() => sut.Parse(resultJson));
+        Assert.Throws<DatabricksSqlException>(() => sut.Parse(resultJson));
 
         // Assert
         loggerMock.Verify(

@@ -61,7 +61,7 @@ public class SqlStatusResponseParser : ISqlStatusResponseParser
                     var chunk = _chunkParser.Parse(GetChunk(jsonObject));
                     return SqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
                 default:
-                    throw new SqlException($@"Databricks SQL statement execution failed. State: {state}");
+                    throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
             }
         }
         catch (Exception e)
@@ -84,7 +84,7 @@ public class SqlStatusResponseParser : ISqlStatusResponseParser
     private static string[] GetColumnNames(JObject responseJsonObject)
     {
         var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()).ToArray() ??
-                          throw new SqlException("Unable to retrieve 'columns' from the responseJsonObject.");
+                          throw new DatabricksSqlException("Unable to retrieve 'columns' from the responseJsonObject.");
         return columnNames!;
     }
 

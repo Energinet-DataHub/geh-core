@@ -100,7 +100,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new SqlException($"Unable to get result from Databricks. HTTP status code: {response.StatusCode}");
+            throw new DatabricksSqlException($"Unable to get result from Databricks. HTTP status code: {response.StatusCode}");
         }
 
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -112,7 +112,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         {
             if (waitTime > 600000)
             {
-                throw new SqlException($"Unable to get result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+                throw new DatabricksSqlException($"Unable to get result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
             }
 
             waitTime *= 2;
@@ -123,7 +123,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                throw new SqlException($"Unable to get result from Databricks. HTTP status code: {httpResponse.StatusCode}");
+                throw new DatabricksSqlException($"Unable to get result from Databricks. HTTP status code: {httpResponse.StatusCode}");
             }
 
             jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -133,7 +133,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
         if (databricksSqlResponse.State is not SqlResponseState.Succeeded)
         {
-            throw new SqlException($"Unable to get result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+            throw new DatabricksSqlException($"Unable to get result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
         }
 
         return databricksSqlResponse;
@@ -144,7 +144,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         var httpResponse = await _httpClient.GetAsync(chunkLink).ConfigureAwait(false);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new SqlException($"Unable to get chunk from {chunkLink}. HTTP status code: {httpResponse.StatusCode}");
+            throw new DatabricksSqlException($"Unable to get chunk from {chunkLink}. HTTP status code: {httpResponse.StatusCode}");
         }
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -156,7 +156,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         var httpResponse = await _externalHttpClient.GetAsync(externalLink).ConfigureAwait(false);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new SqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
+            throw new DatabricksSqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
         }
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);

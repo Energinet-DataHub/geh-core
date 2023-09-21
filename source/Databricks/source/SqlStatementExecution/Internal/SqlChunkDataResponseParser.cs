@@ -35,7 +35,7 @@ public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
     private static List<string[]> GetDataArray(JArray jsonArray)
     {
         var dataArray = jsonArray.ToObject<List<string[]>>() ??
-                        throw new SqlException("Unable to retrieve 'data_array' from the response");
+                        throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
         return dataArray;
     }
 }

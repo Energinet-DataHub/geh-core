@@ -68,7 +68,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
@@ -92,7 +92,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
@@ -116,7 +116,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
@@ -140,7 +140,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
@@ -164,7 +164,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
@@ -188,7 +188,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
@@ -201,7 +201,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
@@ -222,7 +222,7 @@ public class SqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<SqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
     }
 
     [Theory]
