@@ -19,14 +19,14 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 /// <summary>
 /// This interface is used to parse the response from the Databricks SQL API.
 /// </summary>
-public interface IDatabricksSqlResponseParser
+public interface ISqlResponseParser
 {
     /// <summary>
     /// Parse the response Status from the Databricks SQL API.
     /// </summary>
     /// <param name="jsonResponse"></param>
-    /// <returns>Returns <see cref="DatabricksSqlResponse"/></returns>
-    DatabricksSqlResponse ParseStatusResponse(string jsonResponse);
+    /// <returns>Returns <see cref="SqlResponse"/></returns>
+    SqlResponse ParseStatusResponse(string jsonResponse);
 
     /// <summary>
     /// Parse the response Chunk from the Databricks SQL API.
@@ -42,8 +42,8 @@ public interface IDatabricksSqlResponseParser
     /// <br></br>}
     /// </summary>
     /// <param name="jsonResponse"></param>
-    /// <returns>Returns <see cref="DatabricksSqlChunkResponse"/></returns>
-    DatabricksSqlChunkResponse ParseChunkResponse(string jsonResponse);
+    /// <returns>Returns <see cref="SqlChunkResponse"/></returns>
+    SqlChunkResponse ParseChunkResponse(string jsonResponse);
 
     /// <summary>
     /// Parse the response Chunk Data from the Databricks SQL API.

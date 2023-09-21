@@ -116,10 +116,10 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 });
 
-            serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
-            serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();
-            serviceCollection.AddScoped<IDatabricksSqlChunkResponseParser, DatabricksSqlChunkResponseParser>();
-            serviceCollection.AddScoped<IDatabricksSqlChunkDataResponseParser, DatabricksSqlChunkDataResponseParser>();
+            serviceCollection.AddScoped<ISqlResponseParser, SqlResponseParser>();
+            serviceCollection.AddScoped<ISqlStatusResponseParser, SqlStatusResponseParser>();
+            serviceCollection.AddScoped<ISqlChunkResponseParser, SqlChunkResponseParser>();
+            serviceCollection.AddScoped<ISqlChunkDataResponseParser, SqlChunkDataResponseParser>();
 
             return serviceCollection;
         }

@@ -16,9 +16,9 @@ using System;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
-public class DatabricksSqlException : Exception
+public class SqlException : Exception
 {
-    public DatabricksSqlException(string message)
+    public SqlException(string message)
         : base(message)
     {
     }

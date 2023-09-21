@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 /// <summary>
 /// Representation of the state of a Databricks SQL response.
 /// </summary>
-public enum DatabricksSqlResponseState
+public enum SqlResponseState
 {
     Failed = 0,
     Cancelled = 1,

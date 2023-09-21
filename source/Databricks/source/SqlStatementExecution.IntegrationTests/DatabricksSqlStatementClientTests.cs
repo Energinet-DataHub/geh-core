@@ -53,7 +53,7 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
     [InlineAutoMoqData]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
         Mock<IHttpClientFactory> httpClientFactory,
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
+        Mock<ILogger<SqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
         Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
     {
         // Arrange
@@ -77,7 +77,7 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(
         Mock<IHttpClientFactory> httpClientFactory,
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
+        Mock<ILogger<SqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
         Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
     {
         // Arrange

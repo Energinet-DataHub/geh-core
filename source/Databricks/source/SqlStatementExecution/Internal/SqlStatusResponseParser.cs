@@ -21,20 +21,20 @@ using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
-public class DatabricksSqlStatusResponseParser : IDatabricksSqlStatusResponseParser
+public class SqlStatusResponseParser : ISqlStatusResponseParser
 {
-    private readonly ILogger<DatabricksSqlStatusResponseParser> _logger;
-    private readonly IDatabricksSqlChunkResponseParser _chunkParser;
+    private readonly ILogger<SqlStatusResponseParser> _logger;
+    private readonly ISqlChunkResponseParser _chunkParser;
 
-    public DatabricksSqlStatusResponseParser(
-        ILogger<DatabricksSqlStatusResponseParser> logger,
-        IDatabricksSqlChunkResponseParser chunkParser)
+    public SqlStatusResponseParser(
+        ILogger<SqlStatusResponseParser> logger,
+        ISqlChunkResponseParser chunkParser)
     {
         _logger = logger;
         _chunkParser = chunkParser;
     }
 
-    public DatabricksSqlResponse Parse(string jsonResponse)
+    public SqlResponse Parse(string jsonResponse)
     {
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None };
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
@@ -47,21 +47,21 @@ public class DatabricksSqlStatusResponseParser : IDatabricksSqlStatusResponsePar
             switch (state)
             {
                 case "PENDING":
-                    return DatabricksSqlResponse.CreateAsPending(statementId);
+                    return SqlResponse.CreateAsPending(statementId);
                 case "RUNNING":
-                    return DatabricksSqlResponse.CreateAsRunning(statementId);
+                    return SqlResponse.CreateAsRunning(statementId);
                 case "CLOSED":
-                    return DatabricksSqlResponse.CreateAsClosed(statementId);
+                    return SqlResponse.CreateAsClosed(statementId);
                 case "CANCELED":
-                    return DatabricksSqlResponse.CreateAsCancelled(statementId);
+                    return SqlResponse.CreateAsCancelled(statementId);
                 case "FAILED":
-                    return DatabricksSqlResponse.CreateAsFailed(statementId);
+                    return SqlResponse.CreateAsFailed(statementId);
                 case "SUCCEEDED":
                     var columnNames = GetColumnNames(jsonObject);
                     var chunk = _chunkParser.Parse(GetChunk(jsonObject));
-                    return DatabricksSqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
+                    return SqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
                 default:
-                    throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
+                    throw new SqlException($@"Databricks SQL statement execution failed. State: {state}");
             }
         }
         catch (Exception e)
@@ -84,7 +84,7 @@ public class DatabricksSqlStatusResponseParser : IDatabricksSqlStatusResponsePar
     private static string[] GetColumnNames(JObject responseJsonObject)
     {
         var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()).ToArray() ??
-                          throw new DatabricksSqlException("Unable to retrieve 'columns' from the responseJsonObject.");
+                          throw new SqlException("Unable to retrieve 'columns' from the responseJsonObject.");
         return columnNames!;
     }
 

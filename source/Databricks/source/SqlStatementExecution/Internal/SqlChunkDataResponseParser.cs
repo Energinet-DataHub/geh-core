@@ -13,42 +13,29 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
-public class DatabricksSqlChunkResponseParser : IDatabricksSqlChunkResponseParser
+public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {
-    public DatabricksSqlChunkResponse Parse(string jsonResponse)
+    public TableChunk Parse(string jsonResponse, string[] columnNames)
     {
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
-        var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
+        var jsonArray = JsonConvert.DeserializeObject<JArray>(jsonResponse, settings) ??
                          throw new InvalidOperationException();
-        return Parse(jsonObject);
+
+        var rows = GetDataArray(jsonArray);
+        return new TableChunk(columnNames, rows);
     }
 
-    public DatabricksSqlChunkResponse Parse(JToken jsonResponse)
+    private static List<string[]> GetDataArray(JArray jsonArray)
     {
-        var nextChunkInternalLink = GetNextChunkInternalLink(jsonResponse);
-        var externalLink = GetExternalLink(jsonResponse);
-        return new DatabricksSqlChunkResponse(externalLink, nextChunkInternalLink);
-    }
-
-    private static Uri? GetExternalLink(JToken chunk)
-    {
-        var link = chunk["external_links"]?[0]?["external_link"]?.ToObject<string>();
-        if (link == null)
-        {
-            return null;
-        }
-
-        return new Uri(link);
-    }
-
-    private string? GetNextChunkInternalLink(JToken chunk)
-    {
-        return chunk["external_links"]?[0]?["next_chunk_internal_link"]?.ToObject<string>();
+        var dataArray = jsonArray.ToObject<List<string[]>>() ??
+                        throw new SqlException("Unable to retrieve 'data_array' from the response");
+        return dataArray;
     }
 }

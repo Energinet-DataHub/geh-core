@@ -26,7 +26,7 @@ public class DatabricksSqlStatementClientBuilder
 {
     private readonly List<HttpResponseMessage> _responseMessages = new();
     private readonly List<HttpResponseMessage> _externalResponseMessages = new();
-    private IDatabricksSqlResponseParser? _parser;
+    private ISqlResponseParser? _parser;
 
     public DatabricksSqlStatementClientBuilder AddHttpClientResponse(string content, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
     {
@@ -40,7 +40,7 @@ public class DatabricksSqlStatementClientBuilder
         return this;
     }
 
-    public DatabricksSqlStatementClientBuilder UseParser(IDatabricksSqlResponseParser parser)
+    public DatabricksSqlStatementClientBuilder UseParser(ISqlResponseParser parser)
     {
         _parser = parser;
         return this;
@@ -58,7 +58,7 @@ public class DatabricksSqlStatementClientBuilder
         {
             WorkspaceUrl = "https://foo.com",
         });
-        var parser = _parser ?? new Mock<IDatabricksSqlResponseParser>().Object;
+        var parser = _parser ?? new Mock<ISqlResponseParser>().Object;
         var logger = new Mock<ILogger<DatabricksSqlStatementClient>>();
         return new DatabricksSqlStatementClient(httpClientFactory.Object, options.Object, parser, logger.Object);
     }

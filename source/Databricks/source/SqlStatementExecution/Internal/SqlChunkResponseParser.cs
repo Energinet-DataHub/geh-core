@@ -13,29 +13,42 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
-public class DatabricksSqlChunkDataResponseParser : IDatabricksSqlChunkDataResponseParser
+public class SqlChunkResponseParser : ISqlChunkResponseParser
 {
-    public TableChunk Parse(string jsonResponse, string[] columnNames)
+    public SqlChunkResponse Parse(string jsonResponse)
     {
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
-        var jsonArray = JsonConvert.DeserializeObject<JArray>(jsonResponse, settings) ??
+        var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
                          throw new InvalidOperationException();
-
-        var rows = GetDataArray(jsonArray);
-        return new TableChunk(columnNames, rows);
+        return Parse(jsonObject);
     }
 
-    private static List<string[]> GetDataArray(JArray jsonArray)
+    public SqlChunkResponse Parse(JToken jsonResponse)
     {
-        var dataArray = jsonArray.ToObject<List<string[]>>() ??
-                        throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
-        return dataArray;
+        var nextChunkInternalLink = GetNextChunkInternalLink(jsonResponse);
+        var externalLink = GetExternalLink(jsonResponse);
+        return new SqlChunkResponse(externalLink, nextChunkInternalLink);
+    }
+
+    private static Uri? GetExternalLink(JToken chunk)
+    {
+        var link = chunk["external_links"]?[0]?["external_link"]?.ToObject<string>();
+        if (link == null)
+        {
+            return null;
+        }
+
+        return new Uri(link);
+    }
+
+    private string? GetNextChunkInternalLink(JToken chunk)
+    {
+        return chunk["external_links"]?[0]?["next_chunk_internal_link"]?.ToObject<string>();
     }
 }

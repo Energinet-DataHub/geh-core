@@ -17,14 +17,15 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 /// <summary>
-/// This interface is used to parse the response from the Databricks SQL API.
+/// Parses the response from a Databricks SQL statement execution.
 /// </summary>
-public interface IDatabricksSqlStatusResponseParser
+public interface ISqlChunkDataResponseParser
 {
     /// <summary>
-    /// Parse the response from the Databricks SQL API.
+    /// Parses the chunk data response from a Databricks SQL statement execution.
     /// </summary>
     /// <param name="jsonResponse"></param>
-    /// <returns>Returns <see cref="DatabricksSqlResponse"/></returns>
-    DatabricksSqlResponse Parse(string jsonResponse);
+    /// <param name="columnNames"></param>
+    /// <returns>Returns a <see cref="TableChunk"/></returns>
+    TableChunk Parse(string jsonResponse, string[] columnNames);
 }

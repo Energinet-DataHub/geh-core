@@ -103,7 +103,7 @@ public class DatabricksSchemaManager
 
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new DatabricksSqlException($"Unable to execute SQL statement on Databricks. Status code: {httpResponse.StatusCode}");
+            throw new SqlException($"Unable to execute SQL statement on Databricks. Status code: {httpResponse.StatusCode}");
         }
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -114,7 +114,7 @@ public class DatabricksSchemaManager
         var state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
         if (state != "SUCCEEDED")
         {
-            throw new DatabricksSqlException($"Failed to execute SQL statement: {sqlStatement}. Response: {jsonResponse}");
+            throw new SqlException($"Failed to execute SQL statement: {sqlStatement}. Response: {jsonResponse}");
         }
     }
 }
