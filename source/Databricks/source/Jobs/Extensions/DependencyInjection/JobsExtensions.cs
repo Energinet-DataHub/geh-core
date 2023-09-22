@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
         /// Adds Databricks Jobs Client to the service collection.
         /// </summary>
         /// <returns>IServiceCollection containing elements needed to request Databricks Jobs API.</returns>
-        public static IServiceCollection AddJobs(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddDatabricksJobs(this IServiceCollection serviceCollection)
         {
             return AddJobInner(serviceCollection);
         }
