@@ -34,14 +34,14 @@ public class DatabricksSqlStatementOptions
     public string WarehouseId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Defines the hour of the day when the health check DataLake should start.
-    /// The default value is 6:00 AM.
+    /// Defines the hour of the day when the health check towards Databricks SQL Statement API should start.
+    /// The default value is 6 AM. Valid values are 0-23.
     /// </summary>
-    public TimeOnly DatabricksHealthCheckStartHour { get; set; } = new(6, 0);
+    public int DatabricksHealthCheckStartHour { get; set; } = 6;
 
     /// <summary>
-    /// Defines the hour of the day when the health check towards DataLake should end.
-    /// The default value is 8:00 PM.
+    /// Defines the hour of the day when the health check towards Databricks SQL Statement API should end.
+    /// The default value is 8 PM. Valid values are 0-23.
     /// </summary>
-    public TimeOnly DatabricksHealthCheckEndHour { get; set; } = new(20, 0);
+    public int DatabricksHealthCheckEndHour { get; set; } = 20;
 }
