@@ -8,9 +8,7 @@ The bundle contains the following packages:
 * `Energinet.DataHub.Core.App.Common.Abstractions`
 * `Energinet.DataHub.Core.App.Common.Security`
 * `Energinet.DataHub.Core.App.FunctionApp`
-* `Energinet.DataHub.Core.App.FunctionApp.SimpleInjector`
 * `Energinet.DataHub.Core.App.WebApp`
-* `Energinet.DataHub.Core.App.WebApp.SimpleInjector`
 
 The packages contain types commonly used by domain teams when implementing Azure Function App's and Web App's.
 

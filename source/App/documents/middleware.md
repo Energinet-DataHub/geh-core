@@ -88,23 +88,6 @@ Use the extension to register in the container like:
 serviceCollection.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience");
 ```
 
-#### SimpleInjector
-
-If using SimpleInjector follow the description in current section.
-
-The following package must be installed
-
-- `Energinet.DataHub.Core.App.FunctionApp.SimpleInjector`
-
-```c#
-protected override void ConfigureContainer(Container container)
-{
-    …
-    container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
-    …
-}
-```
-
 ### WebApi
 
 Install `Energinet.DataHub.Core.App.WebApp`.
@@ -150,37 +133,6 @@ Use the extension to register in the container like:
 
 ```c#
 services.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience");
-```
-
-#### SimpleInjector
-
-If using SimpleInjector follow the description in current section.
-
-The following package must be installed
-
-- `Energinet.DataHub.Core.App.WebApp.SimpleInjector`
-
-Replace the default middleware factory with the SimpleInjectorMiddlewareFactory:
-
-```c#
-services.AddTransient<IMiddlewareFactory>(_ =>
-{
-    return new SimpleInjectorMiddlewareFactory(_container);
-});
-```
-
-If SimpleInjector is not already in use, do remember to wrap ASP.NET Core requests in a SimpleInjector execution context:
-
-```c#
-services.UseSimpleInjectorAspNetRequestScoping(_container);
-```
-
-Register in container:
-
-```c#
-…
-container.AddJwtTokenSecurity("https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration", "audience")
-…
 ```
 
 ## Actor Middleware
