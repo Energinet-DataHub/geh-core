@@ -14,7 +14,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.Options;
 
@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Internal
         /// </summary>
         /// <param name="optionsFactory">The databricks settings (options).</param>
         /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public JobsApiClient(IOptions<DatabricksOptions> optionsFactory, long timeoutSeconds = 30)
+        public JobsApiClient(IOptions<DatabricksJobsOptions> optionsFactory, long timeoutSeconds = 30)
         {
             var options = optionsFactory.Value;
             var apiUrl = new Uri(new Uri(options.WorkspaceUrl), "api/");

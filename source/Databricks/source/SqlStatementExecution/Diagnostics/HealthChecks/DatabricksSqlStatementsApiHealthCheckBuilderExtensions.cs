@@ -12,20 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 
 public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
 {
-    private const string Name = "DatabricksSqlStatementsApiHealthCheck";
+    private const string Name = "DatabricksSqlStatementApiHealthCheck";
 
-    public static IHealthChecksBuilder AddDatabricksSqlStatementsApiHealthCheck(
+    public static IHealthChecksBuilder AddDatabricksSqlStatementApiHealthCheck(
         this IHealthChecksBuilder builder,
-        Func<IServiceProvider, DatabricksOptions> options,
+        Func<IServiceProvider, DatabricksSqlStatementOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
@@ -33,7 +36,7 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? Name,
-            serviceProvider => new DatabricksSqlStatementsApiHealthRegistration(
+            serviceProvider => new DatabricksSqlStatementApiHealthRegistration(
                 serviceProvider.GetRequiredService<IHttpClientFactory>(),
                 serviceProvider.GetRequiredService<IClock>(),
                 options(serviceProvider)),

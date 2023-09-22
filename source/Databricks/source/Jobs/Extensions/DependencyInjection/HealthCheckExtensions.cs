@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Databricks.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 
 public static class HealthCheckExtensions
 {
@@ -25,7 +25,7 @@ public static class HealthCheckExtensions
         string workspaceToken,
         string workspaceUrl)
     {
-        serviceCollection.AddOptions<DatabricksOptions>().Configure(options =>
+        serviceCollection.AddOptions<DatabricksJobsOptions>().Configure(options =>
         {
             options.WarehouseId = warehouseId;
             options.WorkspaceToken = workspaceToken;

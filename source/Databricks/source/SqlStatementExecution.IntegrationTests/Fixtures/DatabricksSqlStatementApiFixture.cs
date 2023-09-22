@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Logging;
@@ -32,7 +32,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
 
-    public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
+    public Mock<IOptions<DatabricksSqlStatementOptions>> DatabricksOptionsMock { get; }
 
     public Task InitializeAsync()
     {
@@ -45,7 +45,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     }
 
     public SqlStatementClient CreateSqlStatementClient(
-        DatabricksOptions databricksOptions,
+        DatabricksSqlStatementOptions databricksOptions,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<ILogger<SqlStatementClient>> loggerMock2)
     {
@@ -62,12 +62,12 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return sqlStatementClient;
     }
 
-    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSettings databricksSettings)
+    private static Mock<IOptions<DatabricksSqlStatementOptions>> CreateDatabricksOptionsMock(DatabricksSettings databricksSettings)
     {
-        var databricksOptionsMock = new Mock<IOptions<DatabricksOptions>>();
+        var databricksOptionsMock = new Mock<IOptions<DatabricksSqlStatementOptions>>();
         databricksOptionsMock
             .Setup(o => o.Value)
-            .Returns(new DatabricksOptions
+            .Returns(new DatabricksSqlStatementOptions
             {
                 WorkspaceUrl = databricksSettings.WorkspaceUrl,
                 WorkspaceToken = databricksSettings.WorkspaceAccessToken,

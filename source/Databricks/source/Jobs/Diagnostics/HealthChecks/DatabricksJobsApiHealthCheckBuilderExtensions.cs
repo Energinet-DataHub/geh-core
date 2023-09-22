@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.AppSettings;
-using Energinet.DataHub.Core.Databricks.Jobs;
+using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 
 public static class DatabricksJobsApiHealthCheckBuilderExtensions
 {
@@ -26,7 +25,7 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
 
     public static IHealthChecksBuilder AddDatabricksJobsApiHealthCheck(
         this IHealthChecksBuilder builder,
-        Func<IServiceProvider, DatabricksOptions> options,
+        Func<IServiceProvider, DatabricksJobsOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,

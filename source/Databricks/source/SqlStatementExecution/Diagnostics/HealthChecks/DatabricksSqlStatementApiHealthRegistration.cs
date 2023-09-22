@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using System.Threading;
+using System.Threading.Tasks;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 
-public class DatabricksSqlStatementsApiHealthRegistration : IHealthCheck
+public class DatabricksSqlStatementApiHealthRegistration : IHealthCheck
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IClock _clock;
-    private readonly DatabricksOptions _options;
+    private readonly DatabricksSqlStatementOptions _options;
 
-    public DatabricksSqlStatementsApiHealthRegistration(IHttpClientFactory httpClientFactory, IClock clock, DatabricksOptions options)
+    public DatabricksSqlStatementApiHealthRegistration(IHttpClientFactory httpClientFactory, IClock clock, DatabricksSqlStatementOptions options)
     {
         _httpClientFactory = httpClientFactory;
         _clock = clock;

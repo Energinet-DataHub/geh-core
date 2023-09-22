@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -43,8 +43,8 @@ public class SqlStatementClientBuilder
         var handlerMock = new HttpMessageHandlerMock(_responseMessages);
         var client = new HttpClient(handlerMock);
         client.BaseAddress = new Uri("https://foo.com");
-        var options = new Mock<IOptions<DatabricksOptions>>();
-        options.Setup(o => o.Value).Returns(new DatabricksOptions
+        var options = new Mock<IOptions<DatabricksSqlStatementOptions>>();
+        options.Setup(o => o.Value).Returns(new DatabricksSqlStatementOptions
         {
             WorkspaceUrl = "https://foo.com",
         });

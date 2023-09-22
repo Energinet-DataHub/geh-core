@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,7 +27,7 @@ public class DatabricksSchemaManager
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
 
-    public DatabricksSchemaManager(DatabricksOptions databricksOptions, string schemaPrefix)
+    public DatabricksSchemaManager(DatabricksSqlStatementOptions databricksOptions, string schemaPrefix)
     {
         DatabricksOptions = databricksOptions ?? throw new ArgumentNullException(nameof(databricksOptions));
 
@@ -39,7 +39,7 @@ public class DatabricksSchemaManager
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
-    private DatabricksOptions DatabricksOptions { get; }
+    private DatabricksSqlStatementOptions DatabricksOptions { get; }
 
     /// <summary>
     /// Create schema (formerly known as database).

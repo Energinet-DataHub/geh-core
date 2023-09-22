@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.AppSettings;
+using System;
 
-public class DatabricksOptions
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+
+public class DatabricksSqlStatementOptions
 {
     /// <summary>
     /// Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net.

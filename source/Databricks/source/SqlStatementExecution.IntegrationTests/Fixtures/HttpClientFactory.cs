@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 
 namespace SqlStatementExecution.IntegrationTests.Fixtures;
 
 public static class HttpClientFactory
 {
-    public static HttpClient CreateHttpClient(DatabricksOptions databricksOptions)
+    public static HttpClient CreateHttpClient(DatabricksSqlStatementOptions databricksOptions)
     {
         var httpClient = new HttpClient
         {

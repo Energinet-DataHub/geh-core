@@ -14,7 +14,7 @@
 
 using System;
 using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -65,7 +65,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             string workspaceUrl)
             where T : class, ISqlStatementClient
         {
-            serviceCollection.AddOptions<DatabricksOptions>().Configure(options =>
+            serviceCollection.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
             {
                 options.WarehouseId = warehouseId;
                 options.WorkspaceToken = workspaceToken;
