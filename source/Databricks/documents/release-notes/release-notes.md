@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 1.2.0
+
+- Databricks Health check extensions are added
+
 ## Version 1.1.0
 
 - Configuration of HttpClient is moved to Dependency Injection

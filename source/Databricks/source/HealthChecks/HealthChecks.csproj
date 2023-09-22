@@ -14,7 +14,7 @@
   
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Databricks.HealthChecks</PackageId>
-    <PackageVersion>1.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.2.0$(VersionSuffix)</PackageVersion>
     <Title>Databricks Health checks</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
