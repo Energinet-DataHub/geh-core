@@ -20,8 +20,10 @@ Artifacts should be organized in the following folder structure:
 │
 ├── .vscode/
 │
-├───docs
-│   └── development.md
+├───documents
+│   ├── development.md
+│   └── release-notes
+│       └──release-notes.md
 │
 ├───source/
 │   ├── <NuGet package bundle>
@@ -65,7 +67,7 @@ Define the maintainers of this repository, one of which must approve any given p
 
 Contains VS Code workspace configuration which is relevant for any developer working in the repository. E.g. if we want to ensure all obey a certain setting we can configure it in `settings.json`.
 
-### Folder: docs
+### Folder: documents
 
 Contains notes and documentation stored in `*.md` files.
 
