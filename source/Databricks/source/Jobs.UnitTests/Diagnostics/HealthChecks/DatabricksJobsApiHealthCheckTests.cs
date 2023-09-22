@@ -90,6 +90,7 @@ public class DatabricksJobsApiHealthCheckTests
     [Theory]
     [InlineAutoMoqData(-1, 20)]
     [InlineAutoMoqData(6, 24)]
+    [InlineAutoMoqData(-1, 24)]
     public void Databricks_Interval_HealthCheck_When_Calling_Dependency_Throws_Invalid_Interval_Exception(
         int startHour,
         int endHour,
