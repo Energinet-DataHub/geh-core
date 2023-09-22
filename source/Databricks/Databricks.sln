@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthChecks", "source\Heal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "source\Common\Common.csproj", "{63EB9F56-646B-47A5-8FE0-8CD199BCC8BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs", "source\Jobs\Jobs.csproj", "{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{63EB9F56-646B-47A5-8FE0-8CD199BCC8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63EB9F56-646B-47A5-8FE0-8CD199BCC8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63EB9F56-646B-47A5-8FE0-8CD199BCC8BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{E8A56710-1EB2-4ED1-8E93-E3653F815983} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
 		{962D1EB7-3F1D-4C95-9E8B-73FBA4DD1A04} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
 		{63EB9F56-646B-47A5-8FE0-8CD199BCC8BA} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {66C69E01-8F6F-4E17-BA99-F00F5E65D57E}

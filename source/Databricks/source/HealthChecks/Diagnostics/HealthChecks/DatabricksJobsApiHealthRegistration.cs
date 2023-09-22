@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.AppSettings;
+using Energinet.DataHub.Core.Databricks.Jobs;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.Diagnostics.HealthChecks;
 
-public class DatabricksSqlStatementsApiHealthRegistration : IHealthCheck
+public class DatabricksJobsApiHealthRegistration : IHealthCheck
 {
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IJobsApiClient _jobsApiClient;
     private readonly IClock _clock;
     private readonly DatabricksOptions _options;
 
-    public DatabricksSqlStatementsApiHealthRegistration(IHttpClientFactory httpClientFactory, IClock clock, DatabricksOptions options)
+    public DatabricksJobsApiHealthRegistration(IJobsApiClient jobsApiClient, IClock clock, DatabricksOptions options)
     {
-        _httpClientFactory = httpClientFactory;
+        _jobsApiClient = jobsApiClient;
         _clock = clock;
         _options = options;
     }
@@ -37,26 +37,9 @@ public class DatabricksSqlStatementsApiHealthRegistration : IHealthCheck
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
         if (_options.DatabricksHealthCheckStartHour.Hour <= currentHour && currentHour <= _options.DatabricksHealthCheckEndHour.Hour)
         {
-            var httpClient = CreateHttpClient();
-            var url = $"{_options.WorkspaceUrl}/api/2.0/sql/warehouses/{_options.WarehouseId}";
-            var response = await httpClient
-                .GetAsync(url, cancellationToken)
-                .ConfigureAwait(false);
-
-            return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+            await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
         }
 
         return HealthCheckResult.Healthy();
-    }
-
-    private HttpClient CreateHttpClient()
-    {
-        var httpClient = _httpClientFactory.CreateClient();
-        httpClient.BaseAddress = new Uri(_options.WorkspaceUrl);
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", _options.WorkspaceToken);
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.BaseAddress = new Uri(_options.WorkspaceUrl);
-        return httpClient;
     }
 }
