@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 8.0.0
+
+- Deleted packages `Energinet.DataHub.Core.App.FunctionApp.SimpleInjector` and `Energinet.DataHub.Core.App.WebApp.SimpleInjector`.
+
 ## Version 7.6.0
 
 - Changed Health Check response format for Azure Function App's and ASP.NET Core Web API's to support the use of Health Checks UI. See [Health Checks](../health-checks.md).
