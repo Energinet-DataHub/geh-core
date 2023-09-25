@@ -84,10 +84,4 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.3.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
-
 </Project>
