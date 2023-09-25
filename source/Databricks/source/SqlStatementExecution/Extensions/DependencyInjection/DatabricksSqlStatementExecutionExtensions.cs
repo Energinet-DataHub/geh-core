@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection
 {
-    public static class SqlStatementExecutionExtensions
+    public static class DatabricksSqlStatementExecutionExtensions
     {
         /// <summary>
         /// Adds Databricks SqlStatementExecution to the service collection

@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
-public class SqlStatementExecutionExtensionsTests
+public class DatabricksSqlStatementExecutionExtensionsTests
 {
     [Fact]
     [Obsolete]
