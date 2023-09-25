@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
 /// <summary>
 /// Representation of the state of a Databricks SQL response.

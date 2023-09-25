@@ -34,6 +34,7 @@ public class SqlResponseParserTests
     private readonly string _failedResultJson;
     private readonly string _succeededResultStatementId;
     private readonly string[] _succeededResultColumnNames;
+    private readonly string _pendingLowerCaseStateResultJson;
 
     public SqlResponseParserTests()
     {
@@ -56,6 +57,7 @@ public class SqlResponseParserTests
         _closedResultJson = SqlResponseStatusHelper.CreateStatusResponse("CLOSED");
         _canceledResultJson = SqlResponseStatusHelper.CreateStatusResponse("CANCELED");
         _failedResultJson = SqlResponseStatusHelper.CreateStatusResponse("FAILED");
+        _pendingLowerCaseStateResultJson = SqlResponseStatusHelper.CreateStatusResponse("pending");
     }
 
     [Theory]
@@ -260,5 +262,20 @@ public class SqlResponseParserTests
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void Parse_WhenStateIsLowerCase_ReturnResult(
+        SqlStatusResponseParser sut)
+    {
+        // Arrange
+        var expectedState = SqlResponseState.Pending;
+
+        // Act
+        var actual = sut.Parse(_pendingLowerCaseStateResultJson);
+
+        // Assert
+        actual.State.Should().Be(expectedState);
     }
 }

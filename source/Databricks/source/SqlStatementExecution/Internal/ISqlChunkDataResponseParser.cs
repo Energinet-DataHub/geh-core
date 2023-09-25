@@ -23,6 +23,9 @@ public interface ISqlChunkDataResponseParser
 {
     /// <summary>
     /// Parses the chunk data response from a Databricks SQL statement execution.
+    ///
+    /// The Chunk Data can vary in response depending on the type of statement executed.
+    /// Therefore a list of column names is required to parse the response.
     /// </summary>
     /// <param name="jsonResponse"></param>
     /// <param name="columnNames"></param>

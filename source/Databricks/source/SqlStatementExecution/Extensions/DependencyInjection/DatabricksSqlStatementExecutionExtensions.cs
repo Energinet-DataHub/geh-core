@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
     public static class DatabricksSqlStatementExecutionExtensions
     {
         /// <summary>
-        /// Adds Databricks SqlStatementExecution to the service collection
+        /// Adds the <see cref="IDatabricksSqlStatementClient"/> and related services to the service collection.
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <param name="warehouseId"></param>
@@ -42,7 +42,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         }
 
         /// <summary>
-        /// Adds Databricks SqlStatementExecution to the service collection
+        /// Adds the <see cref="IDatabricksSqlStatementClient"/> and related services to the service collection.
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <param name="databricksOptions"></param>

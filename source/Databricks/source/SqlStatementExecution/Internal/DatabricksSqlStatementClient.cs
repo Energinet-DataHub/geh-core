@@ -26,8 +26,13 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
-// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
-// https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
+/// <summary>
+/// A client to execute SQL statements against Databricks.
+///
+/// This class has 2 HttpClients. The first one is used to execute the SQL statement and the second one is used to get the data from the external link.
+/// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
+/// https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
+/// </summary>
 public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";

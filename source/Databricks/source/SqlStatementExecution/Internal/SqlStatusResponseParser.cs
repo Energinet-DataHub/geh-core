@@ -42,32 +42,38 @@ public class SqlStatusResponseParser : ISqlStatusResponseParser
 
         try
         {
-            var statementId = GetStatementId(jsonObject);
-            var state = GetState(jsonObject);
-            switch (state)
-            {
-                case "PENDING":
-                    return SqlResponse.CreateAsPending(statementId);
-                case "RUNNING":
-                    return SqlResponse.CreateAsRunning(statementId);
-                case "CLOSED":
-                    return SqlResponse.CreateAsClosed(statementId);
-                case "CANCELED":
-                    return SqlResponse.CreateAsCancelled(statementId);
-                case "FAILED":
-                    return SqlResponse.CreateAsFailed(statementId);
-                case "SUCCEEDED":
-                    var columnNames = GetColumnNames(jsonObject);
-                    var chunk = _chunkParser.Parse(GetChunk(jsonObject));
-                    return SqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
-                default:
-                    throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
-            }
+            return GetSqlResponse(jsonObject);
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Databricks SQL statement execution failed. Response {JsonResponse}", jsonResponse);
             throw;
+        }
+    }
+
+    private SqlResponse GetSqlResponse(JObject jsonObject)
+    {
+        var statementId = GetStatementId(jsonObject);
+        var state = GetState(jsonObject).ToUpper();
+        switch (state)
+        {
+            case "PENDING":
+                return SqlResponse.CreateAsPending(statementId);
+            case "RUNNING":
+                return SqlResponse.CreateAsRunning(statementId);
+            case "CLOSED":
+                return SqlResponse.CreateAsClosed(statementId);
+            case "CANCELED":
+                return SqlResponse.CreateAsCancelled(statementId);
+            case "FAILED":
+                return SqlResponse.CreateAsFailed(statementId);
+            case "SUCCEEDED":
+                var columnNames = GetColumnNames(jsonObject);
+                var chunk = _chunkParser.Parse(GetChunk(jsonObject));
+                return SqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
+            default:
+                throw new DatabricksSqlException(
+                    $@"Databricks SQL statement execution failed. State: {state}");
         }
     }
 
