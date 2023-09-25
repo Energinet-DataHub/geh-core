@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 2.0.0
+
+- See [Version 2.0.0 release notes](./version_2_0_0.md)
+
 ## Version 1.1.0
 
 - Configuration of HttpClient is moved to Dependency Injection

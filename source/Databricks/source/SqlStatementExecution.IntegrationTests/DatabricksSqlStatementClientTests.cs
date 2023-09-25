@@ -28,11 +28,11 @@ namespace SqlStatementExecution.IntegrationTests;
 ///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.
 ///      Use 'DisposeAsync()' to drop any created schema.
 /// </summary>
-public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
+public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
-    public SqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
+    public DatabricksSqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
     }
@@ -52,13 +52,15 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
-        Mock<ILogger<SqlStatementClient>> sqlStatementClientLoggerMock)
+        Mock<IHttpClientFactory> httpClientFactory,
+        Mock<ILogger<SqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
+        Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
     {
         // Arrange
         var tableName = await CreateResultTableWithTwoRowsAsync();
         var sut = _fixture.CreateSqlStatementClient(
             _fixture.DatabricksOptionsMock.Object.Value,
+            httpClientFactory,
             databricksSqlStatusResponseParserLoggerMock,
             sqlStatementClientLoggerMock);
 
@@ -74,13 +76,15 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
-        Mock<ILogger<SqlStatementClient>> sqlStatementClientLoggerMock)
+        Mock<IHttpClientFactory> httpClientFactory,
+        Mock<ILogger<SqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
+        Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
     {
         // Arrange
         const int expectedRowCount = 100;
         var sut = _fixture.CreateSqlStatementClient(
             _fixture.DatabricksOptionsMock.Object.Value,
+            httpClientFactory,
             databricksSqlStatusResponseParserLoggerMock,
             sqlStatementClientLoggerMock);
 

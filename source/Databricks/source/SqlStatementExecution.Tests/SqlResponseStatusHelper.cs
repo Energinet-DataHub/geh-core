@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Assets;
+using Newtonsoft.Json;
 
-public class TestFiles
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
+
+public static class SqlResponseStatusHelper
 {
-    public string TimeSeriesResponse => GetFileAsString("time_series_response.json");
-
-    private string GetFileAsString(string fileName)
+    public static string CreateStatusResponse(string state)
     {
-        var stream = GetFileStream(fileName);
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
-    }
-
-    private Stream GetFileStream(string fileName)
-    {
-        var rootNamespace = GetType().Namespace!;
-        return GetType().Assembly.GetManifestResourceStream($"{rootNamespace}.{fileName}");
+        var statement = new
+        {
+            statement_id = "01edef23-0d2c-10dd-879b-26b5e97b3796",
+            status = new { state, },
+        };
+        return JsonConvert.SerializeObject(statement, Formatting.Indented);
     }
 }

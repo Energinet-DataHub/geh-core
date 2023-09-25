@@ -17,11 +17,11 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests
 {
-    public class DatabricksSqlChunkDataResponseParserTests
+    public class SqlChunkDataResponseParserTests
     {
         [Theory]
         [InlineAutoData]
-        public void Parse_ReturnsExpectedTableChunk(DatabricksSqlChunkDataResponseParser sut)
+        public void Parse_ReturnsExpectedTableChunk(SqlChunkDataResponseParser sut)
         {
             // Arrange
             var jsonResponse = "[[\"John\", \"Doe\"], [\"Jane\", \"Smith\"]]";
@@ -42,7 +42,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests
         [Theory]
         [InlineAutoData]
         public void Parse_WithInvalidJsonResponse_ThrowsInvalidOperationException(
-            DatabricksSqlChunkDataResponseParser sut,
+            SqlChunkDataResponseParser sut,
             string[] columnNames)
         {
             // Arrange

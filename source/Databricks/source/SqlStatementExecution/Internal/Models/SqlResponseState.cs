@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
-
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
 /// <summary>
-/// This interface is used to execute SQL statements against Databricks.
+/// Representation of the state of a Databricks SQL response.
 /// </summary>
-public interface ISqlStatementClient
+public enum SqlResponseState
 {
-    /// <summary>
-    /// Get all the rows of a SQL query in as an asynchronous data stream.
-    /// </summary>
-    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
+    Failed = 0,
+    Cancelled = 1,
+    Pending = 2,
+    Succeeded = 3,
+    Running = 4,
+    Closed = 5,
 }

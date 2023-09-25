@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public static class DatabrickSqlResponseStatusHelper
+/// <summary>
+/// This interface is used to execute SQL statements against Databricks.
+/// </summary>
+public interface IDatabricksSqlStatementClient
 {
-    public static string CreateStatusResponse(string state)
-    {
-        var statement = new
-        {
-            statement_id = "01edef23-0d2c-10dd-879b-26b5e97b3796",
-            status = new { state, },
-        };
-        return JsonConvert.SerializeObject(statement, Formatting.Indented);
-    }
+    /// <summary>
+    /// Get all the rows of a SQL query in as an asynchronous data stream.
+    /// </summary>
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
 }

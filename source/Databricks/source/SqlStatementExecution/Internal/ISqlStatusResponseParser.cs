@@ -13,26 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
-using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 /// <summary>
-/// This interface is used to parse the chunk response from the Databricks SQL API.
+/// This interface is used to parse the response from the Databricks SQL API.
 /// </summary>
-public interface IDatabricksSqlChunkResponseParser
+public interface ISqlStatusResponseParser
 {
     /// <summary>
-    /// Parse the chunk response from the Databricks SQL API.
+    /// Parse the response from the Databricks SQL API.
     /// </summary>
     /// <param name="jsonResponse"></param>
-    /// <returns>Returns <see cref="DatabricksSqlChunkResponse"/></returns>
-    DatabricksSqlChunkResponse Parse(string jsonResponse);
-
-    /// <summary>
-    /// Parse the chunk response from the Databricks SQL API.
-    /// </summary>
-    /// <param name="jsonResponse"></param>
-    /// <returns>Returns <see cref="DatabricksSqlChunkResponse"/></returns>
-    DatabricksSqlChunkResponse Parse(JToken jsonResponse);
+    /// <returns>Returns <see cref="SqlResponse"/></returns>
+    SqlResponse Parse(string jsonResponse);
 }

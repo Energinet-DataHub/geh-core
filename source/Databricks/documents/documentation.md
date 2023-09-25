@@ -17,7 +17,12 @@ private static void AddDatabricks(IServiceCollection services, IConfiguration co
 {   
     var options = new DatabricksOptions();
     configuration.GetSection("DatabricksOptions").Bind(options);
-    services.AddDatabricks(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
+
+    // Option 1
+    services.AddSqlStatementExecution(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
+
+    // Option 2
+    services.AddSqlStatementExecution(options);
 }
 ```
 
@@ -30,7 +35,7 @@ public async Task<IActionResult> GetAsync()
     var sqlQuery = "SELECT column1 FROM database.table";
     var resultList = new List<TestModel>();
 
-    await foreach (var row in _sqlStatementClient.ExecuteAsync(sqlQuery)) {
+    await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery)) {
         var testModel = new TestModel(row["column1"]);
         resultList.Add(testModel)
     }
