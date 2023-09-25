@@ -26,4 +26,13 @@ public interface IDatabricksSqlStatementClient
     /// Get all the rows of a SQL query in as an asynchronous data stream.
     /// </summary>
     IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
+
+    /// <summary>
+    /// Get all the rows of a SQL query in as an asynchronous data stream.
+    ///
+    /// Uses parameterized queries to prevent SQL injections.
+    /// </summary>
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(
+        string sqlStatement,
+        List<SqlStatementParameter> parameters);
 }

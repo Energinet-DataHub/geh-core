@@ -55,6 +55,42 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _externalHttpClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
     }
 
+    public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
+    {
+        _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
+
+        var response = await GetFirstChunkOrNullAsync(sqlStatement, sqlStatementParameters).ConfigureAwait(false);
+        var columnNames = response.ColumnNames;
+        var chunk = response.Chunk;
+        var rowCount = 0;
+
+        while (chunk != null)
+        {
+            if (chunk.ExternalLink == null)
+            {
+                break;
+            }
+
+            var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
+
+            for (var index = 0; index < data.Rows.Count; index++)
+            {
+                yield return new SqlResultRow(data, index);
+                rowCount++;
+            }
+
+            if (chunk.NextChunkInternalLink == null)
+            {
+                break;
+            }
+
+            chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
+        }
+
+        _logger.LogDebug("SQL statement executed. Rows returned: {RowCount}", rowCount);
+    }
+
+    [Obsolete("ExecuteAsync is deprecated, please use ExecuteAsync(string, List<SqlStatementParameter>) instead.")]
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
         _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
@@ -98,6 +134,61 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         {
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
+            warehouse_id = _options.Value.WarehouseId,
+            disposition = "EXTERNAL_LINKS", // Some results are larger than the maximum allowed 16MB limit, thus we need to use external links
+        };
+        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new DatabricksSqlException($"Unable to get response from Databricks. HTTP status code: {response.StatusCode}");
+        }
+
+        var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+        LogDatabricksSqlResponseState(databricksSqlResponse);
+
+        var waitTime = 1000;
+        while (databricksSqlResponse.State is SqlResponseState.Pending or SqlResponseState.Running)
+        {
+            if (waitTime > 600000)
+            {
+                throw new DatabricksSqlException($"Unable to get response from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+            }
+
+            waitTime *= 2;
+            await Task.Delay(waitTime).ConfigureAwait(false);
+
+            var path = $"{StatementsEndpointPath}/{databricksSqlResponse.StatementId}";
+            var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                throw new DatabricksSqlException($"Unable to get response from Databricks. HTTP status code: {httpResponse.StatusCode}");
+            }
+
+            jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+            LogDatabricksSqlResponseState(databricksSqlResponse);
+        }
+
+        if (databricksSqlResponse.State is not SqlResponseState.Succeeded)
+        {
+            throw new DatabricksSqlException($"Unable to get response from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+        }
+
+        return databricksSqlResponse;
+    }
+
+    private async Task<SqlResponse> GetFirstChunkOrNullAsync(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
+    {
+        const int timeOutPerAttemptSeconds = 30;
+
+        var requestObject = new
+        {
+            wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
+            statement = sqlStatement,
+            parameters = sqlStatementParameters,
             warehouse_id = _options.Value.WarehouseId,
             disposition = "EXTERNAL_LINKS", // Some results are larger than the maximum allowed 16MB limit, thus we need to use external links
         };
