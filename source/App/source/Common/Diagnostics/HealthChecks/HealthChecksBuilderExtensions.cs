@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Reflection;
 using Energinet.DataHub.Core.App.Common.Reflection;
@@ -39,9 +38,12 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
                 name: HealthChecksConstants.LiveHealthCheckName,
                 factory: sp =>
                 {
-                    var entryAssembly = Assembly.GetEntryAssembly();
+                    // This extension is only usefull for DH3 applications and they should always have an
+                    // entry assembly.
+                    var entryAssembly = Assembly.GetEntryAssembly()!;
                     var parser = sp.GetRequiredService<IAssemblyInformationalVersionParser>();
-
+                    var version = parser.GetVersion(entryAssembly);
+                    return new LiveHealthCheck(version);
                 },
                 failureStatus: HealthStatus.Unhealthy,
                 tags: default,

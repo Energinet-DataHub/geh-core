@@ -12,19 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+
 namespace Energinet.DataHub.Core.App.Common.Reflection
 {
     /// <summary>
-    /// Responsible for reflecting and parsing the value of the 'InformationalVersion'
-    /// assembly meta data.
+    /// Responsible for reflecting and parsing the value of the <see cref="AssemblyInformationalVersionAttribute"/>.
+    /// Our workflow in GitHub adds custom version information to this attribute, so we can identify
+    /// the exact code version that aws used to build the assembly.
     /// </summary>
     public interface IAssemblyInformationalVersionParser
     {
         /// <summary>
-        /// If the entry assembly contains our custom version information this will return
-        /// a text like 'Version: *.*.* PR: * SHA: *'; otherwise it returns any value
-        /// specified in the reflected attribute, or an empty string if the attribute is not available.
+        /// If the assembly contains our custom version information this will return a text
+        /// like 'Version: *.*.* PR: * SHA: *'; otherwise it returns any value specified in
+        /// the reflected attribute, or an empty string if the attribute is not available.
         /// </summary>
-        string Version { get; }
+        string GetVersion(Assembly assembly);
     }
 }
