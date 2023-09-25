@@ -12,22 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Assets;
+using System.Collections.Generic;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
-public class TestFiles
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+
+/// <summary>
+/// This interface is used to execute SQL statements against Databricks.
+/// </summary>
+public interface IDatabricksSqlStatementClient
 {
-    public string TimeSeriesResponse => GetFileAsString("time_series_response.json");
-
-    private string GetFileAsString(string fileName)
-    {
-        var stream = GetFileStream(fileName);
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
-    }
-
-    private Stream GetFileStream(string fileName)
-    {
-        var rootNamespace = GetType().Namespace!;
-        return GetType().Assembly.GetManifestResourceStream($"{rootNamespace}.{fileName}")!;
-    }
+    /// <summary>
+    /// Get all the rows of a SQL query in as an asynchronous data stream.
+    /// </summary>
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
 }

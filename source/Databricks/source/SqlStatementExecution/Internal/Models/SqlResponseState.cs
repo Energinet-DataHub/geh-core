@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
-
-public static class DatabrickSqlResponseStatusHelper
+/// <summary>
+/// Representation of the state of a Databricks SQL response.
+/// </summary>
+public enum SqlResponseState
 {
-    public static string CreateStatusResponse(string state)
-    {
-        var statement = new
-        {
-            statement_id = "01edef23-0d2c-10dd-879b-26b5e97b3796",
-            status = new { state, },
-        };
-        return JsonConvert.SerializeObject(statement, Formatting.Indented);
-    }
+    Failed = 0,
+    Cancelled = 1,
+    Pending = 2,
+    Succeeded = 3,
+    Running = 4,
+    Closed = 5,
 }

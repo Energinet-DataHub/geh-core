@@ -30,7 +30,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Databricks.SqlStatementExecution</PackageId>
-    <PackageVersion>1.2.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>3.0.0$(VersionSuffix)</PackageVersion>
     <Title>Databricks SQL Statement Execution</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -84,11 +84,4 @@ limitations under the License.
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.3.2" />
   </ItemGroup>
-
-
-
-
-
-
-
 </Project>

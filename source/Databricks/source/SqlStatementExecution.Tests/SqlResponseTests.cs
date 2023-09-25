@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Xunit.Categories;
@@ -20,23 +19,23 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
 [UnitTest]
-public class DatabricksSqlResponseTests
+public class SqlResponseTests
 {
     private readonly string[] _columnNames = { "someColumn" };
-    private readonly DatabricksSqlChunkResponse _chunkResponse = new(new Uri("https://foo.com"), "bar");
+    private readonly SqlChunkResponse _chunkResponse = new(new Uri("https://foo.com"), "bar");
 
     [Theory]
     [AutoMoqData]
     public void CreateAsPending_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
         // Act
-        var actual = DatabricksSqlResponse.CreateAsPending(statementId);
+        var actual = SqlResponse.CreateAsPending(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
         actual.ColumnNames.Should().BeNull();
         actual.Chunk.Should().BeNull();
-        actual.State.Should().Be(DatabricksSqlResponseState.Pending);
+        actual.State.Should().Be(SqlResponseState.Pending);
     }
 
     [Theory]
@@ -44,13 +43,13 @@ public class DatabricksSqlResponseTests
     public void CreateAsRunning_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
         // Act
-        var actual = DatabricksSqlResponse.CreateAsRunning(statementId);
+        var actual = SqlResponse.CreateAsRunning(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
         actual.ColumnNames.Should().BeNull();
         actual.Chunk.Should().BeNull();
-        actual.State.Should().Be(DatabricksSqlResponseState.Running);
+        actual.State.Should().Be(SqlResponseState.Running);
     }
 
     [Theory]
@@ -58,13 +57,13 @@ public class DatabricksSqlResponseTests
     public void CreateAsSucceeded_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
         // Act
-        var actual = DatabricksSqlResponse.CreateAsSucceeded(statementId, _columnNames, _chunkResponse);
+        var actual = SqlResponse.CreateAsSucceeded(statementId, _columnNames, _chunkResponse);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
         actual.ColumnNames.Should().BeEquivalentTo(_columnNames);
         actual.Chunk.Should().BeEquivalentTo(_chunkResponse);
-        actual.State.Should().Be(DatabricksSqlResponseState.Succeeded);
+        actual.State.Should().Be(SqlResponseState.Succeeded);
     }
 
     [Theory]
@@ -72,13 +71,13 @@ public class DatabricksSqlResponseTests
     public void CreateAsFailed_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
         // Act
-        var actual = DatabricksSqlResponse.CreateAsFailed(statementId);
+        var actual = SqlResponse.CreateAsFailed(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
         actual.ColumnNames.Should().BeNull();
         actual.Chunk.Should().BeNull();
-        actual.State.Should().Be(DatabricksSqlResponseState.Failed);
+        actual.State.Should().Be(SqlResponseState.Failed);
     }
 
     [Theory]
@@ -86,13 +85,13 @@ public class DatabricksSqlResponseTests
     public void CreateAsCanceled_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
         // Act
-        var actual = DatabricksSqlResponse.CreateAsCancelled(statementId);
+        var actual = SqlResponse.CreateAsCancelled(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
         actual.ColumnNames.Should().BeNull();
         actual.Chunk.Should().BeNull();
-        actual.State.Should().Be(DatabricksSqlResponseState.Cancelled);
+        actual.State.Should().Be(SqlResponseState.Cancelled);
     }
 
     [Theory]
@@ -100,12 +99,12 @@ public class DatabricksSqlResponseTests
     public void CreateAsClosed_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
         // Act
-        var actual = DatabricksSqlResponse.CreateAsClosed(statementId);
+        var actual = SqlResponse.CreateAsClosed(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
         actual.ColumnNames.Should().BeNull();
         actual.Chunk.Should().BeNull();
-        actual.State.Should().Be(DatabricksSqlResponseState.Closed);
+        actual.State.Should().Be(SqlResponseState.Closed);
     }
 }

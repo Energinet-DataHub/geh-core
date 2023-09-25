@@ -17,11 +17,12 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Builders;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
-public class SqlStatementClientTests
+public class DatabricksSqlStatementClientTests
 {
     private readonly string _running;
     private readonly string _failed;
@@ -29,29 +30,37 @@ public class SqlStatementClientTests
     private readonly string _cancelled;
     private readonly string _pending;
 
-    public SqlStatementClientTests()
+    private readonly string _calculationResultChunkJson;
+    private readonly string _calculationResultWithExternalLinks;
+    private readonly string _chunkData;
+
+    public DatabricksSqlStatementClientTests()
     {
-        _running = DatabrickSqlResponseStatusHelper.CreateStatusResponse("RUNNING");
-        _failed = DatabrickSqlResponseStatusHelper.CreateStatusResponse("FAILED");
-        _closed = DatabrickSqlResponseStatusHelper.CreateStatusResponse("CLOSED");
-        _cancelled = DatabrickSqlResponseStatusHelper.CreateStatusResponse("CANCELED");
-        _pending = DatabrickSqlResponseStatusHelper.CreateStatusResponse("PENDING");
+        _calculationResultChunkJson = GetJsonFromFile("CalculationResultChunk.json");
+        _calculationResultWithExternalLinks = GetJsonFromFile("CalculationResultWithExternalLinks.json");
+        _chunkData = GetJsonFromFile("ChunkData.json");
+
+        _running = SqlResponseStatusHelper.CreateStatusResponse("RUNNING");
+        _failed = SqlResponseStatusHelper.CreateStatusResponse("FAILED");
+        _closed = SqlResponseStatusHelper.CreateStatusResponse("CLOSED");
+        _cancelled = SqlResponseStatusHelper.CreateStatusResponse("CANCELED");
+        _pending = SqlResponseStatusHelper.CreateStatusResponse("PENDING");
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenFirstRunningThenStatementFails_ThrowsDatabricksSqlException(
         Guid statementId,
-        Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_running))
-            .Returns(DatabricksSqlResponse.CreateAsRunning(statementId));
+            .Returns(SqlResponse.CreateAsRunning(statementId));
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_failed))
-            .Returns(DatabricksSqlResponse.CreateAsFailed(statementId));
+            .Returns(SqlResponse.CreateAsFailed(statementId));
         var sut = builder
             .AddHttpClientResponse(_running)
             .AddHttpClientResponse(_failed)
@@ -66,16 +75,16 @@ public class SqlStatementClientTests
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenFirstRunningThenStatementIsClosed_ThrowsDatabricksSqlException(
         Guid statementId,
-        Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_running))
-            .Returns(DatabricksSqlResponse.CreateAsRunning(statementId));
+            .Returns(SqlResponse.CreateAsRunning(statementId));
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_closed))
-            .Returns(DatabricksSqlResponse.CreateAsClosed(statementId));
+            .Returns(SqlResponse.CreateAsClosed(statementId));
         var sut = builder
             .AddHttpClientResponse(_running)
             .AddHttpClientResponse(_closed)
@@ -90,16 +99,16 @@ public class SqlStatementClientTests
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenFirstRunningThenStatementIsCancelled_ThrowsDatabricksSqlException(
         Guid statementId,
-        Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_running))
-            .Returns(DatabricksSqlResponse.CreateAsRunning(statementId));
+            .Returns(SqlResponse.CreateAsRunning(statementId));
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_cancelled))
-            .Returns(DatabricksSqlResponse.CreateAsCancelled(statementId));
+            .Returns(SqlResponse.CreateAsCancelled(statementId));
         var sut = builder
             .AddHttpClientResponse(_running)
             .AddHttpClientResponse(_cancelled)
@@ -114,16 +123,16 @@ public class SqlStatementClientTests
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenFirstPendingThenStatementFails_ThrowsDatabricksSqlException(
         Guid statementId,
-        Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_pending))
-            .Returns(DatabricksSqlResponse.CreateAsPending(statementId));
+            .Returns(SqlResponse.CreateAsPending(statementId));
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_failed))
-            .Returns(DatabricksSqlResponse.CreateAsFailed(statementId));
+            .Returns(SqlResponse.CreateAsFailed(statementId));
         var sut = builder
             .AddHttpClientResponse(_pending)
             .AddHttpClientResponse(_failed)
@@ -138,16 +147,16 @@ public class SqlStatementClientTests
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenFirstPendingThenStatementIsClosed_ThrowsDatabricksSqlException(
         Guid statementId,
-        Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_pending))
-            .Returns(DatabricksSqlResponse.CreateAsPending(statementId));
+            .Returns(SqlResponse.CreateAsPending(statementId));
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_closed))
-            .Returns(DatabricksSqlResponse.CreateAsClosed(statementId));
+            .Returns(SqlResponse.CreateAsClosed(statementId));
         var sut = builder
             .AddHttpClientResponse(_pending)
             .AddHttpClientResponse(_closed)
@@ -162,16 +171,16 @@ public class SqlStatementClientTests
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenFirstPendingThenStatementIsCancelled_ThrowsDatabricksSqlException(
         Guid statementId,
-        Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_pending))
-            .Returns(DatabricksSqlResponse.CreateAsPending(statementId));
+            .Returns(SqlResponse.CreateAsPending(statementId));
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_cancelled))
-            .Returns(DatabricksSqlResponse.CreateAsCancelled(statementId));
+            .Returns(SqlResponse.CreateAsCancelled(statementId));
         var sut = builder
             .AddHttpClientResponse(_pending)
             .AddHttpClientResponse(_cancelled)
@@ -184,7 +193,7 @@ public class SqlStatementClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteAsync_WhenHttpRequestFails_ThrowsDatabricksSqlException(SqlStatementClientBuilder builder)
+    public async Task ExecuteAsync_WhenHttpRequestFails_ThrowsDatabricksSqlException(DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         var sut = builder
@@ -199,13 +208,13 @@ public class SqlStatementClientTests
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenSecondHttpRequestFails_ThrowsDatabricksSqlException(
         Guid statementId,
-        Mock<IDatabricksSqlResponseParser> parserMock,
-        SqlStatementClientBuilder builder)
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
     {
         // Arrange
         parserMock
             .Setup(parser => parser.ParseStatusResponse(_running))
-            .Returns(DatabricksSqlResponse.CreateAsRunning(statementId));
+            .Returns(SqlResponse.CreateAsRunning(statementId));
         var sut = builder
             .AddHttpClientResponse(_running)
             .AddHttpClientResponse("http request failed", HttpStatusCode.BadRequest)
@@ -214,5 +223,40 @@ public class SqlStatementClientTests
 
         // Act and assert
         await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ExecuteAsync_WhenMultipleChunks_GetAllChunks(
+        DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        var mockedLogger = new Mock<ILogger<SqlStatusResponseParser>>();
+        var parser = new SqlResponseParser(
+            new SqlStatusResponseParser(
+                mockedLogger.Object,
+                new SqlChunkResponseParser()),
+            new SqlChunkResponseParser(),
+            new SqlChunkDataResponseParser());
+
+        var sut = builder
+            .AddHttpClientResponse(_calculationResultWithExternalLinks)
+            .AddExternalHttpClientResponse(_chunkData)
+            .AddHttpClientResponse(_calculationResultChunkJson)
+            .UseParser(parser)
+            .Build();
+
+        // Act
+        var result = await sut.ExecuteAsync("some sql").ToListAsync();
+
+        // Assert
+        Assert.Equal(5, result.Count);
+    }
+
+    private string GetJsonFromFile(string fileName)
+    {
+        var stream = EmbeddedResources.GetStream(fileName);
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
 }

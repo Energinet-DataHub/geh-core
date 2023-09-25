@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -44,20 +45,24 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public SqlStatementClient CreateSqlStatementClient(
+    public DatabricksSqlStatementClient CreateSqlStatementClient(
         DatabricksSqlStatementOptions databricksOptions,
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<ILogger<SqlStatementClient>> loggerMock2)
+        Mock<IHttpClientFactory> httpClientFactory,
+        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<DatabricksSqlStatementClient>> loggerMock2)
     {
-        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
+        var databricksSqlChunkResponseParser = new SqlChunkResponseParser();
 
-        var sqlStatementClient = new SqlStatementClient(
-            HttpClientFactory.CreateHttpClient(databricksOptions),
+        httpClientFactory.Setup(f => f.CreateClient(HttpClientNameConstants.Databricks))
+            .Returns(HttpClientFactory.CreateHttpClient(databricksOptions));
+
+        var sqlStatementClient = new DatabricksSqlStatementClient(
+            httpClientFactory.Object,
             DatabricksOptionsMock.Object,
-            new DatabricksSqlResponseParser(
-                new DatabricksSqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
+            new SqlResponseParser(
+                new SqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
                 databricksSqlChunkResponseParser,
-                new DatabricksSqlChunkDataResponseParser()),
+                new SqlChunkDataResponseParser()),
             loggerMock2.Object);
         return sqlStatementClient;
     }
