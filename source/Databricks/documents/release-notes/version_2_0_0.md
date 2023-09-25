@@ -6,12 +6,6 @@ Additionally we have changed the way to register the `IDatabricksSqlStatementCli
 
 There are now two ways to register the Client. Either with the `DatabricksOptions` model or with parameters as show below.
 
-## Usage
-
-Install `Energinet.DataHub.Core.Databricks.SqlStatementExecution` package.
-
-Example of how to setup the Databricks in `startup.cs`.
-
 ```c#
 private static void AddDatabricks(IServiceCollection services, IConfiguration configuration)
 {   
@@ -23,23 +17,5 @@ private static void AddDatabricks(IServiceCollection services, IConfiguration co
 
     // Option 2
     services.AddSqlStatementExecution(options);
-}
-```
-
-Example of how to use the SQL Statement Execution client.
-
-```c#
-[HttpGet]
-public async Task<IActionResult> GetAsync()
-{
-    var sqlQuery = "SELECT column1 FROM database.table";
-    var resultList = new List<TestModel>();
-
-    await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery)) {
-        var testModel = new TestModel(row["column1"]);
-        resultList.Add(testModel)
-    }
-
-    return Ok(resultList);
 }
 ```
