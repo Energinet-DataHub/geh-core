@@ -17,11 +17,11 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
 
-public class DatabricksSqlChunkResponseParserTests
+public class SqlChunkResponseParserTests
 {
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenJsonResponseIsNull_ThrowsArgumentNullException(DatabricksSqlChunkResponseParser sut)
+    public void Parse_WhenJsonResponseIsNull_ThrowsArgumentNullException(SqlChunkResponseParser sut)
     {
         // Act + Assert
         Assert.Throws<ArgumentNullException>(() => sut.Parse(null!));
@@ -29,7 +29,7 @@ public class DatabricksSqlChunkResponseParserTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Parse_WhenValidJsonResponse_ReturnsResponseWithExpectedExternalLink(DatabricksSqlChunkResponseParser sut)
+    public void Parse_WhenValidJsonResponse_ReturnsResponseWithExpectedExternalLink(SqlChunkResponseParser sut)
     {
         // Arrange
         var jsonResponse = @"{""external_links"":[{""external_link"":""https://example.com"",""next_chunk_internal_link"":""https://internal.example.com""}]}";
@@ -44,7 +44,7 @@ public class DatabricksSqlChunkResponseParserTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Parse_WhenValidJsonResponse_ReturnsResponseWithExpectedNextChunkInternalLink(DatabricksSqlChunkResponseParser sut)
+    public void Parse_WhenValidJsonResponse_ReturnsResponseWithExpectedNextChunkInternalLink(SqlChunkResponseParser sut)
     {
         // Arrange
         var jsonResponse = @"{""external_links"":[{""external_link"":""https://example.com"",""next_chunk_internal_link"":""https://internal.example.com""}]}";
@@ -59,7 +59,7 @@ public class DatabricksSqlChunkResponseParserTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Parse_WhenInvalidJsonResponse_ThrowsException(DatabricksSqlChunkResponseParser sut)
+    public void Parse_WhenInvalidJsonResponse_ThrowsException(SqlChunkResponseParser sut)
     {
         // Arrange
         var jsonResponse = "invalid json";
@@ -70,7 +70,7 @@ public class DatabricksSqlChunkResponseParserTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Parse_WhenMissingExternalLink_ReturnsNull(DatabricksSqlChunkResponseParser sut)
+    public void Parse_WhenMissingExternalLink_ReturnsNull(SqlChunkResponseParser sut)
     {
         // Arrange
         var jsonResponse = @"{""external_links"":[{}]}";
@@ -84,7 +84,7 @@ public class DatabricksSqlChunkResponseParserTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Parse_WhenMissingNextChunkInternalLink_ReturnsNullLink(DatabricksSqlChunkResponseParser sut)
+    public void Parse_WhenMissingNextChunkInternalLink_ReturnsNullLink(SqlChunkResponseParser sut)
     {
         // Arrange
         var jsonResponse = @"{""external_links"":[{""external_link"":""https://example.com""}]}";

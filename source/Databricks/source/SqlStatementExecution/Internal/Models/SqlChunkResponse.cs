@@ -16,4 +16,4 @@ using System;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
-public record DatabricksSqlChunkResponse(Uri? ExternalLink, string? NextChunkInternalLink);
+public record SqlChunkResponse(Uri? ExternalLink, string? NextChunkInternalLink);

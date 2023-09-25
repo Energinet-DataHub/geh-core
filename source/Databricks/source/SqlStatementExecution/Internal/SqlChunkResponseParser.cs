@@ -19,9 +19,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
-public class DatabricksSqlChunkResponseParser : IDatabricksSqlChunkResponseParser
+public class SqlChunkResponseParser : ISqlChunkResponseParser
 {
-    public DatabricksSqlChunkResponse Parse(string jsonResponse)
+    public SqlChunkResponse Parse(string jsonResponse)
     {
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
@@ -29,11 +29,11 @@ public class DatabricksSqlChunkResponseParser : IDatabricksSqlChunkResponseParse
         return Parse(jsonObject);
     }
 
-    public DatabricksSqlChunkResponse Parse(JToken jsonResponse)
+    public SqlChunkResponse Parse(JToken jsonResponse)
     {
         var nextChunkInternalLink = GetNextChunkInternalLink(jsonResponse);
         var externalLink = GetExternalLink(jsonResponse);
-        return new DatabricksSqlChunkResponse(externalLink, nextChunkInternalLink);
+        return new SqlChunkResponse(externalLink, nextChunkInternalLink);
     }
 
     private static Uri? GetExternalLink(JToken chunk)

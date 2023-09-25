@@ -20,7 +20,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
-public class DatabricksSqlChunkDataResponseParser : IDatabricksSqlChunkDataResponseParser
+public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {
     public TableChunk Parse(string jsonResponse, string[] columnNames)
     {

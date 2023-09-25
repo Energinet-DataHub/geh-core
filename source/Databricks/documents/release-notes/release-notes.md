@@ -1,8 +1,12 @@
 # Databricks Release Notes
 
-## Version 1.2.0
+## Version 3.0.0
 
-- Databricks Health check extensions are added
+- See [Version 3.0.0 release notes](./version_3_0_0.md)
+
+## Version 2.0.0
+
+- See [Version 2.0.0 release notes](./version_2_0_0.md)
 
 ## Version 1.1.0
 

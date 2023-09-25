@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using System.Net.Http;
+
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 
 /// <summary>
-/// Representation of the state of a Databricks SQL response.
+/// Constants used for naming <see cref="HttpClient"/> instances.
+///     Databricks: Used for communicating with the Databricks API.
+///     External: Used for communicating with external services without authorization.
 /// </summary>
-public enum DatabricksSqlResponseState
+public class HttpClientNameConstants
 {
-    Failed = 0,
-    Cancelled = 1,
-    Pending = 2,
-    Succeeded = 3,
-    Running = 4,
-    Closed = 5,
+    public const string Databricks = "Databricks";
+    public const string External = "External";
 }
