@@ -2,8 +2,7 @@
 
 ## Version 2.0.0
 
-- Changed ServiceCollection extension.
-- Rename `ISqlStatementClient.cs` to `IDatabricksSqlStatementClient`
+- See [Version 2.0.0 release notes](./version_2_0_0.md)
 
 ## Version 1.1.0
 
