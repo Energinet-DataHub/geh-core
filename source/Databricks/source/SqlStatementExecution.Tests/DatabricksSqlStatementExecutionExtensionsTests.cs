@@ -54,7 +54,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
+        services.AddDatabricksSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
@@ -71,7 +71,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
+        services.AddDatabricksSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
@@ -92,7 +92,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         };
 
         // Act
-        services.AddSqlStatementExecution(databricksOptions);
+        services.AddDatabricksSqlStatementExecution(databricksOptions);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
@@ -112,7 +112,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         };
 
         // Act
-        services.AddSqlStatementExecution(databricksOptions);
+        services.AddDatabricksSqlStatementExecution(databricksOptions);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert

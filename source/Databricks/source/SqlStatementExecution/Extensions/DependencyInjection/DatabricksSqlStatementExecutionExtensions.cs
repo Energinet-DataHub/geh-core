@@ -47,7 +47,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         /// <param name="serviceCollection"></param>
         /// <param name="databricksOptions"></param>
         /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        public static IServiceCollection AddSqlStatementExecution(
+        public static IServiceCollection AddDatabricksSqlStatementExecution(
             this IServiceCollection serviceCollection,
             DatabricksOptions databricksOptions)
         {
@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         /// <param name="workspaceToken"></param>
         /// <param name="workspaceUrl"></param>
         /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        public static IServiceCollection AddSqlStatementExecution(
+        public static IServiceCollection AddDatabricksSqlStatementExecution(
             this IServiceCollection serviceCollection,
             string warehouseId,
             string workspaceToken,
