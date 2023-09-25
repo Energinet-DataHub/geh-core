@@ -14,7 +14,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Reflection;
+using Energinet.DataHub.Core.App.Common.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -32,7 +35,17 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
         /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
         public static IHealthChecksBuilder AddLiveCheck(this IHealthChecksBuilder builder)
         {
-            return builder.AddCheck(HealthChecksConstants.LiveHealthCheckName, () => HealthCheckResult.Healthy());
+            return builder.Add(new HealthCheckRegistration(
+                name: HealthChecksConstants.LiveHealthCheckName,
+                factory: sp =>
+                {
+                    var entryAssembly = Assembly.GetEntryAssembly();
+                    var parser = sp.GetRequiredService<IAssemblyInformationalVersionParser>();
+
+                },
+                failureStatus: HealthStatus.Unhealthy,
+                tags: default,
+                timeout: default));
         }
 
         /// <summary>
