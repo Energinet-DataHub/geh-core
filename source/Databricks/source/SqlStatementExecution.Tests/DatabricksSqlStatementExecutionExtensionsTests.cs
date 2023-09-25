@@ -45,7 +45,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     }
 
     [Fact]
-    public void AddSqlStatementExecution_WithMultipleParameters_Should_ReturnConfiguredHttpClient()
+    public void AddDatabricksSqlStatementExecution_WithMultipleParameters_Should_ReturnConfiguredHttpClient()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -62,7 +62,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     }
 
     [Fact]
-    public void AddSqlStatementExecution_WithMultipleParameters_Should_ResolveSqlClient()
+    public void AddDatabricksSqlStatementExecution_WithMultipleParameters_Should_ResolveSqlClient()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -80,7 +80,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     }
 
     [Fact]
-    public void AddSqlStatementExecution_WithDatabricksOptions_Should_ReturnConfiguredHttpClient()
+    public void AddDatabricksSqlStatementExecution_WithDatabricksOptions_Should_ReturnConfiguredHttpClient()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -100,7 +100,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     }
 
     [Fact]
-    public void AddSqlStatementExecution_WithDatabricksOptions_Should_ResolveSqlClient()
+    public void AddDatabricksSqlStatementExecution_WithDatabricksOptions_Should_ResolveSqlClient()
     {
         // Arrange
         var services = new ServiceCollection();
