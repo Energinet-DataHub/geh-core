@@ -23,6 +23,16 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
 {
     private const string Name = "DatabricksJobsApiHealthCheck";
 
+    /// <summary>
+    /// Add a health check to the "ready" endpoint where the health endpoint of another service can be called.
+    /// </summary>
+    /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
+    /// <param name="options">The <see cref="DatabricksJobsOptions"/>.</param>
+    /// <param name="name">The name of the service to call.</param>
+    /// <param name="failureStatus">The response health status on failure.</param>
+    /// <param name="tags">A list of tags that can be used for filtering health checks.</param>
+    /// <param name="timeout">The amount of time to wait before timing out.</param>
+    /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
     public static IHealthChecksBuilder AddDatabricksJobsApiHealthCheck(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, DatabricksJobsOptions> options,
