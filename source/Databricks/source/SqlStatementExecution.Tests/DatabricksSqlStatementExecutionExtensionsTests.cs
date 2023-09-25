@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,7 +45,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     }
 
     [Fact]
-    public void AddSqlStatementExecution_Should_ReturnConfiguredHttpClient()
+    public void AddSqlStatementExecution_WithMultipleParameters_Should_ReturnConfiguredHttpClient()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -54,20 +54,15 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
+        services.AddSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
-
-        using var assertionScope = new AssertionScope();
-        var spyClient = client.Should().BeOfType<SpyDatabricksSqlStatementClient>().Subject;
-        spyClient.WorkspaceUriIs(new Uri(workspaceUri)).Should().BeTrue();
-        spyClient.WorkspaceTokenIs(workspaceToken).Should().BeTrue();
+        AssertHttpClient(serviceProvider, workspaceUri, workspaceToken);
     }
 
     [Fact]
-    public void AddSqlStatementExecution_Should_ReturnConfiguredExternalHttpClient()
+    public void AddSqlStatementExecution_WithMultipleParameters_Should_ResolveSqlClient()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -76,28 +71,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         const string warehouseId = "baz";
 
         // Act
-        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
-        var serviceProvider = services.BuildServiceProvider();
-
-        // Assert
-        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
-
-        using var assertionScope = new AssertionScope();
-        var spyClient = client.Should().BeOfType<SpyDatabricksSqlStatementClient>().Subject;
-        spyClient.ExternalClientIsConfigured().Should().BeTrue();
-    }
-
-    [Fact]
-    public void AddSqlStatementExecution_Should_ResolveSqlClient()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        const string workspaceUri = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
-
-        // Act
-        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
+        services.AddSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
@@ -106,72 +80,57 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     }
 
     [Fact]
-    public void OtherClass_Should_NotGetOurConfiguredClient()
+    public void AddSqlStatementExecution_WithDatabricksOptions_Should_ReturnConfiguredHttpClient()
     {
         // Arrange
         var services = new ServiceCollection();
-        const string workspaceUri = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
+        var databricksOptions = new DatabricksOptions
+        {
+            WorkspaceUrl = "https://foo.com",
+            WorkspaceToken = "bar",
+            WarehouseId = "baz",
+        };
 
         // Act
-        services.AddSqlStatementExecution<SpyDatabricksSqlStatementClient>(warehouseId, workspaceToken, workspaceUri);
-        services.AddTransient<DependOnHttpClient>();
+        services.AddSqlStatementExecution(databricksOptions);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var client = serviceProvider.GetRequiredService<DependOnHttpClient>();
-        client.BaseAddressIsDefault().Should().BeTrue();
+        AssertHttpClient(serviceProvider, databricksOptions.WorkspaceUrl, databricksOptions.WorkspaceToken);
     }
 
-    public class DependOnHttpClient
+    [Fact]
+    public void AddSqlStatementExecution_WithDatabricksOptions_Should_ResolveSqlClient()
     {
-        private readonly HttpClient _client;
-
-        public DependOnHttpClient(HttpClient client)
+        // Arrange
+        var services = new ServiceCollection();
+        var databricksOptions = new DatabricksOptions
         {
-            _client = client;
-        }
+            WorkspaceUrl = "https://foo.com",
+            WorkspaceToken = "bar",
+            WarehouseId = "baz",
+        };
 
-        public bool BaseAddressIsDefault()
-        {
-            return _client.BaseAddress == default;
-        }
+        // Act
+        services.AddSqlStatementExecution(databricksOptions);
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Assert
+        var client = serviceProvider.GetService<IDatabricksSqlStatementClient>();
+        client.Should().NotBeNull();
     }
 
-    private sealed class SpyDatabricksSqlStatementClient : IDatabricksSqlStatementClient
+    private static void AssertHttpClient(
+        ServiceProvider serviceProvider,
+        string workspaceUri,
+        string workspaceToken)
     {
-        private readonly HttpClient _client;
-        private readonly HttpClient _externalClient;
+        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+        var httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
 
-        public SpyDatabricksSqlStatementClient(IHttpClientFactory httpClientFactory)
-        {
-            _client = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
-            _externalClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
-        }
-
-        public IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool WorkspaceUriIs(Uri workspaceUri)
-        {
-            return _client.BaseAddress == workspaceUri;
-        }
-
-        public bool WorkspaceTokenIs(string workspaceToken)
-        {
-            return
-                _client.DefaultRequestHeaders.Authorization?.Parameter != null &&
-                _client.DefaultRequestHeaders.Authorization?.Scheme == "Bearer" &&
-                _client.DefaultRequestHeaders.Authorization.Parameter.EndsWith(workspaceToken);
-        }
-
-        public bool ExternalClientIsConfigured()
-        {
-            return _externalClient.BaseAddress == default &&
-                   _externalClient.DefaultRequestHeaders.Authorization == null;
-        }
+        httpClient.BaseAddress.Should().Be(new Uri(workspaceUri));
+        httpClient.DefaultRequestHeaders.Authorization.Should().NotBeNull();
+        httpClient.DefaultRequestHeaders.Authorization!.Scheme.Should().Be("Bearer");
+        httpClient.DefaultRequestHeaders.Authorization!.Parameter.Should().Be(workspaceToken);
     }
 }
