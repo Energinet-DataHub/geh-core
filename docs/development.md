@@ -104,7 +104,7 @@ If the workflow is triggered:
 
 ## Preparations for a new release
 
-Only packages that has changes should be published as new versions.
+Only packages that have changes should be published as new versions.
 
 To prepare any given package for a new release, do the following:
 
