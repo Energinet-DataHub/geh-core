@@ -21,7 +21,8 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Model
 /// <remarks>
 /// The <see cref="SqlStatementParameter"/> class is used to define a parameter for a parameterized SQL query.
 /// It encapsulates the name and value of the parameter. The <see cref="Type"/> property is set to "STRING" by default.
-/// If another value is given, Databricks SQL Statement Execution API will perform type checking.
+/// If another type is given, Databricks SQL Statement Execution API will perform type checking.
+/// (See 'parameters' at https://docs.databricks.com/api/workspace/statementexecution/executestatement).
 ///
 /// Instances of this class are typically used when constructing parameterized SQL
 /// statements. See <see cref="DatabricksSqlStatementClient"/>
