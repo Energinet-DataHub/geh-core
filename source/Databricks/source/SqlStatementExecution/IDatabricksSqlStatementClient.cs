@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
@@ -25,6 +26,7 @@ public interface IDatabricksSqlStatementClient
     /// <summary>
     /// Get all the rows of a SQL query in as an asynchronous data stream.
     /// </summary>
+    [Obsolete("ExecuteAsync(string) is deprecated, please use ExecuteAsync(string, List<SqlStatementParameter>) instead.")]
     IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
 
     /// <summary>

@@ -90,7 +90,6 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _logger.LogDebug("SQL statement executed. Rows returned: {RowCount}", rowCount);
     }
 
-    [Obsolete("ExecuteAsync is deprecated, please use ExecuteAsync(string, List<SqlStatementParameter>) instead.")]
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
         _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
