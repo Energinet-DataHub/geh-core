@@ -41,7 +41,7 @@ public async Task<IActionResult> GetAsync()
     var resultList = new List<TestModel>();
 
     await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery, parameters)) {
-        var testModel = new TestModel(row["my_name"] ,row["my_date"]);
+        var testModel = new TestModel(row["my_name"], row["my_date"]);
         resultList.Add(testModel)
     }
 
