@@ -57,7 +57,10 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
     {
-        _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
+        _logger.LogDebug(
+            "Executing SQL statement: {Sql}, with parameters: {Parameters}",
+            HttpUtility.HtmlEncode(sqlStatement),
+            sqlStatementParameters);
 
         var response = await GetFirstChunkOrNullAsync(sqlStatement, sqlStatementParameters).ConfigureAwait(false);
         var columnNames = response.ColumnNames;

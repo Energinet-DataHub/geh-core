@@ -33,18 +33,17 @@ public interface IDatabricksSqlStatementClient
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
     /// <param name="sqlStatement">The SQL query to be executed, with placeholders for parameters. </param>
-    /// <param name="parameters">A list of <see cref="SqlStatementParameter"/> objects representing parameters
+    /// <param name="sqlStatementParameters">A list of <see cref="SqlStatementParameter"/> objects representing parameters
     /// to be used in the query, preventing SQL injection vulnerabilities.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
-    /// Each row is streamed as soon as it becomes available, providing efficient memory usage for large result sets.
     /// </returns>
     /// <remarks>
     /// Use this method to execute SQL queries against Databricks with parameterization to protect against SQL injection attacks.
     /// The <paramref name="sqlStatement"/> should contain placeholders in the form of ':parameterName', that has corresponding
-    /// <see cref="SqlStatementParameter"/> objects in the <paramref name="parameters"/> list.
+    /// <see cref="SqlStatementParameter"/> objects in the <paramref name="sqlStatementParameters"/> list.
     /// </remarks>
     IAsyncEnumerable<SqlResultRow> ExecuteAsync(
         string sqlStatement,
-        List<SqlStatementParameter> parameters);
+        List<SqlStatementParameter> sqlStatementParameters);
 }
