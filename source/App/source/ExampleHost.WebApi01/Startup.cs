@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using ExampleHost.WebApi01.Common;
 
