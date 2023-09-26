@@ -20,8 +20,8 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Model
 /// </summary>
 /// <remarks>
 /// The <see cref="SqlStatementParameter"/> class is used to define a parameter for a parameterized SQL query.
-/// It encapsulates the name and value of the parameterThe <see cref="Type"/> property is always set to "STRING",
-/// to avoid 3rd party type checking. If we were to provide types here, Statement Execution would perform type checking.
+/// It encapsulates the name and value of the parameter. The <see cref="Type"/> property is set to "STRING" by default.
+/// If another value is given, Databricks SQL Statement Execution API will perform type checking.
 ///
 /// Instances of this class are typically used when constructing parameterized SQL
 /// statements. See <see cref="DatabricksSqlStatementClient"/>
@@ -41,20 +41,22 @@ public sealed record SqlStatementParameter
     public string Value { get; }
 
     /// <summary>
-    /// Gets the data type of the SQL parameter, which is always "STRING."
+    /// Gets the data type of the SQL parameter, which is "STRING" by default.
     /// </summary>
     [JsonPropertyName("type")]
-    public static string Type => "STRING";
+    public string Type { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SqlStatementParameter"/> class
-    /// with the specified name and value.
+    /// with the specified name and value, and sets the data type to "STRING" by default.
     /// </summary>
     /// <param name="name">The name of the SQL parameter.</param>
     /// <param name="value">The value of the SQL parameter.</param>
-    public SqlStatementParameter(string name, string value)
+    /// <param name="type">The data type of the SQL parameter (default is "STRING").</param>
+    public SqlStatementParameter(string name, string value, string type = "STRING")
     {
         Name = name;
         Value = value;
+        Type = type;
     }
 }
