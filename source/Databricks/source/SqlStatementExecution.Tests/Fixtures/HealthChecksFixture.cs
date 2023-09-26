@@ -52,7 +52,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Fixtures
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddHttpClient();
                     services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
 
                     RegisterHttpClientFactoryMock(services);
