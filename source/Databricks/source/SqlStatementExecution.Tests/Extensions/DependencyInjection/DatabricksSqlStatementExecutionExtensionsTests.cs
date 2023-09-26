@@ -19,13 +19,13 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants
 using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Extensions.DependencyInjection;
 
 public class DatabricksSqlStatementExecutionExtensionsTests
 {
     [Fact]
     [Obsolete]
-    public void Deprecate_AddDatabricks_Should_ReturnSqlStatementClient()
+    public void Deprecated_AddDatabricks_Should_ReturnSqlStatementClient()
     {
         // Arrange
         var services = new ServiceCollection();
