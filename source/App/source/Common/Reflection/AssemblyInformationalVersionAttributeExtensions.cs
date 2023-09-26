@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Core.App.Common.Reflection
         /// </summary>
         public static SourceVersionInformation GetSourceVersionInformation(this AssemblyInformationalVersionAttribute attribute)
         {
-            var sourceVersionMatchPattern = @"(.*?)+PR_(.*?)+SHA_(.*?)";
+            var sourceVersionMatchPattern = @"^(.+)\+PR_(.+)\+SHA_(.+)$";
             var match = Regex.Match(attribute.InformationalVersion, sourceVersionMatchPattern);
             return match.Success
                 ? new SourceVersionInformation(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value)
