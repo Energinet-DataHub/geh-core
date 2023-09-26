@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System.Net;
+using System.Reflection;
 using ExampleHost.FunctionApp.Tests.Fixtures;
+using ExampleHost.FunctionApp01.Monitor;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
@@ -69,6 +71,29 @@ namespace ExampleHost.FunctionApp.Tests.Integration
 
             var content = await actualResponse.Content.ReadAsStringAsync();
             content.Should().StartWith("{\"status\":\"Healthy\"");
+        }
+
+        /// <summary>
+        /// Verify the response contains the executing applications 'Version' in the 'description' field.
+        /// The 'Version' is set in the 'ExampleHost.FunctionApp01.csproj' file.
+        /// </summary>
+        [Fact]
+        public async Task CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation()
+        {
+            // Arrange
+            var expectedSourceVersionInformation = "1.2.3";
+
+            // Act
+            using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/live");
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+
+            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+
+            var content = await actualResponse.Content.ReadAsStringAsync();
+            content.Should().Contain($"description\":\"{expectedSourceVersionInformation}");
         }
     }
 }
