@@ -3,7 +3,7 @@
 In this new version we
 
 * added Health checks for the Databricks SQL Statement Execution API
-* added HealthChecks for the Databricks Jobs API
+* added Health checks for the Databricks Jobs API
 * added `JobsApiClient`as a client for the Databricks Jobs API
 
 Register the `IJobsApiClient` to the service collection using `JobsExtensions.AddDatabricksJobs()`
