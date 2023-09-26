@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using System.Reflection;
 using ExampleHost.FunctionApp.Tests.Fixtures;
-using ExampleHost.FunctionApp01.Monitor;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
