@@ -15,14 +15,46 @@
 using System.Text.Json.Serialization;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
-
 /// <summary>
-/// This class is used to represent a parameter in a SQL statement, for the
-/// Databricks Sql Statement Execution API.
-///
-/// A parameter consists of a name, a value, and optionally a type. To represent a NULL value, the value field
-/// may be omitted or set to null explicitly. If the type field is omitted, the value is interpreted as a string.
+/// Represents a parameter for a parameterized SQL query.
 /// </summary>
-public record SqlStatementParameter([property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("value")] string Value,
-    [property: JsonPropertyName("type")] string Type);
+/// <remarks>
+/// The <see cref="SqlStatementParameter"/> class is used to define a parameter for a parameterized SQL query.
+/// It encapsulates the name and value of the parameterThe <see cref="Type"/> property is always set to "STRING",
+/// to avoid 3rd party typechecking. If we were to provide types here, Statement Execution would perform typechecking.
+///
+/// Instances of this class are typically used when constructing parameterized SQL
+/// statements. See <see cref="DatabricksSqlStatementClient"/>
+/// </remarks>
+public sealed record SqlStatementParameter
+{
+    /// <summary>
+    /// Gets the name of the SQL parameter.
+    /// </summary>
+    [JsonPropertyName("name")]
+    public string Name { get; }
+
+    /// <summary>
+    /// Gets the value of the SQL parameter.
+    /// </summary>
+    [JsonPropertyName("value")]
+    public string Value { get; }
+
+    /// <summary>
+    /// Gets the data type of the SQL parameter, which is always "STRING."
+    /// </summary>
+    [JsonPropertyName("type")]
+    public static string Type => "STRING";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SqlStatementParameter"/> class
+    /// with the specified name and value.
+    /// </summary>
+    /// <param name="name">The name of the SQL parameter.</param>
+    /// <param name="value">The value of the SQL parameter.</param>
+    public SqlStatementParameter(string name, string value)
+    {
+        Name = name;
+        Value = value;
+    }
+}
