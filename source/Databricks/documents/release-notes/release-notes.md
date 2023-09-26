@@ -1,8 +1,8 @@
 # Databricks Release Notes
 
 ## Version 3.0.0
-- Added support for `SqlStatementParameter` in `ExecuteAsync(string sqlStatement, List<SqlStatementParameter> parameters)`, to prevent SQL Injection.
-- Marked `ExecuteAsync(string sqlStatement)` as obsolete. please use `ExecuteAsync(string, List<SqlStatementParameter>)` instead.
+- Added support for `SqlStatementParameter` in `ExecuteAsync(string, List<SqlStatementParameter>)`, to prevent SQL Injection.
+- Marked `ExecuteAsync(string)` as obsolete. please use `ExecuteAsync(string, List<SqlStatementParameter>)` instead.
 
 ## Version 2.0.0
 
