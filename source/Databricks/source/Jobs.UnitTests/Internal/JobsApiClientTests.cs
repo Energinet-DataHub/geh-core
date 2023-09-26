@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Energinet.DataHub.Core.Databricks.Jobs.Internal;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -32,6 +33,6 @@ public class JobsApiClientTests
         var actual = sut.Jobs;
 
         // Assert
-        Assert.Equal(typeof(Microsoft.Azure.Databricks.Client.JobsApiClient), actual.GetType());
+        actual.GetType().Should().Be(typeof(Microsoft.Azure.Databricks.Client.JobsApiClient));
     }
 }
