@@ -38,12 +38,13 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
                 name: HealthChecksConstants.LiveHealthCheckName,
                 factory: sp =>
                 {
-                    // This extension is only usefull for DH3 applications and they should always have an
-                    // entry assembly.
-                    var entryAssembly = Assembly.GetEntryAssembly()!;
-                    var parser = sp.GetRequiredService<IAssemblyInformationalVersionParser>();
-                    var version = parser.GetVersion(entryAssembly);
-                    return new LiveHealthCheck(version);
+                    // Any DH3 application should have AssemblyInformationalVersionAttribute so
+                    // we can skip some null checks.
+                    var sourceVersionInformation = Assembly
+                        .GetEntryAssembly()!
+                        .GetAssemblyInformationalVersionAttribute()!
+                        .GetSourceVersionInformation();
+                    return new LiveHealthCheck(sourceVersionInformation.ToString());
                 },
                 failureStatus: HealthStatus.Unhealthy,
                 tags: default,

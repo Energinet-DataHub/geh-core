@@ -53,8 +53,6 @@ namespace ExampleHost.WebApi01
             services.AddHostedService<SomeTrigger>();
             services.AddScoped<SomeTrigger.SomeWorker>();
 
-            services.AddSingleton<IAssemblyInformationalVersionParser, AssemblyInformationalVersionParser>();
-
             services
                 .AddHealthChecks()
                 .AddLiveCheck()
