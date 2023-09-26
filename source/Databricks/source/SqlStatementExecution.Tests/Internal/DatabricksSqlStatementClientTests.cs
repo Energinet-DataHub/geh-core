@@ -20,7 +20,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Internal;
 
 public class DatabricksSqlStatementClientTests
 {
