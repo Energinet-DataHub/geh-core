@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
@@ -20,6 +22,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Moq;
+using Moq.Protected;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
@@ -58,19 +63,21 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
                     });
 
                     services.AddRouting();
-                    // services.AddHttpClient();
+
+                    RegisterHttpClientFactoryMock(services);
+
                     services.AddScoped<IJobsApiClient, JobsApiClient>();
                     services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
 
-                    services.AddHealthChecks().AddDatabricksJobsApiHealthCheck(
+                    services.AddHealthChecks()
+                        .AddLiveCheck()
+                        .AddDatabricksJobsApiHealthCheck(
                             _ => new DatabricksJobsOptions
-                        {
-                            DatabricksHealthCheckStartHour = 6,
-                            DatabricksHealthCheckEndHour = 20,
-                            WorkspaceUrl = "https://fake",
-                            WarehouseId = "id",
-                            WorkspaceToken = "token",
-                        });
+                            {
+                                DatabricksHealthCheckStartHour = 6,
+                                DatabricksHealthCheckEndHour = 20,
+                                WorkspaceUrl = "https://fake",
+                            });
                 })
                 .Configure(app =>
                 {
@@ -82,6 +89,31 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
                         endpoints.MapReadyHealthChecks();
                     });
                 });
+        }
+
+        private static void RegisterHttpClientFactoryMock(IServiceCollection services)
+        {
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+
+            var response = new HttpResponseMessage { StatusCode = HttpStatusCode.OK };
+
+            httpMessageHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(response);
+
+            var httpClient = new HttpClient(httpMessageHandlerMock.Object);
+            services.AddScoped<HttpClient>(_ => httpClient);
+
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock
+                .Setup(x => x.CreateClient(Options.DefaultName))
+                .Returns(() => httpClient);
+
+            services.AddScoped<IHttpClientFactory>(_ => httpClientFactoryMock.Object);
         }
     }
 }

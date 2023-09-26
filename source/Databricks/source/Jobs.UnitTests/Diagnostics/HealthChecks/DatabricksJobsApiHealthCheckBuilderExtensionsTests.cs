@@ -35,7 +35,7 @@ public class DatabricksJobsApiHealthCheckBuilderExtensionsTests
     /// </summary>
     [Theory]
     [InlineData("live")]
-    // [InlineData("ready")]
+    [InlineData("ready")]
     public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
     {
         // Act
