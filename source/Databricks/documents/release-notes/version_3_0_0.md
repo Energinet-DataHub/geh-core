@@ -15,7 +15,7 @@ By using Parameter Markers in the SQL statement, the developer can prevent SQL i
 2. Modify your code to use the new `ExecuteAsync(string, List<SqlStatementParameter>)` by modifying your query to use Parameter Markers, and provide a list of `SqlStatementParameter` corresponding to the parameter markers.
    1. Optionally, it is possible to call the method with an empty list as parameters and it would work as before. (Still recommended to use Parameter Markers in queries to avoid SQL injection)
 
-## Example usage:
+## Example usage
 
 ```c#
 [HttpGet]
