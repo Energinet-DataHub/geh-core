@@ -19,10 +19,10 @@ private static void AddDatabricks(IServiceCollection services, IConfiguration co
     configuration.GetSection("DatabricksOptions").Bind(options);
 
     // Option 1
-    services.AddSqlStatementExecution(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
+    services.AddDatabricksSqlStatementExecution(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
 
     // Option 2
-    services.AddSqlStatementExecution(options);
+    services.AddDatabricksSqlStatementExecution(options);
 }
 ```
 
