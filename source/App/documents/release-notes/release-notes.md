@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 8.1.0
+
+- Support the retrieval of DH3 source version information from an .NET assembly.
+- Refactored Live health check to return DH3 source version information when available.
+
 ## Version 8.0.0
 
 - Deleted packages `Energinet.DataHub.Core.App.FunctionApp.SimpleInjector` and `Energinet.DataHub.Core.App.WebApp.SimpleInjector`.
