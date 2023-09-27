@@ -3,7 +3,7 @@
 ## Version 3.0.0
 
 - Replaced `ExecuteAsync(string)` with `ExecuteAsync(string, List<SqlStatementParameter>)` for the possibility to use Parameter Markers in SQL statements.
-  - Optionally, it is possible to call the method with an empty list as parameters and it would work as before. (Still recommended to use Parameter Markers in queries to avoid SQL injection)
+    - Optionally, it is possible to call the method with an empty list as parameters and it would work as before. (Still recommended to use Parameter Markers in queries to avoid SQL injection)
 
 ## Version 2.0.0
 
