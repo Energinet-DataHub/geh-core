@@ -26,9 +26,9 @@ public interface IDatabricksSqlStatementClient
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
-    /// <param name="sqlStatement">The SQL query to be executed, with placeholders for parameters. </param>
+    /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters. </param>
     /// <param name="sqlStatementParameters">A list of <see cref="SqlStatementParameter"/> objects representing parameters
-    /// to be used in the query, preventing SQL injection vulnerabilities.</param>
+    /// to be used in the query.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
     /// </returns>
