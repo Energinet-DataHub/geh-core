@@ -40,8 +40,8 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Internal
         public JobsApiClient(IOptions<DatabricksJobsOptions> optionsFactory, long timeoutSeconds = 30)
         {
             var options = optionsFactory.Value;
-            var apiUrl = new Uri(new Uri(options.WorkspaceUrl), "api/");
-            _httpClient = CreateHttpClient(options.WorkspaceToken, timeoutSeconds, apiUrl);
+            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), "api/");
+            _httpClient = CreateHttpClient(options.DATABRICKS_WORKSPACE_TOKEN, timeoutSeconds, apiUrl);
             Jobs = new Microsoft.Azure.Databricks.Client.JobsApiClient(_httpClient);
         }
 

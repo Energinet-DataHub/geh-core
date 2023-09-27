@@ -23,11 +23,11 @@ public static class HttpClientFactory
     {
         var httpClient = new HttpClient
         {
-            BaseAddress = new Uri(databricksOptions.WorkspaceUrl),
+            BaseAddress = new Uri(databricksOptions.DATABRICKS_WORKSPACE_URL),
         };
 
         httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", databricksOptions.WorkspaceToken);
+            new AuthenticationHeaderValue("Bearer", databricksOptions.DATABRICKS_WORKSPACE_TOKEN);
 
         httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

@@ -97,7 +97,7 @@ public class DatabricksSchemaManager
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
             statement = sqlStatement,
-            warehouse_id = DatabricksOptions.WarehouseId,
+            warehouse_id = DatabricksOptions.DATABRICKS_WAREHOUSE_ID,
         };
         var httpResponse = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 

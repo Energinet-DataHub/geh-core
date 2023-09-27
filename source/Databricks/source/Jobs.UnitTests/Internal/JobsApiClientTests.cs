@@ -26,7 +26,7 @@ public class JobsApiClientTests
     public void Databricks_Jobs_Client_When_Calling_Jobs_Returns_Jobs_Api_Client()
     {
         // Arrange
-        var options = new DatabricksJobsOptions { WorkspaceUrl = "https://test" };
+        var options = new DatabricksJobsOptions { DATABRICKS_WORKSPACE_URL = "https://test" };
         var sut = new JobsApiClient(Options.Create(options));
 
         // Act

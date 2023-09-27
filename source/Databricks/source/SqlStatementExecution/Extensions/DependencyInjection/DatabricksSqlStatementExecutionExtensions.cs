@@ -51,7 +51,11 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             this IServiceCollection serviceCollection,
             DatabricksSqlStatementOptions databricksOptions)
         {
-            return AddSqlStatementExecutionInner(serviceCollection, databricksOptions.WarehouseId, databricksOptions.WorkspaceToken, databricksOptions.WorkspaceUrl);
+            return AddSqlStatementExecutionInner(
+                serviceCollection,
+                databricksOptions.DATABRICKS_WAREHOUSE_ID,
+                databricksOptions.DATABRICKS_WORKSPACE_TOKEN,
+                databricksOptions.DATABRICKS_WORKSPACE_URL);
         }
 
         /// <summary>
@@ -79,9 +83,9 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         {
             serviceCollection.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
             {
-                options.WarehouseId = warehouseId;
-                options.WorkspaceToken = workspaceToken;
-                options.WorkspaceUrl = workspaceUrl;
+                options.DATABRICKS_WAREHOUSE_ID = warehouseId;
+                options.DATABRICKS_WORKSPACE_TOKEN = workspaceToken;
+                options.DATABRICKS_WORKSPACE_URL = workspaceUrl;
             });
 
             serviceCollection.AddHttpClient(

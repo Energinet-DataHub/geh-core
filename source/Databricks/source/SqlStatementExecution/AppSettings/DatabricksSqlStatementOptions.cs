@@ -19,27 +19,27 @@ public class DatabricksSqlStatementOptions
     /// <summary>
     /// Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net.
     /// </summary>
-    public string WorkspaceUrl { get; set; } = string.Empty;
+    public string DATABRICKS_WORKSPACE_URL { get; set; } = string.Empty;
 
     /// <summary>
     /// The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token.
     /// </summary>
-    public string WorkspaceToken { get; set; } = string.Empty;
+    public string DATABRICKS_WORKSPACE_TOKEN { get; set; } = string.Empty;
 
     /// <summary>
     /// The databricks warehouse id.
     /// </summary>
-    public string WarehouseId { get; set; } = string.Empty;
+    public string DATABRICKS_WAREHOUSE_ID { get; set; } = string.Empty;
 
     /// <summary>
-    /// Defines the hour of the day when the health check towards Databricks SQL Statement API should start.
-    /// The default value is 6 AM. Valid values are 0-23.
+    /// Defines the hour of the day when the health check DataLake should start.
+    /// The default value is 6:00 AM.
     /// </summary>
-    public int DatabricksHealthCheckStartHour { get; set; } = 6;
+    public int DATABRICKS_HEALTH_CHECK_START_HOUR { get; set; } = 6;
 
     /// <summary>
-    /// Defines the hour of the day when the health check towards Databricks SQL Statement API should end.
-    /// The default value is 8 PM. Valid values are 0-23.
+    /// Defines the hour of the day when the health check towards DataLake should end.
+    /// The default value is 8:00 PM.
     /// </summary>
-    public int DatabricksHealthCheckEndHour { get; set; } = 20;
+    public int DATABRICKS_HEALTH_CHECK_END_HOUR { get; set; } = 20;
 }

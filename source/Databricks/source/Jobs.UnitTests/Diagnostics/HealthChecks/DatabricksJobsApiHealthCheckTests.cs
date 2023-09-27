@@ -42,8 +42,8 @@ public class DatabricksJobsApiHealthCheckTests
         // Arrange
         var options = new DatabricksJobsOptions
         {
-            DatabricksHealthCheckStartHour = startHour,
-            DatabricksHealthCheckEndHour = endHour,
+            DATABRICKS_HEALTH_CHECK_START_HOUR = startHour,
+            DATABRICKS_HEALTH_CHECK_END_HOUR = endHour,
         };
         clock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
@@ -71,8 +71,8 @@ public class DatabricksJobsApiHealthCheckTests
         // Arrange
         var options = new DatabricksJobsOptions
         {
-            DatabricksHealthCheckStartHour = startHour,
-            DatabricksHealthCheckEndHour = endHour,
+            DATABRICKS_HEALTH_CHECK_START_HOUR = startHour,
+            DATABRICKS_HEALTH_CHECK_END_HOUR = endHour,
         };
         clock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
@@ -100,9 +100,9 @@ public class DatabricksJobsApiHealthCheckTests
         // Arrange
         var options = new DatabricksJobsOptions
         {
-            DatabricksHealthCheckStartHour = startHour,
-            DatabricksHealthCheckEndHour = endHour,
-            WorkspaceUrl = "https://fake",
+            DATABRICKS_HEALTH_CHECK_START_HOUR = startHour,
+            DATABRICKS_HEALTH_CHECK_END_HOUR = endHour,
+            DATABRICKS_WORKSPACE_URL = "https://fake",
         };
 
         // Act & Assert
