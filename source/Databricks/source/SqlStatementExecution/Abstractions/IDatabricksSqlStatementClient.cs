@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using System.Collections.Generic;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 
 /// <summary>
-/// This class is optimized to reduce allocations when reading data from the database.
+/// This interface is used to execute SQL statements against Databricks SQL Statement Execution API.
 /// </summary>
-public record SqlResultRow
+public interface IDatabricksSqlStatementClient
 {
-    private readonly TableChunk _chunk;
-    private readonly int _index;
-
-    public SqlResultRow(TableChunk chunk, int index)
-    {
-        _chunk = chunk;
-        _index = index;
-    }
-
-    public virtual string this[string column] => _chunk[_index, column];
+    /// <summary>
+    /// Get all the rows of a SQL query in as an asynchronous data stream.
+    /// </summary>
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
 }

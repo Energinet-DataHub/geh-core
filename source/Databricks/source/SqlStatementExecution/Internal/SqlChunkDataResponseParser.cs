@@ -14,7 +14,8 @@
 
 using System;
 using System.Collections.Generic;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

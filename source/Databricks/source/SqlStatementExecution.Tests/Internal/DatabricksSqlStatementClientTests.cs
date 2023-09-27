@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Builders;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Microsoft.Extensions.Logging;

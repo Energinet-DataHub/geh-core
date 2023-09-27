@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
-
-public record SqlChunkResponse(Uri? ExternalLink, string? NextChunkInternalLink);
+/// <summary>
+/// Representation of the state of a Databricks SQL response.
+/// </summary>
+public enum SqlResponseState
+{
+    Failed = 0,
+    Cancelled = 1,
+    Pending = 2,
+    Succeeded = 3,
+    Running = 4,
+    Closed = 5,
+}
