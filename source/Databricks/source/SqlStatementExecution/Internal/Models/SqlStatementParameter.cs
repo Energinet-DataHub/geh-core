@@ -37,7 +37,7 @@ public sealed record SqlStatementParameter
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SqlStatementParameter"/> class
-    /// with the specified name and value, and sets the data type to "STRING" by default.
+    /// with the specified name and value, and sets the data type to "STRING" by default if not provided.
     /// </summary>
     /// <param name="name">The name of the SQL parameter.</param>
     /// <param name="value">The value of the SQL parameter.</param>
