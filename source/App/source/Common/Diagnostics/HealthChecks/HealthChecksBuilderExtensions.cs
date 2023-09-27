@@ -15,6 +15,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
+using Energinet.DataHub.Core.App.Common.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -32,7 +34,21 @@ namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
         /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
         public static IHealthChecksBuilder AddLiveCheck(this IHealthChecksBuilder builder)
         {
-            return builder.AddCheck(HealthChecksConstants.LiveHealthCheckName, () => HealthCheckResult.Healthy());
+            return builder.Add(new HealthCheckRegistration(
+                name: HealthChecksConstants.LiveHealthCheckName,
+                factory: sp =>
+                {
+                    // Any DH3 application should have AssemblyInformationalVersionAttribute so
+                    // we can skip some null checks.
+                    var sourceVersionInformation = Assembly
+                        .GetEntryAssembly()!
+                        .GetAssemblyInformationalVersionAttribute()!
+                        .GetSourceVersionInformation();
+                    return new LiveHealthCheck(sourceVersionInformation.ToString());
+                },
+                failureStatus: HealthStatus.Unhealthy,
+                tags: default,
+                timeout: default));
         }
 
         /// <summary>
