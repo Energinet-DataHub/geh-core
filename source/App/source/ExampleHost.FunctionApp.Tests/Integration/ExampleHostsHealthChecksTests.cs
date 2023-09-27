@@ -72,14 +72,14 @@ namespace ExampleHost.FunctionApp.Tests.Integration
         }
 
         /// <summary>
-        /// Verify the response contains the executing applications 'Version' in the 'description' field.
-        /// The 'Version' is set in the 'ExampleHost.FunctionApp01.csproj' file.
+        /// Verify the response contains the executing applications DH3 source version information in the 'description' field.
+        /// The 'Version' and 'SourceRevisionId' is set in the 'ExampleHost.FunctionApp01.csproj' file.
         /// </summary>
         [Fact]
         public async Task CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation()
         {
             // Arrange
-            var expectedSourceVersionInformation = "1.2.3";
+            var expectedSourceVersionInformation = "Version: 1.2.3 PR: 4 SHA: 1234";
 
             // Act
             using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/live");

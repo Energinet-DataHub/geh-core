@@ -24,8 +24,9 @@ limitations under the License.
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <!-- Setting this value to support the test 'CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation' -->
+    <!-- Setting values in 'Version' and 'SourceRevisionId' to support the test 'CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation' -->
     <Version>1.2.3</Version>
+    <SourceRevisionId>PR_4+SHA_1234</SourceRevisionId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
