@@ -87,6 +87,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
                 options.DATABRICKS_WAREHOUSE_ID = warehouseId;
                 options.DATABRICKS_WORKSPACE_TOKEN = workspaceToken;
                 options.DATABRICKS_WORKSPACE_URL = workspaceUrl;
+                // TODO AJW: What about the other settings? End and start hour.
             });
 
             serviceCollection.AddHttpClient(

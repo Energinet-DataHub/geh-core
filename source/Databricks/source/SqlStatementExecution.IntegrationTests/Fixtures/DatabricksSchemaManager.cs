@@ -27,11 +27,11 @@ public class DatabricksSchemaManager
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
 
-    public DatabricksSchemaManager(DatabricksSqlStatementOptions databricksOptions, string schemaPrefix)
+    public DatabricksSchemaManager(DatabricksSqlStatementOptions databricksSqlStatementOptions, string schemaPrefix)
     {
-        DatabricksOptions = databricksOptions ?? throw new ArgumentNullException(nameof(databricksOptions));
+        DatabricksSqlStatementOptions = databricksSqlStatementOptions ?? throw new ArgumentNullException(nameof(databricksSqlStatementOptions));
 
-        _httpClient = HttpClientFactory.CreateHttpClient(DatabricksOptions);
+        _httpClient = HttpClientFactory.CreateHttpClient(DatabricksSqlStatementOptions);
         SchemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
     }
 
@@ -39,7 +39,7 @@ public class DatabricksSchemaManager
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
-    private DatabricksSqlStatementOptions DatabricksOptions { get; }
+    private DatabricksSqlStatementOptions DatabricksSqlStatementOptions { get; }
 
     /// <summary>
     /// Create schema (formerly known as database).
@@ -97,7 +97,7 @@ public class DatabricksSchemaManager
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
             statement = sqlStatement,
-            warehouse_id = DatabricksOptions.DATABRICKS_WAREHOUSE_ID,
+            warehouse_id = DatabricksSqlStatementOptions.DATABRICKS_WAREHOUSE_ID,
         };
         var httpResponse = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 

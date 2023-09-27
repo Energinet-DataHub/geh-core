@@ -18,7 +18,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests.Diagnostics.HealthChecks;
 
 public class DatabricksJobsApiHealthCheckBuilderExtensionsTests
     : IClassFixture<HealthChecksFixture>

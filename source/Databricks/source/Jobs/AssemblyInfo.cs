@@ -15,3 +15,4 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Energinet.DataHub.Core.Databricks.Jobs.UnitTests")]
+[assembly: InternalsVisibleTo("Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests")]
