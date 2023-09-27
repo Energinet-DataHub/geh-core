@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 
@@ -23,7 +24,23 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 public interface IDatabricksSqlStatementClient
 {
     /// <summary>
-    /// Get all the rows of a SQL query in as an asynchronous data stream.
+    /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
-    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
+    /// <param name="sqlStatement">The SQL query to be executed, with placeholders for parameters. </param>
+    /// <param name="sqlStatementParameters">A list of <see cref="SqlStatementParameter"/> objects representing parameters
+    /// to be used in the query, preventing SQL injection vulnerabilities.</param>
+    /// <returns>
+    /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
+    /// </returns>
+    /// <remarks>
+    /// Use this method to execute SQL queries against Databricks with parameterization to protect against SQL injection attacks.
+    /// The <paramref name="sqlStatement"/> should contain placeholders in the form of ':parameterName', that has corresponding
+    /// <see cref="SqlStatementParameter"/> objects in the <paramref name="sqlStatementParameters"/> list.
+    ///
+    /// Optionally, a normal SQL query can be executed by passing an empty list of <see cref="SqlStatementParameter"/> objects.
+    /// But it is recommended to always use parameterization to protect against SQL injection attacks.
+    /// </remarks>
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(
+        string sqlStatement,
+        List<SqlStatementParameter> sqlStatementParameters);
 }

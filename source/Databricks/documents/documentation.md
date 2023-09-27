@@ -32,11 +32,16 @@ Example of how to use the SQL Statement Execution client.
 [HttpGet]
 public async Task<IActionResult> GetAsync()
 {
-    var sqlQuery = "SELECT column1 FROM database.table";
+    var sqlQuery = "SELECT * FROM my_table WHERE name = :my_name AND date = :my_date";
+    var parameters = new List<SqlStatementParameter>
+    {
+        new SqlStatementParameter("my_name", "Sheldon Cooper", "STRING"),
+        new SqlStatementParameter("my_date", "26-02-1980", "DATE"),
+    };
     var resultList = new List<TestModel>();
 
-    await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery)) {
-        var testModel = new TestModel(row["column1"]);
+    await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery, parameters)) {
+        var testModel = new TestModel(row["my_name"], row["my_date"]);
         resultList.Add(testModel)
     }
 
