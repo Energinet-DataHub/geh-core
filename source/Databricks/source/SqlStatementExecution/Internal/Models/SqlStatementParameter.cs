@@ -23,27 +23,15 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Model
 /// It encapsulates the name and value of the parameter. The <see cref="Type"/> property is set to "STRING" by default.
 /// If another type is given, Databricks SQL Statement Execution API will perform type checking.
 /// (See 'parameters' at https://docs.databricks.com/api/workspace/statementexecution/executestatement).
-///
-/// Instances of this class are typically used when constructing parameterized SQL
-/// statements. See <see cref="DatabricksSqlStatementClient"/>
 /// </remarks>
 public sealed record SqlStatementParameter
 {
-    /// <summary>
-    /// Gets the name of the SQL parameter.
-    /// </summary>
     [JsonPropertyName("name")]
     public string Name { get; }
 
-    /// <summary>
-    /// Gets the value of the SQL parameter.
-    /// </summary>
     [JsonPropertyName("value")]
     public string Value { get; }
 
-    /// <summary>
-    /// Gets the data type of the SQL parameter, which is "STRING" by default.
-    /// </summary>
     [JsonPropertyName("type")]
     public string Type { get; }
 
