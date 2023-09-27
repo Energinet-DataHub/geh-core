@@ -70,5 +70,28 @@ namespace ExampleHost.FunctionApp.Tests.Integration
             var content = await actualResponse.Content.ReadAsStringAsync();
             content.Should().StartWith("{\"status\":\"Healthy\"");
         }
+
+        /// <summary>
+        /// Verify the response contains the executing applications DH3 source version information in the 'description' field.
+        /// The 'Version' and 'SourceRevisionId' is set in the 'ExampleHost.FunctionApp01.csproj' file.
+        /// </summary>
+        [Fact]
+        public async Task CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation()
+        {
+            // Arrange
+            var expectedSourceVersionInformation = "Version: 1.2.3 PR: 4 SHA: 1234";
+
+            // Act
+            using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/live");
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+
+            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+
+            var content = await actualResponse.Content.ReadAsStringAsync();
+            content.Should().Contain($"description\":\"{expectedSourceVersionInformation}");
+        }
     }
 }

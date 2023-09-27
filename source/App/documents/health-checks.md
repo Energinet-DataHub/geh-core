@@ -30,6 +30,8 @@ The **liveness** check should be used when validating critical application depen
 
 The health checks returns a response that is compatible with the use of the [Health Checks UI](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#HealthCheckUI). This is a JSON format that allows callers to drill down into each specific health check and determine its status.
 
+The _liveness_ endpoint also returns the source version information in the `description` field of the JSON, for any DH3 application that was build using the standard DH3 CI workflows.
+
 ## Azure Functions App
 
 After following the guidelines below, the health checks endpoints will be:
