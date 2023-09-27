@@ -35,6 +35,12 @@ public class DatabricksJobsApiHealthRegistration : IHealthCheck
             options.DATABRICKS_HEALTH_CHECK_END_HOUR);
     }
 
+    /// <summary>
+    /// Check health of the Databricks Jobs API.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>An async task of <see cref="HealthCheckResult"/></returns>
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;

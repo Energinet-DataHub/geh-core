@@ -29,7 +29,10 @@ public class DatabricksSqlStatementApiHealthRegistration : IHealthCheck
     private readonly IClock _clock;
     private readonly DatabricksSqlStatementOptions _options;
 
-    public DatabricksSqlStatementApiHealthRegistration(IHttpClientFactory httpClientFactory, IClock clock, DatabricksSqlStatementOptions options)
+    public DatabricksSqlStatementApiHealthRegistration(
+        IHttpClientFactory httpClientFactory,
+        IClock clock,
+        DatabricksSqlStatementOptions options)
     {
         _httpClientFactory = httpClientFactory;
         _clock = clock;
@@ -40,6 +43,12 @@ public class DatabricksSqlStatementApiHealthRegistration : IHealthCheck
             options.DATABRICKS_HEALTH_CHECK_END_HOUR);
     }
 
+    /// <summary>
+    /// Check health of the Databricks Sql Statement Execution API.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>An async task of <see cref="HealthCheckResult"/></returns>
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
