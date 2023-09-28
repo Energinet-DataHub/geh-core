@@ -15,13 +15,10 @@ Example of how to setup the Databricks Sql Statement Execution in `startup.cs`.
 ```c#
 private static void AddDatabricksSqlStatementExecution(IServiceCollection services, IConfiguration configuration)
 {   
-    var options = configuration.Get<DatabricksSqlStatementOptions>()!;
-
-    // Option 1
-    services.AddSqlStatementExecution(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
-
-    // Option 2
-    services.AddSqlStatementExecution(options);
+    services.Configure<DatabricksSqlStatementOptions>(
+                configuration.GetSection(DatabricksSqlStatementOptions.DatabricksOptions));
+    
+    services.AddDatabricksSqlStatementExecution();
 }
 ```
 
@@ -52,10 +49,12 @@ Example of how to setup the Databricks Sql Statement Execution health check in `
 ```c#
 private static void AddSqlStatementApiHealthChecks(IServiceCollection serviceCollection, IConfiguration configuration)
 {
+    services.Configure<DatabricksSqlStatementOptions>(
+                configuration.GetSection(DatabricksSqlStatementOptions.DatabricksOptions));
+    
     serviceCollection.AddHealthChecks()
         .AddLiveCheck()
-        .AddDatabricksSqlStatementApiHealthCheck(
-            _ => GetDatabricksSqlStatementOptions(configuration));
+        .AddDatabricksSqlStatementApiHealthCheck();
 }
 ```
 
@@ -72,13 +71,8 @@ Example of how to setup the Databricks in `startup.cs`.
 ```c#
 private static void AddDatabricksJobs(IServiceCollection services, IConfiguration configuration)
 {   
-    var options = configuration.Get<DatabricksJobsOptions>()!;
-    services.AddOptions<DatabricksJobsOptions>().Configure(options =>
-    {
-        options.WarehouseId = options.WarehouseId;
-        options.WorkspaceToken = options.WorkspaceToken;
-        options.WorkspaceUrl = options.WorkspaceUrl;
-    });
+    services.Configure<DatabricksJobsOptions>(
+                configuration.GetSection(DatabricksJobsOptions.DatabricksOptions));
     
     services.AddDatabricksJobs();
 }
@@ -105,9 +99,11 @@ Example of how to setup the Databricks Jobs health check in `startup.cs`.
 ```c#
 private static void AddJobsApiHealthChecks(IServiceCollection serviceCollection, IConfiguration configuration)
 {
+    services.Configure<DatabricksJobsOptions>(
+                configuration.GetSection(DatabricksJobsOptions.DatabricksOptions));
+    
     serviceCollection.AddHealthChecks()
         .AddLiveCheck()
-        .AddDatabricksJobsApiHealthCheck(
-            _ => GetDatabricksJobsOptions(configuration));
+        .AddDatabricksJobsApiHealthCheck();
 }
 ```
