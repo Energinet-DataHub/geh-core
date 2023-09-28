@@ -26,7 +26,7 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
     private const string Name = "DatabricksJobsApiHealthCheck";
 
     /// <summary>
-    /// Add a health check to the "ready" endpoint where the health endpoint of another service can be called.
+    /// Add a health check of the Databricks Jobs Api to be used by the "ready" endpoint.
     /// </summary>
     /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
     /// <param name="name">The name of the service to call.</param>

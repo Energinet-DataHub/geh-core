@@ -27,6 +27,15 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
 {
     private const string Name = "DatabricksSqlStatementApiHealthCheck";
 
+    /// <summary>
+    /// Add a health check of the Databricks SQL Statement Execution Api to be used by the "ready" endpoint.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="name"></param>
+    /// <param name="failureStatus"></param>
+    /// <param name="tags"></param>
+    /// <param name="timeout"></param>
+    /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
     public static IHealthChecksBuilder AddDatabricksSqlStatementApiHealthCheck(
         this IHealthChecksBuilder builder,
         string? name = default,
