@@ -33,9 +33,9 @@ public class JobsExtensionsTests
         const string warehouseId = "baz";
         services.AddOptions<DatabricksJobsOptions>().Configure(options =>
         {
-            options.DATABRICKS_WAREHOUSE_ID = warehouseId;
-            options.DATABRICKS_WORKSPACE_TOKEN = workspaceToken;
-            options.DATABRICKS_WORKSPACE_URL = workspaceUrl;
+            options.WarehouseId = warehouseId;
+            options.WorkspaceToken = workspaceToken;
+            options.WorkspaceUrl = workspaceUrl;
         });
 
         // Act
@@ -57,9 +57,9 @@ public class JobsExtensionsTests
         const string warehouseId = "baz";
         services.AddOptions<DatabricksJobsOptions>().Configure(options =>
         {
-            options.DATABRICKS_WAREHOUSE_ID = warehouseId;
-            options.DATABRICKS_WORKSPACE_TOKEN = workspaceToken;
-            options.DATABRICKS_WORKSPACE_URL = workspaceUrl;
+            options.WarehouseId = warehouseId;
+            options.WorkspaceToken = workspaceToken;
+            options.WorkspaceUrl = workspaceUrl;
         });
 
         // Act

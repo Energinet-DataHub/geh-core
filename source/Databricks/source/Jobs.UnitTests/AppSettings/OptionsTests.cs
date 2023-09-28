@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.AppSettings;
 public class OptionsTests
 {
     [Theory]
-    [InlineAutoMoqData(typeof(DatabricksJobsOptions), 5, "DATABRICKS_WORKSPACE_URL", "DATABRICKS_WORKSPACE_TOKEN", "DATABRICKS_WAREHOUSE_ID", "DATABRICKS_HEALTH_CHECK_START_HOUR", "DATABRICKS_HEALTH_CHECK_END_HOUR")]
+    [InlineAutoMoqData(typeof(DatabricksJobsOptions), 5, "WorkspaceUrl", "WorkspaceToken", "WarehouseId", "DatabricksHealthCheckStartHour", "DatabricksHealthCheckEndHour")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act

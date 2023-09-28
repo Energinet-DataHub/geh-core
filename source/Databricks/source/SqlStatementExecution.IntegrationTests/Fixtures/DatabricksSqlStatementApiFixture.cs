@@ -74,9 +74,9 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
             .Setup(o => o.Value)
             .Returns(new DatabricksSqlStatementOptions
             {
-                DATABRICKS_WORKSPACE_URL = databricksSettings.WorkspaceUrl,
-                DATABRICKS_WORKSPACE_TOKEN = databricksSettings.WorkspaceAccessToken,
-                DATABRICKS_WAREHOUSE_ID = databricksSettings.WarehouseId,
+                WorkspaceUrl = databricksSettings.WorkspaceUrl,
+                WorkspaceToken = databricksSettings.WorkspaceAccessToken,
+                WarehouseId = databricksSettings.WarehouseId,
             });
 
         return databricksOptionsMock;

@@ -61,9 +61,9 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Fixtures
                         .AddDatabricksSqlStatementApiHealthCheck(
                             _ => new DatabricksSqlStatementOptions
                         {
-                            DATABRICKS_HEALTH_CHECK_START_HOUR = 0,
-                            DATABRICKS_HEALTH_CHECK_END_HOUR = 23,
-                            DATABRICKS_WORKSPACE_URL = "https://foo.com",
+                            DatabricksHealthCheckStartHour = 0,
+                            DatabricksHealthCheckEndHour = 23,
+                            WorkspaceUrl = "https://foo.com",
                         });
                 })
                 .Configure(app =>

@@ -54,11 +54,11 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         {
             return AddSqlStatementExecutionInner(
                 serviceCollection,
-                databricksOptions.DATABRICKS_WAREHOUSE_ID,
-                databricksOptions.DATABRICKS_WORKSPACE_TOKEN,
-                databricksOptions.DATABRICKS_WORKSPACE_URL,
-                databricksOptions.DATABRICKS_HEALTH_CHECK_START_HOUR,
-                databricksOptions.DATABRICKS_HEALTH_CHECK_END_HOUR);
+                databricksOptions.WarehouseId,
+                databricksOptions.WorkspaceToken,
+                databricksOptions.WorkspaceUrl,
+                databricksOptions.DatabricksHealthCheckStartHour,
+                databricksOptions.DatabricksHealthCheckEndHour);
         }
 
         /// <summary>
@@ -88,11 +88,11 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         {
             serviceCollection.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
             {
-                options.DATABRICKS_WAREHOUSE_ID = warehouseId;
-                options.DATABRICKS_WORKSPACE_TOKEN = workspaceToken;
-                options.DATABRICKS_WORKSPACE_URL = workspaceUrl;
-                options.DATABRICKS_HEALTH_CHECK_START_HOUR = healthCheckStartHour;
-                options.DATABRICKS_HEALTH_CHECK_END_HOUR = healthCheckEndHour;
+                options.WarehouseId = warehouseId;
+                options.WorkspaceToken = workspaceToken;
+                options.WorkspaceUrl = workspaceUrl;
+                options.DatabricksHealthCheckStartHour = healthCheckStartHour;
+                options.DatabricksHealthCheckEndHour = healthCheckEndHour;
             });
 
             serviceCollection.AddHttpClient(

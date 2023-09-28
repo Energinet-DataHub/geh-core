@@ -87,9 +87,9 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         var services = new ServiceCollection();
         var databricksOptions = new DatabricksSqlStatementOptions()
         {
-            DATABRICKS_WORKSPACE_URL = "https://foo.com",
-            DATABRICKS_WORKSPACE_TOKEN = "bar",
-            DATABRICKS_WAREHOUSE_ID = "baz",
+            WorkspaceUrl = "https://foo.com",
+            WorkspaceToken = "bar",
+            WarehouseId = "baz",
         };
 
         // Act
@@ -97,7 +97,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        AssertHttpClient(serviceProvider, databricksOptions.DATABRICKS_WORKSPACE_URL, databricksOptions.DATABRICKS_WORKSPACE_TOKEN);
+        AssertHttpClient(serviceProvider, databricksOptions.WorkspaceUrl, databricksOptions.WorkspaceToken);
     }
 
     [Fact]
@@ -107,9 +107,9 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         var services = new ServiceCollection();
         var databricksOptions = new DatabricksSqlStatementOptions
         {
-            DATABRICKS_WORKSPACE_URL = "https://foo.com",
-            DATABRICKS_WORKSPACE_TOKEN = "bar",
-            DATABRICKS_WAREHOUSE_ID = "baz",
+            WorkspaceUrl = "https://foo.com",
+            WorkspaceToken = "bar",
+            WarehouseId = "baz",
         };
 
         // Act

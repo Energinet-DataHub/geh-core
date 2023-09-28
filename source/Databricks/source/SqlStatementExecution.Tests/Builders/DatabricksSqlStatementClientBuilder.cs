@@ -57,7 +57,7 @@ public class DatabricksSqlStatementClientBuilder
         var options = new Mock<IOptions<DatabricksSqlStatementOptions>>();
         options.Setup(o => o.Value).Returns(new DatabricksSqlStatementOptions
         {
-            DATABRICKS_WORKSPACE_URL = "https://foo.com",
+            WorkspaceUrl = "https://foo.com",
         });
         var parser = _parser ?? new Mock<ISqlResponseParser>().Object;
         var logger = new Mock<ILogger<DatabricksSqlStatementClient>>();

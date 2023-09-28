@@ -57,9 +57,9 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
                     const string warehouseId = "baz";
                     services.AddOptions<DatabricksJobsOptions>().Configure(options =>
                     {
-                        options.DATABRICKS_WAREHOUSE_ID = warehouseId;
-                        options.DATABRICKS_WORKSPACE_TOKEN = workspaceToken;
-                        options.DATABRICKS_WORKSPACE_URL = workspaceUrl;
+                        options.WarehouseId = warehouseId;
+                        options.WorkspaceToken = workspaceToken;
+                        options.WorkspaceUrl = workspaceUrl;
                     });
 
                     services.AddRouting();
@@ -74,9 +74,9 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
                         .AddDatabricksJobsApiHealthCheck(
                             _ => new DatabricksJobsOptions
                             {
-                                DATABRICKS_HEALTH_CHECK_START_HOUR = 0,
-                                DATABRICKS_HEALTH_CHECK_END_HOUR = 23,
-                                DATABRICKS_WORKSPACE_URL = workspaceUrl,
+                                DatabricksHealthCheckStartHour = 0,
+                                DatabricksHealthCheckEndHour = 23,
+                                WorkspaceUrl = workspaceUrl,
                             });
                 })
                 .Configure(app =>

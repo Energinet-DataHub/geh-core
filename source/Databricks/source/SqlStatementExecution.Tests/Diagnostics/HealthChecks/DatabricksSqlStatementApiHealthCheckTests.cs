@@ -45,9 +45,9 @@ public class DatabricksSqlStatementApiHealthCheckTests
         // Arrange
         var options = new DatabricksSqlStatementOptions
         {
-            DATABRICKS_HEALTH_CHECK_START_HOUR = startHour,
-            DATABRICKS_HEALTH_CHECK_END_HOUR = endHour,
-            DATABRICKS_WORKSPACE_URL = "https://fake",
+            DatabricksHealthCheckStartHour = startHour,
+            DatabricksHealthCheckEndHour = endHour,
+            WorkspaceUrl = "https://fake",
         };
         clockMock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         httpMessageHandlerMock.Protected()
@@ -81,9 +81,9 @@ public class DatabricksSqlStatementApiHealthCheckTests
         // Arrange
         var options = new DatabricksSqlStatementOptions
         {
-            DATABRICKS_HEALTH_CHECK_START_HOUR = startHour,
-            DATABRICKS_HEALTH_CHECK_END_HOUR = endHour,
-            DATABRICKS_WORKSPACE_URL = "https://fake",
+            DatabricksHealthCheckStartHour = startHour,
+            DatabricksHealthCheckEndHour = endHour,
+            WorkspaceUrl = "https://fake",
         };
 
         // Act & Assert

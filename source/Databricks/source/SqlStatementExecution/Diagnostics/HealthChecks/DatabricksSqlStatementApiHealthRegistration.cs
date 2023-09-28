@@ -39,8 +39,8 @@ public class DatabricksSqlStatementApiHealthRegistration : IHealthCheck
         _options = options;
 
         ThrowExceptionIfHourIntervalIsInvalid(
-            options.DATABRICKS_HEALTH_CHECK_START_HOUR,
-            options.DATABRICKS_HEALTH_CHECK_END_HOUR);
+            options.DatabricksHealthCheckStartHour,
+            options.DatabricksHealthCheckEndHour);
     }
 
     /// <summary>
@@ -52,10 +52,10 @@ public class DatabricksSqlStatementApiHealthRegistration : IHealthCheck
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
-        if (_options.DATABRICKS_HEALTH_CHECK_START_HOUR <= currentHour && currentHour <= _options.DATABRICKS_HEALTH_CHECK_END_HOUR)
+        if (_options.DatabricksHealthCheckStartHour <= currentHour && currentHour <= _options.DatabricksHealthCheckEndHour)
         {
             var httpClient = CreateHttpClient();
-            var url = $"{_options.DATABRICKS_WORKSPACE_URL}/api/2.0/sql/warehouses/{_options.DATABRICKS_WAREHOUSE_ID}";
+            var url = $"{_options.WorkspaceUrl}/api/2.0/sql/warehouses/{_options.WarehouseId}";
             var response = await httpClient
                 .GetAsync(url, cancellationToken)
                 .ConfigureAwait(false);
@@ -77,11 +77,11 @@ public class DatabricksSqlStatementApiHealthRegistration : IHealthCheck
     private HttpClient CreateHttpClient()
     {
         var httpClient = _httpClientFactory.CreateClient();
-        httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
+        httpClient.BaseAddress = new Uri(_options.WorkspaceUrl);
         httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", _options.DATABRICKS_WORKSPACE_TOKEN);
+            new AuthenticationHeaderValue("Bearer", _options.WorkspaceToken);
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
+        httpClient.BaseAddress = new Uri(_options.WorkspaceUrl);
         return httpClient;
     }
 }

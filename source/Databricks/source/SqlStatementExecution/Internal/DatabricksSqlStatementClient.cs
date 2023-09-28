@@ -99,7 +99,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         {
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
-            warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
+            warehouse_id = _options.Value.WarehouseId,
             disposition = "EXTERNAL_LINKS", // Some results are larger than the maximum allowed 16MB limit, thus we need to use external links
         };
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);

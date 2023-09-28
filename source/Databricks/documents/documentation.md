@@ -75,9 +75,9 @@ private static void AddDatabricksJobs(IServiceCollection services, IConfiguratio
     var options = configuration.Get<DatabricksJobsOptions>()!;
     services.AddOptions<DatabricksJobsOptions>().Configure(options =>
     {
-        options.DATABRICKS_WAREHOUSE_ID = options.DATABRICKS_WAREHOUSE_ID;
-        options.DATABRICKS_WORKSPACE_TOKEN = options.DATABRICKS_WORKSPACE_TOKEN;
-        options.DATABRICKS_WORKSPACE_URL = options.DATABRICKS_WORKSPACE_URL;
+        options.WarehouseId = options.WarehouseId;
+        options.WorkspaceToken = options.WorkspaceToken;
+        options.WorkspaceUrl = options.WorkspaceUrl;
     });
     
     services.AddDatabricksJobs();

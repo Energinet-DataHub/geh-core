@@ -31,8 +31,8 @@ public class DatabricksJobsApiHealthRegistration : IHealthCheck
         _options = options;
 
         ThrowExceptionIfHourIntervalIsInvalid(
-            options.DATABRICKS_HEALTH_CHECK_START_HOUR,
-            options.DATABRICKS_HEALTH_CHECK_END_HOUR);
+            options.DatabricksHealthCheckStartHour,
+            options.DatabricksHealthCheckEndHour);
     }
 
     /// <summary>
@@ -44,8 +44,8 @@ public class DatabricksJobsApiHealthRegistration : IHealthCheck
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
-        if (_options.DATABRICKS_HEALTH_CHECK_START_HOUR <= currentHour
-            && currentHour <= _options.DATABRICKS_HEALTH_CHECK_END_HOUR)
+        if (_options.DatabricksHealthCheckStartHour <= currentHour
+            && currentHour <= _options.DatabricksHealthCheckEndHour)
         {
             await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
         }
