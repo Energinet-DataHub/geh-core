@@ -49,6 +49,8 @@ public class DatabricksSqlStatementApiHealthCheckTests
             DatabricksHealthCheckEndHour = endHour,
             WorkspaceUrl = "https://fake",
         };
+        var databricksOptions = Options.Create(options);
+
         clockMock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -58,7 +60,7 @@ public class DatabricksSqlStatementApiHealthCheckTests
             .ReturnsAsync(new HttpResponseMessage(httpStatusCode));
         using var httpClientMock = new HttpClient(httpMessageHandlerMock.Object);
         httpClientFactoryMock.Setup(x => x.CreateClient(Options.DefaultName)).Returns(httpClientMock);
-        var sut = new DatabricksSqlStatementApiHealthCheck(httpClientFactoryMock.Object, clockMock.Object, options);
+        var sut = new DatabricksSqlStatementApiHealthCheck(httpClientFactoryMock.Object, clockMock.Object, databricksOptions);
 
         // Act
         var actualHealthStatus = await sut
@@ -83,10 +85,11 @@ public class DatabricksSqlStatementApiHealthCheckTests
         {
             DatabricksHealthCheckStartHour = startHour,
             DatabricksHealthCheckEndHour = endHour,
-            WorkspaceUrl = "https://fake",
         };
+        var databricksOptions = Options.Create(options);
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new DatabricksSqlStatementApiHealthCheck(httpClientFactoryMock.Object, clockMock.Object, options));
+        Assert.Throws<ArgumentException>(() =>
+            new DatabricksSqlStatementApiHealthCheck(httpClientFactoryMock.Object, clockMock.Object, databricksOptions));
     }
 }

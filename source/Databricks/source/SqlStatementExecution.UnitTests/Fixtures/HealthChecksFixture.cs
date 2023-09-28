@@ -15,7 +15,6 @@
 using System.Net;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,13 +57,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixt
 
                     services.AddHealthChecks()
                         .AddLiveCheck()
-                        .AddDatabricksSqlStatementApiHealthCheck(
-                            _ => new DatabricksSqlStatementOptions
-                        {
-                            DatabricksHealthCheckStartHour = 0,
-                            DatabricksHealthCheckEndHour = 23,
-                            WorkspaceUrl = "https://foo.com",
-                        });
+                        .AddDatabricksSqlStatementApiHealthCheck();
                 })
                 .Configure(app =>
                 {

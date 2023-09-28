@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
@@ -32,15 +33,15 @@ public class DatabricksSqlStatementApiHealthCheck : IHealthCheck
     public DatabricksSqlStatementApiHealthCheck(
         IHttpClientFactory httpClientFactory,
         IClock clock,
-        DatabricksSqlStatementOptions options)
+        IOptions<DatabricksSqlStatementOptions> databricksOptions)
     {
         _httpClientFactory = httpClientFactory;
         _clock = clock;
-        _options = options;
+        _options = databricksOptions.Value;
 
         ThrowExceptionIfHourIntervalIsInvalid(
-            options.DatabricksHealthCheckStartHour,
-            options.DatabricksHealthCheckEndHour);
+            _options.DatabricksHealthCheckStartHour,
+            _options.DatabricksHealthCheckEndHour);
     }
 
     /// <summary>

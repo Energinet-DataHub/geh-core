@@ -18,6 +18,7 @@ using System.Net.Http;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
@@ -28,7 +29,6 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
 
     public static IHealthChecksBuilder AddDatabricksSqlStatementApiHealthCheck(
         this IHealthChecksBuilder builder,
-        Func<IServiceProvider, DatabricksSqlStatementOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
@@ -39,7 +39,7 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
             serviceProvider => new DatabricksSqlStatementApiHealthCheck(
                 serviceProvider.GetRequiredService<IHttpClientFactory>(),
                 serviceProvider.GetRequiredService<IClock>(),
-                options(serviceProvider)),
+                serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()),
             failureStatus,
             tags,
             timeout));

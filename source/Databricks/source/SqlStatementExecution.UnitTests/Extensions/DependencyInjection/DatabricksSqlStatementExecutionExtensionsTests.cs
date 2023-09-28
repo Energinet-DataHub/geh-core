@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Helpers;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -46,79 +46,40 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     }
 
     [Fact]
-    public void AddDatabricksSqlStatementExecution_WithMultipleParameters_Should_ReturnConfiguredHttpClient()
+    public void AddDatabricksSqlStatementExecution_Should_ResolveSqlClient()
     {
         // Arrange
-        var services = new ServiceCollection();
-        const string workspaceUri = "https://foo.com";
+        var serviceCollection = new ServiceCollection();
+        const string workspaceUrl = "https://foo.com";
         const string workspaceToken = "bar";
         const string warehouseId = "baz";
+        serviceCollection.AddDataBricksOptionsToServiceCollection(warehouseId, workspaceToken, workspaceUrl);
 
         // Act
-        services.AddDatabricksSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
-        var serviceProvider = services.BuildServiceProvider();
+        serviceCollection.AddDatabricksSqlStatementExecution();
 
         // Assert
-        AssertHttpClient(serviceProvider, workspaceUri, workspaceToken);
-    }
-
-    [Fact]
-    public void AddDatabricksSqlStatementExecution_WithMultipleParameters_Should_ResolveSqlClient()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        const string workspaceUri = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
-
-        // Act
-        services.AddDatabricksSqlStatementExecution(warehouseId, workspaceToken, workspaceUri);
-        var serviceProvider = services.BuildServiceProvider();
-
-        // Assert
+        var serviceProvider = serviceCollection.BuildServiceProvider();
         var client = serviceProvider.GetService<IDatabricksSqlStatementClient>();
         client.Should().NotBeNull();
     }
 
     [Fact]
-    public void AddDatabricksSqlStatementExecution_WithDatabricksOptions_Should_ReturnConfiguredHttpClient()
+    public void AddDatabricksSqlStatementExecution_Should_ReturnConfiguredHttpClient()
     {
         // Arrange
-        var services = new ServiceCollection();
-        var databricksOptions = new DatabricksSqlStatementOptions()
-        {
-            WorkspaceUrl = "https://foo.com",
-            WorkspaceToken = "bar",
-            WarehouseId = "baz",
-        };
+        var serviceCollection = new ServiceCollection();
+        const string workspaceUrl = "https://foo.com";
+        const string workspaceToken = "bar";
+        const string warehouseId = "baz";
+        serviceCollection.AddDataBricksOptionsToServiceCollection(warehouseId, workspaceToken, workspaceUrl);
 
         // Act
-        services.AddDatabricksSqlStatementExecution(databricksOptions);
-        var serviceProvider = services.BuildServiceProvider();
+        serviceCollection.AddDatabricksSqlStatementExecution();
 
         // Assert
-        AssertHttpClient(serviceProvider, databricksOptions.WorkspaceUrl, databricksOptions.WorkspaceToken);
-    }
-
-    [Fact]
-    public void AddDatabricksSqlStatementExecution_WithDatabricksOptions_Should_ResolveSqlClient()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var databricksOptions = new DatabricksSqlStatementOptions
-        {
-            WorkspaceUrl = "https://foo.com",
-            WorkspaceToken = "bar",
-            WarehouseId = "baz",
-        };
-
-        // Act
-        services.AddDatabricksSqlStatementExecution(databricksOptions);
-        var serviceProvider = services.BuildServiceProvider();
-
-        // Assert
-        var client = serviceProvider.GetService<IDatabricksSqlStatementClient>();
-        client.Should().NotBeNull();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        AssertHttpClient(serviceProvider, workspaceUrl, workspaceToken);
     }
 
     private static void AssertHttpClient(
