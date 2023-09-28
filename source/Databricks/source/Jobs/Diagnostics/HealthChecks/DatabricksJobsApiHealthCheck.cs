@@ -18,13 +18,13 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 
-public class DatabricksJobsApiHealthRegistration : IHealthCheck
+public class DatabricksJobsApiHealthCheck : IHealthCheck
 {
     private readonly IJobsApiClient _jobsApiClient;
     private readonly IClock _clock;
     private readonly DatabricksJobsOptions _options;
 
-    public DatabricksJobsApiHealthRegistration(IJobsApiClient jobsApiClient, IClock clock, DatabricksJobsOptions options)
+    public DatabricksJobsApiHealthCheck(IJobsApiClient jobsApiClient, IClock clock, DatabricksJobsOptions options)
     {
         _jobsApiClient = jobsApiClient;
         _clock = clock;

@@ -47,7 +47,7 @@ public class DatabricksJobsApiHealthCheckTests
         };
         clock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
-        var sut = new DatabricksJobsApiHealthRegistration(jobsApiClientMock.Object, clock.Object, options);
+        var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, options);
 
         // Act
         var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
@@ -76,7 +76,7 @@ public class DatabricksJobsApiHealthCheckTests
         };
         clock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
-        var sut = new DatabricksJobsApiHealthRegistration(jobsApiClientMock.Object, clock.Object, options);
+        var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, options);
 
         // Act
         var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
@@ -106,6 +106,6 @@ public class DatabricksJobsApiHealthCheckTests
         };
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new DatabricksJobsApiHealthRegistration(jobsApiClientMock.Object, clockMock.Object, options));
+        Assert.Throws<ArgumentException>(() => new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clockMock.Object, options));
     }
 }

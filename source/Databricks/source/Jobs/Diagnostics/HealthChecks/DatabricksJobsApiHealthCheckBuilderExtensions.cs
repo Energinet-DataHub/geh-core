@@ -43,7 +43,7 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? Name,
-            serviceProvider => new DatabricksJobsApiHealthRegistration(
+            serviceProvider => new DatabricksJobsApiHealthCheck(
                 serviceProvider.GetRequiredService<IJobsApiClient>(),
                 serviceProvider.GetRequiredService<IClock>(),
                 options(serviceProvider)),

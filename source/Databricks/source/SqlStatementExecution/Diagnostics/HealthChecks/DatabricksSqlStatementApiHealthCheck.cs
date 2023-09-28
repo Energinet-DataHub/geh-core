@@ -23,13 +23,13 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 
-public class DatabricksSqlStatementApiHealthRegistration : IHealthCheck
+public class DatabricksSqlStatementApiHealthCheck : IHealthCheck
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IClock _clock;
     private readonly DatabricksSqlStatementOptions _options;
 
-    public DatabricksSqlStatementApiHealthRegistration(
+    public DatabricksSqlStatementApiHealthCheck(
         IHttpClientFactory httpClientFactory,
         IClock clock,
         DatabricksSqlStatementOptions options)

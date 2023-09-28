@@ -58,7 +58,7 @@ public class DatabricksSqlStatementApiHealthCheckTests
             .ReturnsAsync(new HttpResponseMessage(httpStatusCode));
         using var httpClientMock = new HttpClient(httpMessageHandlerMock.Object);
         httpClientFactoryMock.Setup(x => x.CreateClient(Options.DefaultName)).Returns(httpClientMock);
-        var sut = new DatabricksSqlStatementApiHealthRegistration(httpClientFactoryMock.Object, clockMock.Object, options);
+        var sut = new DatabricksSqlStatementApiHealthCheck(httpClientFactoryMock.Object, clockMock.Object, options);
 
         // Act
         var actualHealthStatus = await sut
@@ -87,6 +87,6 @@ public class DatabricksSqlStatementApiHealthCheckTests
         };
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new DatabricksSqlStatementApiHealthRegistration(httpClientFactoryMock.Object, clockMock.Object, options));
+        Assert.Throws<ArgumentException>(() => new DatabricksSqlStatementApiHealthCheck(httpClientFactoryMock.Object, clockMock.Object, options));
     }
 }
