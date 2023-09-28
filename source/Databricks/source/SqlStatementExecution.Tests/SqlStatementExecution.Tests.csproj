@@ -20,7 +20,6 @@ limitations under the License.
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
     <AssemblyName>Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests</RootNamespace>

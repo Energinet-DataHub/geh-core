@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SqlStatementExecution.IntegrationTests.Fixtures;
 
-namespace SqlStatementExecution.IntegrationTests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests;
 
 /// <summary>
 /// We use an IClassFixture to control the life cycle of the DatabricksSqlStatementApiFixture so:

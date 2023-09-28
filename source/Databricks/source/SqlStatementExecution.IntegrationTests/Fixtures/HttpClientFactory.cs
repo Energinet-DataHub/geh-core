@@ -15,7 +15,7 @@
 using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 
-namespace SqlStatementExecution.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
 public static class HttpClientFactory
 {

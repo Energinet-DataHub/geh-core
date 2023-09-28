@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace SqlStatementExecution.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
 public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 {

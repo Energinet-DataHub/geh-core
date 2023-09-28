@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace SqlStatementExecution.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
 /// <summary>
 /// A manager for managing Databricks SQL schemas and tables from integration tests.
