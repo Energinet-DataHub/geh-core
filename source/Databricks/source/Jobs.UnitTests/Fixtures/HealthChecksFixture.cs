@@ -53,14 +53,13 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
             return new WebHostBuilder()
                 .ConfigureServices(services =>
                 {
-                    const string workspaceUrl = "https://foo.com";
-                    const string workspaceToken = "bar";
-                    const string warehouseId = "baz";
                     services.AddOptions<DatabricksJobsOptions>().Configure(options =>
                     {
-                        options.WarehouseId = warehouseId;
-                        options.WorkspaceToken = workspaceToken;
-                        options.WorkspaceUrl = workspaceUrl;
+                        options.WarehouseId = "baz";
+                        options.WorkspaceToken = "bar";
+                        options.WorkspaceUrl = "https://foo.com";
+                        options.DatabricksHealthCheckStartHour = 0;
+                        options.DatabricksHealthCheckEndHour = 23;
                     });
 
                     services.AddRouting();
@@ -72,13 +71,7 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
 
                     services.AddHealthChecks()
                         .AddLiveCheck()
-                        .AddDatabricksJobsApiHealthCheck(
-                            _ => new DatabricksJobsOptions
-                            {
-                                DatabricksHealthCheckStartHour = 0,
-                                DatabricksHealthCheckEndHour = 23,
-                                WorkspaceUrl = workspaceUrl,
-                            });
+                        .AddDatabricksJobsApiHealthCheck();
                 })
                 .Configure(app =>
                 {

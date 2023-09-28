@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
@@ -25,15 +26,18 @@ public class DatabricksJobsApiHealthCheck : IHealthCheck
     private readonly IClock _clock;
     private readonly DatabricksJobsOptions _options;
 
-    public DatabricksJobsApiHealthCheck(IJobsApiClient jobsApiClient, IClock clock, DatabricksJobsOptions options)
+    public DatabricksJobsApiHealthCheck(
+        IJobsApiClient jobsApiClient,
+        IClock clock,
+        IOptions<DatabricksJobsOptions> options)
     {
         _jobsApiClient = jobsApiClient;
         _clock = clock;
-        _options = options;
+        _options = options.Value;
 
         ThrowExceptionIfHourIntervalIsInvalid(
-            options.DatabricksHealthCheckStartHour,
-            options.DatabricksHealthCheckEndHour);
+            _options.DatabricksHealthCheckStartHour,
+            _options.DatabricksHealthCheckEndHour);
     }
 
     /// <summary>

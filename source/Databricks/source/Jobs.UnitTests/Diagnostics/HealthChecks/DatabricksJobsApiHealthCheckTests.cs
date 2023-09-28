@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -46,9 +47,11 @@ public class DatabricksJobsApiHealthCheckTests
             DatabricksHealthCheckStartHour = startHour,
             DatabricksHealthCheckEndHour = endHour,
         };
+        var databricksOptions = Options.Create(options);
+
         clock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
-        var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, options);
+        var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, databricksOptions);
 
         // Act
         var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
@@ -75,9 +78,11 @@ public class DatabricksJobsApiHealthCheckTests
             DatabricksHealthCheckStartHour = startHour,
             DatabricksHealthCheckEndHour = endHour,
         };
+        var databricksOptions = Options.Create(options);
+
         clock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
-        var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, options);
+        var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, databricksOptions);
 
         // Act
         var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
@@ -105,8 +110,10 @@ public class DatabricksJobsApiHealthCheckTests
             DatabricksHealthCheckEndHour = endHour,
             WorkspaceUrl = "https://fake",
         };
+        var databricksOptions = Options.Create(options);
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clockMock.Object, options));
+        Assert.Throws<ArgumentException>(() =>
+            new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clockMock.Object, databricksOptions));
     }
 }
