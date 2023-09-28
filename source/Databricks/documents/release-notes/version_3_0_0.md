@@ -38,4 +38,4 @@ public async Task<IActionResult> GetAsync()
 }
 ```
 
-Notice, if a type is given in the `SqlStatementParameter` Create method, Databricks SQL Statement Execution API will perform type checking on the parameter value. Otherwise, it will be treated as a string. See [Databricks documentation](https://docs.databricks.com/api/workspace/statementexecution/executestatement) for more information.
+Notice, if a type is given in the `SqlStatementParameter` Create method, Databricks SQL Statement Execution API will perform type checking on the parameter value. But no functional difference. See [Databricks documentation](https://docs.databricks.com/api/workspace/statementexecution/executestatement) for more information.
