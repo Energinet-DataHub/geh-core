@@ -21,6 +21,7 @@ limitations under the License.
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>false</IsPackable>
     <AssemblyName>Energinet.DataHub.Core.Databricks.Jobs.UnitTests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Databricks.Jobs.UnitTests</RootNamespace>
@@ -40,6 +41,10 @@ limitations under the License.
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.categories" Version="2.0.7" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
