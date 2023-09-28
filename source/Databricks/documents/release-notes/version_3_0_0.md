@@ -4,7 +4,7 @@
 
 ### SQL Statement Execution using Parameter Markers
 
-The method `ExecuteAsync(string)` has been replaced with `ExecuteAsync(string, List<SqlStatementParameter>)`.
+The method `ExecuteAsync(string)` has been replaced with `ExecuteAsync(string, List<SqlStatementParameter>?)`.
 The new method supports [Parameter Markers](https://docs.databricks.com/en/sql/language-manual/sql-ref-parameter-marker.html) in for form of `:parameter_name` in the SQL statement. The parameters are passed in a list of `SqlStatementParameter` objects.
 
 By using Parameter Markers in the SQL statement, the developer can prevent SQL injections.
@@ -13,7 +13,7 @@ By using Parameter Markers in the SQL statement, the developer can prevent SQL i
 
 1. Update your NuGet package to version 3.0.0.
 2. Modify your code to use the new `ExecuteAsync(string, List<SqlStatementParameter>)` by modifying your query to use Parameter Markers, and provide a list of `SqlStatementParameter` corresponding to the parameter markers.
-   1. Optionally, it is possible to call the method with an empty list as parameters and it would work as before. (Still recommended to use Parameter Markers in queries to avoid SQL injection)
+   1. Optionally, the developer can use the method as before, only with a string. (Still recommended to use Parameter Markers in queries to avoid SQL injection)
 
 ## Example usage
 

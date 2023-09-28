@@ -55,8 +55,12 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _externalHttpClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
     }
 
-    public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
+    public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(
+        string sqlStatement,
+        List<SqlStatementParameter>? sqlStatementParameters = null)
     {
+        sqlStatementParameters ??= new List<SqlStatementParameter>();
+
         _logger.LogDebug(
             "Executing SQL statement: {Sql}, with parameters: {Parameters}",
             HttpUtility.HtmlEncode(sqlStatement),

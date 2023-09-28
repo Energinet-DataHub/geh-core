@@ -27,7 +27,7 @@ public interface IDatabricksSqlStatementClient
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
     /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters. </param>
-    /// <param name="sqlStatementParameters">A list of <see cref="SqlStatementParameter"/> objects representing parameters
+    /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects representing parameters
     /// to be used in the query.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
@@ -37,10 +37,10 @@ public interface IDatabricksSqlStatementClient
     /// The <paramref name="sqlStatement"/> should contain Parameter Markers in the form of ':parameterName', that has corresponding
     /// <see cref="SqlStatementParameter"/> objects in the <paramref name="sqlStatementParameters"/> list.
     ///
-    /// Optionally, a normal SQL query can be executed by passing an empty list of <see cref="SqlStatementParameter"/> objects.
-    /// But it is recommended to always use Parameter Markers to protect against SQL injection attacks.
+    /// Optionally, to simply execute a SQL query without parameter markers, the optional <paramref name="sqlStatementParameters"/> parameter
+    /// can be left empty. However, it is recommended to make use of parameter markers to protect against SQL injection attacks.
     /// </remarks>
     IAsyncEnumerable<SqlResultRow> ExecuteAsync(
         string sqlStatement,
-        List<SqlStatementParameter> sqlStatementParameters);
+        List<SqlStatementParameter>? sqlStatementParameters);
 }

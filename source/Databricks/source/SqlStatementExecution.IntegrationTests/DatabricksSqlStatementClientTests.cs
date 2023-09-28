@@ -92,9 +92,9 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
             sqlStatementClientLoggerMock);
         var sqlStatementParameters = new List<SqlStatementParameter>(3)
         {
-            new SqlStatementParameter("id", "r.id"),
-            new SqlStatementParameter("someValue", "some_value"),
-            new SqlStatementParameter("expectedRowCount", "100", "INT"),
+            SqlStatementParameter.CreateStringParameter("id", "some_id"),
+            SqlStatementParameter.CreateStringParameter("someValue", "some_value"),
+            SqlStatementParameter.CreateIntParameter("expectedRowCount", 100),
         };
 
         // Arrange: The result of this query spans multiple chunks
