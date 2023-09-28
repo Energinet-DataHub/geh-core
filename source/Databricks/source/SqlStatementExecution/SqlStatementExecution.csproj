@@ -84,5 +84,4 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.3.2" />
   </ItemGroup>
 
-
 </Project>
