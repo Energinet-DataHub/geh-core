@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Model
 /// <remarks>
 /// The <see cref="SqlStatementParameter"/> class is used to define a parameter for a parameterized SQL query.
 /// It encapsulates the name, value and type of the parameter.
-/// If another type than "STRING" is given, Databricks SQL Statement Execution API will perform type checking.
+/// If another type than "STRING" is as type in the Create-method, Databricks SQL Statement Execution API will perform type checking.
 /// (See <a href="https://docs.databricks.com/api/workspace/statementexecution/executestatement">'Parameters' section</a>)
 /// </remarks>
 public sealed record SqlStatementParameter
@@ -56,9 +56,10 @@ public sealed record SqlStatementParameter
     /// </summary>
     /// <param name="name">The name of the SQL parameter.</param>
     /// <param name="value">The string value of the SQL parameter.</param>
+    /// <param name="type">[Optional] The type of the SQL parameter. Default set to "STRING". </param>
     /// <returns>A new instance of <see cref="SqlStatementParameter"/>.</returns>
-    public static SqlStatementParameter Create(string name, string value)
+    public static SqlStatementParameter Create(string name, string value, string type = "STRING")
     {
-        return new SqlStatementParameter(name, value, "STRING");
+        return new SqlStatementParameter(name, value, type);
     }
 }
