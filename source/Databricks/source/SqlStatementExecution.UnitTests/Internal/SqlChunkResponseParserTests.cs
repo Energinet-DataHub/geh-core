@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Internal;
 
 public class SqlChunkResponseParserTests
 {

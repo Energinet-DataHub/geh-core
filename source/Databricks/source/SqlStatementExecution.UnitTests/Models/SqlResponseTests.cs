@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Models;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Models;
 
 [UnitTest]
 public class SqlResponseTests

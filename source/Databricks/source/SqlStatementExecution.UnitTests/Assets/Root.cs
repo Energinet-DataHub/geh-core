@@ -12,19 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Assets;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
-
-public static class SqlResponseStatusHelper
+internal class Root
 {
-    public static string CreateStatusResponse(string state)
-    {
-        var statement = new
-        {
-            statement_id = "01edef23-0d2c-10dd-879b-26b5e97b3796",
-            status = new { state, },
-        };
-        return JsonConvert.SerializeObject(statement, Formatting.Indented);
-    }
 }

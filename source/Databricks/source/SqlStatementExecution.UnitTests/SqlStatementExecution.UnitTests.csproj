@@ -21,8 +21,8 @@ limitations under the License.
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

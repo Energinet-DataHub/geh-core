@@ -14,5 +14,5 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests")]
+[assembly: InternalsVisibleTo("Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests")]
 [assembly: InternalsVisibleTo("Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests")]

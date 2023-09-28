@@ -26,7 +26,7 @@ using Moq;
 using Moq.Protected;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Fixtures
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixtures
 {
     public sealed class HealthChecksFixture : IDisposable
     {

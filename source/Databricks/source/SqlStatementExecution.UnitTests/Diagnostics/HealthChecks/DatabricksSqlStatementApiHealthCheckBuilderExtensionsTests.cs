@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Fixtures;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixtures;
 using FluentAssertions.Execution;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Diagnostics.HealthChecks;
 
 public class DatabricksSqlStatementApiHealthCheckBuilderExtensionsTests
     : IClassFixture<HealthChecksFixture>

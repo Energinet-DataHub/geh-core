@@ -23,7 +23,7 @@ using Moq;
 using Moq.Protected;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Diagnostics.HealthChecks;
 
 public class DatabricksSqlStatementApiHealthCheckTests
 {

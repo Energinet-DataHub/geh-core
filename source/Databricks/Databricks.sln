@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{C3C7D8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution", "source\SqlStatementExecution\SqlStatementExecution.csproj", "{8DAD22BC-DA0E-484D-9092-57AE4394DCA0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.Tests", "source\SqlStatementExecution.Tests\SqlStatementExecution.Tests.csproj", "{CAE1550E-D962-458A-95C2-D42B89E37B65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.UnitTests", "source\SqlStatementExecution.UnitTests\SqlStatementExecution.UnitTests.csproj", "{CAE1550E-D962-458A-95C2-D42B89E37B65}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.IntegrationTests", "source\SqlStatementExecution.IntegrationTests\SqlStatementExecution.IntegrationTests.csproj", "{E8A56710-1EB2-4ED1-8E93-E3653F815983}"
 EndProject

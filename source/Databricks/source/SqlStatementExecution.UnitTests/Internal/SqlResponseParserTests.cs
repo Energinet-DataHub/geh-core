@@ -22,7 +22,7 @@ using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Internal;
 
 [UnitTest]
 public class SqlResponseParserTests

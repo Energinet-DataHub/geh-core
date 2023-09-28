@@ -20,7 +20,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants
 using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Extensions.DependencyInjection;
 
 public class DatabricksSqlStatementExecutionExtensionsTests
 {

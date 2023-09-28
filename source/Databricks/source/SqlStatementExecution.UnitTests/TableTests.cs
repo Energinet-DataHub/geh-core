@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests;
 
 [UnitTest]
 public class TableTests

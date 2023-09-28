@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Tests.Builders;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Builders;
 
 public class DatabricksSqlStatementClientBuilder
 {
