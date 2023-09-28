@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.Options;

@@ -14,7 +14,7 @@
 
 using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs;
+namespace Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 
 /// <summary>
 /// The Databricks Jobs API client.

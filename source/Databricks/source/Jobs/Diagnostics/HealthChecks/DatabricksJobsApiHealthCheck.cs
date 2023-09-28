@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;

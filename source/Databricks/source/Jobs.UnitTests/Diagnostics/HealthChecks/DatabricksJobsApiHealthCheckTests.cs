@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
