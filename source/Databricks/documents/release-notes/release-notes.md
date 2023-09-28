@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 3.0.0
+
+- See [Version 3.0.0 release notes](./version_3_0_0.md)
+
 ## Version 2.0.0
 
 - See [Version 2.0.0 release notes](./version_2_0_0.md)

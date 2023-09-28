@@ -55,11 +55,18 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _externalHttpClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
     }
 
-    public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
+    public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(
+        string sqlStatement,
+        List<SqlStatementParameter>? sqlStatementParameters = null)
     {
-        _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
+        sqlStatementParameters ??= new List<SqlStatementParameter>();
 
-        var response = await GetFirstChunkOrNullAsync(sqlStatement).ConfigureAwait(false);
+        _logger.LogDebug(
+            "Executing SQL statement: {Sql}, with parameters: {Parameters}",
+            HttpUtility.HtmlEncode(sqlStatement),
+            sqlStatementParameters);
+
+        var response = await GetFirstChunkOrNullAsync(sqlStatement, sqlStatementParameters).ConfigureAwait(false);
         var columnNames = response.ColumnNames;
         var chunk = response.Chunk;
         var rowCount = 0;
@@ -90,7 +97,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _logger.LogDebug("SQL statement executed. Rows returned: {RowCount}", rowCount);
     }
 
-    private async Task<SqlResponse> GetFirstChunkOrNullAsync(string sqlStatement)
+    private async Task<SqlResponse> GetFirstChunkOrNullAsync(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
     {
         const int timeOutPerAttemptSeconds = 30;
 
@@ -98,6 +105,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         {
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
+            parameters = sqlStatementParameters,
             warehouse_id = _options.Value.WarehouseId,
             disposition = "EXTERNAL_LINKS", // Some results are larger than the maximum allowed 16MB limit, thus we need to use external links
         };

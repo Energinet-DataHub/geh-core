@@ -19,10 +19,10 @@ private static void AddDatabricks(IServiceCollection services, IConfiguration co
     configuration.GetSection("DatabricksOptions").Bind(options);
 
     // Option 1
-    services.AddSqlStatementExecution(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
+    services.AddDatabricksSqlStatementExecution(options.WarehouseId, options.WorkspaceToken, options.WorkspaceUrl);
 
     // Option 2
-    services.AddSqlStatementExecution(options);
+    services.AddDatabricksSqlStatementExecution(options);
 }
 ```
 
@@ -32,14 +32,21 @@ Example of how to use the SQL Statement Execution client.
 [HttpGet]
 public async Task<IActionResult> GetAsync()
 {
-    var sqlQuery = "SELECT column1 FROM database.table";
+    var sqlQuery = "SELECT * FROM my_table WHERE name = :my_name AND date = :my_date";
+    var parameters = new List<SqlStatementParameter>
+    {
+        SqlStatementParameter.Create("my_name", "Sheldon Cooper"),
+        SqlStatementParameter.Create("my_date", "26-02-1980", "DATE"),
+    };
     var resultList = new List<TestModel>();
 
-    await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery)) {
-        var testModel = new TestModel(row["column1"]);
+    await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery, parameters)) {
+        var testModel = new TestModel(row["my_name"], row["my_date"]);
         resultList.Add(testModel)
     }
 
     return Ok(resultList);
 }
 ```
+
+Notice, if a type is given in the `SqlStatementParameter` Create method, Databricks SQL Statement Execution API will perform type checking on the parameter value. But no functional difference. See [Databricks documentation](https://docs.databricks.com/api/workspace/statementexecution/executestatement) for more information.
