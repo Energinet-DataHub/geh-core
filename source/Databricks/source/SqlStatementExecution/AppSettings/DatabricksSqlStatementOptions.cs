@@ -17,6 +17,11 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 public class DatabricksSqlStatementOptions
 {
     /// <summary>
+    /// Settings scope for Databricks options.
+    /// </summary>
+    public const string DatabricksOptions = "DatabricksOptions";
+
+    /// <summary>
     /// Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net.
     /// </summary>
     public string WorkspaceUrl { get; set; } = string.Empty;
