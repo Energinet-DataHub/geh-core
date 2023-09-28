@@ -94,7 +94,7 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
         {
             SqlStatementParameter.Create("id", "some_id"),
             SqlStatementParameter.Create("someValue", "some_value"),
-            SqlStatementParameter.Create("expectedRowCount", "100"),
+            SqlStatementParameter.Create("expectedRowCount", "100", "INT"),
         };
 
         // Arrange: The result of this query spans multiple chunks
