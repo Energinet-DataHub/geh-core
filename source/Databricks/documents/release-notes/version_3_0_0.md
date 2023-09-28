@@ -24,8 +24,8 @@ public async Task<IActionResult> GetAsync()
     var sqlQuery = "SELECT * FROM my_table WHERE name = :my_name AND date = :my_date";
     var parameters = new List<SqlStatementParameter>
     {
-        new SqlStatementParameter("my_name", "Sheldon Cooper"),
-        new SqlStatementParameter("my_date", "26-02-1980", "DATE"),
+        SqlStatementParameter.Create("my_name", "Sheldon Cooper"),
+        SqlStatementParameter.Create("my_date", "26-02-1980"),
     };
     var resultList = new List<TestModel>();
 
