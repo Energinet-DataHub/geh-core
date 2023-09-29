@@ -11,6 +11,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{65F2891F-9158-4EE1-8296-D44C5388D5C7}"
 	ProjectSection(SolutionItems) = preProject
 		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
+		documents\release-notes\version_2_0_0.md = documents\release-notes\version_2_0_0.md
 		documents\release-notes\version_3_0_0.md = documents\release-notes\version_3_0_0.md
 	EndProjectSection
 EndProject
@@ -18,9 +19,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{C3C7D8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution", "source\SqlStatementExecution\SqlStatementExecution.csproj", "{8DAD22BC-DA0E-484D-9092-57AE4394DCA0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.Tests", "source\SqlStatementExecution.Tests\SqlStatementExecution.Tests.csproj", "{CAE1550E-D962-458A-95C2-D42B89E37B65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.UnitTests", "source\SqlStatementExecution.UnitTests\SqlStatementExecution.UnitTests.csproj", "{CAE1550E-D962-458A-95C2-D42B89E37B65}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.IntegrationTests", "source\SqlStatementExecution.IntegrationTests\SqlStatementExecution.IntegrationTests.csproj", "{E8A56710-1EB2-4ED1-8E93-E3653F815983}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs", "source\Jobs\Jobs.csproj", "{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.UnitTests", "source\Jobs.UnitTests\Jobs.UnitTests.csproj", "{390C1889-635B-4B3E-A754-051E31A30110}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.IntegrationTests", "source\Jobs.IntegrationTests\Jobs.IntegrationTests.csproj", "{2E3F08FC-523F-4150-828B-07D6304DDF9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +47,18 @@ Global
 		{E8A56710-1EB2-4ED1-8E93-E3653F815983}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8A56710-1EB2-4ED1-8E93-E3653F815983}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8A56710-1EB2-4ED1-8E93-E3653F815983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{390C1889-635B-4B3E-A754-051E31A30110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{390C1889-635B-4B3E-A754-051E31A30110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{390C1889-635B-4B3E-A754-051E31A30110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{390C1889-635B-4B3E-A754-051E31A30110}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E3F08FC-523F-4150-828B-07D6304DDF9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E3F08FC-523F-4150-828B-07D6304DDF9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E3F08FC-523F-4150-828B-07D6304DDF9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E3F08FC-523F-4150-828B-07D6304DDF9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,8 +68,12 @@ Global
 		{8DAD22BC-DA0E-484D-9092-57AE4394DCA0} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
 		{CAE1550E-D962-458A-95C2-D42B89E37B65} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
 		{E8A56710-1EB2-4ED1-8E93-E3653F815983} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
+		{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
+		{390C1889-635B-4B3E-A754-051E31A30110} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
+		{2E3F08FC-523F-4150-828B-07D6304DDF9C} = {C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {66C69E01-8F6F-4E17-BA99-F00F5E65D57E}
 	EndGlobalSection
 EndGlobal
+

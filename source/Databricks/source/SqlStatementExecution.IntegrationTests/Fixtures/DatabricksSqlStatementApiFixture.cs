@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace SqlStatementExecution.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
 public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 {
@@ -33,7 +33,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
 
-    public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
+    public Mock<IOptions<DatabricksSqlStatementOptions>> DatabricksOptionsMock { get; }
 
     public Task InitializeAsync()
     {
@@ -46,7 +46,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     }
 
     public DatabricksSqlStatementClient CreateSqlStatementClient(
-        DatabricksOptions databricksOptions,
+        DatabricksSqlStatementOptions databricksOptions,
         Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<DatabricksSqlStatementClient>> loggerMock2)
@@ -67,12 +67,12 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return sqlStatementClient;
     }
 
-    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSettings databricksSettings)
+    private static Mock<IOptions<DatabricksSqlStatementOptions>> CreateDatabricksOptionsMock(DatabricksSettings databricksSettings)
     {
-        var databricksOptionsMock = new Mock<IOptions<DatabricksOptions>>();
+        var databricksOptionsMock = new Mock<IOptions<DatabricksSqlStatementOptions>>();
         databricksOptionsMock
             .Setup(o => o.Value)
-            .Returns(new DatabricksOptions
+            .Returns(new DatabricksSqlStatementOptions
             {
                 WorkspaceUrl = databricksSettings.WorkspaceUrl,
                 WorkspaceToken = databricksSettings.WorkspaceAccessToken,

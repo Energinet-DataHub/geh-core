@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace SqlStatementExecution.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
 /// <summary>
 /// A manager for managing Databricks SQL schemas and tables from integration tests.
@@ -27,11 +27,11 @@ public class DatabricksSchemaManager
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
 
-    public DatabricksSchemaManager(DatabricksOptions databricksOptions, string schemaPrefix)
+    public DatabricksSchemaManager(DatabricksSqlStatementOptions databricksSqlStatementOptions, string schemaPrefix)
     {
-        DatabricksOptions = databricksOptions ?? throw new ArgumentNullException(nameof(databricksOptions));
+        DatabricksSqlStatementOptions = databricksSqlStatementOptions ?? throw new ArgumentNullException(nameof(databricksSqlStatementOptions));
 
-        _httpClient = HttpClientFactory.CreateHttpClient(DatabricksOptions);
+        _httpClient = HttpClientFactory.CreateHttpClient(DatabricksSqlStatementOptions);
         SchemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
     }
 
@@ -39,7 +39,7 @@ public class DatabricksSchemaManager
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
-    private DatabricksOptions DatabricksOptions { get; }
+    private DatabricksSqlStatementOptions DatabricksSqlStatementOptions { get; }
 
     /// <summary>
     /// Create schema (formerly known as database).
@@ -97,7 +97,7 @@ public class DatabricksSchemaManager
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
             statement = sqlStatement,
-            warehouse_id = DatabricksOptions.WarehouseId,
+            warehouse_id = DatabricksSqlStatementOptions.WarehouseId,
         };
         var httpResponse = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 

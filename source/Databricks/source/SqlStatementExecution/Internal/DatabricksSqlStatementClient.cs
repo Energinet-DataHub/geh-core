@@ -18,9 +18,11 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -38,13 +40,13 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly HttpClient _externalHttpClient;
-    private readonly IOptions<DatabricksOptions> _options;
+    private readonly IOptions<DatabricksSqlStatementOptions> _options;
     private readonly ISqlResponseParser _responseResponseParser;
     private readonly ILogger<DatabricksSqlStatementClient> _logger;
 
     public DatabricksSqlStatementClient(
         IHttpClientFactory httpClientFactory,
-        IOptions<DatabricksOptions> options,
+        IOptions<DatabricksSqlStatementOptions> options,
         ISqlResponseParser responseResponseParser,
         ILogger<DatabricksSqlStatementClient> logger)
     {

@@ -14,10 +14,12 @@
 
 using System;
 using System.Net.Http.Headers;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection
 {
@@ -31,65 +33,47 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         /// <param name="workspaceToken"></param>
         /// <param name="workspaceUrl"></param>
         /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        [Obsolete("Use 'AddSqlStatementExecution'")]
+        [Obsolete("Use 'AddDatabricksSqlStatementExecution'")]
         public static IServiceCollection AddDatabricks(
             this IServiceCollection serviceCollection,
             string warehouseId,
             string workspaceToken,
             string workspaceUrl)
         {
-            return AddSqlStatementExecutionInner(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
+            serviceCollection.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
+            {
+                options.WarehouseId = warehouseId;
+                options.WorkspaceToken = workspaceToken;
+                options.WorkspaceUrl = workspaceUrl;
+                options.DatabricksHealthCheckStartHour = 6; // use default
+                options.DatabricksHealthCheckEndHour = 20; // use default
+            });
+
+            return serviceCollection.AddSqlStatementExecutionInner();
         }
 
         /// <summary>
         /// Adds the <see cref="IDatabricksSqlStatementClient"/> and related services to the service collection.
         /// </summary>
         /// <param name="serviceCollection"></param>
-        /// <param name="databricksOptions"></param>
         /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        public static IServiceCollection AddDatabricksSqlStatementExecution(
-            this IServiceCollection serviceCollection,
-            DatabricksOptions databricksOptions)
+        public static IServiceCollection AddDatabricksSqlStatementExecution(this IServiceCollection serviceCollection)
         {
-            return AddSqlStatementExecutionInner(serviceCollection, databricksOptions.WarehouseId, databricksOptions.WorkspaceToken, databricksOptions.WorkspaceUrl);
+            return serviceCollection.AddSqlStatementExecutionInner();
         }
 
-        /// <summary>
-        /// Adds Databricks SqlStatementExecution to the service collection
-        /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="warehouseId"></param>
-        /// <param name="workspaceToken"></param>
-        /// <param name="workspaceUrl"></param>
-        /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        public static IServiceCollection AddDatabricksSqlStatementExecution(
-            this IServiceCollection serviceCollection,
-            string warehouseId,
-            string workspaceToken,
-            string workspaceUrl)
+        private static IServiceCollection AddSqlStatementExecutionInner(this IServiceCollection serviceCollection)
         {
-            return AddSqlStatementExecutionInner(serviceCollection, warehouseId, workspaceToken, workspaceUrl);
-        }
-
-        private static IServiceCollection AddSqlStatementExecutionInner(
-            IServiceCollection serviceCollection,
-            string warehouseId,
-            string workspaceToken,
-            string workspaceUrl)
-        {
-            serviceCollection.AddOptions<DatabricksOptions>().Configure(options =>
-            {
-                options.WarehouseId = warehouseId;
-                options.WorkspaceToken = workspaceToken;
-                options.WorkspaceUrl = workspaceUrl;
-            });
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var databricksOptions = serviceProvider
+                .GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
 
             serviceCollection.AddHttpClient(
                 HttpClientNameConstants.Databricks,
                 client =>
                 {
-                    client.BaseAddress = new Uri(workspaceUrl);
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", workspaceToken);
+                    client.BaseAddress = new Uri(databricksOptions.WorkspaceUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", databricksOptions.WorkspaceToken);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
