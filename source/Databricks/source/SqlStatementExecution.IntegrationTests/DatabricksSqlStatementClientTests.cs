@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -67,7 +68,9 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
         var sqlStatement = $"SELECT * FROM {SchemaName}.{tableName}";
 
         // Act
-        var actual = await sut.ExecuteAsync(sqlStatement).ToListAsync();
+        var actual = await sut.ExecuteAsync(
+            sqlStatement,
+            new List<SqlStatementParameter>()).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);
@@ -87,12 +90,19 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
             httpClientFactory,
             databricksSqlStatusResponseParserLoggerMock,
             sqlStatementClientLoggerMock);
+        var sqlStatementParameters = new List<SqlStatementParameter>(3)
+        {
+            SqlStatementParameter.Create("id", "some_id"),
+            SqlStatementParameter.Create("someValue", "some_value"),
+            SqlStatementParameter.Create("expectedRowCount", "100", "INT"),
+        };
 
         // Arrange: The result of this query spans multiple chunks
-        var sqlStatement = $"select r.id, 'some value' as value from range({expectedRowCount}) as r";
+        var sqlStatement = $"select :id, :someValue as value from range(:expectedRowCount) as r";
 
         // Act
-        var actual = await sut.ExecuteAsync(sqlStatement).CountAsync();
+        var actual = await sut.ExecuteAsync(sqlStatement, sqlStatementParameters)
+            .CountAsync();
 
         // Assert
         actual.Should().Be(expectedRowCount);

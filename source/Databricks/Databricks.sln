@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-no
 	ProjectSection(SolutionItems) = preProject
 		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
 		documents\release-notes\version_2_0_0.md = documents\release-notes\version_2_0_0.md
+		documents\release-notes\version_3_0_0.md = documents\release-notes\version_3_0_0.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{C3C7D8A2-E32D-4353-A70F-5D88D52E48D3}"

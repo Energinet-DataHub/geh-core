@@ -15,6 +15,7 @@
 using System.Net;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +51,15 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixt
             return new WebHostBuilder()
                 .ConfigureServices(services =>
                 {
+                    services.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
+                    {
+                        options.WarehouseId = "baz";
+                        options.WorkspaceToken = "bar";
+                        options.WorkspaceUrl = "https://foo.com";
+                        options.DatabricksHealthCheckStartHour = 0;
+                        options.DatabricksHealthCheckEndHour = 23;
+                    });
+
                     services.AddRouting();
                     services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
 

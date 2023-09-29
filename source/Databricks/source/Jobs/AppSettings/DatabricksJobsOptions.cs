@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 
 public class DatabricksJobsOptions
@@ -19,32 +21,38 @@ public class DatabricksJobsOptions
     /// <summary>
     /// Settings scope for Databricks options.
     /// </summary>
+    [Required]
     public const string DatabricksOptions = "DatabricksOptions";
 
     /// <summary>
     /// Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net.
     /// </summary>
+    [Required]
     public string WorkspaceUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token.
     /// </summary>
+    [Required]
     public string WorkspaceToken { get; set; } = string.Empty;
 
     /// <summary>
     /// The databricks warehouse id.
     /// </summary>
+    [Required]
     public string WarehouseId { get; set; } = string.Empty;
 
     /// <summary>
     /// Defines the hour of the day when the health check DataLake should start.
     /// The default value is 6:00 AM.
     /// </summary>
+    [Required]
     public int DatabricksHealthCheckStartHour { get; set; } = 6;
 
     /// <summary>
     /// Defines the hour of the day when the health check towards DataLake should end.
     /// The default value is 8:00 PM.
     /// </summary>
+    [Required]
     public int DatabricksHealthCheckEndHour { get; set; } = 20;
 }

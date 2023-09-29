@@ -1,6 +1,6 @@
 # Databricks Release Notes
 
-## Version 3.0.0
+## Version 4.0.0
 
 In this new version we
 
@@ -9,6 +9,10 @@ In this new version we
 - added `JobsApiClient`as a client for the Databricks Jobs API
 
 See [documentation.md](../documentation.md) for information on how to setup and use the package.
+
+## Version 3.0.0
+
+- See [Version 3.0.0 release notes](./version_3_0_0.md)
 
 ## Version 2.0.0
 

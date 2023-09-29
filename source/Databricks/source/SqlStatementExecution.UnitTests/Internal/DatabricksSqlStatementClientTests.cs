@@ -15,6 +15,7 @@
 using System.Net;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Builders;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -69,7 +70,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -93,7 +95,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -117,7 +120,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -141,7 +145,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -165,7 +170,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -189,7 +195,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -202,7 +209,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -223,7 +231,8 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.ExecuteAsync("some sql").ToListAsync());
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
+            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
     }
 
     [Theory]
@@ -248,7 +257,7 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act
-        var result = await sut.ExecuteAsync("some sql").ToListAsync();
+        var result = await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
 
         // Assert
         Assert.Equal(5, result.Count);
