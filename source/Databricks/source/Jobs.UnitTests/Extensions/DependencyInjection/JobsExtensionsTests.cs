@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Databricks.Jobs.Internal;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -24,23 +24,23 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Extensions.Dependency
 
 public class JobsExtensionsTests
 {
+    private readonly IConfiguration _configuration = new ConfigurationBuilder()
+        .AddInMemoryCollection(new Dictionary<string, string?>()
+        {
+            ["WorkspaceUrl"] = "https://foo.com",
+            ["WarehouseId"] = "baz",
+            ["WorkspaceToken"] = "bar",
+        })
+        .Build();
+
     [Fact]
     public void AddDatabricksJobs_Should_ReturnJobsApiClient()
     {
         // Arrange
         var services = new ServiceCollection();
-        const string workspaceUrl = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
-        services.AddOptions<DatabricksJobsOptions>().Configure(options =>
-        {
-            options.WarehouseId = warehouseId;
-            options.WorkspaceToken = workspaceToken;
-            options.WorkspaceUrl = workspaceUrl;
-        });
 
         // Act
-        services.AddDatabricksJobs();
+        services.AddDatabricksJobs(_configuration);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
@@ -53,18 +53,9 @@ public class JobsExtensionsTests
     {
         // Arrange
         var services = new ServiceCollection();
-        const string workspaceUrl = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
-        services.AddOptions<DatabricksJobsOptions>().Configure(options =>
-        {
-            options.WarehouseId = warehouseId;
-            options.WorkspaceToken = workspaceToken;
-            options.WorkspaceUrl = workspaceUrl;
-        });
 
         // Act
-        services.AddDatabricksJobs();
+        services.AddDatabricksJobs(_configuration);
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
