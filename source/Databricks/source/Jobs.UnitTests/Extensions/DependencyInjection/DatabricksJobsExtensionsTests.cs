@@ -22,7 +22,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Extensions.DependencyInjection;
 
-public class JobsExtensionsTests
+public class DatabricksJobsExtensionsTests
 {
     private readonly IConfiguration _configuration = new ConfigurationBuilder()
         .AddInMemoryCollection(new Dictionary<string, string?>()
