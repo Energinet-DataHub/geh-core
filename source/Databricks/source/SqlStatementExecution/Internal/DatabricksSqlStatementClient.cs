@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -59,7 +60,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(
         string sqlStatement,
-        List<SqlStatementParameter>? sqlStatementParameters = null)
+        List<SqlStatementParameter>? sqlStatementParameters)
     {
         sqlStatementParameters ??= new List<SqlStatementParameter>();
 
@@ -69,6 +70,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
             sqlStatementParameters);
 
         var response = await GetFirstChunkOrNullAsync(sqlStatement, sqlStatementParameters).ConfigureAwait(false);
+
         var columnNames = response.ColumnNames;
         var chunk = response.Chunk;
         var rowCount = 0;
@@ -82,11 +84,20 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
             var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
 
-            for (var index = 0; index < data.Rows.Count; index++)
+            var index = 0;
+            await foreach (var row in data)
+            {
+                var tableChunk = new TableChunk(columnNames!, new List<string[]> { row! });
+                yield return new SqlResultRow(tableChunk, index);
+                rowCount++;
+                index++;
+            }
+
+            /*for (var index = 0; index < data.Rows.Count; index++)
             {
                 yield return new SqlResultRow(data, index);
                 rowCount++;
-            }
+            }*/
 
             if (chunk.NextChunkInternalLink == null)
             {
@@ -166,7 +177,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         return _responseResponseParser.ParseChunkResponse(jsonResponse);
     }
 
-    private async Task<TableChunk> GetChunkDataAsync(Uri? externalLink, string[] columnNames)
+    private async Task<IAsyncEnumerable<string[]?>> GetChunkDataAsync(Uri? externalLink, string[] columnNames)
     {
         var httpResponse = await _externalHttpClient.GetAsync(externalLink).ConfigureAwait(false);
         if (!httpResponse.IsSuccessStatusCode)
@@ -174,8 +185,8 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
             throw new DatabricksSqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
         }
 
-        var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        return _responseResponseParser.ParseChunkDataResponse(jsonResponse, columnNames);
+        var jsonResponse = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        return _responseResponseParser.ParseChunkDataResponseAsync(jsonResponse, columnNames);
     }
 
     private void LogDatabricksSqlResponseState(SqlResponse response)

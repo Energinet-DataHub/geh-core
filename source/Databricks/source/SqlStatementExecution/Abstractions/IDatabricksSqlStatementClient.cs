@@ -28,7 +28,7 @@ public interface IDatabricksSqlStatementClient
     /// </summary>
     /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters. </param>
     /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects representing parameters
-    /// to be used in the query.</param>
+    ///     to be used in the query.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
     /// </returns>

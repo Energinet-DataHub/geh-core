@@ -12,30 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {
-    public TableChunk Parse(string jsonResponse, string[] columnNames)
+    public async IAsyncEnumerable<string[]?> ParseAsync(Stream jsonResponse, string[] columnNames)
     {
-        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
+        await foreach (var item in JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse))
+        {
+            yield return item;
+        }
+
+        /*var jsonArray = JsonSerializer.DeserializeAsyncEnumerable<JsonArray>(jsonResponse);
+
+        // var jsonArray = JsonSerializer.Deserialize<JsonArray>(jsonResponse);
+        /*var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
         var jsonArray = JsonConvert.DeserializeObject<JArray>(jsonResponse, settings) ??
-                         throw new InvalidOperationException();
+                         throw new InvalidOperationException();#1#
 
         var rows = GetDataArray(jsonArray);
-        return new TableChunk(columnNames, rows);
+        return new TableChunk(columnNames, rows);*/
     }
 
-    private static List<string[]> GetDataArray(JArray jsonArray)
+    private static List<string[]> GetDataArray(IAsyncEnumerable<JsonArray?> jsonArray)
     {
-        var dataArray = jsonArray.ToObject<List<string[]>>() ??
+        var dataArray = jsonArray.GetAsyncEnumerator().Current.Deserialize<List<string[]>>() ??
                         throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
         return dataArray;
     }
