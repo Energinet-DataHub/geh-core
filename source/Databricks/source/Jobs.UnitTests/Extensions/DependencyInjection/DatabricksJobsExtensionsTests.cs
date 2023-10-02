@@ -51,8 +51,9 @@ public class DatabricksJobsExtensionsTests
 
     [Theory]
     [InlineData(false, 0, 23)]
-    [InlineData(true, -1, 23)]
-    [InlineData(true, 0, 24)]
+    [InlineData(true, -1, 23)] // Start hour is too low
+    [InlineData(true, 0, 24)] // End hour is too high
+    [InlineData(true, 1, 1)] // End hour must be greather than start houd
     public void AddDatabricksJobs_Should_RegisterDatabricksJobsOptions(
         bool shouldThrowException, int startHour, int endHour)
     {

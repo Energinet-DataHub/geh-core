@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
                     {
                         return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
                     },
-                    "Databricks Jobs Health Check start hour must be lower than end hour.");
+                    "Databricks Jobs Health Check end hour must be greater than start hour.");
 
             return serviceCollection;
         }
