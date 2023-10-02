@@ -47,19 +47,4 @@ public class DatabricksJobsExtensionsTests
         var client = serviceProvider.GetRequiredService<IJobsApiClient>();
         client.Should().BeOfType<JobsApiClient>();
     }
-
-    [Fact]
-    public void AddDatabricksJobs_Should_ResolveSqlClient()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-
-        // Act
-        services.AddDatabricksJobs(_configuration);
-        var serviceProvider = services.BuildServiceProvider();
-
-        // Assert
-        var client = serviceProvider.GetService<IJobsApiClient>();
-        client.Should().NotBeNull();
-    }
 }
