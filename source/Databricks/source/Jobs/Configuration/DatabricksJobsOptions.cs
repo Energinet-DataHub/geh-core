@@ -14,7 +14,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
+namespace Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 
 public class DatabricksJobsOptions
 {

@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
+using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
 {
-    public static class JobsExtensions
+    public static class DatabricksJobsExtensions
     {
         /// <summary>
         /// Adds Databricks Jobs Client to the service collection.

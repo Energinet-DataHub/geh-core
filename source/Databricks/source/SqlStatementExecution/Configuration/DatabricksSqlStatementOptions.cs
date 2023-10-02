@@ -14,7 +14,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 
 public class DatabricksSqlStatementOptions
 {

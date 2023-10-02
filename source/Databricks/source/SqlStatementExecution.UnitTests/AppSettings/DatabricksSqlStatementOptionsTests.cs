@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using FluentAssertions;
-using Xunit;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.AppSettings;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Configuration;
 
-public class OptionsTests
+public class DatabricksSqlStatementOptionsTests
 {
     [Theory]
-    [InlineAutoMoqData(typeof(DatabricksJobsOptions), 5, "WorkspaceUrl", "WorkspaceToken", "WarehouseId", "DatabricksHealthCheckStartHour", "DatabricksHealthCheckEndHour")]
+    [InlineAutoMoqData(typeof(DatabricksSqlStatementOptions), 5, "WorkspaceUrl", "WorkspaceToken", "WarehouseId", "DatabricksHealthCheckStartHour", "DatabricksHealthCheckEndHour")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act
