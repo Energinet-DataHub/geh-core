@@ -29,7 +29,9 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
         public static IServiceCollection AddDatabricksJobs(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.AddSingleton<IJobsApiClient, JobsApiClient>();
-            serviceCollection.AddOptions<DatabricksJobsOptions>().Bind(configuration);
+            serviceCollection
+                .AddOptions<DatabricksJobsOptions>()
+                .Bind(configuration);
             return serviceCollection;
         }
     }

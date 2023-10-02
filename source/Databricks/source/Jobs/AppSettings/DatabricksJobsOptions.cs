@@ -21,7 +21,6 @@ public class DatabricksJobsOptions
     /// <summary>
     /// Settings scope for Databricks options.
     /// </summary>
-    [Required]
     public const string DatabricksOptions = "DatabricksOptions";
 
     /// <summary>
