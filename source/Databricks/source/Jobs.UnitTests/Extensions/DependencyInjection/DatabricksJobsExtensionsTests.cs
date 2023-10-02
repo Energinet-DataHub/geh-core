@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.Databricks.Jobs.Internal;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Extensions.DependencyInjection;
@@ -41,10 +42,48 @@ public class DatabricksJobsExtensionsTests
 
         // Act
         services.AddDatabricksJobs(_configuration);
-        var serviceProvider = services.BuildServiceProvider();
 
         // Assert
+        var serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<IJobsApiClient>();
         client.Should().BeOfType<JobsApiClient>();
+    }
+
+    [Theory]
+    [InlineData(false, 0, 23)]
+    [InlineData(true, -1, 23)]
+    [InlineData(true, 0, 24)]
+    public void AddDatabricksJobs_Should_RegisterDatabricksJobsOptions(
+        bool shouldThrowException, int startHour, int endHour)
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>()
+            {
+                ["WorkspaceUrl"] = "https://foo.com",
+                ["WarehouseId"] = "baz",
+                ["WorkspaceToken"] = "bar",
+                ["DatabricksHealthCheckStartHour"] = startHour.ToString(),
+                ["DatabricksHealthCheckEndHour"] = endHour.ToString(),
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddDatabricksJobs(configuration);
+
+        // Assert
+        var serviceProvider = services.BuildServiceProvider();
+
+        var act = () => serviceProvider.GetRequiredService<IJobsApiClient>();
+        if (shouldThrowException)
+        {
+            act.Should().Throw<OptionsValidationException>();
+        }
+        else
+        {
+            act.Should().NotThrow();
+        }
     }
 }

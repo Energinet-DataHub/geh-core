@@ -31,7 +31,15 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
             serviceCollection.AddSingleton<IJobsApiClient, JobsApiClient>();
             serviceCollection
                 .AddOptions<DatabricksJobsOptions>()
-                .Bind(configuration);
+                .Bind(configuration)
+                .ValidateDataAnnotations()
+                .Validate(
+                    options =>
+                    {
+                        return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
+                    },
+                    "Databricks Jobs Health Check start hour must be lower than end hour.");
+
             return serviceCollection;
         }
     }

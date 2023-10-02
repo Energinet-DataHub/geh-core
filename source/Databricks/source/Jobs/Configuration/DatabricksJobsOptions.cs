@@ -45,13 +45,13 @@ public class DatabricksJobsOptions
     /// Defines the hour of the day when the health check DataLake should start.
     /// The default value is 6:00 AM.
     /// </summary>
-    [Required]
+    [Range(0, 23, ErrorMessage = "Value must be between 0 and 23 inclusive.")]
     public int DatabricksHealthCheckStartHour { get; set; } = 6;
 
     /// <summary>
     /// Defines the hour of the day when the health check towards DataLake should end.
     /// The default value is 8:00 PM.
     /// </summary>
-    [Required]
+    [Range(0, 23, ErrorMessage = "Value must be between 0 and 23 inclusive.")]
     public int DatabricksHealthCheckEndHour { get; set; } = 20;
 }
