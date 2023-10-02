@@ -58,7 +58,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _externalHttpClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
     }
 
-    public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(
+    public async IAsyncEnumerable<string[]?> ExecuteAsync(
         string sqlStatement,
         List<SqlStatementParameter>? sqlStatementParameters)
     {
@@ -87,8 +87,10 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
             var index = 0;
             await foreach (var row in data)
             {
-                var tableChunk = new TableChunk(columnNames!, new List<string[]> { row! });
-                yield return new SqlResultRow(tableChunk, index);
+                yield return row;
+
+                /*var tableChunk = new TableChunk(columnNames!, new List<string[]> { row! });
+                yield return new SqlResultRow(tableChunk, index);*/
                 rowCount++;
                 index++;
             }

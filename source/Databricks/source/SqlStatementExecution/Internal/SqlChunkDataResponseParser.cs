@@ -16,20 +16,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {
-    public async IAsyncEnumerable<string[]?> ParseAsync(Stream jsonResponse, string[] columnNames)
+    public IAsyncEnumerable<string[]?> ParseAsync(Stream jsonResponse, string[] columnNames)
     {
-        await foreach (var item in JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse))
+        return JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse);
+
+        /*await foreach (var item in JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse))
         {
             yield return item;
-        }
+        }*/
 
         /*var jsonArray = JsonSerializer.DeserializeAsyncEnumerable<JsonArray>(jsonResponse);
 
