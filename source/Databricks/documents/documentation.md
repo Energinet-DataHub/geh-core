@@ -78,7 +78,7 @@ Example of how to setup the Databricks in `startup.cs`.
 ```c#
 private static void AddDatabricksJobs(IServiceCollection services, IConfiguration configuration)
 {   
-    services.AddDatabricksJobs(configration);
+    services.AddDatabricksJobs(configuration);
 }
 ```
 
@@ -101,7 +101,7 @@ The package contains functionality to do health checks of the status of the Data
 Example of how to setup the Databricks Jobs health check in `startup.cs`.
 
 ```c#
-private static void AddJobsApiHealthChecks(IServiceCollection serviceCollection, IConfiguration configuration)
+private static void AddJobsApiHealthChecks(IServiceCollection serviceCollection)
 {
     serviceCollection.AddHealthChecks()
         .AddLiveCheck()
