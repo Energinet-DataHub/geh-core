@@ -31,7 +31,7 @@ limitations under the License.
 
     <PropertyGroup>
         <PackageId>Energinet.DataHub.Core.Databricks.Jobs</PackageId>
-        <PackageVersion>4.0.0$(VersionSuffix)</PackageVersion>
+        <PackageVersion>5.0.0$(VersionSuffix)</PackageVersion>
         <Title>Databricks Jobs</Title>
         <Company>Energinet-DataHub</Company>
         <Authors>Energinet-DataHub</Authors>
@@ -75,6 +75,7 @@ limitations under the License.
       <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.1.2" />
       <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.11" />
       <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
       <PackageReference Include="NodaTime" Version="3.0.0" />
     </ItemGroup>
     

@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
+using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
 using Energinet.DataHub.Core.Databricks.Jobs.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
@@ -24,9 +26,10 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
         /// Adds Databricks Jobs Client to the service collection.
         /// </summary>
         /// <returns>IServiceCollection containing elements needed to request Databricks Jobs API.</returns>
-        public static IServiceCollection AddDatabricksJobs(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddDatabricksJobs(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.AddSingleton<IJobsApiClient, JobsApiClient>();
+            serviceCollection.AddOptions<DatabricksJobsOptions>().Bind(configuration);
             return serviceCollection;
         }
     }

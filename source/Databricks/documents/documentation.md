@@ -78,10 +78,7 @@ Example of how to setup the Databricks in `startup.cs`.
 ```c#
 private static void AddDatabricksJobs(IServiceCollection services, IConfiguration configuration)
 {   
-    services.Configure<DatabricksJobsOptions>(
-                configuration.GetSection(DatabricksJobsOptions.DatabricksOptions));
-    
-    services.AddDatabricksJobs();
+    services.AddDatabricksJobs(configration);
 }
 ```
 
@@ -106,9 +103,6 @@ Example of how to setup the Databricks Jobs health check in `startup.cs`.
 ```c#
 private static void AddJobsApiHealthChecks(IServiceCollection serviceCollection, IConfiguration configuration)
 {
-    services.Configure<DatabricksJobsOptions>(
-                configuration.GetSection(DatabricksJobsOptions.DatabricksOptions));
-    
     serviceCollection.AddHealthChecks()
         .AddLiveCheck()
         .AddDatabricksJobsApiHealthCheck();
