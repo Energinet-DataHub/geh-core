@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Databricks.Jobs.Internal;
+using Energinet.DataHub.Core.Databricks.Jobs.Internal.Constants;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,5 +62,21 @@ public class JobsExtensionsTests
         // Assert
         var client = serviceProvider.GetService<IJobsApiClient>();
         client.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void AddDatabricksJobs_Should_Resolve_Named_Http_Client()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddDatabricksJobs(_configuration);
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Assert
+        var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
+        var httpClient = httpClientFactory!.CreateClient(HttpClientNameConstants.DatabricksJobsApi);
+        httpClient.BaseAddress.Should().Be(new Uri("https://foo.com/api/"));
     }
 }
