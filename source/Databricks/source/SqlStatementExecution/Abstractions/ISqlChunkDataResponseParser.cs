@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;

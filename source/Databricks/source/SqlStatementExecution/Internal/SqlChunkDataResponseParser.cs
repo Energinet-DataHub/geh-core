@@ -15,7 +15,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
@@ -24,7 +23,14 @@ public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {
     public IAsyncEnumerable<string[]?> ParseAsync(Stream jsonResponse, string[] columnNames)
     {
-        return JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse);
+        var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse);
+
+        if (asyncEnumerable == null)
+        {
+            throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
+        }
+
+        return asyncEnumerable;
 
         /*await foreach (var item in JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse))
         {
@@ -42,10 +48,10 @@ public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
         return new TableChunk(columnNames, rows);*/
     }
 
-    private static List<string[]> GetDataArray(IAsyncEnumerable<JsonArray?> jsonArray)
+    /*private static List<string[]> GetDataArray(IAsyncEnumerable<JsonArray?> jsonArray)
     {
         var dataArray = jsonArray.GetAsyncEnumerator().Current.Deserialize<List<string[]>>() ??
                         throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
         return dataArray;
-    }
+    }*/
 }
