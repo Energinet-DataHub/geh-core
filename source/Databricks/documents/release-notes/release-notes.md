@@ -1,21 +1,26 @@
 # Databricks Release Notes
 
-## Version 6.0.0
+## Version 7.0.0
 
-In this new version we
+In this new version we:
 
 - refactored namespace `AppSettings` to `Configuration`.
-- refactored the validation of Databricks Jobs options to use validation based on data annotations.
+- refactored the validation of `DatabricksJobsOptions` to use validation based on data annotations.
+- refactored the validation of `DatabricksSqlStatementOptions` to use validation based on data annotations.
+
+## Version 6.0.0
+
+- The jobs extension now registers the http client.
 
 ## Version 5.0.0
 
-In this new version we
+In this new version we:
 
 - added the Databricks Jobs options to dependency injection.
 
 ## Version 4.0.0
 
-In this new version we
+In this new version we:
 
 - added Health checks for the Databricks SQL Statement Execution API
 - added Health checks for the Databricks Jobs API

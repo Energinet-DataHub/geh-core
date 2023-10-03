@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Internal;
 using FluentAssertions;
-using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Internal;
@@ -26,8 +26,8 @@ public class JobsApiClientTests
     public void Databricks_Jobs_Client_When_Calling_Jobs_Returns_Jobs_Api_Client()
     {
         // Arrange
-        var options = new DatabricksJobsOptions { WorkspaceUrl = "https://test" };
-        var sut = new JobsApiClient(Options.Create(options));
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>().Object;
+        var sut = new JobsApiClient(httpClientFactoryMock);
 
         // Act
         var actual = sut.Jobs;
