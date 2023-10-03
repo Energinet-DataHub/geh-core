@@ -57,5 +57,5 @@ public interface ISqlResponseParser
     /// <param name="jsonResponse"></param>
     /// <param name="columnNames"></param>
     /// <returns>Returns <see cref="TableChunk"/></returns>
-    IAsyncEnumerable<string[]?> ParseChunkDataResponseAsync(Stream jsonResponse, string[] columnNames);
+    IAsyncEnumerable<string[]> ParseChunkDataResponseAsync(Stream jsonResponse, string[] columnNames);
 }

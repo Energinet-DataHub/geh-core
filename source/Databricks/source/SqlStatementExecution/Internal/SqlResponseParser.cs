@@ -46,7 +46,7 @@ public class SqlResponseParser : ISqlResponseParser
         return _sqlChunkResponseParser.Parse(jsonResponse);
     }
 
-    public IAsyncEnumerable<string[]?> ParseChunkDataResponseAsync(Stream jsonResponse, string[] columnNames)
+    public IAsyncEnumerable<string[]> ParseChunkDataResponseAsync(Stream jsonResponse, string[] columnNames)
     {
         return _sqlChunkDataResponseParser.ParseAsync(jsonResponse, columnNames);
     }

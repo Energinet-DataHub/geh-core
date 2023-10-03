@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {
-    public IAsyncEnumerable<string[]?> ParseAsync(Stream jsonResponse, string[] columnNames)
+    public IAsyncEnumerable<string[]> ParseAsync(Stream jsonResponse, string[] columnNames)
     {
         var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse);
 
@@ -30,7 +30,7 @@ public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
             throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
         }
 
-        return asyncEnumerable;
+        return asyncEnumerable!;
 
         /*await foreach (var item in JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse))
         {

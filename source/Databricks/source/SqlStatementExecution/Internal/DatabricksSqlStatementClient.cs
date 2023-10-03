@@ -58,7 +58,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _externalHttpClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
     }
 
-    public async IAsyncEnumerable<string[]?> ExecuteAsync(
+    public async IAsyncEnumerable<string[]> ExecuteAsync(
         string sqlStatement,
         List<SqlStatementParameter>? sqlStatementParameters)
     {
@@ -177,7 +177,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         return _responseResponseParser.ParseChunkResponse(jsonResponse);
     }
 
-    private async Task<IAsyncEnumerable<string[]?>> GetChunkDataAsync(Uri? externalLink, string[] columnNames)
+    private async Task<IAsyncEnumerable<string[]>> GetChunkDataAsync(Uri? externalLink, string[] columnNames)
     {
         var httpResponse = await _externalHttpClient.GetAsync(externalLink).ConfigureAwait(false);
         if (!httpResponse.IsSuccessStatusCode)

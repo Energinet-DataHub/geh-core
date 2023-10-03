@@ -40,7 +40,7 @@ public interface IDatabricksSqlStatementClient
     /// Optionally, to simply execute a SQL query without parameter markers, the optional <paramref name="sqlStatementParameters"/> parameter
     /// can be left empty. However, it is recommended to make use of parameter markers to protect against SQL injection attacks.
     /// </remarks>
-    IAsyncEnumerable<string[]?> ExecuteAsync(
+    IAsyncEnumerable<string[]> ExecuteAsync(
         string sqlStatement,
         List<SqlStatementParameter>? sqlStatementParameters);
 }
