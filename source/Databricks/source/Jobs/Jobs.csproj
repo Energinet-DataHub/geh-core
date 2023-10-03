@@ -31,7 +31,7 @@ limitations under the License.
 
     <PropertyGroup>
         <PackageId>Energinet.DataHub.Core.Databricks.Jobs</PackageId>
-        <PackageVersion>5.0.0$(VersionSuffix)</PackageVersion>
+        <PackageVersion>6.0.0$(VersionSuffix)</PackageVersion>
         <Title>Databricks Jobs</Title>
         <Company>Energinet-DataHub</Company>
         <Authors>Energinet-DataHub</Authors>
@@ -57,7 +57,7 @@ limitations under the License.
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
-  
+
     <PropertyGroup>
       <GenerateDocumentationFile>true</GenerateDocumentationFile>
       <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -79,5 +79,5 @@ limitations under the License.
       <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="7.0.0" />
       <PackageReference Include="NodaTime" Version="3.0.0" />
     </ItemGroup>
-    
+
 </Project>

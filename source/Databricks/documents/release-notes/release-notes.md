@@ -1,5 +1,12 @@
 # Databricks Release Notes
 
+## Version 6.0.0
+
+In this new version we
+
+- refactored namespace `AppSettings` to `Configuration`.
+- refactored the validation of Databricks Jobs options to use validation based on data annotations.
+
 ## Version 5.0.0
 
 In this new version we
