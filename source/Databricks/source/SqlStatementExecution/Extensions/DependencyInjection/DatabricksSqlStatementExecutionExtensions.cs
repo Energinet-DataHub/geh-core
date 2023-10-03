@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -55,25 +56,33 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
         /// <summary>
         /// Adds the <see cref="IDatabricksSqlStatementClient"/> and related services to the service collection.
         /// </summary>
-        /// <param name="serviceCollection"></param>
         /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        public static IServiceCollection AddDatabricksSqlStatementExecution(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddDatabricksSqlStatementExecution(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
+            serviceCollection
+                .AddOptions<DatabricksSqlStatementOptions>()
+                .Bind(configuration)
+                .ValidateDataAnnotations()
+                .Validate(
+                    options =>
+                    {
+                        return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
+                    },
+                    "Databricks Jobs Health Check end hour must be greater than start hour.");
+
             return serviceCollection.AddSqlStatementExecutionInner();
         }
 
         private static IServiceCollection AddSqlStatementExecutionInner(this IServiceCollection serviceCollection)
         {
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var databricksOptions = serviceProvider
-                .GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
-
             serviceCollection.AddHttpClient(
                 HttpClientNameConstants.Databricks,
-                client =>
+                (serviceProvider, client) =>
                 {
-                    client.BaseAddress = new Uri(databricksOptions.WorkspaceUrl);
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", databricksOptions.WorkspaceToken);
+                    var options = serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
+
+                    client.BaseAddress = new Uri(options.WorkspaceUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
