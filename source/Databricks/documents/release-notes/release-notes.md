@@ -1,11 +1,14 @@
 # Databricks Release Notes
 
+## Version 6.0.0
+
+- the jobs extension now registries the http client.
+
 ## Version 5.0.0
 
 In this new version we
 
 - added the Databricks Jobs options to dependency injection.
-- the jobs extension now registries the http client.  
 
 ## Version 4.0.0
 
