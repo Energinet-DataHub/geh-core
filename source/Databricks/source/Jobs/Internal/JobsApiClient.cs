@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
-using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
+using Energinet.DataHub.Core.Databricks.Jobs.Internal.Constants;
 using Microsoft.Azure.Databricks.Client;
-using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.Internal
 {
@@ -31,38 +28,14 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Internal
     /// </summary>
     public sealed class JobsApiClient : IDisposable, IJobsApiClient
     {
-        private readonly HttpClient _httpClient;
-
         /// <summary>
-        /// Create client object with specified base URL, access token and timeout.
+        /// Create Databricks Jobs client object with a Http client.
         /// </summary>
-        /// <param name="optionsFactory">The databricks settings (options).</param>
-        /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public JobsApiClient(IOptions<DatabricksJobsOptions> optionsFactory, long timeoutSeconds = 30)
+        /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/>.</param>
+        public JobsApiClient(IHttpClientFactory httpClientFactory)
         {
-            var options = optionsFactory.Value;
-            var apiUrl = new Uri(new Uri(options.WorkspaceUrl), "api/");
-            _httpClient = CreateHttpClient(options.WorkspaceToken, timeoutSeconds, apiUrl);
-            Jobs = new Microsoft.Azure.Databricks.Client.JobsApiClient(_httpClient);
-        }
-
-        private static HttpClient CreateHttpClient(string token, long timeoutSeconds, Uri apiUrl)
-        {
-            var handler = new HttpClientHandler
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-            };
-
-            var httpClient = new HttpClient(handler, false)
-            {
-                BaseAddress = apiUrl,
-                Timeout = TimeSpan.FromSeconds(timeoutSeconds),
-            };
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-            return httpClient;
+            var httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.DatabricksJobsApi);
+            Jobs = new Microsoft.Azure.Databricks.Client.JobsApiClient(httpClient);
         }
 
         public IJobsApi Jobs { get; }
@@ -77,7 +50,6 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.Internal
         {
             if (disposing)
             {
-                _httpClient.Dispose();
                 Jobs.Dispose();
             }
         }
