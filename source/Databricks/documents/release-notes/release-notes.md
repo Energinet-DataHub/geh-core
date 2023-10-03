@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 6.0.1
+
+- No functional change.
+
 ## Version 6.0.0
 
 - the jobs extension now registers the http client.
