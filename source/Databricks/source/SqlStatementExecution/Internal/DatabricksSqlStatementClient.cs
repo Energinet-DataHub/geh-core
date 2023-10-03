@@ -84,7 +84,6 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
             var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
 
-            var index = 0;
             await foreach (var row in data)
             {
                 yield return row;
@@ -92,7 +91,6 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
                 /*var tableChunk = new TableChunk(columnNames!, new List<string[]> { row! });
                 yield return new SqlResultRow(tableChunk, index);*/
                 rowCount++;
-                index++;
             }
 
             /*for (var index = 0; index < data.Rows.Count; index++)
