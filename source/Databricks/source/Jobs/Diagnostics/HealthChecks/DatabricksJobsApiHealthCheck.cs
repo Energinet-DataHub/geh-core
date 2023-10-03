@@ -34,10 +34,6 @@ public class DatabricksJobsApiHealthCheck : IHealthCheck
         _jobsApiClient = jobsApiClient;
         _clock = clock;
         _options = options.Value;
-
-        ThrowExceptionIfHourIntervalIsInvalid(
-            _options.DatabricksHealthCheckStartHour,
-            _options.DatabricksHealthCheckEndHour);
     }
 
     /// <summary>
@@ -56,13 +52,5 @@ public class DatabricksJobsApiHealthCheck : IHealthCheck
         }
 
         return HealthCheckResult.Healthy();
-    }
-
-    private static void ThrowExceptionIfHourIntervalIsInvalid(int startHour, int endHour)
-    {
-        if (startHour < 0 || 23 < endHour)
-        {
-            throw new ArgumentException("Databricks Jobs Health Check start hour must be between 0 and 23 inclusive.");
-        }
     }
 }

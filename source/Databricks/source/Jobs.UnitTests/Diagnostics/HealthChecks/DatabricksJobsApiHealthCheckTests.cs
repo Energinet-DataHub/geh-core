@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
@@ -91,29 +90,5 @@ public class DatabricksJobsApiHealthCheckTests
         // Assert
         jobsApiClientMock.Verify(x => x.Jobs, Times.Exactly(times));
         actualHealthStatus.Status.Should().Be(HealthStatus.Healthy);
-    }
-
-    [Theory]
-    [InlineAutoMoqData(-1, 20)]
-    [InlineAutoMoqData(6, 24)]
-    [InlineAutoMoqData(-1, 24)]
-    public void Databricks_Interval_HealthCheck_When_Calling_Dependency_Throws_Invalid_Interval_Exception(
-        int startHour,
-        int endHour,
-        [Frozen] Mock<IJobsApiClient> jobsApiClientMock,
-        [Frozen] Mock<IClock> clockMock)
-    {
-        // Arrange
-        var options = new DatabricksJobsOptions
-        {
-            DatabricksHealthCheckStartHour = startHour,
-            DatabricksHealthCheckEndHour = endHour,
-            WorkspaceUrl = "https://fake",
-        };
-        var databricksOptions = Options.Create(options);
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() =>
-            new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clockMock.Object, databricksOptions));
     }
 }
