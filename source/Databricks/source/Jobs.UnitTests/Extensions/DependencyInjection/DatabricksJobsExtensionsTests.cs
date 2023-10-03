@@ -50,12 +50,12 @@ public class DatabricksJobsExtensionsTests
     }
 
     [Theory]
-    [InlineData(false, 0, 23)]
-    [InlineData(true, -1, 23)] // Start hour is too low
-    [InlineData(true, 0, 24)] // End hour is too high
-    [InlineData(true, 1, 1)] // End hour must be greather than start houd
+    [InlineData(0, 23, "")]
+    [InlineData(-1, 23, "*DatabricksHealthCheckStartHour must be between 0 and 23*")]
+    [InlineData(0, 24, "*DatabricksHealthCheckEndHour must be between 0 and 23*")]
+    [InlineData(1, 1, "*end hour must be greater than start hour*")]
     public void AddDatabricksJobs_Should_RegisterDatabricksJobsOptions(
-        bool shouldThrowException, int startHour, int endHour)
+        int startHour, int endHour, string expectedExceptionMessageWildcardPattern)
     {
         // Arrange
         var configuration = new ConfigurationBuilder()
@@ -76,15 +76,16 @@ public class DatabricksJobsExtensionsTests
 
         // Assert
         var serviceProvider = services.BuildServiceProvider();
-
         var act = () => serviceProvider.GetRequiredService<IJobsApiClient>();
-        if (shouldThrowException)
+        if (string.IsNullOrEmpty(expectedExceptionMessageWildcardPattern))
         {
-            act.Should().Throw<OptionsValidationException>();
+            act.Should().NotThrow();
         }
         else
         {
-            act.Should().NotThrow();
+            act.Should()
+                .Throw<OptionsValidationException>()
+                .WithMessage(expectedWildcardPattern: expectedExceptionMessageWildcardPattern);
         }
     }
 }
