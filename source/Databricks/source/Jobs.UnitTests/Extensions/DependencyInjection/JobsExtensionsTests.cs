@@ -75,8 +75,8 @@ public class JobsExtensionsTests
         var serviceProvider = services.BuildServiceProvider();
 
         // Assert
-        var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
-        var httpClient = httpClientFactory!.CreateClient(HttpClientNameConstants.DatabricksJobsApi);
+        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+        var httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.DatabricksJobsApi);
         httpClient.BaseAddress.Should().Be(new Uri("https://foo.com/api/"));
     }
 }

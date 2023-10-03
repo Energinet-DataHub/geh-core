@@ -2,7 +2,7 @@
 
 ## Version 6.0.0
 
-- the jobs extension now registries the http client.
+- the jobs extension now registers the http client.
 
 ## Version 5.0.0
 
