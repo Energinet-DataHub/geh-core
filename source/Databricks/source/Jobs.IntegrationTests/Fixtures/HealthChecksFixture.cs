@@ -16,7 +16,7 @@ using System.Net;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Core.Databricks.Jobs.AppSettings;
+using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +28,7 @@ using Moq;
 using Moq.Protected;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
+namespace Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests.Fixtures
 {
     public sealed class HealthChecksFixture : IDisposable
     {
@@ -89,7 +89,7 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
         {
             var jobsApiClientMock = new Mock<IJobsApiClient>();
             jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
-            services.AddScoped<IJobsApiClient>(_ => jobsApiClientMock.Object);
+            services.AddScoped(_ => jobsApiClientMock.Object);
         }
 
         private static void RegisterHttpClientFactoryMock(IServiceCollection services)
@@ -107,14 +107,14 @@ namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures
                 .ReturnsAsync(response);
 
             var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-            services.AddScoped<HttpClient>(_ => httpClient);
+            services.AddScoped(_ => httpClient);
 
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             httpClientFactoryMock
                 .Setup(x => x.CreateClient(Options.DefaultName))
                 .Returns(() => httpClient);
 
-            services.AddScoped<IHttpClientFactory>(_ => httpClientFactoryMock.Object);
+            services.AddScoped(_ => httpClientFactoryMock.Object);
         }
     }
 }

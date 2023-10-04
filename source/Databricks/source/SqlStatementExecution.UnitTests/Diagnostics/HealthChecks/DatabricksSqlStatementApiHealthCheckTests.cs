@@ -14,7 +14,7 @@
 
 using System.Net;
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

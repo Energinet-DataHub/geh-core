@@ -18,12 +18,27 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Helpers;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Extensions.DependencyInjection;
 
 public class DatabricksSqlStatementExecutionExtensionsTests
 {
+    private const string WorkspaceUrl = "https://foo.com";
+    private const string WarehouseId = "baz";
+    private const string WorkspaceToken = "bar";
+
+    private readonly IConfiguration _configuration = new ConfigurationBuilder()
+        .AddInMemoryCollection(new Dictionary<string, string?>()
+        {
+            ["WorkspaceUrl"] = WorkspaceUrl,
+            ["WarehouseId"] = WarehouseId,
+            ["WorkspaceToken"] = WorkspaceToken,
+        })
+        .Build();
+
     [Fact]
     [Obsolete]
     public void Deprecated_AddDatabricks_Should_ReturnSqlStatementClient()
@@ -36,12 +51,11 @@ public class DatabricksSqlStatementExecutionExtensionsTests
 
         // Act
         services.AddDatabricks(warehouseId, workspaceToken, workspaceUri);
-        var serviceProvider = services.BuildServiceProvider();
 
         // Assert
+        var serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
 
-        using var assertionScope = new AssertionScope();
         client.Should().BeOfType<DatabricksSqlStatementClient>();
     }
 
@@ -50,18 +64,14 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     {
         // Arrange
         var serviceCollection = new ServiceCollection();
-        const string workspaceUrl = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
-        serviceCollection.AddDataBricksOptionsToServiceCollection(warehouseId, workspaceToken, workspaceUrl);
 
         // Act
-        serviceCollection.AddDatabricksSqlStatementExecution();
+        serviceCollection.AddDatabricksSqlStatementExecution(_configuration);
 
         // Assert
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var client = serviceProvider.GetService<IDatabricksSqlStatementClient>();
-        client.Should().NotBeNull();
+        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
+        client.Should().BeOfType<DatabricksSqlStatementClient>();
     }
 
     [Fact]
@@ -69,17 +79,53 @@ public class DatabricksSqlStatementExecutionExtensionsTests
     {
         // Arrange
         var serviceCollection = new ServiceCollection();
-        const string workspaceUrl = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
-        serviceCollection.AddDataBricksOptionsToServiceCollection(warehouseId, workspaceToken, workspaceUrl);
 
         // Act
-        serviceCollection.AddDatabricksSqlStatementExecution();
+        serviceCollection.AddDatabricksSqlStatementExecution(_configuration);
 
         // Assert
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        AssertHttpClient(serviceProvider, workspaceUrl, workspaceToken);
+        AssertHttpClient(serviceProvider, WorkspaceUrl, WorkspaceToken);
+    }
+
+    [Theory]
+    [InlineData(0, 23, "")]
+    [InlineData(-1, 23, "*DatabricksHealthCheckStartHour must be between 0 and 23*")]
+    [InlineData(0, 24, "*DatabricksHealthCheckEndHour must be between 0 and 23*")]
+    [InlineData(1, 1, "*end hour must be greater than start hour*")]
+    public void AddDatabricksSqlStatementExecution_Should_RegisterDatabricksSqlStatementOptions(
+        int startHour, int endHour, string expectedExceptionMessageWildcardPattern)
+    {
+        // Arrange
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>()
+            {
+                ["WorkspaceUrl"] = "https://foo.com",
+                ["WarehouseId"] = "baz",
+                ["WorkspaceToken"] = "bar",
+                ["DatabricksHealthCheckStartHour"] = startHour.ToString(),
+                ["DatabricksHealthCheckEndHour"] = endHour.ToString(),
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddDatabricksSqlStatementExecution(configuration);
+
+        // Assert
+        var serviceProvider = services.BuildServiceProvider();
+        var act = () => serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
+        if (string.IsNullOrEmpty(expectedExceptionMessageWildcardPattern))
+        {
+            act.Should().NotThrow();
+        }
+        else
+        {
+            act.Should()
+                .Throw<OptionsValidationException>()
+                .WithMessage(expectedWildcardPattern: expectedExceptionMessageWildcardPattern);
+        }
     }
 
     private static void AssertHttpClient(

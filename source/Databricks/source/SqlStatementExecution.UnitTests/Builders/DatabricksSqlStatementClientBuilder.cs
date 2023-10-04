@@ -14,7 +14,7 @@
 
 using System.Net;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Microsoft.Extensions.Logging;

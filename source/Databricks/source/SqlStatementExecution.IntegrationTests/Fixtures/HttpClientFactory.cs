@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 

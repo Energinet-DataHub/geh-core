@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -31,7 +31,7 @@ limitations under the License.
 
     <PropertyGroup>
         <PackageId>Energinet.DataHub.Core.Databricks.Jobs</PackageId>
-        <PackageVersion>4.0.0$(VersionSuffix)</PackageVersion>
+        <PackageVersion>7.0.0$(VersionSuffix)</PackageVersion>
         <Title>Databricks Jobs</Title>
         <Company>Energinet-DataHub</Company>
         <Authors>Energinet-DataHub</Authors>
@@ -57,7 +57,7 @@ limitations under the License.
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
-  
+
     <PropertyGroup>
       <GenerateDocumentationFile>true</GenerateDocumentationFile>
       <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -74,8 +74,15 @@ limitations under the License.
     <ItemGroup>
       <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.1.2" />
       <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.11" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="7.0.0" />
       <PackageReference Include="NodaTime" Version="3.0.0" />
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
-    
+
 </Project>
