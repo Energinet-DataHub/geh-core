@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.AppSettings;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Configuration;
 
-public class OptionsTests
+public class DatabricksSqlStatementOptionsTests
 {
     [Theory]
     [InlineAutoMoqData(typeof(DatabricksSqlStatementOptions), 5, "WorkspaceUrl", "WorkspaceToken", "WarehouseId", "DatabricksHealthCheckStartHour", "DatabricksHealthCheckEndHour")]

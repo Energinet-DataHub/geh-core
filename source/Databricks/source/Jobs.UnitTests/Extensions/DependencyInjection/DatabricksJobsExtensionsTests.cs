@@ -19,11 +19,12 @@ using Energinet.DataHub.Core.Databricks.Jobs.Internal.Constants;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Extensions.DependencyInjection;
 
-public class JobsExtensionsTests
+public class DatabricksJobsExtensionsTests
 {
     private readonly IConfiguration _configuration = new ConfigurationBuilder()
         .AddInMemoryCollection(new Dictionary<string, string?>()
@@ -42,26 +43,51 @@ public class JobsExtensionsTests
 
         // Act
         services.AddDatabricksJobs(_configuration);
-        var serviceProvider = services.BuildServiceProvider();
 
         // Assert
+        var serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<IJobsApiClient>();
         client.Should().BeOfType<JobsApiClient>();
     }
 
-    [Fact]
-    public void AddDatabricksJobs_Should_ResolveSqlClient()
+    [Theory]
+    [InlineData(0, 23, "")]
+    [InlineData(-1, 23, "*DatabricksHealthCheckStartHour must be between 0 and 23*")]
+    [InlineData(0, 24, "*DatabricksHealthCheckEndHour must be between 0 and 23*")]
+    [InlineData(1, 1, "*end hour must be greater than start hour*")]
+    public void AddDatabricksJobs_Should_RegisterDatabricksJobsOptions(
+        int startHour, int endHour, string expectedExceptionMessageWildcardPattern)
     {
         // Arrange
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>()
+            {
+                ["WorkspaceUrl"] = "https://foo.com",
+                ["WarehouseId"] = "baz",
+                ["WorkspaceToken"] = "bar",
+                ["DatabricksHealthCheckStartHour"] = startHour.ToString(),
+                ["DatabricksHealthCheckEndHour"] = endHour.ToString(),
+            })
+            .Build();
+
         var services = new ServiceCollection();
 
         // Act
-        services.AddDatabricksJobs(_configuration);
-        var serviceProvider = services.BuildServiceProvider();
+        services.AddDatabricksJobs(configuration);
 
         // Assert
-        var client = serviceProvider.GetService<IJobsApiClient>();
-        client.Should().NotBeNull();
+        var serviceProvider = services.BuildServiceProvider();
+        var act = () => serviceProvider.GetRequiredService<IJobsApiClient>();
+        if (string.IsNullOrEmpty(expectedExceptionMessageWildcardPattern))
+        {
+            act.Should().NotThrow();
+        }
+        else
+        {
+            act.Should()
+                .Throw<OptionsValidationException>()
+                .WithMessage(expectedWildcardPattern: expectedExceptionMessageWildcardPattern);
+        }
     }
 
     [Fact]

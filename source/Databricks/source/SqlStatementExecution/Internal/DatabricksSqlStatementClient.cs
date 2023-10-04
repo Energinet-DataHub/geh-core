@@ -19,7 +19,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
@@ -40,7 +40,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly HttpClient _externalHttpClient;
-    private readonly IOptions<DatabricksSqlStatementOptions> _options;
+    private readonly DatabricksSqlStatementOptions _options;
     private readonly ISqlResponseParser _responseResponseParser;
     private readonly ILogger<DatabricksSqlStatementClient> _logger;
 
@@ -50,7 +50,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         ISqlResponseParser responseResponseParser,
         ILogger<DatabricksSqlStatementClient> logger)
     {
-        _options = options;
+        _options = options.Value;
         _responseResponseParser = responseResponseParser;
         _logger = logger;
         _httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
@@ -108,7 +108,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
             parameters = sqlStatementParameters,
-            warehouse_id = _options.Value.WarehouseId,
+            warehouse_id = _options.WarehouseId,
             disposition = "EXTERNAL_LINKS", // Some results are larger than the maximum allowed 16MB limit, thus we need to use external links
         };
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Core.Databricks.Jobs.UnitTests.Fixtures;
+using Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
