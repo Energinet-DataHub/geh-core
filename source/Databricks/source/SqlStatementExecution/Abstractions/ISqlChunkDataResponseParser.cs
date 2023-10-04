@@ -32,5 +32,16 @@ public interface ISqlChunkDataResponseParser
     /// <param name="jsonResponse"></param>
     /// <param name="columnNames"></param>
     /// <returns>Returns a <see cref="TableChunk"/></returns>
-    IAsyncEnumerable<string[]> ParseAsync(Stream jsonResponse, string[] columnNames);
+    TableChunk Parse(string jsonResponse, string[] columnNames);
+
+    /// <summary>
+    /// Parses the chunk data response from a Databricks SQL statement execution.
+    ///
+    /// The Chunk Data can vary in response depending on the type of statement executed.
+    /// Therefore a list of column names is required to parse the response.
+    /// </summary>
+    /// <param name="jsonStream"></param>
+    /// <param name="columnNames"></param>
+    /// <returns>Returns a <see cref="TableChunk"/></returns>
+    IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream, string[] columnNames);
 }

@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
@@ -44,6 +43,11 @@ public class SqlResponseParser : ISqlResponseParser
     public SqlChunkResponse ParseChunkResponse(string jsonResponse)
     {
         return _sqlChunkResponseParser.Parse(jsonResponse);
+    }
+
+    public TableChunk ParseChunkDataResponse(string jsonResponse, string[] columnNames)
+    {
+        return _sqlChunkDataResponseParser.Parse(jsonResponse, columnNames);
     }
 
     public IAsyncEnumerable<string[]> ParseChunkDataResponseAsync(Stream jsonResponse, string[] columnNames)

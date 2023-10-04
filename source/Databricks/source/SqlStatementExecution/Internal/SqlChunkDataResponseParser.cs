@@ -12,18 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
 public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {
-    public IAsyncEnumerable<string[]> ParseAsync(Stream jsonResponse, string[] columnNames)
+    public TableChunk Parse(string jsonResponse, string[] columnNames)
     {
-        var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse);
+        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
+        var jsonArray = JsonConvert.DeserializeObject<JArray>(jsonResponse, settings) ??
+                        throw new InvalidOperationException();
+
+        var rows = GetDataArray(jsonArray);
+        return new TableChunk(columnNames, rows);
+    }
+
+    public IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream, string[] columnNames)
+    {
+        var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonStream);
 
         if (asyncEnumerable == null)
         {
@@ -31,27 +45,12 @@ public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
         }
 
         return asyncEnumerable!;
-
-        /*await foreach (var item in JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonResponse))
-        {
-            yield return item;
-        }*/
-
-        /*var jsonArray = JsonSerializer.DeserializeAsyncEnumerable<JsonArray>(jsonResponse);
-
-        // var jsonArray = JsonSerializer.Deserialize<JsonArray>(jsonResponse);
-        /*var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
-        var jsonArray = JsonConvert.DeserializeObject<JArray>(jsonResponse, settings) ??
-                         throw new InvalidOperationException();#1#
-
-        var rows = GetDataArray(jsonArray);
-        return new TableChunk(columnNames, rows);*/
     }
 
-    /*private static List<string[]> GetDataArray(IAsyncEnumerable<JsonArray?> jsonArray)
+    private static List<string[]> GetDataArray(JArray jsonArray)
     {
-        var dataArray = jsonArray.GetAsyncEnumerator().Current.Deserialize<List<string[]>>() ??
+        var dataArray = jsonArray.ToObject<List<string[]>>() ??
                         throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
         return dataArray;
-    }*/
+    }
 }

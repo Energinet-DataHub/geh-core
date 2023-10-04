@@ -28,6 +28,27 @@ public interface IDatabricksSqlStatementClient
     /// </summary>
     /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters. </param>
     /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects representing parameters
+    /// to be used in the query.</param>
+    /// <returns>
+    /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
+    /// </returns>
+    /// <remarks>
+    /// Use this method to execute SQL queries combined with Parameter Markers against Databricks to protect against SQL injection attacks.
+    /// The <paramref name="sqlStatement"/> should contain Parameter Markers in the form of ':parameterName', that has corresponding
+    /// <see cref="SqlStatementParameter"/> objects in the <paramref name="sqlStatementParameters"/> list.
+    ///
+    /// Optionally, to simply execute a SQL query without parameter markers, the optional <paramref name="sqlStatementParameters"/> parameter
+    /// can be left empty. However, it is recommended to make use of parameter markers to protect against SQL injection attacks.
+    /// </remarks>
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(
+        string sqlStatement,
+        List<SqlStatementParameter>? sqlStatementParameters);
+
+    /// <summary>
+    /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
+    /// </summary>
+    /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters. </param>
+    /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects representing parameters
     ///     to be used in the query.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
@@ -40,7 +61,7 @@ public interface IDatabricksSqlStatementClient
     /// Optionally, to simply execute a SQL query without parameter markers, the optional <paramref name="sqlStatementParameters"/> parameter
     /// can be left empty. However, it is recommended to make use of parameter markers to protect against SQL injection attacks.
     /// </remarks>
-    IAsyncEnumerable<string[]> ExecuteAsync(
+    IAsyncEnumerable<string[]> StreamAsync(
         string sqlStatement,
         List<SqlStatementParameter>? sqlStatementParameters);
 }
