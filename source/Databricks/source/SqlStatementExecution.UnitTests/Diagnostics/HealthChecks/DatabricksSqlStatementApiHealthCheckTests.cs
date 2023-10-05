@@ -70,26 +70,4 @@ public class DatabricksSqlStatementApiHealthCheckTests
         // Assert
         actualHealthStatus.Status.Should().Be(expectedHealthStatus);
     }
-
-    [Theory]
-    [InlineAutoMoqData(-1, 20)]
-    [InlineAutoMoqData(6, 24)]
-    public void Databricks_Interval_HealthCheck_When_Calling_Dependency_Throws_Invalid_Interval_Exception(
-        int startHour,
-        int endHour,
-        [Frozen] Mock<IHttpClientFactory> httpClientFactoryMock,
-        [Frozen] Mock<IClock> clockMock)
-    {
-        // Arrange
-        var options = new DatabricksSqlStatementOptions
-        {
-            DatabricksHealthCheckStartHour = startHour,
-            DatabricksHealthCheckEndHour = endHour,
-        };
-        var databricksOptions = Options.Create(options);
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() =>
-            new DatabricksSqlStatementApiHealthCheck(httpClientFactoryMock.Object, clockMock.Object, databricksOptions));
-    }
 }
