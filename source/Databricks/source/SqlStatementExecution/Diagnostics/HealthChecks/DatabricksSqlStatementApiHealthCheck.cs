@@ -38,10 +38,6 @@ public class DatabricksSqlStatementApiHealthCheck : IHealthCheck
         _httpClientFactory = httpClientFactory;
         _clock = clock;
         _options = databricksOptions.Value;
-
-        ThrowExceptionIfHourIntervalIsInvalid(
-            _options.DatabricksHealthCheckStartHour,
-            _options.DatabricksHealthCheckEndHour);
     }
 
     /// <summary>
@@ -65,14 +61,6 @@ public class DatabricksSqlStatementApiHealthCheck : IHealthCheck
         }
 
         return HealthCheckResult.Healthy();
-    }
-
-    private static void ThrowExceptionIfHourIntervalIsInvalid(int databricksHealthCheckStartHour, int databricksHealthCheckEndHour)
-    {
-        if (databricksHealthCheckStartHour < 0 || 23 < databricksHealthCheckEndHour)
-        {
-            throw new ArgumentException("Databricks SQL Statement API Health Check start hour must be between 0 and 23 inclusive.");
-        }
     }
 
     private HttpClient CreateHttpClient()
