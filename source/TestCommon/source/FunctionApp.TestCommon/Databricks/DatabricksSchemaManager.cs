@@ -56,6 +56,7 @@ public class DatabricksSchemaManager
     {
         var sqlStatement = $"CREATE SCHEMA IF NOT EXISTS {SchemaName}";
         await ExecuteSqlAsync(sqlStatement);
+        _schemaExists = true;
     }
 
     /// <summary>
@@ -66,6 +67,7 @@ public class DatabricksSchemaManager
     {
         var sqlStatement = $"DROP SCHEMA {SchemaName} CASCADE";
         await ExecuteSqlAsync(sqlStatement);
+        _schemaExists = false;
     }
 
     /// <summary>
@@ -149,7 +151,7 @@ public class DatabricksSchemaManager
         await ExecuteSqlAsync(sqlStatement);
     }
 
-    private async Task ExecuteSqlAsync(string sqlStatement)
+    protected virtual async Task ExecuteSqlAsync(string sqlStatement)
     {
         sqlStatement = sqlStatement.Trim();
 
@@ -186,7 +188,7 @@ public class DatabricksSchemaManager
         }
     }
 
-    private static HttpClient CreateHttpClient(DatabricksSettings databricksOptions)
+    protected virtual HttpClient CreateHttpClient(DatabricksSettings databricksOptions)
     {
         var httpClient = new HttpClient
         {
