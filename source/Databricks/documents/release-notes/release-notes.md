@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 7.0.1
+
+- Remove validation from DatabricksSqlStatementApiHealthCheck as this was refactored in version 7.0.0 to be handled using options validation.
+
 ## Version 7.0.0
 
 In this new version we:
