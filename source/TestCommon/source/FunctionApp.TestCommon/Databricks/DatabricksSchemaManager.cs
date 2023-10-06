@@ -151,7 +151,7 @@ public class DatabricksSchemaManager
         await ExecuteSqlAsync(sqlStatement);
     }
 
-    protected virtual async Task ExecuteSqlAsync(string sqlStatement)
+    private async Task ExecuteSqlAsync(string sqlStatement)
     {
         sqlStatement = sqlStatement.Trim();
 
@@ -188,7 +188,7 @@ public class DatabricksSchemaManager
         }
     }
 
-    protected virtual HttpClient CreateHttpClient(DatabricksSettings databricksOptions)
+    private static HttpClient CreateHttpClient(DatabricksSettings databricksOptions)
     {
         var httpClient = new HttpClient
         {

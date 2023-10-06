@@ -28,7 +28,11 @@ public class DatabricksSchemaManagerTests
     public async Task When_CreateSchemaThenSchemaExist()
     {
         // Arrange
-        var sut = new DatabricksSchemaManagerSut(new DatabricksSettings(), "test-common");
+        // has internal setters.. damn
+        var databricksSettings = new DatabricksSettings();
+
+        // cannot mock due to private methods ExecuteSqlAsync and CreateHttpClient.. damn inherited and stubbing?
+        var sut = new DatabricksSchemaManagerSut(databricksSettings, "test-common");
 
         // Act
         await sut.CreateSchemaAsync();
@@ -43,7 +47,11 @@ public class DatabricksSchemaManagerTests
     public async Task When_DropSchemaThenSchemaDoesNotExist()
     {
         // Arrange
-        var sut = new DatabricksSchemaManagerSut(new DatabricksSettings(), "test-common");
+        // has internal setters.. damn
+        var databricksSettings = new DatabricksSettings();
+
+        // cannot mock due to private methods ExecuteSqlAsync and CreateHttpClient.. damn inherited and stubbing?
+        var sut = new DatabricksSchemaManagerSut(databricksSettings, "test-common");
 
         // Act
         await sut.DropSchemaAsync();
@@ -56,24 +64,24 @@ public class DatabricksSchemaManagerTests
 
 public class DatabricksSchemaManagerSut : DatabricksSchemaManager
 {
-    private int _executeSqlAsyncHasExecuted;
+     private int _executeSqlAsyncHasExecuted;
 
-    public DatabricksSchemaManagerSut(DatabricksSettings databricksSettings, string schemaPrefix)
-        : base(databricksSettings, schemaPrefix)
-    {
-        _executeSqlAsyncHasExecuted = 0;
+     public DatabricksSchemaManagerSut(DatabricksSettings databricksSettings, string schemaPrefix)
+         : base(databricksSettings, schemaPrefix)
+     {
+         _executeSqlAsyncHasExecuted = 0;
     }
 
-    public int ExecuteSqlAsyncHasExecuted => _executeSqlAsyncHasExecuted;
+     public int ExecuteSqlAsyncHasExecuted => _executeSqlAsyncHasExecuted;
 
-    protected override async Task ExecuteSqlAsync(string sqlStatement)
-    {
-        await Task.CompletedTask.ConfigureAwait(false);
-        _executeSqlAsyncHasExecuted += 1;
-    }
-
-    protected override HttpClient CreateHttpClient(DatabricksSettings databricksOptions)
-    {
-        return new HttpClient();
-    }
+    // protected override async Task ExecuteSqlAsync(string sqlStatement)
+    // {
+    //     await Task.CompletedTask.ConfigureAwait(false);
+    //     _executeSqlAsyncHasExecuted += 1;
+    // }
+    //
+    // protected override HttpClient CreateHttpClient(DatabricksSettings databricksOptions)
+    // {
+    //     return new HttpClient();
+    // }
 }
