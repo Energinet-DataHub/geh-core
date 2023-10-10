@@ -64,11 +64,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         List<SqlStatementParameter>? sqlStatementParameters = null)
     {
         sqlStatementParameters ??= new List<SqlStatementParameter>();
-
-        _logger.LogDebug(
-            "Executing SQL statement: {Sql}, with parameters: {Parameters}",
-            HttpUtility.HtmlEncode(sqlStatement),
-            sqlStatementParameters);
+        LogDatabricksRequest(sqlStatement, sqlStatementParameters);
 
         var response = await GetFirstChunkOrNullAsync(sqlStatement, sqlStatementParameters).ConfigureAwait(false);
         var columnNames = response.ColumnNames;
@@ -77,12 +73,9 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
         while (chunk != null)
         {
-            if (chunk.ExternalLink == null)
-            {
-                break;
-            }
+            if (chunk.ExternalLink == null) break;
 
-            var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
+            var data = await GetChunkDataAsStringAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
 
             for (var index = 0; index < data.Rows.Count; index++)
             {
@@ -90,10 +83,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
                 rowCount++;
             }
 
-            if (chunk.NextChunkInternalLink == null)
-            {
-                break;
-            }
+            if (chunk.NextChunkInternalLink == null) break;
 
             chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
         }
@@ -103,14 +93,10 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
     public async IAsyncEnumerable<string[]> StreamAsync(
         string sqlStatement,
-        List<SqlStatementParameter>? sqlStatementParameters)
+        List<SqlStatementParameter>? sqlStatementParameters = null)
     {
         sqlStatementParameters ??= new List<SqlStatementParameter>();
-
-        _logger.LogDebug(
-            "Executing SQL statement: {Sql}, with parameters: {Parameters}",
-            HttpUtility.HtmlEncode(sqlStatement),
-            sqlStatementParameters);
+        LogDatabricksRequest(sqlStatement, sqlStatementParameters);
 
         var response = await GetFirstChunkOrNullAsync(sqlStatement, sqlStatementParameters).ConfigureAwait(false);
 
@@ -119,10 +105,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
         while (chunk != null)
         {
-            if (chunk.ExternalLink == null)
-            {
-                break;
-            }
+            if (chunk.ExternalLink == null) break;
 
             var data = await GetChunkDataAsStreamAsync(chunk.ExternalLink).ConfigureAwait(false);
 
@@ -132,10 +115,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
                 rowCount++;
             }
 
-            if (chunk.NextChunkInternalLink == null)
-            {
-                break;
-            }
+            if (chunk.NextChunkInternalLink == null) break;
 
             chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
         }
@@ -211,28 +191,39 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         return _responseResponseParser.ParseChunkResponse(jsonResponse);
     }
 
-    private async Task<TableChunk> GetChunkDataAsync(Uri? externalLink, string[] columnNames)
+    private async Task<TableChunk> GetChunkDataAsStringAsync(Uri? externalLink, string[] columnNames)
     {
-        var httpResponse = await _externalHttpClient.GetAsync(externalLink).ConfigureAwait(false);
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new DatabricksSqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
-        }
-
+        var httpResponse = await GetChunkDataAsync(externalLink);
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
         return _responseResponseParser.ParseChunkDataResponse(jsonResponse, columnNames);
     }
 
-    private async Task<IAsyncEnumerable<string[]>> GetChunkDataAsStreamAsync(Uri? externalLink, string[] columnNames)
+    private async Task<IAsyncEnumerable<string[]>> GetChunkDataAsStreamAsync(Uri? externalLink)
+    {
+        var httpResponse = await GetChunkDataAsync(externalLink);
+
+        var jsonResponse = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        return _responseResponseParser.ParseChunkDataResponseAsync(jsonResponse);
+    }
+
+    private async Task<HttpResponseMessage> GetChunkDataAsync(Uri? externalLink)
     {
         var httpResponse = await _externalHttpClient.GetAsync(externalLink).ConfigureAwait(false);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new DatabricksSqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
+            throw new DatabricksSqlException(
+                $"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
         }
 
-        var jsonResponse = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
-        return _responseResponseParser.ParseChunkDataResponseAsync(jsonResponse, columnNames);
+        return httpResponse;
+    }
+
+    private void LogDatabricksRequest(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
+    {
+        _logger.LogDebug(
+            "Executing SQL statement: {Sql}, with parameters: {Parameters}",
+            HttpUtility.HtmlEncode(sqlStatement),
+            sqlStatementParameters);
     }
 
     private void LogDatabricksSqlResponseState(SqlResponse response)
