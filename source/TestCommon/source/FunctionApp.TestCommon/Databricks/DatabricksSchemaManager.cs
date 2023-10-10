@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -32,13 +31,13 @@ public class DatabricksSchemaManager
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
-    private bool _schemaExists = false;
+    private bool _schemaExists;
 
-    public DatabricksSchemaManager(DatabricksSettings databricksSettings, string schemaPrefix)
+    public DatabricksSchemaManager(IHttpClientFactory factory, DatabricksSettings databricksSettings, string schemaPrefix)
     {
         DatabricksSettings = databricksSettings ?? throw new ArgumentNullException(nameof(databricksSettings));
 
-        _httpClient = CreateHttpClient(DatabricksSettings);
+        _httpClient = factory.CreateHttpClient(DatabricksSettings);
         SchemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
     }
 
@@ -102,7 +101,7 @@ public class DatabricksSchemaManager
     /// <param name="tableName">Name of table</param>
     /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.
     /// </param>
-    public async Task InserAsync(string tableName, IEnumerable<IEnumerable<string>> rows)
+    public async Task InsertAsync(string tableName, IEnumerable<IEnumerable<string>> rows)
     {
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
         var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} VALUES {values}";
@@ -135,7 +134,7 @@ public class DatabricksSchemaManager
     public async Task InsertAsync(string tableName, IEnumerable<string> columnNames, IEnumerable<string> row)
     {
         var columnsNames = string.Join(", ", columnNames);
-        var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES ({string.Join(",", row)})";
+        var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES ({string.Join(", ", row)})";
         await ExecuteSqlAsync(sqlStatement);
     }
 
@@ -147,7 +146,7 @@ public class DatabricksSchemaManager
     /// <param name="row"></param>
     public async Task InsertAsync(string tableName, IEnumerable<string> row)
     {
-        var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", row)})";
+        var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(", ", row)})";
         await ExecuteSqlAsync(sqlStatement);
     }
 
@@ -186,22 +185,5 @@ public class DatabricksSchemaManager
         {
             throw new Exception($"Failed to execute SQL statement: {sqlStatement}. Response: {jsonResponse}");
         }
-    }
-
-    private static HttpClient CreateHttpClient(DatabricksSettings databricksOptions)
-    {
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(databricksOptions.WorkspaceUrl),
-        };
-
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", databricksOptions.WorkspaceAccessToken);
-
-        httpClient.DefaultRequestHeaders.Accept.Clear();
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-
-        return httpClient;
     }
 }
