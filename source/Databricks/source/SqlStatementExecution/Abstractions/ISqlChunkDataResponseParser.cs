@@ -41,7 +41,6 @@ public interface ISqlChunkDataResponseParser
     /// Therefore a list of column names is required to parse the response.
     /// </summary>
     /// <param name="jsonStream"></param>
-    /// <param name="columnNames"></param>
     /// <returns>Returns a <see cref="TableChunk"/></returns>
-    IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream, string[] columnNames);
+    IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream);
 }

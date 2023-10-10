@@ -35,7 +35,7 @@ public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
         return new TableChunk(columnNames, rows);
     }
 
-    public IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream, string[] columnNames)
+    public IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream)
     {
         var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonStream);
 

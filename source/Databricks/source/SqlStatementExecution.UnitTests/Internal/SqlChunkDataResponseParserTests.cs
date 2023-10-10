@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Inte
 
             // Act
             await using var jsonStream = GenerateStreamFromString(jsonResponse);
-            var data = sut.ParseAsync(jsonStream, expectedColumnNames);
+            var data = sut.ParseAsync(jsonStream);
 
             // Assert
             await foreach (var actual in data)
