@@ -52,7 +52,7 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
+    public async Task ExecuteAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
         Mock<IHttpClientFactory> httpClientFactory,
         Mock<ILogger<SqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
         Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
@@ -68,9 +68,31 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
         var sqlStatement = $"SELECT * FROM {SchemaName}.{tableName}";
 
         // Act
-        var actual = await sut.ExecuteAsync(
-            sqlStatement,
-            new List<SqlStatementParameter>()).ToListAsync();
+        var actual = await sut.ExecuteAsync(sqlStatement, new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        actual.Count.Should().Be(2);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
+        Mock<IHttpClientFactory> httpClientFactory,
+        Mock<ILogger<SqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
+        Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
+    {
+        // Arrange
+        var tableName = await CreateResultTableWithTwoRowsAsync();
+        var sut = _fixture.CreateSqlStatementClient(
+            _fixture.DatabricksOptionsMock.Object.Value,
+            httpClientFactory,
+            databricksSqlStatusResponseParserLoggerMock,
+            sqlStatementClientLoggerMock);
+
+        var sqlStatement = $"SELECT * FROM {SchemaName}.{tableName}";
+
+        // Act
+        var actual = await sut.StreamAsync(sqlStatement, new List<SqlStatementParameter>()).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);
@@ -98,11 +120,41 @@ public class DatabricksSqlStatementClientTests : IClassFixture<DatabricksSqlStat
         };
 
         // Arrange: The result of this query spans multiple chunks
-        var sqlStatement = $"select :id, :someValue as value from range(:expectedRowCount) as r";
+        const string sqlStatement = "select :id, :someValue as value from range(:expectedRowCount) as r";
 
         // Act
-        var actual = await sut.ExecuteAsync(sqlStatement, sqlStatementParameters)
-            .CountAsync();
+        var actual = await sut.ExecuteAsync(sqlStatement, sqlStatementParameters).CountAsync();
+
+        // Assert
+        actual.Should().Be(expectedRowCount);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenMultipleChunks_ReturnsAllRows(
+        Mock<IHttpClientFactory> httpClientFactory,
+        Mock<ILogger<SqlStatusResponseParser>> databricksSqlStatusResponseParserLoggerMock,
+        Mock<ILogger<DatabricksSqlStatementClient>> sqlStatementClientLoggerMock)
+    {
+        // Arrange
+        const int expectedRowCount = 100;
+        var sut = _fixture.CreateSqlStatementClient(
+            _fixture.DatabricksOptionsMock.Object.Value,
+            httpClientFactory,
+            databricksSqlStatusResponseParserLoggerMock,
+            sqlStatementClientLoggerMock);
+        var sqlStatementParameters = new List<SqlStatementParameter>(3)
+        {
+            SqlStatementParameter.Create("id", "some_id"),
+            SqlStatementParameter.Create("someValue", "some_value"),
+            SqlStatementParameter.Create("expectedRowCount", "100", "INT"),
+        };
+
+        // Arrange: The result of this query spans multiple chunks
+        const string sqlStatement = "select :id, :someValue as value from range(:expectedRowCount) as r";
+
+        // Act
+        var actual = await sut.StreamAsync(sqlStatement, sqlStatementParameters).CountAsync();
 
         // Assert
         actual.Should().Be(expectedRowCount);
