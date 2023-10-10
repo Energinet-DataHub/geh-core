@@ -51,7 +51,7 @@ public interface IDatabricksSqlStatementClient
     /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects representing parameters
     ///     to be used in the query.</param>
     /// <returns>
-    /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
+    /// An asynchronous enumerable of <see cref="string"/> array representing the result set of the query.
     /// </returns>
     /// <remarks>
     /// Use this method to execute SQL queries combined with Parameter Markers against Databricks to protect against SQL injection attacks.
