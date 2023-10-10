@@ -114,7 +114,6 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
         var response = await GetFirstChunkOrNullAsync(sqlStatement, sqlStatementParameters).ConfigureAwait(false);
 
-        var columnNames = response.ColumnNames;
         var chunk = response.Chunk;
         var rowCount = 0;
 
@@ -125,7 +124,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
                 break;
             }
 
-            var data = await GetChunkDataAsStreamAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
+            var data = await GetChunkDataAsStreamAsync(chunk.ExternalLink).ConfigureAwait(false);
 
             await foreach (var row in data)
             {
