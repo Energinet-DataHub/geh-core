@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 3.1.1
+
+- No functional change.
+
 ## Version 3.1.0
 
 - Added `SetApplicationInsightLogLevel` for function apps.
@@ -17,7 +21,7 @@ Moved `LoggingScope` and `RootLoggingScope` to package `Energinet.DataHub.Core.L
 
 ## Version 2.3.0
 
-- Added new LoggingScopeMiddleware package  
+- Added new LoggingScopeMiddleware package
     - Added HttpLoggingScopeMiddleware
     - Added FunctionLoggingScopeMiddleware
 

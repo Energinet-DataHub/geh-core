@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 8.1.1
+
+- No functional change.
+
 ## Version 8.1.0
 
 - Support the retrieval of DH3 source version information from an .NET assembly.

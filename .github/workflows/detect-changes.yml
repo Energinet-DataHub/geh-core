@@ -24,6 +24,8 @@ on:
     outputs:
       app_common:
         value: ${{ jobs.changes.outputs.app_common }}
+      databricks:
+        value: ${{ jobs.changes.outputs.databricks }}
       featuremanagement:
         value: ${{ jobs.changes.outputs.featuremanagement }}
       json_serialization:
@@ -34,8 +36,6 @@ on:
         value: ${{ jobs.changes.outputs.messaging }}
       testcommon:
         value: ${{ jobs.changes.outputs.testcommon }}
-      databricks:
-        value: ${{ jobs.changes.outputs.databricks }}
 
 jobs:
   changes:
@@ -44,12 +44,12 @@ jobs:
     # Set job outputs to values from filter step
     outputs:
       app_common: ${{ steps.filter.outputs.app_common }}
+      databricks: ${{ steps.filter.outputs.databricks }}
       featuremanagement: ${{ steps.filter.outputs.featuremanagement }}
       json_serialization: ${{ steps.filter.outputs.json_serialization }}
       logging: ${{ steps.filter.outputs.logging }}
       messaging: ${{ steps.filter.outputs.messaging }}
       testcommon: ${{ steps.filter.outputs.testcommon }}
-      databricks: ${{ steps.filter.outputs.databricks }}
     steps:
       # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
       - name: Checkout repository
@@ -65,6 +65,10 @@ jobs:
               - '.github/workflows/detect-changes.yml'
               - 'source/App/**'
               - '.github/workflows/app-common-bundle-publish.yml'
+            databricks:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/Databricks/**'
+              - '.github/workflows/databricks-bundle-publish.yml'
             featuremanagement:
               - '.github/workflows/detect-changes.yml'
               - 'source/FeatureManagement/**'
@@ -85,7 +89,3 @@ jobs:
               - '.github/workflows/detect-changes.yml'
               - 'source/TestCommon/**'
               - '.github/workflows/testcommon-bundle-publish.yml'
-            databricks:
-              - '.github/workflows/detect-changes.yml'
-              - 'source/Databricks/**'
-              - '.github/workflows/databricks-bundle-publish.yml'
