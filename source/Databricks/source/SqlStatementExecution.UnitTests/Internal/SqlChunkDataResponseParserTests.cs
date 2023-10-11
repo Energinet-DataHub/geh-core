@@ -68,8 +68,11 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Inte
             // Arrange
             const string jsonResponse = "invalid json";
 
-            // Act & Assert
-            sut.Invoking(s => s.Parse(jsonResponse, columnNames)).Should().Throw<Exception>();
+            // Act
+            var act = () => sut.Parse(jsonResponse, columnNames);
+
+            // Assert
+            act.Should().Throw<Exception>();
         }
     }
 }
