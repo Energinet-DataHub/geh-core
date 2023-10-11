@@ -69,9 +69,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -94,9 +96,13 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<DatabricksSqlException>()
+            .WithMessage("Unable to get response from Databricks because the SQL statement execution didn't succeed. State: Failed");
     }
 
     [Theory]
@@ -119,9 +125,13 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<DatabricksSqlException>()
+            .WithMessage("Unable to get response from Databricks because the SQL statement execution didn't succeed. State: Failed");
     }
 
     [Theory]
@@ -144,9 +154,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -169,9 +181,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -194,9 +208,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -219,9 +235,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -244,9 +262,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -269,9 +289,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -294,9 +316,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -319,9 +343,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -333,9 +359,11 @@ public class DatabricksSqlStatementClientTests
             .AddHttpClientResponse("http request failed", HttpStatusCode.BadRequest)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -347,9 +375,11 @@ public class DatabricksSqlStatementClientTests
             .AddHttpClientResponse("http request failed", HttpStatusCode.BadRequest)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -369,9 +399,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -391,9 +423,11 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
