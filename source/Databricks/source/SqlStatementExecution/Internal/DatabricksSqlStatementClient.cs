@@ -220,10 +220,13 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
     private void LogDatabricksRequest(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
     {
-        _logger.LogDebug(
-            "Executing SQL statement: {Sql}, with parameters: {Parameters}",
-            HttpUtility.HtmlEncode(sqlStatement),
-            sqlStatementParameters);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug(
+                "Executing SQL statement: {Sql}, with parameters: {Parameters}",
+                HttpUtility.HtmlEncode(sqlStatement),
+                sqlStatementParameters);
+        }
     }
 
     private void LogDatabricksSqlResponseState(SqlResponse response)
