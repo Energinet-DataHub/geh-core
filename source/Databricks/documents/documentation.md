@@ -45,6 +45,32 @@ public async Task<IActionResult> GetAsync()
 }
 ```
 
+Example of how to stream data with the SQL Statement Execution client.
+
+```c#
+[HttpGet]
+public async Task<IActionResult> StreamAsync()
+{
+    var sqlQuery = "SELECT * FROM my_table WHERE name = :my_name AND date = :my_date";
+    var parameters = new List<SqlStatementParameter>
+    {
+        SqlStatementParameter.Create("my_name", "Sheldon Cooper"),
+        SqlStatementParameter.Create("my_date", "26-02-1980", "DATE"),
+    };
+    var resultList = new List<TestModel>();
+    
+    await foreach (var row in _databricksSqlStatementClient.StreamAsync(sqlQuery, parameters))
+    {
+        var myName = row[0];
+        var myDate = row[1];
+        var testModel = new TestModel(myName, myDate);
+        resultList.Add(testModel)
+    }
+
+    return Ok(resultList);
+}
+```
+
 Notice, if a type is given in the `SqlStatementParameter` Create method, Databricks SQL Statement Execution API will perform type checking on the parameter value. But no functional difference. See [Databricks documentation](https://docs.databricks.com/api/workspace/statementexecution/executestatement) for more information.
 
 ### Health checks

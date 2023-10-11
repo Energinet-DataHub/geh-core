@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.IO;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
@@ -31,4 +33,14 @@ public interface ISqlChunkDataResponseParser
     /// <param name="columnNames"></param>
     /// <returns>Returns a <see cref="TableChunk"/></returns>
     TableChunk Parse(string jsonResponse, string[] columnNames);
+
+    /// <summary>
+    /// Parses the chunk data response from a Databricks SQL statement execution.
+    ///
+    /// The Chunk Data can vary in response depending on the type of statement executed.
+    /// Therefore a list of column names is required to parse the response.
+    /// </summary>
+    /// <param name="jsonStream"></param>
+    /// <returns>Returns a <see cref="TableChunk"/></returns>
+    IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream);
 }

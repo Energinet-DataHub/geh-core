@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.IO;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
@@ -46,5 +48,10 @@ public class SqlResponseParser : ISqlResponseParser
     public TableChunk ParseChunkDataResponse(string jsonResponse, string[] columnNames)
     {
         return _sqlChunkDataResponseParser.Parse(jsonResponse, columnNames);
+    }
+
+    public IAsyncEnumerable<string[]> ParseChunkDataResponseAsync(Stream jsonResponse)
+    {
+        return _sqlChunkDataResponseParser.ParseAsync(jsonResponse);
     }
 }

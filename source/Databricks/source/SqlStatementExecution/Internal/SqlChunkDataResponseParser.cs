@@ -14,10 +14,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 
@@ -27,10 +29,22 @@ public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
     {
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
         var jsonArray = JsonConvert.DeserializeObject<JArray>(jsonResponse, settings) ??
-                         throw new InvalidOperationException();
+                        throw new InvalidOperationException();
 
         var rows = GetDataArray(jsonArray);
         return new TableChunk(columnNames, rows);
+    }
+
+    public IAsyncEnumerable<string[]> ParseAsync(Stream jsonStream)
+    {
+        var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<string[]>(jsonStream);
+
+        if (asyncEnumerable == null)
+        {
+            throw new DatabricksSqlException("Unable to retrieve 'data_array' from the response");
+        }
+
+        return asyncEnumerable!;
     }
 
     private static List<string[]> GetDataArray(JArray jsonArray)

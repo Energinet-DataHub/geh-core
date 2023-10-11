@@ -69,9 +69,41 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>()
+            .WithMessage("Unable to get response from Databricks because the SQL statement execution didn't succeed. State: Failed");
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenFirstRunningThenStatementFails_ThrowsDatabricksSqlException(
+        Guid statementId,
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_running))
+            .Returns(SqlResponse.CreateAsRunning(statementId));
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_failed))
+            .Returns(SqlResponse.CreateAsFailed(statementId));
+        var sut = builder
+            .AddHttpClientResponse(_running)
+            .AddHttpClientResponse(_failed)
+            .UseParser(parserMock.Object)
+            .Build();
+
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<DatabricksSqlException>()
+            .WithMessage("Unable to get response from Databricks because the SQL statement execution didn't succeed. State: Failed");
     }
 
     [Theory]
@@ -94,9 +126,12 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -119,9 +154,38 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenFirstRunningThenStatementIsCancelled_ThrowsDatabricksSqlException(
+        Guid statementId,
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_running))
+            .Returns(SqlResponse.CreateAsRunning(statementId));
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_cancelled))
+            .Returns(SqlResponse.CreateAsCancelled(statementId));
+        var sut = builder
+            .AddHttpClientResponse(_running)
+            .AddHttpClientResponse(_cancelled)
+            .UseParser(parserMock.Object)
+            .Build();
+
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -144,9 +208,38 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenFirstPendingThenStatementFails_ThrowsDatabricksSqlException(
+        Guid statementId,
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_pending))
+            .Returns(SqlResponse.CreateAsPending(statementId));
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_failed))
+            .Returns(SqlResponse.CreateAsFailed(statementId));
+        var sut = builder
+            .AddHttpClientResponse(_pending)
+            .AddHttpClientResponse(_failed)
+            .UseParser(parserMock.Object)
+            .Build();
+
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -169,9 +262,38 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenFirstPendingThenStatementIsClosed_ThrowsDatabricksSqlException(
+        Guid statementId,
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_pending))
+            .Returns(SqlResponse.CreateAsPending(statementId));
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_closed))
+            .Returns(SqlResponse.CreateAsClosed(statementId));
+        var sut = builder
+            .AddHttpClientResponse(_pending)
+            .AddHttpClientResponse(_closed)
+            .UseParser(parserMock.Object)
+            .Build();
+
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -194,9 +316,38 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenFirstPendingThenStatementIsCancelled_ThrowsDatabricksSqlException(
+        Guid statementId,
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_pending))
+            .Returns(SqlResponse.CreateAsPending(statementId));
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_cancelled))
+            .Returns(SqlResponse.CreateAsCancelled(statementId));
+        var sut = builder
+            .AddHttpClientResponse(_pending)
+            .AddHttpClientResponse(_cancelled)
+            .UseParser(parserMock.Object)
+            .Build();
+
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -208,9 +359,27 @@ public class DatabricksSqlStatementClientTests
             .AddHttpClientResponse("http request failed", HttpStatusCode.BadRequest)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenHttpRequestFails_ThrowsDatabricksSqlException(DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        var sut = builder
+            .AddHttpClientResponse("http request failed", HttpStatusCode.BadRequest)
+            .Build();
+
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
@@ -230,18 +399,122 @@ public class DatabricksSqlStatementClientTests
             .UseParser(parserMock.Object)
             .Build();
 
-        // Act and assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await sut.
-            ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync());
+        // Act
+        Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenSecondHttpRequestFails_ThrowsDatabricksSqlException(
+        Guid statementId,
+        Mock<ISqlResponseParser> parserMock,
+        DatabricksSqlStatementClientBuilder builder)
+    {
+        // Arrange
+        parserMock
+            .Setup(parser => parser.ParseStatusResponse(_running))
+            .Returns(SqlResponse.CreateAsRunning(statementId));
+        var sut = builder
+            .AddHttpClientResponse(_running)
+            .AddHttpClientResponse("http request failed", HttpStatusCode.BadRequest)
+            .UseParser(parserMock.Object)
+            .Build();
+
+        // Act
+        Func<Task> act = async () => await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenMultipleChunks_GetAllChunks(
-        DatabricksSqlStatementClientBuilder builder)
+        DatabricksSqlStatementClientBuilder builder,
+        Mock<ILogger<SqlStatusResponseParser>> mockedLogger)
     {
         // Arrange
-        var mockedLogger = new Mock<ILogger<SqlStatusResponseParser>>();
+        var parser = new SqlResponseParser(
+            new SqlStatusResponseParser(mockedLogger.Object, new SqlChunkResponseParser()),
+            new SqlChunkResponseParser(),
+            new SqlChunkDataResponseParser());
+
+        var sut = builder
+            .AddHttpClientResponse(_calculationResultWithExternalLinks)
+            .AddExternalHttpClientResponse(_chunkData)
+            .AddHttpClientResponse(_calculationResultChunkJson)
+            .UseParser(parser)
+            .Build();
+
+        // Act
+        var result = await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        Assert.Equal(5, result.Count);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenMultipleChunks_GetAllChunks(
+        DatabricksSqlStatementClientBuilder builder,
+        Mock<ILogger<SqlStatusResponseParser>> mockedLogger)
+    {
+        // Arrange
+        var parser = new SqlResponseParser(
+            new SqlStatusResponseParser(mockedLogger.Object, new SqlChunkResponseParser()),
+            new SqlChunkResponseParser(),
+            new SqlChunkDataResponseParser());
+
+        var sut = builder
+            .AddHttpClientResponse(_calculationResultWithExternalLinks)
+            .AddExternalHttpClientResponse(_chunkData)
+            .AddHttpClientResponse(_calculationResultChunkJson)
+            .UseParser(parser)
+            .Build();
+
+        // Act
+        var result = await sut.StreamAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+
+        // Assert
+        Assert.Equal(5, result.Count);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ExecuteAsync_WhenNoParameters_ReturnsExpected(
+        DatabricksSqlStatementClientBuilder builder,
+        Mock<ILogger<SqlStatusResponseParser>> mockedLogger)
+    {
+        // Arrange
+        var parser = new SqlResponseParser(
+            new SqlStatusResponseParser(mockedLogger.Object, new SqlChunkResponseParser()),
+            new SqlChunkResponseParser(),
+            new SqlChunkDataResponseParser());
+
+        var sut = builder
+            .AddHttpClientResponse(_calculationResultWithExternalLinks)
+            .AddExternalHttpClientResponse(_chunkData)
+            .AddHttpClientResponse(_calculationResultChunkJson)
+            .UseParser(parser)
+            .Build();
+
+        // Act
+        var result = await sut.ExecuteAsync("some sql").ToListAsync();
+
+        // Assert
+        Assert.Equal(5, result.Count);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StreamAsync_WhenNoParameters_ReturnsExpected(
+        DatabricksSqlStatementClientBuilder builder,
+        Mock<ILogger<SqlStatusResponseParser>> mockedLogger)
+    {
+        // Arrange
         var parser = new SqlResponseParser(
             new SqlStatusResponseParser(
                 mockedLogger.Object,
@@ -257,7 +530,7 @@ public class DatabricksSqlStatementClientTests
             .Build();
 
         // Act
-        var result = await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
+        var result = await sut.StreamAsync("some sql").ToListAsync();
 
         // Assert
         Assert.Equal(5, result.Count);
