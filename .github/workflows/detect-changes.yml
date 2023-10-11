@@ -32,10 +32,6 @@ on:
         value: ${{ jobs.changes.outputs.logging }}
       messaging:
         value: ${{ jobs.changes.outputs.messaging }}
-      schemas:
-        value: ${{ jobs.changes.outputs.schemas }}
-      schemavalidation:
-        value: ${{ jobs.changes.outputs.schemavalidation }}
       testcommon:
         value: ${{ jobs.changes.outputs.testcommon }}
       databricks:
@@ -52,8 +48,6 @@ jobs:
       json_serialization: ${{ steps.filter.outputs.json_serialization }}
       logging: ${{ steps.filter.outputs.logging }}
       messaging: ${{ steps.filter.outputs.messaging }}
-      schemas: ${{ steps.filter.outputs.schemas }}
-      schemavalidation: ${{ steps.filter.outputs.schemavalidation }}
       testcommon: ${{ steps.filter.outputs.testcommon }}
       databricks: ${{ steps.filter.outputs.databricks }}
     steps:
