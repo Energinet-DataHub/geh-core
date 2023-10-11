@@ -52,6 +52,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Inte
             await using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(jsonResponse));
             var actual = sut.ParseAsync(jsonStream);
 
+            // Assert
             var actualList = await actual.ToListAsync();
 
             actualList.First().Should().BeEquivalentTo("John", "Doe");
