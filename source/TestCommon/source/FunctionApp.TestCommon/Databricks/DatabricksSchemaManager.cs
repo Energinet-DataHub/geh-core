@@ -73,7 +73,7 @@ public class DatabricksSchemaManager
     /// Create table with a given name and specified column definition (column name, (data type, is nullable))
     /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
     /// </summary>
-    public async Task<string> CreateTableAsync(string tableName, Dictionary<string, (string DataType, bool IsNullable)> columnDefinition)
+    public async Task CreateTableAsync(string tableName, Dictionary<string, (string DataType, bool IsNullable)> columnDefinition)
     {
         var columnDefinitions =
             string.Join(", ", columnDefinition.Select(c =>
@@ -81,11 +81,10 @@ public class DatabricksSchemaManager
 
         var sqlStatement = $"CREATE TABLE IF NOT EXISTS {SchemaName}.{tableName} ({columnDefinitions})";
         await ExecuteSqlAsync(sqlStatement);
-        return tableName;
     }
 
     /// <summary>
-    /// Create a unique table name.
+    /// Creates a unique table name.
     /// </summary>
     public static string CreateTableName(string prefix = "TestTable")
     {
@@ -94,13 +93,11 @@ public class DatabricksSchemaManager
     }
 
     /// <summary>
-    /// Inserts rows into a table for all columns. The rows are specified as a list of lists of strings. Example:
-    /// INSERT INTO myschema.mytable VALUES (10, 'John', 'Doe', 30, 'john.doe@domain', 1.234), (20, 'Jane', 'Doe', 28, 'jane.doe@domain', 4.321);
-    /// INSERT INTO myschema.mytable VALUES ('someString', 'someOtherString', 1.234), ('anotherString', 'anotherOtherString', 2.345);
+    /// Inserts rows into a table for all columns. The rows are specified as a list of lists of strings.
     /// </summary>
+    /// <example>INSERT INTO SchemaName.<paramref name="tableName"/> VALUES (10, 'John', 30), (20, 'Jane', 28)</example>
     /// <param name="tableName">Name of table</param>
-    /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.
-    /// </param>
+    /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.</param>
     public async Task InsertAsync(string tableName, IEnumerable<IEnumerable<string>> rows)
     {
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
@@ -109,13 +106,12 @@ public class DatabricksSchemaManager
     }
 
     /// <summary>
-    /// Inserts rows into a table for selected columns. The rows are specified as a list of lists of strings. Example:
-    /// INSERT INTO myschema.mytable ('id', 'firstname', 'age' ) VALUES (10, 'John', 30), (20, 'Jane', 28);
+    /// Inserts rows into a table for selected columns. The rows are specified as a list of lists of strings.
     /// </summary>
+    /// <example>INSERT INTO SchemaName.<paramref name="tableName"/> ('id', 'firstname', 'age' ) VALUES (10, 'John', 30), (20, 'Jane', 28)</example>
     /// <param name="tableName">Name of table</param>
     /// <param name="columnNames">Names of the columns that rows are referring to</param>
-    /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.
-    /// </param>
+    /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.</param>
     public async Task InsertAsync(string tableName, IEnumerable<string> columnNames, IEnumerable<IEnumerable<string>> rows)
     {
         var columnsNames = string.Join(", ", columnNames);
@@ -125,9 +121,9 @@ public class DatabricksSchemaManager
     }
 
     /// <summary>
-    /// Inserts a single row into a table for selected columns. Example:
-    /// INSERT INTO myschema.mytable ('id', 'firstname', 'age' ) VALUES (10, 'John', 30);
+    /// Inserts a single row into a table for selected columns.
     /// </summary>
+    /// <example>INSERT INTO SchemaName.<paramref name="tableName"/> ('id', 'firstname', 'age' ) VALUES (10, 'John', 30)</example>
     /// <param name="tableName"></param>
     /// <param name="columnNames"></param>
     /// <param name="row"></param>
@@ -139,9 +135,10 @@ public class DatabricksSchemaManager
     }
 
     /// <summary>
-    /// Inserts a single row into a table, for all columns. Example:
-    /// INSERT INTO myschema.mytable VALUES (10, 'John', 'Doe', 30, 'john.doe@domain');
+    /// Inserts a single row into a table, for all columns.
     /// </summary>
+    /// <example>INSERT INTO SchemaName.<paramref name="tableName"/> VALUES (10, 'John', 'Doe', 30, 'john.doe@domain');</example>
+
     /// <param name="tableName"></param>
     /// <param name="row"></param>
     public async Task InsertAsync(string tableName, IEnumerable<string> row)
@@ -153,37 +150,53 @@ public class DatabricksSchemaManager
     private async Task ExecuteSqlAsync(string sqlStatement)
     {
         sqlStatement = sqlStatement.Trim();
+        if (string.IsNullOrEmpty(sqlStatement)) return;
 
-        if (string.IsNullOrEmpty(sqlStatement))
-        {
-            return;
-        }
+        var jsonRequest = PrepareJsonRequest(sqlStatement);
+        var httpResponse = await PostSqlAsync(jsonRequest).ConfigureAwait(false);
 
+        EnsureSuccessfulResponse(httpResponse);
+        await ValidateResponseAsync(httpResponse.Content).ConfigureAwait(false);
+    }
+
+    private string PrepareJsonRequest(string sqlStatement)
+    {
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
-            wait_timeout = $"50s", // Make the operation synchronous
+            wait_timeout = $"50s", // setting a timeout other than 0s makes the operation synchronous
             statement = sqlStatement,
             warehouse_id = DatabricksSettings.WarehouseId,
         };
-        var jsonRequest = JsonConvert.SerializeObject(requestObject);
+
+        return JsonConvert.SerializeObject(requestObject);
+    }
+
+    private async Task<HttpResponseMessage> PostSqlAsync(string jsonRequest)
+    {
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(StatementsEndpointPath, content).ConfigureAwait(false);
+        return await _httpClient.PostAsync(StatementsEndpointPath, content).ConfigureAwait(false);
+    }
 
-        if (!httpResponse.IsSuccessStatusCode)
+    private void EnsureSuccessfulResponse(HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
         {
-            throw new Exception($"Unable to execute SQL statement on Databricks. Status code: {httpResponse.StatusCode}");
+            throw new Exception($"Unable to execute SQL statement on Databricks. Status code: {response.StatusCode}");
         }
+    }
 
-        var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
+    private async Task ValidateResponseAsync(HttpContent content)
+    {
+        var jsonResponse = await content.ReadAsStringAsync().ConfigureAwait(false);
+        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None };
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
                          throw new InvalidOperationException();
 
         var state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
         if (state != "SUCCEEDED")
         {
-            throw new Exception($"Failed to execute SQL statement: {sqlStatement}. Response: {jsonResponse}");
+            throw new Exception($"Failed to execute SQL statement. Response: {jsonResponse}");
         }
     }
 }
