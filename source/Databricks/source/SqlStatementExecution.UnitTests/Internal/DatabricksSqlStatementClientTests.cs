@@ -73,7 +73,8 @@ public class DatabricksSqlStatementClientTests
         Func<Task> act = async () => await sut.ExecuteAsync("some sql", new List<SqlStatementParameter>()).ToListAsync();
 
         // Assert
-        await act.Should().ThrowAsync<DatabricksSqlException>();
+        await act.Should().ThrowAsync<DatabricksSqlException>()
+            .WithMessage("Unable to get response from Databricks because the SQL statement execution didn't succeed. State: Failed");
     }
 
     [Theory]
@@ -130,8 +131,7 @@ public class DatabricksSqlStatementClientTests
 
         // Assert
         await act.Should()
-            .ThrowAsync<DatabricksSqlException>()
-            .WithMessage("Unable to get response from Databricks because the SQL statement execution didn't succeed. State: Failed");
+            .ThrowAsync<DatabricksSqlException>();
     }
 
     [Theory]
