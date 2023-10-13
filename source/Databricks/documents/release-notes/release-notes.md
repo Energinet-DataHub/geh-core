@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 7.1.1
+
+- No functional change.
+
 ## Version 7.1.0
 
 Databricks streaming is added. See [documentation.md](../documentation.md) for information on how to use the new functionality.

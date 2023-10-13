@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.4.1
+
+- No functional change
+
 ## Version 4.4.0
 
 - Implemented `DatabricksSchemaManager` to support use of Databricks Sql statement Api
