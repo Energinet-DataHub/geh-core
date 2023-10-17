@@ -15,9 +15,9 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
+using Energinet.DataHub.Core.Databricks.Jobs.Client;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
-using Energinet.DataHub.Core.Databricks.Jobs.Internal;
-using Energinet.DataHub.Core.Databricks.Jobs.Internal.Constants;
+using Energinet.DataHub.Core.Databricks.Jobs.Constants;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

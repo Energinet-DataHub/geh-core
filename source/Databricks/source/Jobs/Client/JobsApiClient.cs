@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Core.Databricks.Jobs.Internal.Constants;
+using Energinet.DataHub.Core.Databricks.Jobs.Constants;
 using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.Internal
+namespace Energinet.DataHub.Core.Databricks.Jobs.Client
 {
     /// <summary>
     /// A databricks client based on the Microsoft.Azure.JobsApiClient, which is using Job API 2.0.

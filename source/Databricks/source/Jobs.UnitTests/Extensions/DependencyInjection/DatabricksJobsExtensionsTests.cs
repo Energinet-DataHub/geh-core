@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
+using Energinet.DataHub.Core.Databricks.Jobs.Client;
+using Energinet.DataHub.Core.Databricks.Jobs.Constants;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.Databricks.Jobs.Internal;
-using Energinet.DataHub.Core.Databricks.Jobs.Internal.Constants;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
