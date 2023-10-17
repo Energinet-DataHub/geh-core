@@ -16,12 +16,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 
 public class SqlChunkDataResponseParser : ISqlChunkDataResponseParser
 {

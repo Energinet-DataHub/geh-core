@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using System.Net.Http;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
 
-public class DatabricksSqlException : Exception
+/// <summary>
+/// Constants used for naming <see cref="HttpClient"/> instances.
+///     Databricks: Used for communicating with the Databricks API.
+///     External: Used for communicating with external services without authorization.
+/// </summary>
+public class HttpClientNameConstants
 {
-    public DatabricksSqlException(string message)
-        : base(message)
-    {
-    }
+    public const string Databricks = "Databricks";
+    public const string External = "External";
 }

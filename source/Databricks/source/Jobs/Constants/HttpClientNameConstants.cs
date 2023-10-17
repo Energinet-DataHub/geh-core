@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http;
-
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
+namespace Energinet.DataHub.Core.Databricks.Jobs.Constants;
 
 /// <summary>
 /// Constants used for naming <see cref="HttpClient"/> instances.
@@ -23,6 +21,5 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Const
 /// </summary>
 public class HttpClientNameConstants
 {
-    public const string Databricks = "Databricks";
-    public const string External = "External";
+    public const string DatabricksJobsApi = "DatabricksJobsApi";
 }

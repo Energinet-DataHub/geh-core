@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.ResponseParsers;
 
 public class SqlChunkResponseParserTests
 {
