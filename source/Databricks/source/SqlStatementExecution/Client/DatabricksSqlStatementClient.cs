@@ -14,21 +14,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
 
 /// <summary>
 /// A client to execute SQL statements against Databricks.
@@ -157,6 +155,7 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
             waitTime *= 2;
             await Task.Delay(waitTime).ConfigureAwait(false);
+            Console.WriteLine($"Waiting {waitTime}ms for SQL statement to finish");
 
             var path = $"{StatementsEndpointPath}/{databricksSqlResponse.StatementId}";
             var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);

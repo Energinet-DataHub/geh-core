@@ -18,7 +18,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 
 public class SqlChunkResponseParser : ISqlChunkResponseParser
 {

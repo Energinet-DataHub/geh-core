@@ -14,15 +14,15 @@
 
 using System.Net;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Builders;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Client;
 
 public class DatabricksSqlStatementClientTests
 {

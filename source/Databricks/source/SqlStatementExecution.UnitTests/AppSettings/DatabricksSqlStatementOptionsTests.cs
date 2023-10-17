@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Configuration;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.AppSettings;
 
 public class DatabricksSqlStatementOptionsTests
 {

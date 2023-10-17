@@ -14,7 +14,7 @@
 
 using System.Net.Http;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
 
 /// <summary>
 /// Constants used for naming <see cref="HttpClient"/> instances.

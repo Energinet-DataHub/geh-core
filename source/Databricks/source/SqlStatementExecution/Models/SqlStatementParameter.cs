@@ -14,7 +14,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 /// <summary>
 /// Represents a parameter for a parameterized SQL query.
 /// </summary>

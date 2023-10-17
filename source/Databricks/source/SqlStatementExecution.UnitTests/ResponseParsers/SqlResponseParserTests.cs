@@ -14,15 +14,16 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.ResponseParsers;
 
 [UnitTest]
 public class SqlResponseParserTests

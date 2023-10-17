@@ -17,7 +17,7 @@ using System.IO;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 
 public class SqlResponseParser : ISqlResponseParser
 {
