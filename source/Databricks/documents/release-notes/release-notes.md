@@ -2,7 +2,7 @@
 
 ## Version 7.1.2
 
-- The "Internal" namespace is removed, and related code is grouped in relevant namespaces. 
+- The "Internal" namespace is removed, and related code is grouped in relevant namespaces.
 
 ## Version 7.1.1
 
