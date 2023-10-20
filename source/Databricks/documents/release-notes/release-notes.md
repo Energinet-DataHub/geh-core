@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 7.2.0
+
+- Databricks streaming of Apache Arrow is added.
+
 ## Version 7.1.2
 
 - The "Internal" namespace is removed, and related code is grouped in relevant namespaces.
