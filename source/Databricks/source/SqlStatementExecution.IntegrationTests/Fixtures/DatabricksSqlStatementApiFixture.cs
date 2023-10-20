@@ -78,6 +78,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
                 WorkspaceUrl = databricksSettings.WorkspaceUrl,
                 WorkspaceToken = databricksSettings.WorkspaceAccessToken,
                 WarehouseId = databricksSettings.WarehouseId,
+                TimeoutInSeconds = 50,
             });
 
         return databricksOptionsMock;

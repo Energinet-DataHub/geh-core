@@ -95,7 +95,7 @@ public class DatabricksSchemaManager
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
-            wait_timeout = $"50s", // Make the operation synchronous
+            wait_timeout = $"{DatabricksSqlStatementOptions.TimeoutInSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
             warehouse_id = DatabricksSqlStatementOptions.WarehouseId,
         };

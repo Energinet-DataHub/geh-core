@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -22,7 +23,9 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -31,7 +34,8 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
 /// <summary>
 /// A client to execute SQL statements against Databricks.
 ///
-/// This class has 2 HttpClients. The first one is used to execute the SQL statement and the second one is used to get the data from the external link.
+/// This class has 2 HttpClients. The first one is used to execute the SQL statement
+/// and the second one is used to get the data from the external link.
 /// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 /// https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
 /// </summary>
@@ -121,13 +125,48 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         _logger.LogDebug("SQL statement executed. Rows returned: {RowCount}", rowCount);
     }
 
-    private async Task<SqlResponse> GetFirstChunkOrNullAsync(string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
+    public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(Abstractions.Statement statement, Format format)
     {
-        const int timeOutPerAttemptSeconds = 30;
+        var strategy = format.GetStrategy(_options);
+        var request = strategy.GetStatementRequest(statement);
+        var sw = Stopwatch.StartNew();
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath);
+        // Metrics.RecordWarehouseDuration(sw.Elapsed);
 
+        if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
+
+        if (response.manifest.total_row_count <= 0)
+        {
+            yield break;
+        }
+
+        foreach (var chunk in response.manifest.chunks)
+        {
+            sw.Restart();
+            var uri = StatementsEndpointPath +
+                      $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri);
+            // Metrics.RecordChunkDuration(sw.Elapsed);
+
+            if (chunkResponse?.external_links == null) continue;
+
+            sw.Restart();
+            await using var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link);
+            // Metrics.RecordDurationOfDataRetrieval(sw.Elapsed);
+
+            await foreach (var row in strategy.ExecuteAsync(stream, response))
+            {
+                yield return row;
+            }
+        }
+    }
+
+    private async Task<SqlResponse> GetFirstChunkOrNullAsync(
+        string sqlStatement, List<SqlStatementParameter> sqlStatementParameters)
+    {
         var requestObject = new
         {
-            wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
+            wait_timeout = $"{_options.TimeoutInSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
             parameters = sqlStatementParameters,
             warehouse_id = _options.WarehouseId,
@@ -137,7 +176,8 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new DatabricksSqlException($"Unable to get response from Databricks. HTTP status code: {response.StatusCode}");
+            throw new DatabricksSqlException(
+                $"Unable to get response from Databricks. HTTP status code: {response.StatusCode}");
         }
 
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -150,7 +190,8 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
         {
             if (waitTime > 600000)
             {
-                throw new DatabricksSqlException($"Unable to get response from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+                throw new DatabricksSqlException(
+                    $"Unable to get response from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
             }
 
             waitTime *= 2;
@@ -162,7 +203,8 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                throw new DatabricksSqlException($"Unable to get response from Databricks. HTTP status code: {httpResponse.StatusCode}");
+                throw new DatabricksSqlException(
+                    $"Unable to get response from Databricks. HTTP status code: {httpResponse.StatusCode}");
             }
 
             jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -172,7 +214,8 @@ public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 
         if (databricksSqlResponse.State is not SqlResponseState.Succeeded)
         {
-            throw new DatabricksSqlException($"Unable to get response from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+            throw new DatabricksSqlException(
+                $"Unable to get response from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
         }
 
         return databricksSqlResponse;

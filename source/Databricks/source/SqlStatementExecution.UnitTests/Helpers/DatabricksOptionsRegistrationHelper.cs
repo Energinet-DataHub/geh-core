@@ -24,6 +24,7 @@ public static class DatabricksOptionsRegistrationHelper
         string warehouseId,
         string workspaceToken,
         string workspaceUrl,
+        int timeoutInSeconds = 5,
         int healthCheckStartHour = 6,
         int healthCheckEndHour = 20)
     {
@@ -32,6 +33,7 @@ public static class DatabricksOptionsRegistrationHelper
             options.WarehouseId = warehouseId;
             options.WorkspaceToken = workspaceToken;
             options.WorkspaceUrl = workspaceUrl;
+            options.TimeoutInSeconds = timeoutInSeconds;
             options.DatabricksHealthCheckStartHour = healthCheckStartHour;
             options.DatabricksHealthCheckEndHour = healthCheckEndHour;
         });
