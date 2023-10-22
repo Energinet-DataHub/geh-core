@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 
 public abstract class DynamicDatabricksStatement : DatabricksStatement<dynamic>
 {
-    protected override dynamic Create(dynamic record) => record;
+    protected internal override dynamic Create(dynamic record) => record;
 }

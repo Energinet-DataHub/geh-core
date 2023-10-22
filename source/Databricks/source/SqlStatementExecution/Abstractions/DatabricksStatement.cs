@@ -19,18 +19,5 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 
 public abstract class DatabricksStatement<T> : Statement
 {
-    public IAsyncEnumerable<T> ExecuteAsync(IDatabricksSqlStatementClient client)
-        => ExecuteAsync(client, Format.JsonArray);
-
-    public async IAsyncEnumerable<T> ExecuteAsync(IDatabricksSqlStatementClient client, Format format)
-    {
-        var response = client.ExecuteStatementAsync(this, format);
-
-        await foreach (var record in response)
-        {
-            yield return Create(record);
-        }
-    }
-
-    protected abstract T Create(dynamic record);
+    protected internal abstract T Create(dynamic record);
 }
