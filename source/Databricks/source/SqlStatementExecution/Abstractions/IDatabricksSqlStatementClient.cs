@@ -100,4 +100,38 @@ public interface IDatabricksSqlStatementClient
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
     IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement, Format format);
+
+    /// <summary>
+    /// Asynchronously executes a parameterized SQL query on Databricks and streams the results using <see cref="Format.ApacheArrow"/> format.
+    /// </summary>
+    /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
+    /// <returns>
+    /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
+    /// </returns>
+    /// <remarks>
+    /// Use this method to execute SQL queries combined with Parameter Markers against Databricks to protect against SQL injection attacks.
+    /// The <paramref name="statement"/> should contain a collection of <see cref="QueryParameter"/>.
+    ///
+    /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
+    /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
+    /// </remarks>
+    public IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement)
+        => ExecuteStatementAsync(statement, Format.ApacheArrow);
+
+    /// <summary>
+    /// Asynchronously executes a parameterized SQL query on Databricks and streams the results using <see cref="Format.ApacheArrow"/> format.
+    /// </summary>
+    /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
+    /// <returns>
+    /// An asynchronous enumerable of <typeparamref name="T"/> object representing the result of the query.
+    /// </returns>
+    /// <remarks>
+    /// Use this method to execute SQL queries combined with Parameter Markers against Databricks to protect against SQL injection attacks.
+    /// The <paramref name="statement"/> should contain a collection of <see cref="QueryParameter"/>.
+    ///
+    /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
+    /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
+    /// </remarks>
+    public IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement)
+        => ExecuteStatementAsync<T>(statement, Format.ApacheArrow);
 }
