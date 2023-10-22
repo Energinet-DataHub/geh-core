@@ -27,7 +27,7 @@ internal class DatabricksStatementRequest
     internal const string CsvFormat = "CSV";
     internal const string ArrowFormat = "ARROW_STREAM";
 
-    internal DatabricksStatementRequest(int timeoutInSeconds, string warehouseId, Abstractions.Statement statement, string format)
+    internal DatabricksStatementRequest(int timeoutInSeconds, string warehouseId, Abstractions.DatabricksStatement statement, string format)
     {
         Statement = statement.GetSqlStatement();
         Parameters = statement.GetParameters().ToArray();

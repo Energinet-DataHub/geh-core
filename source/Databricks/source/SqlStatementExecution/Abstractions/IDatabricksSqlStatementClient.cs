@@ -82,14 +82,13 @@ public interface IDatabricksSqlStatementClient
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    IAsyncEnumerable<dynamic> ExecuteStatementAsync(Statement statement, Format format);
+    IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format);
 
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
     /// <param name="format">The desired format of the data returned.</param>
-    /// <typeparam name="T">Type returned from <see cref="DatabricksStatement{T}"/></typeparam>
     /// <returns>
     /// An asynchronous enumerable of <typeparamref name="T"/> object representing the result of the query.
     /// </returns>
@@ -100,5 +99,5 @@ public interface IDatabricksSqlStatementClient
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement<T> statement, Format format);
+    IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement, Format format);
 }

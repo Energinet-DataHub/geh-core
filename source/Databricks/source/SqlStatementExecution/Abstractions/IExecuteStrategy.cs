@@ -28,7 +28,7 @@ internal interface IExecuteStrategy
     /// </summary>
     /// <param name="statement"></param>
     /// <returns><see cref="DatabricksStatementRequest"/></returns>
-    DatabricksStatementRequest GetStatementRequest(Statement statement);
+    DatabricksStatementRequest GetStatementRequest(DatabricksStatement statement);
 
     /// <summary>
     /// ExecuteAsync

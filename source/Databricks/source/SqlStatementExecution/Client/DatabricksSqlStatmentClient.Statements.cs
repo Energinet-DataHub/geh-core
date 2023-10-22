@@ -1,4 +1,4 @@
-// Copyright 2020 Energinet DataHub A/S
+﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
 
 public partial class DatabricksSqlStatementClient
 {
-    public async IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement<T> statement, Format format)
+    public async IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement, Format format)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format))
         {
@@ -32,7 +32,7 @@ public partial class DatabricksSqlStatementClient
         }
     }
 
-    public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(Abstractions.Statement statement, Format format)
+    public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(Abstractions.DatabricksStatement statement, Format format)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format))
         {
@@ -40,7 +40,7 @@ public partial class DatabricksSqlStatementClient
         }
     }
 
-    private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(Abstractions.Statement statement, Format format)
+    private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(Abstractions.DatabricksStatement statement, Format format)
     {
         var strategy = format.GetStrategy(_options);
         var request = strategy.GetStatementRequest(statement);

@@ -32,7 +32,7 @@ internal class JsonArrayFormat : IExecuteStrategy
         _options = options;
     }
 
-    public DatabricksStatementRequest GetStatementRequest(Abstractions.Statement statement)
+    public DatabricksStatementRequest GetStatementRequest(Abstractions.DatabricksStatement statement)
         => new(_options.TimeoutInSeconds, _options.WarehouseId, statement, DatabricksStatementRequest.JsonFormat);
 
     public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)

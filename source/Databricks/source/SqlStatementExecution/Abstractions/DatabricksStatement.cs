@@ -12,12 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 
-public abstract class DatabricksStatement<T> : Statement
+public abstract class DatabricksStatement
 {
-    protected internal abstract T Create(dynamic record);
+    public override string ToString() => GetSqlStatement();
+
+    protected internal abstract string GetSqlStatement();
+
+    protected internal virtual IReadOnlyCollection<QueryParameter> GetParameters() => Array.Empty<QueryParameter>();
+
+    protected internal virtual T Create<T>(dynamic record) => record;
 }
