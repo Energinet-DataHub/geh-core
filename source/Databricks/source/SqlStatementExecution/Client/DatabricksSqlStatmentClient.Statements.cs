@@ -32,7 +32,7 @@ public partial class DatabricksSqlStatementClient
         }
     }
 
-    public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(Abstractions.DatabricksStatement statement, Format format)
+    public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format))
         {
@@ -40,7 +40,7 @@ public partial class DatabricksSqlStatementClient
         }
     }
 
-    private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(Abstractions.DatabricksStatement statement, Format format)
+    private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(DatabricksStatement statement, Format format)
     {
         var strategy = format.GetStrategy(_options);
         var request = strategy.GetStatementRequest(statement);
