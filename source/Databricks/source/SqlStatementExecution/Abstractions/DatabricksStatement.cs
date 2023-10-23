@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 
-public abstract class DatabricksStatement<T> : Statement
+public abstract class DatabricksStatement
 {
-    public IAsyncEnumerable<T> ExecuteAsync(IDatabricksSqlStatementClient client)
-        => ExecuteAsync(client, Format.JsonArray);
+    public override string ToString() => GetSqlStatement();
 
-    public async IAsyncEnumerable<T> ExecuteAsync(IDatabricksSqlStatementClient client, Format format)
-    {
-        var response = client.ExecuteStatementAsync(this, format);
+    protected internal abstract string GetSqlStatement();
 
-        await foreach (var record in response)
-        {
-            yield return Create(record);
-        }
-    }
+    protected internal virtual IReadOnlyCollection<QueryParameter> GetParameters() => Array.Empty<QueryParameter>();
 
-    protected abstract T Create(dynamic record);
+    protected internal virtual T Create<T>(dynamic record) => record;
 }
