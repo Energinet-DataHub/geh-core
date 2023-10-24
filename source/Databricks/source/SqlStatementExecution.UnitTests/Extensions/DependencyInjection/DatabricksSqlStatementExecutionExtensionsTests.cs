@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -37,41 +33,6 @@ public class DatabricksSqlStatementExecutionExtensionsTests
             ["WorkspaceToken"] = WorkspaceToken,
         })
         .Build();
-
-    [Fact]
-    [Obsolete]
-    public void Deprecated_AddDatabricks_Should_ReturnSqlStatementClient()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        const string workspaceUri = "https://foo.com";
-        const string workspaceToken = "bar";
-        const string warehouseId = "baz";
-
-        // Act
-        services.AddDatabricks(warehouseId, workspaceToken, workspaceUri);
-
-        // Assert
-        var serviceProvider = services.BuildServiceProvider();
-        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
-
-        client.Should().BeOfType<DatabricksSqlStatementClient>();
-    }
-
-    [Fact]
-    public void AddDatabricksSqlStatementExecution_Should_ResolveSqlClient()
-    {
-        // Arrange
-        var serviceCollection = new ServiceCollection();
-
-        // Act
-        serviceCollection.AddDatabricksSqlStatementExecution(_configuration);
-
-        // Assert
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var client = serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
-        client.Should().BeOfType<DatabricksSqlStatementClient>();
-    }
 
     [Fact]
     public void AddDatabricksSqlStatementExecution_Should_ReturnConfiguredHttpClient()
@@ -114,7 +75,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
 
         // Assert
         var serviceProvider = services.BuildServiceProvider();
-        var act = () => serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
+        var act = () => serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>();
         if (string.IsNullOrEmpty(expectedExceptionMessageWildcardPattern))
         {
             act.Should().NotThrow();

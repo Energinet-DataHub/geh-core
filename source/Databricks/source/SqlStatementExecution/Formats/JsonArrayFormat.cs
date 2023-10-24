@@ -16,8 +16,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Text.Json;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;

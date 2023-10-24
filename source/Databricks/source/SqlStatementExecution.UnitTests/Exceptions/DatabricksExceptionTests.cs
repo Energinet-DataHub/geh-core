@@ -25,7 +25,7 @@ public class DatabricksExceptionTests
 {
     [Theory]
     [AutoMoqData]
-    public void Constructor_WhenCalled_SetsMessage(Abstractions.DatabricksStatement statement)
+    public void Constructor_WhenCalled_SetsMessage(DatabricksStatement statement)
     {
         // Arrange
         const string message = "foo";

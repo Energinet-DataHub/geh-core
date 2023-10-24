@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 /// <summary>
 /// IExecuteStrategy

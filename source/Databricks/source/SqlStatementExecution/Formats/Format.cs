@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 

@@ -18,14 +18,11 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 public sealed class DatabricksSqlWarehouseQueryExecutor
 {
