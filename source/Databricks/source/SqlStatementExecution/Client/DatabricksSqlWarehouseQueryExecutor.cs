@@ -34,7 +34,7 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
     private readonly HttpClient _externalHttpClient;
     private readonly DatabricksSqlStatementOptions _options;
 
-    public DatabricksSqlWarehouseQueryExecutor(
+    internal DatabricksSqlWarehouseQueryExecutor(
         IHttpClientFactory httpClientFactory,
         IOptions<DatabricksSqlStatementOptions> options)
     {
