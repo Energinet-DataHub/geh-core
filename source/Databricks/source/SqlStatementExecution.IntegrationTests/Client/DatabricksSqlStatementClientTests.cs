@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Client;
 

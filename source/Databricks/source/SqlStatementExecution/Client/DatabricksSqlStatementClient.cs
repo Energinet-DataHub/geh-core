@@ -36,7 +36,8 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
 /// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 /// https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
 /// </summary>
-public partial class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
+[Obsolete(message: "This interface is obsolete and will be removed in a future version. Please use DatabricksSqlWarehouseQueryExecutor instead.", error: false)]
+public class DatabricksSqlStatementClient : IDatabricksSqlStatementClient
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;

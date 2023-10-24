@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Builders;
 

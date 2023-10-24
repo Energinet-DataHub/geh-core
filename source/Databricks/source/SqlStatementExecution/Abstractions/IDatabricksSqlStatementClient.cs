@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
@@ -20,6 +21,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 /// <summary>
 /// This interface is used to execute SQL statements against Databricks SQL Statement Execution API.
 /// </summary>
+[Obsolete(message: "This interface is obsolete and will be removed in a future version. Please use DatabricksSqlWarehouseQueryExecutor instead.", error: false)]
 public interface IDatabricksSqlStatementClient
 {
     /// <summary>

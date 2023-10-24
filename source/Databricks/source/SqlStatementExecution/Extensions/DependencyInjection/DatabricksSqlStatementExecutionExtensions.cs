@@ -90,7 +90,9 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 });
 
+#pragma warning disable CS0618 // Type or member is obsolete
             serviceCollection.AddScoped<IDatabricksSqlStatementClient, DatabricksSqlStatementClient>();
+#pragma warning restore CS0618 // Type or member is obsolete
             serviceCollection.AddScoped<ISqlResponseParser, SqlResponseParser>();
             serviceCollection.AddScoped<ISqlStatusResponseParser, SqlStatusResponseParser>();
             serviceCollection.AddScoped<ISqlChunkResponseParser, SqlChunkResponseParser>();
