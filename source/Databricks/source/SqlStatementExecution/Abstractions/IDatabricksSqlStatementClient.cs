@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Dynamic;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 
