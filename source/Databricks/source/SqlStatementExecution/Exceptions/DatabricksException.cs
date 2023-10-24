@@ -19,15 +19,16 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 
 internal class DatabricksException : Exception
 {
-    public string ErrorMessage { get; }
-
     public DatabricksStatementRequest DatabricksStatementRequest { get; }
 
     public DatabricksStatementResponse? Response { get; }
 
-    public DatabricksException(string errorMessage, DatabricksStatementRequest databricksStatementRequest, DatabricksStatementResponse? response = null)
+    public DatabricksException(
+        string errorMessage,
+        DatabricksStatementRequest databricksStatementRequest,
+        DatabricksStatementResponse? response = null)
+        : base(errorMessage)
     {
-        ErrorMessage = errorMessage;
         DatabricksStatementRequest = databricksStatementRequest;
         Response = response;
     }
