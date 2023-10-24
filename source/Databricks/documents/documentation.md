@@ -81,7 +81,7 @@ await foreach (var record in records)
 
 #### ApacheArrow or JsonArray
 
-The main difference between the two is that when using `Format.ApacheArrow` all the columns are [mapped](./source/SqlStatementExecution/Formats/IArrowArrayExtensions.cs) to a .NET type. If use are using `Format.JsonArray` all columns are returned as string.
+The main difference between the two is that when using `Format.ApacheArrow` all the columns are [mapped](../source/SqlStatementExecution/Formats/IArrowArrayExtensions.cs) to a .NET type. If use are using `Format.JsonArray` all columns are returned as string.
 
 ### Deprecated usage
 
