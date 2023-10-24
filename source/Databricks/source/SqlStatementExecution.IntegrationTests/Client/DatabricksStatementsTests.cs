@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Client.Statements;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -27,15 +28,18 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         _sqlWarehouseFixture = sqlWarehouseFixture;
     }
 
-    [Fact]
-    public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnOneMillionRows()
+    [Theory]
+    [InlineData("json")]
+    [InlineData("arrow")]
+    public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnOneMillionRows(string formatKey)
     {
         // Arrange
+        var format = new Format(formatKey);
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
         var statement = new OneMillionRows();
 
         // Act
-        var result = client.ExecuteStatementAsync(statement);
+        var result = client.ExecuteStatementAsync(statement, format);
         var rowCount = await result.CountAsync();
 
         // Assert
