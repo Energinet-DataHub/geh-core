@@ -75,7 +75,7 @@ public class DatabricksSqlStatementExecutionExtensionsTests
 
         // Assert
         var serviceProvider = services.BuildServiceProvider();
-        var act = () => serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>();
+        var act = () => serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
         if (string.IsNullOrEmpty(expectedExceptionMessageWildcardPattern))
         {
             act.Should().NotThrow();
