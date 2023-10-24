@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -21,16 +22,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
-public class DatabricksFixture
+public sealed class DatabricksSqlWarehouseFixture
 {
-    public IDatabricksSqlStatementClient CreateSqlStatementClient()
+    public DatabricksSqlWarehouseQueryExecutor CreateSqlStatementClient()
     {
         var services = CreateServiceCollection();
         var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<IDatabricksSqlStatementClient>();
+        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
     }
 
-    private ServiceCollection CreateServiceCollection()
+    private static ServiceCollection CreateServiceCollection()
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
         var config = new Dictionary<string, string>
