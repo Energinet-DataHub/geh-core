@@ -25,6 +25,4 @@ public abstract class DatabricksStatement
     protected internal abstract string GetSqlStatement();
 
     protected internal virtual IReadOnlyCollection<QueryParameter> GetParameters() => Array.Empty<QueryParameter>();
-
-    protected internal virtual T Create<T>(dynamic record) => record;
 }
