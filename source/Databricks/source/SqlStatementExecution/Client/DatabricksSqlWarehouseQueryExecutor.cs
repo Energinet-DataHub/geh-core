@@ -27,7 +27,7 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
 
-public class DatabricksSqlWarehouseQueryExecutor
+public sealed class DatabricksSqlWarehouseQueryExecutor
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
