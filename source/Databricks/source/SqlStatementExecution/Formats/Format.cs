@@ -20,18 +20,21 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
 public class Format
 {
-    public static Format JsonArray => new("json");
+    private const string JsonFormat = nameof(JsonFormat);
+    private const string ArrowFormat = nameof(ArrowFormat);
 
-    public static Format ApacheArrow => new("arrow");
+    public static Format JsonArray => new(JsonFormat);
 
-    internal Format(string format) => Value = format;
+    public static Format ApacheArrow => new(ArrowFormat);
 
-    public string Value { get; private set; }
+    private Format(string format) => Value = format;
+
+    public string Value { get; }
 
     internal IExecuteStrategy GetStrategy(DatabricksSqlStatementOptions options) => Value switch
     {
-        "json" => new JsonArrayFormat(options),
-        "arrow" => new ApacheArrowFormat(options),
+        JsonFormat => new JsonArrayFormat(options),
+        ArrowFormat => new ApacheArrowFormat(options),
         _ => throw new ArgumentException($"Unknown format: {Value}"),
     };
 }

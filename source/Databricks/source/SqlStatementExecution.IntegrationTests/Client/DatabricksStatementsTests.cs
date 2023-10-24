@@ -29,12 +29,10 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     }
 
     [Theory]
-    [InlineData("json")]
-    [InlineData("arrow")]
-    public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnOneMillionRows(string formatKey)
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnOneMillionRows(Format format)
     {
         // Arrange
-        var format = new Format(formatKey);
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
         var statement = new OneMillionRows();
 
@@ -44,5 +42,11 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
 
         // Assert
         rowCount.Should().Be(1000000);
+    }
+
+    public static IEnumerable<object[]> GetFormats()
+    {
+        yield return new object[] { Format.ApacheArrow };
+        yield return new object[] { Format.JsonArray };
     }
 }
