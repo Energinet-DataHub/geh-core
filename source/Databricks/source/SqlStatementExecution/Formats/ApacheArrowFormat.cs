@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using Apache.Arrow.Ipc;
@@ -32,19 +31,19 @@ internal class ApacheArrowFormat : IExecuteStrategy
         _options = options;
     }
 
-    public DatabricksStatementRequest GetStatementRequest(Abstractions.DatabricksStatement statement)
+    public DatabricksStatementRequest GetStatementRequest(DatabricksStatement statement)
         => new(_options.TimeoutInSeconds, _options.WarehouseId, statement, DatabricksStatementRequest.ArrowFormat);
 
     public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)
     {
-        var sw = Stopwatch.StartNew();
-        var batchCount = 0L;
+        // var sw = Stopwatch.StartNew();
+        // var batchCount = 0L;
         using var reader = new ArrowStreamReader(content);
 
         var batch = await reader.ReadNextRecordBatchAsync();
         while (batch != null)
         {
-            batchCount++;
+            // batchCount++;
             for (var i = 0; i < batch.Length; i++)
             {
                 IDictionary<string, object?> record = new ExpandoObject();

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Text.Json;
@@ -32,12 +31,12 @@ internal class JsonArrayFormat : IExecuteStrategy
         _options = options;
     }
 
-    public DatabricksStatementRequest GetStatementRequest(Abstractions.DatabricksStatement statement)
+    public DatabricksStatementRequest GetStatementRequest(DatabricksStatement statement)
         => new(_options.TimeoutInSeconds, _options.WarehouseId, statement, DatabricksStatementRequest.JsonFormat);
 
     public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)
     {
-        var sw = Stopwatch.StartNew();
+        // var sw = Stopwatch.StartNew();
         await foreach (var record in JsonSerializer.DeserializeAsyncEnumerable<string[]>(content))
         {
             if (record == null) continue;
