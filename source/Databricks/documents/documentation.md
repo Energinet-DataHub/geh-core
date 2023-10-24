@@ -68,7 +68,7 @@ public class QueryPersons : DatabricksStatement
 }
 ```
 
-A query can then be sent to Databricks SQL Warehouse with the `DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync` method. It is possible to set the Streaming format, if no format is set, then ApacheArrow is used. The methods returns a dynamic object for each record that is read from Databricks SQL Warehouse.
+A query can then be sent to Databricks SQL Warehouse with the `DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync` method. It is possible to set the streaming format. If no format is set, then ApacheArrow is used. The methods returns a dynamic object for each record that is read from Databricks SQL Warehouse.
 
 ```c#
 var query = new QueryPersons(name: "Sheldon Cooper", date: new DateTime(1980, 2, 26));
@@ -83,7 +83,7 @@ await foreach (var record in records)
 
 The main difference between the two is that when using `Format.ApacheArrow` all the columns are [mapped](../source/SqlStatementExecution/Formats/IArrowArrayExtensions.cs) to a .NET type. If use are using `Format.JsonArray` all columns are returned as string.
 
-### Deprecated usage
+### Deprecated usage of IDatabricksSqlStatementClient / DatabricksSqlStatementClient
 
 > [!WARNING]
 > This is not recommended - please use DatabricksSqlWarehouseQueryExecutor
