@@ -18,20 +18,20 @@ using FluentAssertions;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Client;
 
-public class DatabricksStatementsTests : IClassFixture<DatabricksFixture>
+public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFixture>
 {
-    private readonly DatabricksFixture _fixture;
+    private readonly DatabricksSqlWarehouseFixture _sqlWarehouseFixture;
 
-    public DatabricksStatementsTests(DatabricksFixture fixture)
+    public DatabricksStatementsTests(DatabricksSqlWarehouseFixture sqlWarehouseFixture)
     {
-        _fixture = fixture;
+        _sqlWarehouseFixture = sqlWarehouseFixture;
     }
 
     [Fact]
     public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnOneMillionRows()
     {
         // Arrange
-        var client = _fixture.CreateSqlStatementClient();
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
         var statement = new OneMillionRows();
 
         // Act

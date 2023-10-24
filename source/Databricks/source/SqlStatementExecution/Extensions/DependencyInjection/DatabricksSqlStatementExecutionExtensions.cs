@@ -94,6 +94,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
             serviceCollection.AddScoped<ISqlStatusResponseParser, SqlStatusResponseParser>();
             serviceCollection.AddScoped<ISqlChunkResponseParser, SqlChunkResponseParser>();
             serviceCollection.AddScoped<ISqlChunkDataResponseParser, SqlChunkDataResponseParser>();
+            serviceCollection.AddSingleton<DatabricksSqlWarehouseQueryExecutor>();
 
             return serviceCollection;
         }
