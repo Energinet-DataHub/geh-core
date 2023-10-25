@@ -22,12 +22,12 @@ public sealed class QueryParameter
     public string Name { get; }
 
     [JsonPropertyName("value")]
-    public string Value { get; }
+    public object Value { get; }
 
     [JsonPropertyName("type")]
     public string Type { get; }
 
-    private QueryParameter(string name, string value, string type)
+    private QueryParameter(string name, object value, string type)
     {
         Name = name;
         Value = value;
@@ -43,11 +43,10 @@ public sealed class QueryParameter
     public static QueryParameter Create(string name, string value) => new(name, value, "STRING");
 
     /// <summary>
-    /// Create a new QueryParameter with a name and value as type.
+    /// Create a new QueryParameter with a name and value. Parameter type will be INT.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="value"></param>
-    /// <param name="type"></param>
     /// <returns><see cref="QueryParameter"/></returns>
-    public static QueryParameter Create(string name, string value, string type) => new(name, value, type);
+    public static QueryParameter Create(string name, int value) => new(name, value, "INT");
 }

@@ -20,6 +20,8 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTes
 
 public sealed class DatabricksSqlWarehouseFixture
 {
+    private static readonly Lazy<IntegrationTestConfiguration> _lazyConfiguration = new(() => new IntegrationTestConfiguration());
+
     public DatabricksSqlWarehouseQueryExecutor CreateSqlStatementClient()
     {
         var services = CreateServiceCollection();
@@ -29,7 +31,7 @@ public sealed class DatabricksSqlWarehouseFixture
 
     private static ServiceCollection CreateServiceCollection()
     {
-        var integrationTestConfiguration = new IntegrationTestConfiguration();
+        var integrationTestConfiguration = _lazyConfiguration.Value;
         var config = new Dictionary<string, string>
         {
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WorkspaceUrl", integrationTestConfiguration.DatabricksSettings.WorkspaceUrl },

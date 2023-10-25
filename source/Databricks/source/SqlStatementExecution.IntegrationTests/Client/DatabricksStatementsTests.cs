@@ -28,6 +28,38 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         _sqlWarehouseFixture = sqlWarehouseFixture;
     }
 
+    [Fact]
+    public async Task ExecuteStatementAsync_WhenQueryingWithParameters_MustIncludeParameterTypeInRequest()
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new LimitRows(10);
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, Format.ApacheArrow);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(10);
+    }
+
+    [Theory]
+    [InlineData("Mike A", 1)]
+    [InlineData("Sheldon Cooper", 0)]
+    public async Task ExecuteStatementAsync_WhenQueryingWithStringParameter_MustReturnRows(string searchFor, int expectedRows)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new QueryPerson(searchFor);
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, Format.ApacheArrow);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(expectedRows);
+    }
+
     [Theory]
     [MemberData(nameof(GetFormats))]
     public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnOneMillionRows(Format format)

@@ -34,14 +34,11 @@ internal class ApacheArrowFormat : IExecuteStrategy
 
     public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)
     {
-        // var sw = Stopwatch.StartNew();
-        // var batchCount = 0L;
         using var reader = new ArrowStreamReader(content);
 
         var batch = await reader.ReadNextRecordBatchAsync();
         while (batch != null)
         {
-            // batchCount++;
             for (var i = 0; i < batch.Length; i++)
             {
                 IDictionary<string, object?> record = new ExpandoObject();
@@ -58,8 +55,5 @@ internal class ApacheArrowFormat : IExecuteStrategy
 
             batch = await reader.ReadNextRecordBatchAsync();
         }
-
-        // Metrics.RecordArrowBatchCount(batchCount);
-        // Metrics.RecordArrowRead(sw.Elapsed);
     }
 }

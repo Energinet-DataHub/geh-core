@@ -84,9 +84,7 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
     {
         var strategy = format.GetStrategy(_options);
         var request = strategy.GetStatementRequest(statement);
-        var sw = Stopwatch.StartNew();
         var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath);
-        // Metrics.RecordWarehouseDuration(sw.Elapsed);
 
         if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
 
@@ -97,17 +95,13 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
 
         foreach (var chunk in response.manifest.chunks)
         {
-            sw.Restart();
             var uri = StatementsEndpointPath +
                       $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
             var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri);
-            // Metrics.RecordChunkDuration(sw.Elapsed);
 
             if (chunkResponse?.external_links == null) continue;
 
-            sw.Restart();
             await using var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link);
-            // Metrics.RecordDurationOfDataRetrieval(sw.Elapsed);
 
             await foreach (var row in strategy.ExecuteAsync(stream, response))
             {

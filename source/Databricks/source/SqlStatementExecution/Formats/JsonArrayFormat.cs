@@ -34,7 +34,6 @@ internal class JsonArrayFormat : IExecuteStrategy
 
     public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)
     {
-        // var sw = Stopwatch.StartNew();
         await foreach (var record in JsonSerializer.DeserializeAsyncEnumerable<string[]>(content))
         {
             if (record == null) continue;
@@ -47,7 +46,5 @@ internal class JsonArrayFormat : IExecuteStrategy
 
             yield return recordAsObject;
         }
-
-        // Metrics.RecordJsonRead(sw.Elapsed);
     }
 }
