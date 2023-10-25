@@ -2,7 +2,7 @@
 
 ## Version 7.2.0
 
-- Databricks streaming of `ApacheArrow` and `JsonArray` is added. 
+- Databricks streaming of `ApacheArrow` and `JsonArray` is added.
 - The `DatabricksSqlStatementClient` is deprecated. Please use `DatabricksSqlWarehouseQueryExecutor` instead. See [documentation.md](../documentation.md) for information on how to use the new functionality.
 
 ## Version 7.1.2
