@@ -18,11 +18,22 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
+/// <summary>
+/// A statement to be executed on Databricks SQL Warehouse
+/// </summary>
 public abstract class DatabricksStatement
 {
     public override string ToString() => GetSqlStatement();
 
+    /// <summary>
+    /// Get the SQL statement
+    /// </summary>
+    /// <returns>SQL statement to be executed</returns>
     protected internal abstract string GetSqlStatement();
 
+    /// <summary>
+    /// When overridden in a derived class, returns the parameters for the SQL statement
+    /// </summary>
+    /// <returns>Parameters for the SQL statement</returns>
     protected internal virtual IReadOnlyCollection<QueryParameter> GetParameters() => Array.Empty<QueryParameter>();
 }
