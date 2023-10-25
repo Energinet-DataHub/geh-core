@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Text.Json;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
@@ -36,7 +35,6 @@ internal class JsonArrayFormat : IExecuteStrategy
 
     public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)
     {
-        // var sw = Stopwatch.StartNew();
         await foreach (var record in JsonSerializer.DeserializeAsyncEnumerable<string[]>(content))
         {
             if (record == null) continue;
@@ -49,7 +47,5 @@ internal class JsonArrayFormat : IExecuteStrategy
 
             yield return recordAsObject;
         }
-
-        // Metrics.RecordJsonRead(sw.Elapsed);
     }
 }

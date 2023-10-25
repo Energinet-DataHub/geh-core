@@ -40,7 +40,4 @@ internal static class IArrowArrayExtensions
             StringArray stringArray => stringArray.GetString(i),
             _ => throw new NotSupportedException($"Unsupported data type {arrowArray}"),
         };
-
-    public static bool? GetBoolean(this IArrowArray arrowArray, int i)
-        => ((BooleanArray)arrowArray).GetValue(i);
 }
