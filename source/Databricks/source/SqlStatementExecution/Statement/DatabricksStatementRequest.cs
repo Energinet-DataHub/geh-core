@@ -24,10 +24,9 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 internal class DatabricksStatementRequest
 {
     internal const string JsonFormat = "JSON_ARRAY";
-    internal const string CsvFormat = "CSV";
     internal const string ArrowFormat = "ARROW_STREAM";
 
-    internal DatabricksStatementRequest(int timeoutInSeconds, string warehouseId, Abstractions.DatabricksStatement statement, string format)
+    internal DatabricksStatementRequest(int timeoutInSeconds, string warehouseId, DatabricksStatement statement, string format)
     {
         Statement = statement.GetSqlStatement();
         Parameters = statement.GetParameters().ToArray();
@@ -61,7 +60,7 @@ internal class DatabricksStatementRequest
         var retriesLeft = 10;
         do
         {
-            response = await GetResponseFromDataWareHouseAsync(client, endpoint, response);
+            response = await GetResponseFromDataWarehouseAsync(client, endpoint, response);
             if (response.IsSucceeded) return response;
         }
         while ((response.IsPending || response.IsRunning) && retriesLeft-- > 0);
@@ -69,7 +68,7 @@ internal class DatabricksStatementRequest
         throw new DatabricksException("Unable to fetch result from Databricks", this, response);
     }
 
-    private async Task<DatabricksStatementResponse> GetResponseFromDataWareHouseAsync(
+    private async Task<DatabricksStatementResponse> GetResponseFromDataWarehouseAsync(
         HttpClient client,
         string endpoint,
         DatabricksStatementResponse? response)

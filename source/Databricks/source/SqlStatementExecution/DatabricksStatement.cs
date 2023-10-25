@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 public abstract class DatabricksStatement
 {
