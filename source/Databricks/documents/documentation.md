@@ -22,6 +22,72 @@ private static void AddDatabricksSqlStatementExecution(IServiceCollection servic
 }
 ```
 
+#### DatabricksSqlWarehouseQueryExecutor
+
+`DatabricksSqlWarehouseQueryExecutor` is built around streaming of data from Databricks SQL Warehouse.
+
+A query is created by extending `DatabricksStatement` and implementing the mandatory method `GetSqlStatement`. To query all persons a minimal implementation would look like this:
+
+```c#
+public class QueryAllPersons : DatabricksStatement
+{
+    protected internal override string GetSqlStatement()
+    {
+        return "SELECT name, date FROM persons";
+    }
+}
+```
+
+If you want to add a filter to a query this must be implemented with parameters.
+
+```c#
+public class QueryPersons : DatabricksStatement
+{
+    private readonly string _name;
+    private readonly DateTime _date;
+
+    public QueryPersons(string name, DateTime date)
+    {
+        _name = name;
+        _date = date;
+    }
+
+    protected internal override string GetSqlStatement()
+    {
+        return "SELECT name, date FROM persons where name = :my_name AND date = :my_date";
+    }
+
+    protected internal override IReadOnlyCollection<QueryParameter> GetParameters()
+    {
+        return new[]
+        {
+            QueryParameter.Create("my_name", _name),
+            QueryParameter.Create("my_date", _date.ToString("yyyy-MM-dd HH:mm:ss.fff") + "Z"),
+        };
+    }
+}
+```
+
+A query can then be sent to Databricks SQL Warehouse with the `DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync` method. It is possible to set the streaming format. If no format is set, then ApacheArrow is used. The methods returns a dynamic object for each record that is read from Databricks SQL Warehouse.
+
+```c#
+var query = new QueryPersons(name: "Sheldon Cooper", date: new DateTime(1980, 2, 26));
+var records = _warehouse.ExecuteStatementAsync(query); // _warehouse is an instance of DatabricksSqlWarehouseQueryExecutor
+
+var allSheldons = new List<Person>();
+await foreach (var record in records)
+    allSheldons.Add(new Person(record.name, record.date));
+```
+
+#### ApacheArrow or JsonArray
+
+The main difference between the two is that when using `Format.ApacheArrow` all the columns are [mapped](../source/SqlStatementExecution/Formats/IArrowArrayExtensions.cs) to a .NET type. If use are using `Format.JsonArray` all columns are returned as string.
+
+### Deprecated usage of IDatabricksSqlStatementClient / DatabricksSqlStatementClient
+
+> [!WARNING]
+> This is not recommended - please use DatabricksSqlWarehouseQueryExecutor
+
 Example of how to use the SQL Statement Execution client.
 
 ```c#

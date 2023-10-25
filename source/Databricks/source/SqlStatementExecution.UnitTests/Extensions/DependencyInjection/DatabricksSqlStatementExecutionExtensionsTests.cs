@@ -16,11 +16,10 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Helpers;
-using FluentAssertions.Execution;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Extensions.DependencyInjection;
 

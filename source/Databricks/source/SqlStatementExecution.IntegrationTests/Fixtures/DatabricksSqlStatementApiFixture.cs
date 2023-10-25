@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
@@ -44,6 +45,15 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
+    }
+
+    public DatabricksSqlStatementClient CreateSqlStatementClient()
+    {
+        var httpFactoryMock = new Mock<IHttpClientFactory>();
+        var parseLoggerMock = new Mock<ILogger<SqlStatusResponseParser>>();
+        var clientLoggerMock = new Mock<ILogger<DatabricksSqlStatementClient>>();
+
+        return CreateSqlStatementClient(DatabricksOptionsMock.Object.Value, httpFactoryMock, parseLoggerMock, clientLoggerMock);
     }
 
     public DatabricksSqlStatementClient CreateSqlStatementClient(
@@ -78,6 +88,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
                 WorkspaceUrl = databricksSettings.WorkspaceUrl,
                 WorkspaceToken = databricksSettings.WorkspaceAccessToken,
                 WarehouseId = databricksSettings.WarehouseId,
+                TimeoutInSeconds = 50,
             });
 
         return databricksOptionsMock;

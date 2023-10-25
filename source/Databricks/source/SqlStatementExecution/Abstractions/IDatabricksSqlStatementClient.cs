@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
@@ -20,14 +21,15 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 /// <summary>
 /// This interface is used to execute SQL statements against Databricks SQL Statement Execution API.
 /// </summary>
+[Obsolete(message: "This interface is obsolete and will be removed in a future version. Please use DatabricksSqlWarehouseQueryExecutor instead.", error: false)]
 public interface IDatabricksSqlStatementClient
 {
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
     /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters. </param>
-    /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects representing parameters
-    /// to be used in the query.</param>
+    /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects
+    /// representing parameters to be used in the query.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="SqlResultRow"/> representing the result set of the query.
     /// </returns>
@@ -46,9 +48,9 @@ public interface IDatabricksSqlStatementClient
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
-    /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters. </param>
-    /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects representing parameters
-    ///     to be used in the query.</param>
+    /// <param name="sqlStatement">The SQL query to be executed, with Parameter Markers for parameters.</param>
+    /// <param name="sqlStatementParameters">[Optional] A list of <see cref="SqlStatementParameter"/> objects
+    /// representing parameters to be used in the query.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="string"/> array representing the result set of the query.
     /// </returns>

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
@@ -89,11 +90,17 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 });
 
+#pragma warning disable CS0618 // Type or member is obsolete
             serviceCollection.AddScoped<IDatabricksSqlStatementClient, DatabricksSqlStatementClient>();
+#pragma warning restore CS0618 // Type or member is obsolete
             serviceCollection.AddScoped<ISqlResponseParser, SqlResponseParser>();
             serviceCollection.AddScoped<ISqlStatusResponseParser, SqlStatusResponseParser>();
             serviceCollection.AddScoped<ISqlChunkResponseParser, SqlChunkResponseParser>();
             serviceCollection.AddScoped<ISqlChunkDataResponseParser, SqlChunkDataResponseParser>();
+            serviceCollection.AddSingleton(sp =>
+                new DatabricksSqlWarehouseQueryExecutor(
+                    sp.GetRequiredService<IHttpClientFactory>(),
+                    sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));
 
             return serviceCollection;
         }
