@@ -2,7 +2,7 @@
 
 ## Version 4.4.2
 
-- Bump version as part of renaming Databricks keys in keyvault 
+- Bump version as part of renaming Databricks keys in keyvault
 
 ## Version 4.4.1
 
