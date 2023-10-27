@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture
         public class ForConstructorOn
         {
             [Fact]
-            public void When_SetParameters_Then_ParameterValueIsUsedForCreation()
+            public void When_SettingAllParameters_Then_ParameterValuesAreUsedForCreation()
             {
                 // Arrange
                 var sut = new Fixture();
@@ -40,6 +40,23 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture
                 using var assertionScope = new AssertionScope();
                 actual.Number.Should().Be(5);
                 actual.Text.Should().Be("example text");
+            }
+
+            [Fact]
+            public void When_SettingOneOfMultipleParameters_Then_ParameterValueIsUsedForCreation()
+            {
+                // Arrange
+                var sut = new Fixture();
+
+                // Act
+                var actual = sut.ForConstructorOn<Example>()
+                    .SetParameter("number").To(5)
+                    .Create();
+
+                // Assert
+                using var assertionScope = new AssertionScope();
+                actual.Number.Should().Be(5);
+                actual.Text.Should().NotBeNullOrEmpty();
             }
 
             public class Example
