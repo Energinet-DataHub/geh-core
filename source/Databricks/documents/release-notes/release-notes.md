@@ -1,5 +1,13 @@
 # Databricks Release Notes
 
+## Version 7.2.2
+
+- Databricks integration test configuration keys in keyvault are renamed
+
+## Version 7.2.1
+
+- No functional change.
+
 ## Version 7.2.0
 
 - Databricks streaming of `ApacheArrow` and `JsonArray` is added.
