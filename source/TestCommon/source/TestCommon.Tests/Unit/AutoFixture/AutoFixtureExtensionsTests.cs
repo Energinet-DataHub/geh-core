@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture
                 var sut = new Fixture();
 
                 // Act
-                var actual = sut.ForConstructorOn<Example>()
+                var actual = sut.ForConstructorOn<HasNumberAndTest>()
                     .SetParameter("number").To(5)
                     .SetParameter("text").To("example text")
                     .Create();
@@ -49,7 +49,7 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture
                 var sut = new Fixture();
 
                 // Act
-                var actual = sut.ForConstructorOn<Example>()
+                var actual = sut.ForConstructorOn<HasNumberAndTest>()
                     .SetParameter("number").To(5)
                     .Create();
 
@@ -59,17 +59,52 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture
                 actual.Text.Should().NotBeNullOrEmpty();
             }
 
-            public class Example
+            [Theory]
+            [InlineData(Priority.Second)]
+            [InlineData(Priority.Third)]
+            [InlineData(Priority.First)]
+            public void When_SettingEnumParameter_Then_ParameterValueIsUsedForCreation(Priority priority)
             {
-                public Example(int number, string text)
+                // Arrange
+                var sut = new Fixture();
+
+                // Act
+                var actual = sut.ForConstructorOn<HasEnum>()
+                    .SetParameter("priority").To(priority)
+                    .Create();
+
+                // Assert
+                actual.Priority.Should().Be(priority);
+            }
+
+            public class HasNumberAndTest
+            {
+                public HasNumberAndTest(int number, string text)
                 {
                     Number = number;
                     Text = text;
                 }
 
-                public int Number { get; private set; }
+                public int Number { get; }
 
-                public string Text { get; private set; }
+                public string Text { get; }
+            }
+
+            public class HasEnum
+            {
+                public HasEnum(Priority priority)
+                {
+                    Priority = priority;
+                }
+
+                public Priority Priority { get; }
+            }
+
+            public enum Priority
+            {
+                First = 0,
+                Second = 1,
+                Third = 2,
             }
         }
     }
