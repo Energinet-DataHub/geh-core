@@ -126,8 +126,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
             return new DatabricksSettings
             {
                 // We have to build the URL here in code as currently this is also what happens in the infrastructure code (terraform).
-                WorkspaceUrl = $"https://{configuration.GetValue("dbw-playground-workspace-url")}",
-                WorkspaceAccessToken = configuration.GetValue("dbw-playground-workspace-token"),
+                WorkspaceUrl = $"https://{configuration.GetValue("dbw-domain-test-workspace-url")}",
+                WorkspaceAccessToken = configuration.GetValue("dbw-domain-test-workspace-token"),
                 WarehouseId = configuration.GetValue("dbw-sql-endpoint-id"),
             };
         }
