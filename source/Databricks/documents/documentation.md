@@ -83,62 +83,6 @@ await foreach (var record in records)
 
 The main difference between the two is that when using `Format.ApacheArrow` all the columns are [mapped](../source/SqlStatementExecution/Formats/IArrowArrayExtensions.cs) to a .NET type. If use are using `Format.JsonArray` all columns are returned as string.
 
-### Deprecated usage of IDatabricksSqlStatementClient / DatabricksSqlStatementClient
-
-> [!WARNING]
-> This is not recommended - please use DatabricksSqlWarehouseQueryExecutor
-
-Example of how to use the SQL Statement Execution client.
-
-```c#
-[HttpGet]
-public async Task<IActionResult> GetAsync()
-{
-    var sqlQuery = "SELECT * FROM my_table WHERE name = :my_name AND date = :my_date";
-    var parameters = new List<SqlStatementParameter>
-    {
-        SqlStatementParameter.Create("my_name", "Sheldon Cooper"),
-        SqlStatementParameter.Create("my_date", "26-02-1980", "DATE"),
-    };
-    var resultList = new List<TestModel>();
-
-    await foreach (var row in _databricksSqlStatementClient.ExecuteAsync(sqlQuery, parameters)) {
-        var testModel = new TestModel(row["my_name"], row["my_date"]);
-        resultList.Add(testModel)
-    }
-
-    return Ok(resultList);
-}
-```
-
-Example of how to stream data with the SQL Statement Execution client.
-
-```c#
-[HttpGet]
-public async Task<IActionResult> StreamAsync()
-{
-    var sqlQuery = "SELECT * FROM my_table WHERE name = :my_name AND date = :my_date";
-    var parameters = new List<SqlStatementParameter>
-    {
-        SqlStatementParameter.Create("my_name", "Sheldon Cooper"),
-        SqlStatementParameter.Create("my_date", "26-02-1980", "DATE"),
-    };
-    var resultList = new List<TestModel>();
-    
-    await foreach (var row in _databricksSqlStatementClient.StreamAsync(sqlQuery, parameters))
-    {
-        var myName = row[0];
-        var myDate = row[1];
-        var testModel = new TestModel(myName, myDate);
-        resultList.Add(testModel)
-    }
-
-    return Ok(resultList);
-}
-```
-
-Notice, if a type is given in the `SqlStatementParameter` Create method, Databricks SQL Statement Execution API will perform type checking on the parameter value. But no functional difference. See [Databricks documentation](https://docs.databricks.com/api/workspace/statementexecution/executestatement) for more information.
-
 ### Health checks
 
 The package contains functionality to do health checks of the status of the Databricks Sql Statement Execution API.
