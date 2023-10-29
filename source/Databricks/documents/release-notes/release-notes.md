@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 8.0.0
+
+- Obsolete methods are removed for Databricks SQL Warehouse integration
+
 ## Version 7.2.2
 
 - Databricks integration test configuration keys in keyvault are renamed
