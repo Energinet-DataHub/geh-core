@@ -3,6 +3,7 @@
 ## Version 8.0.0
 
 - Obsolete methods are removed for Databricks SQL Warehouse integration
+- Add support for adhoc SQL queries
 
 ## Version 7.2.2
 
