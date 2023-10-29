@@ -79,6 +79,23 @@ await foreach (var record in records)
     allSheldons.Add(new Person(record.name, record.date));
 ```
 
+#### Adhoc queries
+
+It's possible to create adhoc queries from `DatabricksStatement` class.
+
+```c#
+var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+              ('Zen Hui', 25),
+              ('Anil B' , 18),
+              ('Shone S', 16),
+              ('Mike A' , 25),
+              ('John A' , 18),
+              ('Jack N' , 16) AS data(name, age)
+              WHERE data.age = :_age;")
+            .WithParameter("_age", 25)
+            .Build();
+```
+
 #### ApacheArrow or JsonArray
 
 The main difference between the two is that when using `Format.ApacheArrow` all the columns are [mapped](../source/SqlStatementExecution/Formats/IArrowArrayExtensions.cs) to a .NET type. If use are using `Format.JsonArray` all columns are returned as string.
