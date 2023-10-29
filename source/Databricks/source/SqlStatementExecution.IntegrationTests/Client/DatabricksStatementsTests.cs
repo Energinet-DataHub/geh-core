@@ -29,6 +29,54 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     }
 
     [Fact]
+    public async Task ExecuteStatement_FromRawSqlWithParameters_ShouldReturnRows()
+    {
+        // Arrange
+        const int expectedRows = 2;
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+              ('Zen Hui', 25),
+              ('Anil B' , 18),
+              ('Shone S', 16),
+              ('Mike A' , 25),
+              ('John A' , 18),
+              ('Jack N' , 16) AS data(name, age)
+              WHERE data.age = :_age;")
+            .WithParameter("_age", 25)
+            .Build();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(expectedRows);
+    }
+
+    [Fact]
+    public async Task ExecuteStatement_FromRawSql_ShouldReturnRows()
+    {
+        // Arrange
+        const int expectedRows = 6;
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+              ('Zen Hui', 25),
+              ('Anil B' , 18),
+              ('Shone S', 16),
+              ('Mike A' , 25),
+              ('John A' , 18),
+              ('Jack N' , 16) AS data(name, age);")
+            .Build();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(expectedRows);
+    }
+
+    [Fact]
     public async Task ExecuteStatementAsync_WhenQueryingWithParameters_MustIncludeParameterTypeInRequest()
     {
         // Arrange

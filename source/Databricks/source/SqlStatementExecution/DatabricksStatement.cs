@@ -23,6 +23,13 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 /// </summary>
 public abstract class DatabricksStatement
 {
+    /// <summary>
+    /// Create an adhoc SQL statement with optional parameters
+    /// </summary>
+    /// <param name="sqlStatement">Query to execute on Databricks SQL Warehouse</param>
+    /// <returns><see cref="DatabricksStatementBuilder"/> for customizing parameters</returns>
+    public static DatabricksStatementBuilder FromRawSql(string sqlStatement) => new DatabricksStatementBuilder(sqlStatement);
+
     public override string ToString() => GetSqlStatement();
 
     /// <summary>
