@@ -26,12 +26,22 @@ public sealed class DatabricksStatementBuilder
         _rawSql = rawSql;
     }
 
+    /// <summary>
+    /// Add a <see cref="string"/> parameter to the SQL statement
+    /// </summary>
+    /// <param name="name">Name of parameter</param>
+    /// <param name="value">Value for the parameter</param>
     public DatabricksStatementBuilder WithParameter(string name, string value)
     {
         _queryParameters.Add(QueryParameter.Create(name, value));
         return this;
     }
 
+    /// <summary>
+    /// Add a <see cref="int"/> parameter to the SQL statement
+    /// </summary>
+    /// <param name="name">Name of parameter</param>
+    /// <param name="value">Value for the parameter</param>
     public DatabricksStatementBuilder WithParameter(string name, int value)
     {
         _queryParameters.Add(QueryParameter.Create(name, value));
