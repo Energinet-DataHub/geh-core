@@ -48,6 +48,10 @@ public sealed class DatabricksStatementBuilder
         return this;
     }
 
+    /// <summary>
+    /// Build the <see cref="DatabricksStatement"/>
+    /// </summary>
+    /// <returns>A <see cref="DatabricksStatement"/> with SQL and optional parameters</returns>
     public DatabricksStatement Build()
     {
         return new RawSqlStatement(_rawSql, _queryParameters.AsReadOnly());
