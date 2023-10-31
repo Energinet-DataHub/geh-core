@@ -36,6 +36,11 @@ public sealed class IntegrationEventServiceBusMessage
 
     public BinaryData Body { get; }
 
+    /// <summary>
+    /// Create a <see cref="IntegrationEventServiceBusMessage"/>
+    /// </summary>
+    /// <param name="message">The Service Bus message body as a byte array</param>
+    /// <param name="bindingData">The binding data of the Service Bus message, usually retrieved through the binding context</param>
     public static IntegrationEventServiceBusMessage Create(byte[] message, IReadOnlyDictionary<string, object> bindingData)
     {
         var messageId = bindingData["MessageId"] as string ?? throw new InvalidOperationException("MessageId is null");
@@ -50,6 +55,10 @@ public sealed class IntegrationEventServiceBusMessage
         return CreateIntegrationEventServiceBusMessage(messageId, subject, applicationProperties, body);
     }
 
+    /// <summary>
+    /// Create a <see cref="IntegrationEventServiceBusMessage"/>
+    /// </summary>
+    /// <param name="message">The <see cref="ServiceBusReceivedMessage"/> is usually received from an Azure Service Bus</param>
     public static IntegrationEventServiceBusMessage Create(ServiceBusReceivedMessage message)
     {
         return CreateIntegrationEventServiceBusMessage(message.MessageId, message.Subject, message.ApplicationProperties, message.Body);
