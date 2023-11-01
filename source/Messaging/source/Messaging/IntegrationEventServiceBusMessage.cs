@@ -14,6 +14,7 @@
 
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using Azure.Messaging.ServiceBus;
 
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
@@ -35,14 +36,40 @@ public sealed class IntegrationEventServiceBusMessage
 
     public BinaryData Body { get; }
 
+    /// <summary>
+    /// Create a <see cref="IntegrationEventServiceBusMessage"/>
+    /// </summary>
+    /// <param name="message">The Service Bus message body as a byte array</param>
+    /// <param name="bindingData">The binding data of the Service Bus message, usually retrieved through the binding context</param>
     public static IntegrationEventServiceBusMessage Create(byte[] message, IReadOnlyDictionary<string, object> bindingData)
     {
-        var applicationPropertiesString = bindingData["ApplicationProperties"] as string ?? throw new InvalidOperationException("Subject is null");
-        var applicationProperties = JsonSerializer.Deserialize<Dictionary<string, object>>(applicationPropertiesString) ?? throw new InvalidOperationException("Could not deserialize ApplicationProperties");
+        var messageId = bindingData["MessageId"] as string ?? throw new InvalidOperationException("MessageId is null");
+        var subject = bindingData["Subject"] as string ?? throw new InvalidOperationException("Subject is null");
+
+        var applicationPropertiesString = bindingData["ApplicationProperties"] as string ?? throw new InvalidOperationException("ApplicationProperties is null");
+        var applicationPropertiesDictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(applicationPropertiesString) ?? throw new InvalidOperationException("Could not deserialize ApplicationProperties");
+        var applicationProperties = new ReadOnlyDictionary<string, object>(applicationPropertiesDictionary);
+
+        var body = new BinaryData(message);
+
+        return CreateIntegrationEventServiceBusMessage(messageId, subject, applicationProperties, body);
+    }
+
+    /// <summary>
+    /// Create a <see cref="IntegrationEventServiceBusMessage"/>
+    /// </summary>
+    /// <param name="message">The <see cref="ServiceBusReceivedMessage"/> is usually received from an Azure Service Bus</param>
+    public static IntegrationEventServiceBusMessage Create(ServiceBusReceivedMessage message)
+    {
+        return CreateIntegrationEventServiceBusMessage(message.MessageId, message.Subject, message.ApplicationProperties, message.Body);
+    }
+
+    private static IntegrationEventServiceBusMessage CreateIntegrationEventServiceBusMessage(string messageId, string subject, IReadOnlyDictionary<string, object> applicationProperties, BinaryData body)
+    {
         return new IntegrationEventServiceBusMessage(
-            Guid.Parse(bindingData["MessageId"] as string ?? throw new InvalidOperationException("MessageId is null")),
-            bindingData["Subject"] as string ?? throw new InvalidOperationException("Subject is null"),
-            new ReadOnlyDictionary<string, object>(applicationProperties),
-            new BinaryData(message));
+            Guid.Parse(messageId),
+            subject,
+            applicationProperties,
+            body);
     }
 }
