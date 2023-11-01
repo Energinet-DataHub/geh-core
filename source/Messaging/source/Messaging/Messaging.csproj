@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
-    <PackageVersion>3.1.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>3.2.0$(VersionSuffix)</PackageVersion>
     <Title>Messaging library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
