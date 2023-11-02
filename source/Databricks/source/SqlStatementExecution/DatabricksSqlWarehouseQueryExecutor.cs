@@ -24,12 +24,13 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public sealed class DatabricksSqlWarehouseQueryExecutor
+public class DatabricksSqlWarehouseQueryExecutor : IDisposable
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly HttpClient _externalHttpClient;
     private readonly DatabricksSqlStatementOptions _options;
+    private bool _disposed = false;
 
     internal DatabricksSqlWarehouseQueryExecutor(
         IHttpClientFactory httpClientFactory,
@@ -38,6 +39,13 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
         _httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
         _externalHttpClient = httpClientFactory.CreateClient(HttpClientNameConstants.External);
         _options = options.Value;
+    }
+
+    protected DatabricksSqlWarehouseQueryExecutor()
+    {
+        _httpClient = new HttpClient();
+        _externalHttpClient = new HttpClient();
+        _options = new DatabricksSqlStatementOptions();
     }
 
     /// <summary>
@@ -54,7 +62,7 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    public IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement)
+    public virtual IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement)
         => ExecuteStatementAsync(statement, Format.ApacheArrow);
 
     /// <summary>
@@ -72,12 +80,31 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format)
+    public virtual async IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format))
         {
             yield return record;
         }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+
+        if (disposing)
+        {
+            _httpClient.Dispose();
+            _externalHttpClient.Dispose();
+        }
+
+        _disposed = true;
     }
 
     private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(DatabricksStatement statement, Format format)
