@@ -59,7 +59,7 @@ public class ServiceCollectionTests
         var services = new ServiceCollection();
         services.AddDatabricksSqlStatementExecution(configuration);
         var serviceProvider = services.BuildServiceProvider();
-        var svc = serviceProvider.GetService<IDatabricksStatementExecutor>();
+        var svc = serviceProvider.GetService<IDatabricksSqlWarehouseQueryExecutor>();
 
         // Assert
         svc.Should().NotBeNull();

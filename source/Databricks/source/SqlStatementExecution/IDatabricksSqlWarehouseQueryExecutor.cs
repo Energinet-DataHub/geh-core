@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 /// <summary>
 /// Executes SQL statements on Databricks SQL Warehouse
 /// </summary>
-public interface IDatabricksStatementExecutor
+public interface IDatabricksSqlWarehouseQueryExecutor
 {
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results using <see cref="Format.ApacheArrow"/> format.

@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                     sp.GetRequiredService<IHttpClientFactory>(),
                     sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));
 
-            serviceCollection.AddSingleton<IDatabricksStatementExecutor>(sp =>
+            serviceCollection.AddSingleton<IDatabricksSqlWarehouseQueryExecutor>(sp =>
                 new DatabricksSqlWarehouseQueryExecutor(
                     sp.GetRequiredService<IHttpClientFactory>(),
                     sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));
