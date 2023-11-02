@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 8.0.1
+
+- Add support for mocking
+
 ## Version 8.0.0
 
 - Obsolete methods are removed for Databricks SQL Warehouse integration
