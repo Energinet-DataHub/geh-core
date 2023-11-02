@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 8.0.1
+
+- Add interface to expose `ExecuteStatementAsync` for mocking
+
 ## Version 8.0.0
 
 - Obsolete methods are removed for Databricks SQL Warehouse integration
