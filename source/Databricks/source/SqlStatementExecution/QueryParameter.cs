@@ -14,7 +14,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 public sealed class QueryParameter
 {

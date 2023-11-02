@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using Apache.Arrow.Ipc;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;

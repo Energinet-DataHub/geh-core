@@ -15,48 +15,16 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Client;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
 {
     public static class DatabricksSqlStatementExecutionExtensions
     {
         /// <summary>
-        /// Adds the <see cref="IDatabricksSqlStatementClient"/> and related services to the service collection.
-        /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="warehouseId"></param>
-        /// <param name="workspaceToken"></param>
-        /// <param name="workspaceUrl"></param>
-        /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        [Obsolete("Use 'AddDatabricksSqlStatementExecution'")]
-        public static IServiceCollection AddDatabricks(
-            this IServiceCollection serviceCollection,
-            string warehouseId,
-            string workspaceToken,
-            string workspaceUrl)
-        {
-            serviceCollection.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
-            {
-                options.WarehouseId = warehouseId;
-                options.WorkspaceToken = workspaceToken;
-                options.WorkspaceUrl = workspaceUrl;
-                options.DatabricksHealthCheckStartHour = 6; // use default
-                options.DatabricksHealthCheckEndHour = 20; // use default
-            });
-
-            return serviceCollection.AddSqlStatementExecutionInner();
-        }
-
-        /// <summary>
-        /// Adds the <see cref="IDatabricksSqlStatementClient"/> and related services to the service collection.
+        /// Adds the <see cref="DatabricksSqlWarehouseQueryExecutor"/> and related services to the service collection.
         /// </summary>
         /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
         public static IServiceCollection AddDatabricksSqlStatementExecution(this IServiceCollection serviceCollection, IConfiguration configuration)
@@ -90,13 +58,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.Dep
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 });
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            serviceCollection.AddScoped<IDatabricksSqlStatementClient, DatabricksSqlStatementClient>();
-#pragma warning restore CS0618 // Type or member is obsolete
-            serviceCollection.AddScoped<ISqlResponseParser, SqlResponseParser>();
-            serviceCollection.AddScoped<ISqlStatusResponseParser, SqlStatusResponseParser>();
-            serviceCollection.AddScoped<ISqlChunkResponseParser, SqlChunkResponseParser>();
-            serviceCollection.AddScoped<ISqlChunkDataResponseParser, SqlChunkDataResponseParser>();
             serviceCollection.AddSingleton(sp =>
                 new DatabricksSqlWarehouseQueryExecutor(
                     sp.GetRequiredService<IHttpClientFactory>(),

@@ -12,31 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Client.Statements;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-public class QueryPerson : DatabricksStatement
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+
+internal class RawSqlStatement : DatabricksStatement
 {
-    private readonly string _personName;
+    private readonly string _rawSql;
+    private readonly ReadOnlyCollection<QueryParameter> _sqlParameters;
 
-    public QueryPerson(string personName)
+    internal RawSqlStatement(string rawSql, ReadOnlyCollection<QueryParameter> sqlParameters)
     {
-        _personName = personName;
-   }
+        _rawSql = rawSql;
+        _sqlParameters = sqlParameters;
+    }
 
     protected internal override string GetSqlStatement()
     {
-        return @"SELECT * FROM VALUES
-              ('Zen Hui', 25),
-              ('Anil B' , 18),
-              ('Shone S', 16),
-              ('Mike A' , 25),
-              ('John A' , 18),
-              ('Jack N' , 16) AS data(name, age)
-                WHERE data.name = :personName";
+        return _rawSql;
     }
 
     protected internal override IReadOnlyCollection<QueryParameter> GetParameters()
     {
-        return new[] { QueryParameter.Create("personName", _personName) };
+        return _sqlParameters;
     }
 }
