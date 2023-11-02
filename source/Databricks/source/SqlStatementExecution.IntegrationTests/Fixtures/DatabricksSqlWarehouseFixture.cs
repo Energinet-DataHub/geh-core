@@ -22,11 +22,11 @@ public sealed class DatabricksSqlWarehouseFixture
 {
     private static readonly Lazy<IntegrationTestConfiguration> _lazyConfiguration = new(() => new IntegrationTestConfiguration());
 
-    public DatabricksSqlWarehouseQueryExecutor CreateSqlStatementClient()
+    public IDatabricksSqlWarehouseQueryExecutor CreateSqlStatementClient()
     {
         var services = CreateServiceCollection();
         var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
+        return serviceProvider.GetRequiredService<IDatabricksSqlWarehouseQueryExecutor>();
     }
 
     private static ServiceCollection CreateServiceCollection()

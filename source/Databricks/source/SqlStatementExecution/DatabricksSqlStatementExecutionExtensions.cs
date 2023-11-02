@@ -58,7 +58,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 });
 
-            serviceCollection.AddSingleton(sp =>
+            serviceCollection.AddSingleton<IDatabricksSqlWarehouseQueryExecutor>(sp =>
                 new DatabricksSqlWarehouseQueryExecutor(
                     sp.GetRequiredService<IHttpClientFactory>(),
                     sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));

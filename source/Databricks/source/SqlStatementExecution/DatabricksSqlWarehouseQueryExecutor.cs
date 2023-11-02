@@ -14,8 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
@@ -24,7 +22,7 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public sealed class DatabricksSqlWarehouseQueryExecutor
+public sealed class DatabricksSqlWarehouseQueryExecutor : IDatabricksSqlWarehouseQueryExecutor
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
@@ -40,38 +38,11 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
         _options = options.Value;
     }
 
-    /// <summary>
-    /// Asynchronously executes a parameterized SQL query on Databricks and streams the results using <see cref="Format.ApacheArrow"/> format.
-    /// </summary>
-    /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
-    /// <returns>
-    /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
-    /// </returns>
-    /// <remarks>
-    /// Use this method to execute SQL queries combined with Parameter Markers against Databricks to protect against SQL injection attacks.
-    /// The <paramref name="statement"/> should contain a collection of <see cref="QueryParameter"/>.
-    ///
-    /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
-    /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
-    /// </remarks>
+    /// <see cref="IDatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(DatabricksStatement)"/>
     public IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement)
         => ExecuteStatementAsync(statement, Format.ApacheArrow);
 
-    /// <summary>
-    /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
-    /// </summary>
-    /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
-    /// <param name="format">The desired format of the data returned.</param>
-    /// <returns>
-    /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
-    /// </returns>
-    /// <remarks>
-    /// Use this method to execute SQL queries combined with Parameter Markers against Databricks to protect against SQL injection attacks.
-    /// The <paramref name="statement"/> should contain a collection of <see cref="QueryParameter"/>.
-    ///
-    /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
-    /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
-    /// </remarks>
+    /// <see cref="IDatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(DatabricksStatement, Format)"/>
     public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format))

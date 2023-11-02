@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 8.0.1
+
+- Added interface to DatabricksSqlWarehouseQueryExecutor to follow the principal "depend on abstractions, not on concretions" and to allow mocking of the class in unit tests.
+
 ## Version 8.0.0
 
 - Obsolete methods are removed for Databricks SQL Warehouse integration
