@@ -24,7 +24,7 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public sealed class DatabricksSqlWarehouseQueryExecutor
+public class DatabricksSqlWarehouseQueryExecutor
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
@@ -41,6 +41,17 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="DatabricksSqlWarehouseQueryExecutor"/>
+    /// class for mocking.
+    /// </summary>
+    protected DatabricksSqlWarehouseQueryExecutor()
+    {
+        _httpClient = null!;
+        _externalHttpClient = null!;
+        _options = null!;
+    }
+
+    /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results using <see cref="Format.ApacheArrow"/> format.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
@@ -54,7 +65,7 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    public IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement)
+    public virtual IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement)
         => ExecuteStatementAsync(statement, Format.ApacheArrow);
 
     /// <summary>
@@ -72,7 +83,7 @@ public sealed class DatabricksSqlWarehouseQueryExecutor
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    public async IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format)
+    public virtual async IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format))
         {

@@ -100,6 +100,26 @@ var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
 
 The main difference between the two is that when using `Format.ApacheArrow` all the columns are [mapped](../source/SqlStatementExecution/Formats/IArrowArrayExtensions.cs) to a .NET type. If use are using `Format.JsonArray` all columns are returned as string.
 
+#### Mocking
+
+The class `DatabricksSqlWarehouseQueryExecutor` can be mocked by overwriting the `ExecuteStatementAsync` methods.
+
+E.g.:
+
+```c#
+// using package System.Linq.Async
+
+var mock = new Mock<DatabricksSqlWarehouseQueryExecutor>();
+mock
+    .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
+    .Returns(new dynamic[] { new { Id = 1 }, new { Id = 2 } }.ToAsyncEnumerable());
+
+var result = mock.Object.ExecuteStatementAsync(new LimitRows(10));
+var rowCount = await result.CountAsync();
+
+rowCount.Should().Be(2);
+```
+
 ### Health checks
 
 The package contains functionality to do health checks of the status of the Databricks Sql Statement Execution API.
