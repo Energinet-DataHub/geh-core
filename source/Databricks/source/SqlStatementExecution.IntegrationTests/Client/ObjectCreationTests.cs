@@ -64,6 +64,34 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
+    [Fact]
+    public async Task GivenAClassWithToParameters_WhenOnlyOneIsMapped_ThenExceptionIsThrown()
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+
+        // Act
+        var result = client.ExecuteStatementAsync<ReallyBadPerson>(PersonsStatement);
+        Func<Task> act = async () => await result.ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    public class ReallyBadPerson
+    {
+        public string Name { get; private set; }
+
+        [ArrowField("age", 2)]
+        public int Age { get; private set; }
+
+        public ReallyBadPerson(string name, int age)
+        {
+            Name = name;
+            Age = age;
+        }
+    }
+
     public class BadPerson
     {
         public BadPerson()
