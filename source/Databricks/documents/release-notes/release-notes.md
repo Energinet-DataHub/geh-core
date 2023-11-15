@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 8.0.2
+
+- Fix bug in databricks timestamp handling
+
 ## Version 8.0.1
 
 - Add support for mocking

@@ -35,7 +35,7 @@ internal static class IArrowArrayExtensions
             DoubleArray doubleArray => doubleArray.GetValue(i),
             Date32Array date32Array => date32Array.GetValue(i),
             Date64Array date64Array => date64Array.GetValue(i),
-            TimestampArray timestampArray => timestampArray.GetValue(i),
+            TimestampArray timestampArray => timestampArray.GetTimestamp(i),
             Decimal128Array decimal128Array => decimal128Array.GetValue(i),
             StringArray stringArray => stringArray.GetString(i),
             _ => throw new NotSupportedException($"Unsupported data type {arrowArray}"),
