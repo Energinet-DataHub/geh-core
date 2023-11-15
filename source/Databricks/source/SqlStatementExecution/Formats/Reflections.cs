@@ -22,16 +22,16 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 internal static class Reflections
 {
     public static string[] GetArrowFieldNames<T>()
-        => Column<T>._names;
+        => ArrowFieldNamesFromProperties<T>._names;
 
     public static T CreateInstance<T>(params object?[] values)
         => Create<T>._withValues(values);
 
-    private static class Column<T>
+    private static class ArrowFieldNamesFromProperties<T>
     {
-        public static readonly string[] _names = GetNames(typeof(T));
+        public static readonly string[] _names = GetNamesByConstructorOrder(typeof(T));
 
-        private static string[] GetNames(Type type)
+        private static string[] GetNamesByConstructorOrder(Type type)
         {
             var fields = type.GetProperties().SelectMany(p => p.GetCustomAttributes<ArrowFieldAttribute>());
 
