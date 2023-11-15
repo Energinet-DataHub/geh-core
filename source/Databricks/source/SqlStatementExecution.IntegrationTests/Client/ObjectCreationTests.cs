@@ -22,6 +22,15 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
 {
     private readonly DatabricksSqlWarehouseFixture _sqlWarehouseFixture;
 
+    private static DatabricksStatement PersonsStatement => DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+              ('Zen Hui', 25),
+              ('Anil B' , 18),
+              ('Shone S', 16),
+              ('Mike A' , 25),
+              ('John A' , 18),
+              ('Jack N' , 16) AS data(name, age)")
+        .Build();
+
     public ObjectCreationTests(DatabricksSqlWarehouseFixture sqlWarehouseFixture)
     {
         _sqlWarehouseFixture = sqlWarehouseFixture;
@@ -32,21 +41,37 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
     {
         // Arrange
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
-              ('Zen Hui', 25),
-              ('Anil B' , 18),
-              ('Shone S', 16),
-              ('Mike A' , 25),
-              ('John A' , 18),
-              ('Jack N' , 16) AS data(name, age)")
-            .Build();
 
         // Act
-        var result = client.ExecuteStatementAsync<Person>(statement);
+        var result = client.ExecuteStatementAsync<Person>(PersonsStatement);
         var persons = await result.ToListAsync();
 
         // Assert
         persons.Should().Contain(new Person("John A", 18));
+    }
+
+    [Fact]
+    public async Task GivenAClassWithMultipleConstructors_WhenConstructingObject_ThenExceptionIsThrown()
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+
+        // Act
+        var result = client.ExecuteStatementAsync<BadPerson>(PersonsStatement);
+        Func<Task> act = async () => await result.ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    public class BadPerson
+    {
+        public BadPerson()
+            : this(string.Empty) { }
+
+        public BadPerson(string name) => Name = name;
+
+        public string Name { get; set; }
     }
 
     public record Person(

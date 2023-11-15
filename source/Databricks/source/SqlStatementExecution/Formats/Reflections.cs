@@ -25,7 +25,7 @@ internal static class Reflections
         => ArrowFieldNamesFromProperties<T>._names;
 
     public static T CreateInstance<T>(params object?[] values)
-        => Create<T>._withValues(values);
+        => Create<T>.WithValues(values);
 
     private static class ArrowFieldNamesFromProperties<T>
     {
@@ -41,7 +41,14 @@ internal static class Reflections
 
     private static class Create<T>
     {
-        public static readonly Func<object?[], T> _withValues = BuildExpressionForObjectCreation();
+        /// <summary>
+        ///  Creates an instance of <typeparamref name="T" /> using the constructor
+        /// </summary>
+        /// <exception cref="InvalidOperationException">is thrown if <typeparamref name="T"/> contains more then one constructor</exception>
+        public static Func<object?[], T> WithValues =>
+            typeof(T).GetConstructors().Length > 1 ?
+                throw new InvalidOperationException("Only one constructor is supported.") :
+                BuildExpressionForObjectCreation();
 
         /// <summary>
         ///  Builds an expression that creates an instance of <typeparamref name="T" /> using the constructor
