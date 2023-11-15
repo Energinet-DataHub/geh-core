@@ -92,12 +92,14 @@ public class DatabricksSqlWarehouseQueryExecutor
     }
 
     /// <summary>
-    /// !!! EXPERIMENTAL !!!
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
     /// </summary>
-    /// <param name="statement">The SQL query to be executed, with collection of &lt;see cref="QueryParameter"/&gt; parameters.</param>
+    /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
     /// <typeparam name="T">Target type</typeparam>
     /// <returns>An asynchronous enumerable of <typeparamref name="T"/> representing the result of the query.</returns>
+    /// <remarks>
+    /// This is an experimental feature and may be removed in a future version.
+    /// </remarks>
     public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement)
         where T : class
     {
