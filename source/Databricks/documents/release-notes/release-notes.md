@@ -1,6 +1,6 @@
 # Databricks Release Notes
 
-## Version 8.02
+## Version 8.0.2
 
 - Fix bug in databricks timestamp handling
 
