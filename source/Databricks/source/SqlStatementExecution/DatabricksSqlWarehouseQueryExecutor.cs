@@ -91,6 +91,44 @@ public class DatabricksSqlWarehouseQueryExecutor
         }
     }
 
+    /// <summary>
+    /// !!! EXPERIMENTAL !!!
+    /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
+    /// </summary>
+    /// <param name="statement">The SQL query to be executed, with collection of &lt;see cref="QueryParameter"/&gt; parameters.</param>
+    /// <typeparam name="T">Target type</typeparam>
+    /// <returns>An asynchronous enumerable of <typeparamref name="T"/> representing the result of the query.</returns>
+    public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement)
+        where T : class
+    {
+        var strategy = new StronglyTypedApacheArrowFormat(_options);
+        var request = strategy.GetStatementRequest(statement);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath);
+
+        if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
+
+        if (response.manifest.total_row_count <= 0)
+        {
+            yield break;
+        }
+
+        foreach (var chunk in response.manifest.chunks)
+        {
+            var uri = StatementsEndpointPath +
+                      $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri);
+
+            if (chunkResponse?.external_links == null) continue;
+
+            await using var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link);
+
+            await foreach (var row in strategy.ExecuteAsync<T>(stream))
+            {
+                yield return row;
+            }
+        }
+    }
+
     private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(DatabricksStatement statement, Format format)
     {
         var strategy = format.GetStrategy(_options);
