@@ -4,7 +4,7 @@
 
 - Create objects from statements as an alternative to dynamic
 
-## Version 8.02
+## Version 8.0.2
 
 - Fix bug in databricks timestamp handling
 
