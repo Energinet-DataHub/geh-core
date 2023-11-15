@@ -99,6 +99,12 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// <returns>An asynchronous enumerable of <typeparamref name="T"/> representing the result of the query.</returns>
     /// <remarks>
     /// This is an experimental feature and may be removed in a future version.
+    ///
+    /// Requirements for <typeparamref name="T"/>:
+    /// - Must be a reference type
+    /// - Must have a public constructor with parameters matching the columns in the result set
+    /// - Must only have a single constructor
+    /// - Must be annotated with <see cref="ArrowFieldAttribute"/> to indicate the order of the constructor parameters
     /// </remarks>
     public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement)
         where T : class
