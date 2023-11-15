@@ -25,7 +25,7 @@ internal static class Reflections
         => Column<T>._names;
 
     public static T CreateInstance<T>(params object?[] values)
-        => Creator<T>._create(values);
+        => Create<T>._withValues(values);
 
     private static class Column<T>
     {
@@ -39,11 +39,14 @@ internal static class Reflections
         }
     }
 
-    private static class Creator<T>
+    private static class Create<T>
     {
-        public static readonly Func<object?[], T> _create = CreateCreator();
+        public static readonly Func<object?[], T> _withValues = BuildExpressionForObjectCreation();
 
-        private static Func<object?[], T> CreateCreator()
+        /// <summary>
+        ///  Builds an expression that creates an instance of <typeparamref name="T" /> using the constructor
+        /// </summary>
+        private static Func<object?[], T> BuildExpressionForObjectCreation()
         {
             var type = typeof(T);
             var ctor = type.GetConstructors().Single();
