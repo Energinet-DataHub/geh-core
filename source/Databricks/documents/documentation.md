@@ -120,6 +120,35 @@ var rowCount = await result.CountAsync();
 rowCount.Should().Be(2);
 ```
 
+#### Experimental - object creation
+
+It's possible to create objects from the result of a query. This is done by annotation the properties of a record class with ArrowField attributes.
+
+The creation is very limited. It only applies to records that are constructed from constructor parameters. Using the constructor order property of the ArrowField attribute to map the constructor parameters to the columns of the query.
+
+Example usage:
+
+```c#
+public record Person(
+        [property: ArrowField("name", 1)] string Name,
+        [property: ArrowField("age", 2)] int Age);
+
+// Create person objects
+var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+              ('Zen Hui', 25),
+              ('Anil B' , 18),
+              ('Shone S', 16),
+              ('Mike A' , 25),
+              ('John A' , 18),
+              ('Jack N' , 16) AS data(name, age)")
+            .Build();
+
+
+var result = client.ExecuteStatementAsync<Person>(statement);
+await foreach (var person in result) 
+    Console.WriteLine(person);
+```
+
 ### Health checks
 
 The package contains functionality to do health checks of the status of the Databricks Sql Statement Execution API.

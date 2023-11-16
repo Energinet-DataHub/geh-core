@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 8.1.0
+
+- Create objects from statements as an alternative to dynamic
+
 ## Version 8.0.2
 
 - Fix bug in databricks timestamp handling
