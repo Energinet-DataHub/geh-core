@@ -109,10 +109,7 @@ internal static class Reflections
         ///  Creates an instance of <typeparamref name="T" /> using the constructor
         /// </summary>
         /// <exception cref="InvalidOperationException">is thrown if <typeparamref name="T"/> contains more then one constructor</exception>
-        public static Func<object?[], T> CreateWithValues =>
-            typeof(T).GetConstructors().Length > 1 ?
-                throw new InvalidOperationException("Only one constructor is supported.") :
-                BuildExpressionForObjectCreation();
+        public static readonly Func<object?[], T> CreateWithValues = BuildExpressionForObjectCreation();
 
         /// <summary>
         ///  Builds an expression that creates an instance of <typeparamref name="T" /> using the constructor
