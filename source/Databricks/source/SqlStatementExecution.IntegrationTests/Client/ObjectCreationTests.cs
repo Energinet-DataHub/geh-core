@@ -65,7 +65,7 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
     }
 
     [Fact]
-    public async Task GivenAClassWithToParameters_WhenOnlyOneIsMapped_ThenExceptionIsThrown()
+    public async Task GivenAClassWithTwoParameters_WhenOnlyOneIsMapped_ThenExceptionIsThrown()
     {
         // Arrange
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
