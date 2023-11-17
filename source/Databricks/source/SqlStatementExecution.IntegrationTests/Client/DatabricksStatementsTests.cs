@@ -29,6 +29,29 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     }
 
     [Fact]
+    public async Task CanHandleArrayTypes()
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = DatabricksStatement.FromRawSql(
+            @"SELECT a, b FROM VALUES
+                ('one', array(0, 1)),
+                ('two', array(2, 3)) AS data(a, b);").Build();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, Format.JsonArray);
+        var row = await result.FirstAsync();
+        var values = JsonSerializer
+                            .Deserialize<string[]>((string)row.b)?
+                            .Select(s => Convert.ToInt32(s))
+                            .ToArray();
+
+        // Assert
+        values.Should().NotBeNull();
+        values.Should().BeEquivalentTo(new[] { 0, 1 });
+    }
+
+    [Fact]
     public async Task ExecuteStatement_FromRawSqlWithParameters_ShouldReturnRows()
     {
         // Arrange
