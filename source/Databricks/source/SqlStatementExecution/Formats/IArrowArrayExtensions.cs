@@ -38,6 +38,19 @@ internal static class IArrowArrayExtensions
             TimestampArray timestampArray => timestampArray.GetTimestamp(i),
             Decimal128Array decimal128Array => decimal128Array.GetValue(i),
             StringArray stringArray => stringArray.GetString(i),
+            ListArray listArray => ReadArray(listArray, i),
             _ => throw new NotSupportedException($"Unsupported data type {arrowArray}"),
         };
+
+    private static object? ReadArray(ListArray array, int i)
+    {
+        var objectArray = new object?[array.Length];
+        var offset = array.ValueOffsets[i];
+        for (var j = 0; j < array.Length; j++)
+        {
+            objectArray[j] = array.Values.GetValue(j + offset);
+        }
+
+        return objectArray;
+    }
 }
