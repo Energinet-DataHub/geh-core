@@ -79,6 +79,24 @@ await foreach (var record in records)
     allSheldons.Add(new Person(record.name, record.date));
 ```
 
+A query can contain arrays. When used with Apache Arrow the array is encoded as object[]. If the format is JsonArray the array is encoded as Json string array.
+
+```c#
+var statement = DatabricksStatement.FromRawSql(
+            @"SELECT a, b FROM VALUES
+                ('one', array(0, 1)),
+                ('two', array(2, 3)) AS data(a, b);").Build();
+
+var result = client.ExecuteStatementAsync(statement, Format.ApacheArrow);
+var row = await result.FirstAsync();
+
+// Apache arrow
+var values = ((object[])row.b).OfType<int>();
+
+// JsonArray
+var values = JsonConvert.DeserializeObject<string[]>((string)row.b).Select(int.Parse);
+```
+
 #### Adhoc queries
 
 It's possible to create adhoc queries from `DatabricksStatement` class.
