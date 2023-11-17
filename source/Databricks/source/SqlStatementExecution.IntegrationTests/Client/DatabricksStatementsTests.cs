@@ -39,15 +39,11 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
                 ('two', array(2, 3)) AS data(a, b);").Build();
 
         // Act
-        var result = client.ExecuteStatementAsync(statement, Format.JsonArray);
+        var result = client.ExecuteStatementAsync(statement, Format.ApacheArrow);
         var row = await result.FirstAsync();
-        var values = JsonSerializer
-                            .Deserialize<string[]>((string)row.b)?
-                            .Select(s => Convert.ToInt32(s))
-                            .ToArray();
+        var values = ((object[])row.b).OfType<int>();
 
         // Assert
-        values.Should().NotBeNull();
         values.Should().BeEquivalentTo(new[] { 0, 1 });
     }
 
