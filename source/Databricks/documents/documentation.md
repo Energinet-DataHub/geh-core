@@ -79,6 +79,24 @@ await foreach (var record in records)
     allSheldons.Add(new Person(record.name, record.date));
 ```
 
+A query can contain arrays. When used with Apache Arrow the array is encoded as object[]. If the format is JsonArray the array is encoded as Json string array.
+
+```c#
+var statement = DatabricksStatement.FromRawSql(
+            @"SELECT a, b FROM VALUES
+                ('one', array(0, 1)),
+                ('two', array(2, 3)) AS data(a, b);").Build();
+
+var result = client.ExecuteStatementAsync(statement, Format.ApacheArrow);
+var row = await result.FirstAsync();
+
+// Apache arrow
+var values = ((object[])row.b).OfType<int>();
+
+// JsonArray
+var values = JsonConvert.DeserializeObject<string[]>((string)row.b).Select(int.Parse);
+```
+
 #### Adhoc queries
 
 It's possible to create adhoc queries from `DatabricksStatement` class.
@@ -118,6 +136,35 @@ var result = mock.Object.ExecuteStatementAsync(new LimitRows(10));
 var rowCount = await result.CountAsync();
 
 rowCount.Should().Be(2);
+```
+
+#### Experimental - object creation
+
+It's possible to create objects from the result of a query. This is done by annotation the properties of a record class with ArrowField attributes.
+
+The creation is very limited. It only applies to records that are constructed from constructor parameters. Using the constructor order property of the ArrowField attribute to map the constructor parameters to the columns of the query.
+
+Example usage:
+
+```c#
+public record Person(
+        [property: ArrowField("name", 1)] string Name,
+        [property: ArrowField("age", 2)] int Age);
+
+// Create person objects
+var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+              ('Zen Hui', 25),
+              ('Anil B' , 18),
+              ('Shone S', 16),
+              ('Mike A' , 25),
+              ('John A' , 18),
+              ('Jack N' , 16) AS data(name, age)")
+            .Build();
+
+
+var result = client.ExecuteStatementAsync<Person>(statement);
+await foreach (var person in result) 
+    Console.WriteLine(person);
 ```
 
 ### Health checks
