@@ -1,5 +1,18 @@
 # Databricks Release Notes
 
+## Version 8.2.0
+
+- Add support for ListArray in Apache Arrow format
+- Update documentation with usage guide for Apache Arrow format and JsonArray format for arrays
+
+## Version 8.1.0
+
+- Create objects from statements as an alternative to dynamic
+
+## Version 8.0.2
+
+- Fix bug in databricks timestamp handling
+
 ## Version 8.0.1
 
 - Add support for mocking
