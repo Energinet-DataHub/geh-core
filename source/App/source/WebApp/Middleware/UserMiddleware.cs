@@ -29,8 +29,7 @@ namespace Energinet.DataHub.Core.App.WebApp.Middleware;
 public sealed class UserMiddleware<TUser> : IMiddleware
     where TUser : class
 {
-    private const string MembershipClaim = "membership";
-    private const string FasMembership = "fas";
+    private const string MultiTenancyClaim = "multitenancy";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserProvider<TUser> _userProvider;
@@ -70,10 +69,10 @@ public sealed class UserMiddleware<TUser> : IMiddleware
         var claimsPrincipal = httpContext.User;
         var userId = GetUserId(claimsPrincipal.Claims);
         var actorId = GetActorId(claimsPrincipal.Claims);
-        var isFas = GetIsFas(claimsPrincipal.Claims);
+        var multiTenancy = GetMultiTenancy(claimsPrincipal.Claims);
 
         var user = await _userProvider
-            .ProvideUserAsync(userId, actorId, isFas, claimsPrincipal.Claims)
+            .ProvideUserAsync(userId, actorId, multiTenancy, claimsPrincipal.Claims)
             .ConfigureAwait(false);
 
         // Domain did not accept the user; returns 401.
@@ -99,8 +98,8 @@ public sealed class UserMiddleware<TUser> : IMiddleware
         return Guid.Parse(actorId);
     }
 
-    private static bool GetIsFas(IEnumerable<Claim> claims)
+    private static bool GetMultiTenancy(IEnumerable<Claim> claims)
     {
-        return claims.Any(claim => claim.Type == MembershipClaim && claim.Value == FasMembership);
+        return claims.Any(claim => claim is { Type: MultiTenancyClaim, Value: "true" });
     }
 }

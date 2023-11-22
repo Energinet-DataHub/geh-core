@@ -29,7 +29,7 @@ public sealed class ExampleDomainUserProvider : IUserProvider<ExampleDomainUser>
     public Task<ExampleDomainUser?> ProvideUserAsync(
         Guid userId,
         Guid actorId,
-        bool isFas,
+        bool multiTenancy,
         IEnumerable<Claim> claims)
     {
         return _contextAccessor!.HttpContext!.Request.Headers.ContainsKey("DenyUser")
