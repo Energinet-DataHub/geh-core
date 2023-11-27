@@ -30,13 +30,13 @@ namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
         /// </summary>
         /// <param name="userId">The id of the user.</param>
         /// <param name="actorId">The id of the actor.</param>
-        /// <param name="isFas">Specifies whether the user is member of FAS.</param>
+        /// <param name="multiTenancy">Specifies whether the user has a claim that allows accessing data across market participants.</param>
         /// <param name="claims">The claims present in the token.</param>
         /// <returns>A domain-specific representation of the user; or null.</returns>
         public Task<TUser?> ProvideUserAsync(
             Guid userId,
             Guid actorId,
-            bool isFas,
+            bool multiTenancy,
             IEnumerable<Claim> claims);
     }
 }
