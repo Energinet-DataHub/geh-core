@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 3.2.1
+
+- No functional change
+
 ## Version 3.2.0
 
 - Support for the `ServiceBusReceivedMessage` type when creating a new `IntegrationEventServiceBusMessage`
