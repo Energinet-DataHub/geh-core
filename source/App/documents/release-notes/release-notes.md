@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 8.2.1
+
+- No functional change
+
 ## Version 8.2.0
 
 - Rename parameter isFas to multiTenancy in IUserProvider.
