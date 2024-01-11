@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 8.2.1
+
+- No functional change
+
 ## Version 8.2.0
 
 - Add support for ListArray in Apache Arrow format

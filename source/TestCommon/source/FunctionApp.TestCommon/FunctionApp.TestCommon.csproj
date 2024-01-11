@@ -31,7 +31,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.FunctionApp.TestCommon</PackageId>
-    <PackageVersion>4.4.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>4.4.3$(VersionSuffix)</PackageVersion>
     <Title>FunctionApp TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -80,7 +80,7 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
-    <PackageReference Include="Azure.Identity" Version="1.9.0" />
+    <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="Azure.Messaging.EventHubs.Processor" Version="5.9.2" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />
     <PackageReference Include="Azure.Messaging.EventHubs" Version="5.9.2" />
@@ -100,7 +100,7 @@ limitations under the License.
     </PackageReference>
     <PackageReference Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
     <PackageReference Include="Polly" Version="7.2.4" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Management" Version="5.0.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
   </ItemGroup>

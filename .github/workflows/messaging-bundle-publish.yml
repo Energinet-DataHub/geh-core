@@ -57,7 +57,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
         with:
           solution_file_path: ./source/Messaging/Messaging.sln
-          code_coverage_flags: messaging
           publish_test_report: "true"
 
       - name: Pack Messaging project

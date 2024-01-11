@@ -55,7 +55,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
         with:
           solution_file_path: ./source/JsonSerialization/JsonSerialization.sln
-          code_coverage_flags: jsonserialization
           publish_test_report: "true"
 
       - name: Pack JsonSerialization project
