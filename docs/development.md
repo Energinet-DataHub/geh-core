@@ -215,26 +215,6 @@ Consider using shorter project file names and folders (see TestCommon example), 
 
 In all packages we should aim for documenting types using [XML documentation comments](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/xmldoc/).
 
-### CodeCov
-
-When a new libray is added to the repository, tracking of code coverage must be enabled. To do so, follow the steps below:
-
-* Add a flag to `codecov.yml` with name and path corresponding to the library.
-
-``` yml
-    - name: <flag-name>
-      paths:
-      - source/<new-folder-name>
-```
-
-* Add the folder of any `*.Tests` project to the ignore list in `codecov.yml`.
-
-``` yml
-  - "source/<new-folder-name>/source/<test-folder-name>.Tests"
-```
-
-* In the pipeline step using the action named `Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test` add a argument named `code_coverage_flags`, and assign it the value given to the flag in `codecov.yml`.
-
 ### Project file
 
 When a new package is added to the repository, it is important that the project file has the necessary properties for the new package.

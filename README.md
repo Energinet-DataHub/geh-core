@@ -33,7 +33,6 @@ Artifacts should be organized in the following folder structure:
 ├── .editorconfig
 ├── .gitignore
 ├── .licenserc.json
-├── codecov.yml
 ├── LICENSE
 └── README.md
 ```
@@ -45,7 +44,6 @@ Contains:
 - `.editorconfig` file for configuration of Formatting, Code Style and Analyzers (including StyleCop).
 - `.gitignore` file that defines which files should be ignored (not checked in) by Git.
 - `.licenserc.json` file that defines the expected license header of certain file types.
-- `codecov.yml`file contains the CodeCov configuration outlining the flags/projects where code coverage is tracked.
 - `LICENSE` License information for all code within this repository.
 - `README.md` file that gives an introduction to this repository.
 
