@@ -58,7 +58,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
         with:
           solution_file_path: ./source/Logging/Logging.sln
-          code_coverage_flags: logging
           publish_test_report: "true"
 
       - name: Pack Logging project

@@ -77,7 +77,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
         with:
           solution_file_path: ./source/App/App.sln
-          code_coverage_flags: appcommon
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
           azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
           azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
