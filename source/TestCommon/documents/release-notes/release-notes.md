@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.4.3
+
+- No functional change
+
 ## Version 4.4.2
 
 - Databricks integration test configuration keys in keyvault are renamed
