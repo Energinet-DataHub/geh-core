@@ -14,6 +14,7 @@
 
 using Azure.Identity;
 using Azure.Monitor.Query;
+using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using ExampleHost.WebApi01;
 using Microsoft.AspNetCore;
@@ -31,7 +32,9 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             var web01BaseUrl = "http://localhost:5000";
 
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
-            Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable(
+                "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                IntegrationTestConfiguration.Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING"));
 
             // We cannot use TestServer as this would not work with Application Insights.
             Web02Host = WebHost.CreateDefaultBuilder()
