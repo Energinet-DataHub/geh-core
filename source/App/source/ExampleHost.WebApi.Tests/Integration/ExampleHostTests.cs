@@ -124,7 +124,7 @@ namespace ExampleHost.WebApi.Tests.Integration
                 .Replace("{{requestIdentification}}", requestIdentification)
                 .Replace("\n", string.Empty);
 
-            var queryTimerange = new QueryTimeRange(TimeSpan.FromMinutes(20));
+            var queryTimeRange = new QueryTimeRange(TimeSpan.FromMinutes(20));
             var waitLimit = TimeSpan.FromMinutes(20);
             var delay = TimeSpan.FromSeconds(50);
 
@@ -138,7 +138,7 @@ namespace ExampleHost.WebApi.Tests.Integration
                         var actualResponse = await Fixture.LogsQueryClient.QueryWorkspaceAsync<QueryResult>(
                             Fixture.LogAnalyticsWorkspaceId,
                             query,
-                            queryTimerange);
+                            queryTimeRange);
 
                         actualCount = actualResponse.Value.Count;
                         return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
