@@ -89,7 +89,7 @@ namespace ExampleHost.WebApi.Tests.Integration
         ///     services.AddApplicationInsightsTelemetry();
         /// </code>
         /// </summary>
-        [Fact(Skip = "Failing even though we haven't changed any code. Will investigate in a separate PR.")]
+        [Fact]
         public async Task Configuration_Should_CauseExpectedEventsToBeLogged()
         {
             var requestIdentification = Guid.NewGuid().ToString();
