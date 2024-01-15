@@ -88,6 +88,18 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
         }
 
         [Fact]
+        public void Given_IdentityHasAccess_When_ApplicationInsightsConnectionString_Then_HasValue()
+        {
+            // Arrange
+
+            // Act
+            var actualValue = Sut.ApplicationInsightsConnectionString;
+
+            // Assert
+            actualValue.Should().NotBeNullOrEmpty();
+        }
+
+        [Fact]
         public void Given_IdentityHasAccess_When_LogAnalyticsWorkspaceId_Then_HasValue()
         {
             // Arrange
