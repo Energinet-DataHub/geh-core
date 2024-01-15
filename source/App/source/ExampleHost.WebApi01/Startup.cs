@@ -50,7 +50,8 @@ namespace ExampleHost.WebApi01
             });
 
             services.AddHostedService<SomeTrigger>();
-            services.AddScoped<SomeTrigger.SomeWorker>();
+            services.AddSingleton<SomeTrigger.SomeWorker>();
+            services.AddSingleton<SomeTrigger.SomeWorker.Thrower>();
 
             services
                 .AddHealthChecks()
