@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 8.3.0
+
+- Updated package version for `Energinet.DataHub.Core.JsonSerialization`.
+
 ## Version 8.2.1
 
 - No functional change
