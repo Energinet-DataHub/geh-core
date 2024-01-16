@@ -19,9 +19,6 @@ namespace ExampleHost.FunctionApp01.Common
     /// </summary>
     public static class EnvironmentSettingNames
     {
-        public const string AzureWebJobsStorage = "AzureWebJobsStorage";
-        public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-
         public const string IntegrationEventConnectionString = "INTEGRATIONEVENT_CONNECTION_STRING";
         public const string IntegrationEventTopicName = "INTEGRATIONEVENT_TOPIC_NAME";
     }

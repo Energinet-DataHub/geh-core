@@ -40,7 +40,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         {
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
-            Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
             AuthorizationConfiguration = new B2CAuthorizationConfiguration(
                 usedForSystemTests: false,

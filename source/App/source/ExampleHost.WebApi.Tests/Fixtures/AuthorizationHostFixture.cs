@@ -26,7 +26,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             var web03BaseUrl = "http://localhost:5002";
 
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
-            Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
             // We cannot use TestServer as this would not work with Application Insights.
             Web03Host = WebHost.CreateDefaultBuilder()

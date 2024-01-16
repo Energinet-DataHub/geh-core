@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using ExampleHost.WebApi01.Common;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ExampleHost.WebApi01
 {
@@ -50,7 +51,9 @@ namespace ExampleHost.WebApi01
             });
 
             services.AddHostedService<SomeTrigger>();
-            services.AddScoped<SomeTrigger.SomeWorker>();
+            services.AddSingleton<SomeTrigger.SomeWorker>();
+            // Ensure we register the "Thrower" if we start the hot locally, but not if this was already registered by tests.
+            services.TryAddSingleton<SomeTrigger.SomeWorker.Thrower>();
 
             services
                 .AddHealthChecks()
