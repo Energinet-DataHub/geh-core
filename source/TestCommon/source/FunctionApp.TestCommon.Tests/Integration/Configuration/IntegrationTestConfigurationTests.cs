@@ -81,7 +81,21 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
             // Arrange
 
             // Act
+#pragma warning disable CS0618 // Type or member is obsolete
             var actualValue = Sut.ApplicationInsightsInstrumentationKey;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            // Assert
+            actualValue.Should().NotBeNullOrEmpty();
+        }
+
+        [Fact]
+        public void Given_IdentityHasAccess_When_ApplicationInsightsConnectionString_Then_HasValue()
+        {
+            // Arrange
+
+            // Act
+            var actualValue = Sut.ApplicationInsightsConnectionString;
 
             // Assert
             actualValue.Should().NotBeNullOrEmpty();

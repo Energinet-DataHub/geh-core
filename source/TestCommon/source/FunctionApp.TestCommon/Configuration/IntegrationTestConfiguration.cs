@@ -32,7 +32,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         {
             Configuration = BuildKeyVaultConfigurationRoot();
 
+#pragma warning disable CS0618 // Type or member is obsolete
             ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
+#pragma warning restore CS0618 // Type or member is obsolete
+            ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
             LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
             EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
             ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
@@ -50,7 +53,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
         /// <summary>
         /// Instrumentation Key to the Application Insights in the Integration Test environment.
         /// </summary>
+        [Obsolete("The official support for instrumentation key is ending on March 31 2025. Use ApplicationInsightsConnectionString instead.", false)]
         public string ApplicationInsightsInstrumentationKey { get; }
+
+        /// <summary>
+        /// Connection string to the Application Insights in the Integration Test environment.
+        /// </summary>
+        public string ApplicationInsightsConnectionString { get; }
 
         /// <summary>
         /// ID of the Log Analytics Workspace in the Integration Test environment.

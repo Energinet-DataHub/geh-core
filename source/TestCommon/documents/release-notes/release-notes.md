@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 4.5.0
+
+- Added property `ApplicationInsightsConnectionString` to `IntegrationTestConfiguration` to support use of connection string when using Application Insights.
+- Marked property `ApplicationInsightsInstrumentationKey` on `IntegrationTestConfiguration` as obsolete.
+
 ## Version 4.4.3
 
 - No functional change
