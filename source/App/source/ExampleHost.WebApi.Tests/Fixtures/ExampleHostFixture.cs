@@ -34,7 +34,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
             Environment.SetEnvironmentVariable(
                 "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                IntegrationTestConfiguration.Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING"));
+                IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
             // We cannot use TestServer as this would not work with Application Insights.
             Web02Host = WebHost.CreateDefaultBuilder()
