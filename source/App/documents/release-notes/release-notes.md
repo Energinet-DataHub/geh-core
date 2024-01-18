@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 8.3.1
+
+- Removed custom property "HostedService" and structured logging placeholder "Worker" from `RepeatingTrigger` because the same information is available in the property `CategoryName`.
+
 ## Version 8.3.0
 
 - Updated package version for `Energinet.DataHub.Core.JsonSerialization`.
