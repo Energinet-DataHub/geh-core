@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
+
 namespace Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 
 /// <summary>
@@ -23,6 +25,11 @@ public sealed class SubscriberWorkerOptions
     /// The connection string for the Service Bus.
     /// </summary>
     public string ServiceBusConnectionString { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The type of protocol and transport that will be used for communicating with the Service Bus.
+    /// </summary>
+    public ServiceBusTransportType TransportType { get; set; } = ServiceBusTransportType.AmqpTcp;
 
     /// <summary>
     /// The name of the topic from where to receive integration events.
