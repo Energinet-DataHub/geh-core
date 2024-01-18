@@ -31,8 +31,6 @@ public abstract class RepeatingTrigger<TService> : BackgroundService, IRepeating
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly TimeSpan _delayBetweenExecutions;
-    private readonly string _serviceName;
-    private readonly Dictionary<string, object> _loggingScope;
 
     private DateTimeOffset _activityTimeStamp;
 
@@ -44,9 +42,6 @@ public abstract class RepeatingTrigger<TService> : BackgroundService, IRepeating
         _serviceProvider = serviceProvider;
         _logger = logger;
         _delayBetweenExecutions = delayBetweenExecutions;
-
-        _serviceName = GetType().Name;
-        _loggingScope = new Dictionary<string, object> { ["HostedService"] = _serviceName };
     }
 
     public DateTimeOffset LastTimeActivityRegistered => _activityTimeStamp;
@@ -55,26 +50,20 @@ public abstract class RepeatingTrigger<TService> : BackgroundService, IRepeating
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        using (_logger.BeginScope(_loggingScope))
-        {
-            await base.StopAsync(cancellationToken).ConfigureAwait(false);
-            _logger.LogWarning("{Worker} has stopped at {Time}", _serviceName, DateTimeOffset.Now);
-        }
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+        _logger.LogWarning("Worker has stopped at {Time}.", DateTimeOffset.Now);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         UpdateIsActive();
 
-        using (_logger.BeginScope(_loggingScope))
-        {
-            _logger.LogInformation("{Worker} started", _serviceName);
+        _logger.LogInformation("Worker started.");
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await InvokeAsync(stoppingToken).ConfigureAwait(false);
-                await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);
-            }
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await InvokeAsync(stoppingToken).ConfigureAwait(false);
+            await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);
         }
     }
 
@@ -102,7 +91,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService, IRepeating
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Unhandled exception in {Worker}", _serviceName);
+            _logger.LogError(e, "Unhandled exception in worker.");
         }
     }
 
