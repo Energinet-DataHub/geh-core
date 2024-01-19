@@ -33,6 +33,7 @@ public sealed class PublisherOptions
 
     /// <summary>
     /// The type of protocol and transport that will be used for communicating with the Service Bus.
+    /// Default value is <see cref="ServiceBusTransportType.AmqpTcp"/>.
     /// </summary>
     public ServiceBusTransportType TransportType { get; set; } = ServiceBusTransportType.AmqpTcp;
 }
