@@ -31,7 +31,7 @@ internal sealed class ServiceBusProcessorFactory : IServiceBusProcessorFactory, 
 
     public ServiceBusProcessor CreateProcessor(string topicName, string subscriptionName)
     {
-        _serviceBusClient ??= new ServiceBusClient(_options.Value.ServiceBusConnectionString);
+        _serviceBusClient ??= CreateServiceBusClient();
         return _serviceBusClient.CreateProcessor(topicName, subscriptionName, new ServiceBusProcessorOptions
         {
             ReceiveMode = ServiceBusReceiveMode.PeekLock,
@@ -46,5 +46,15 @@ internal sealed class ServiceBusProcessorFactory : IServiceBusProcessorFactory, 
             await _serviceBusClient.DisposeAsync();
             _serviceBusClient = null;
         }
+    }
+
+    private ServiceBusClient CreateServiceBusClient()
+    {
+        return new ServiceBusClient(
+            _options.Value.ServiceBusConnectionString,
+            new ServiceBusClientOptions
+            {
+                TransportType = _options.Value.TransportType,
+            });
     }
 }

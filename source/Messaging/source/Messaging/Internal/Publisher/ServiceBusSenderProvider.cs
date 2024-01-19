@@ -29,6 +29,16 @@ internal sealed class ServiceBusSenderProvider : IServiceBusSenderProvider
     }
 
     public ServiceBusSender Instance
-        => _serviceBusSender ??= new ServiceBusClient(_options.Value.ServiceBusConnectionString)
+        => _serviceBusSender ??= CreateServiceBusClient()
             .CreateSender(_options.Value.TopicName);
+
+    private ServiceBusClient CreateServiceBusClient()
+    {
+        return new ServiceBusClient(
+            _options.Value.ServiceBusConnectionString,
+            new ServiceBusClientOptions
+            {
+                TransportType = _options.Value.TransportType,
+            });
+    }
 }

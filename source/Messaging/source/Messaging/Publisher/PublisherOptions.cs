@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
+
 namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
 /// <summary>
@@ -28,4 +30,10 @@ public sealed class PublisherOptions
     /// The name of the topic to send integration events to.
     /// </summary>
     public string TopicName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The type of protocol and transport that will be used for communicating with the Service Bus.
+    /// Default value is <see cref="ServiceBusTransportType.AmqpTcp"/>.
+    /// </summary>
+    public ServiceBusTransportType TransportType { get; set; } = ServiceBusTransportType.AmqpTcp;
 }
