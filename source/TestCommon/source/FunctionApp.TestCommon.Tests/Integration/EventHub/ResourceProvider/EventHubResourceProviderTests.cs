@@ -24,6 +24,7 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Azure.Management.EventHub.Models;
 using Xunit;
 
@@ -195,6 +196,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                     actualResource.EventHubNamespace,
                     actualResource.Name,
                     consumerGroupName);
+
+                using var assertionScope = new AssertionScope();
                 response.Body.Name.Should().Be(consumerGroupName);
                 response.Body.UserMetadata.Should().Be(userMetadata);
             }
