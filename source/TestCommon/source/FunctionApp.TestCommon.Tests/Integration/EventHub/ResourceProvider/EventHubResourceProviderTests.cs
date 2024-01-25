@@ -206,8 +206,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
             public async Task When_SetEnvironmentVariableToConsumerGroupName_Then_EnvironmentVariableContainsActualName()
             {
                 // Arrange
-                var environmentVariable = "env_consumer_group_name";
-                var consumerGroupName = "consumer_group_name";
+                const string environmentVariable = "env_consumer_group_name";
+                const string consumerGroupName = "consumer_group_name";
 
                 // Act
                 var actualResource = await Sut
@@ -217,8 +217,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                     .CreateAsync();
 
                 // Assert
-                var actualName = actualResource.Name;
-
                 var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
                 actualEnvironmentValue.Should().Be(consumerGroupName);
             }
