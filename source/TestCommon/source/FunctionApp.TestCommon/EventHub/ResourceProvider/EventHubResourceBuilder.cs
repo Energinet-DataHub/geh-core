@@ -123,6 +123,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
                     .ConfigureAwait(false);
 
                 eventHubResource.AddConsumerGroup(createdConsumerGroup);
+
+                foreach (var postAction in consumerGroupBuilderPair.Value.PostActions)
+                {
+                    postAction(createdConsumerGroup);
+                }
             }
         }
     }

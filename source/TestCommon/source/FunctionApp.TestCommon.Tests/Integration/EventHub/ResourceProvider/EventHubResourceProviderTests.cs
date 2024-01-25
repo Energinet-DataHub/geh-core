@@ -198,6 +198,27 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 response.Body.Name.Should().Be(consumerGroupName);
                 response.Body.UserMetadata.Should().Be(userMetadata);
             }
+
+            [Fact]
+            public async Task When_SetEnvironmentVariableToConsumerGroupName_Then_EnvironmentVariableContainsActualName()
+            {
+                // Arrange
+                var environmentVariable = "env_consumer_group_name";
+                var consumerGroupName = "consumer_group_name";
+
+                // Act
+                var actualResource = await Sut
+                    .BuildEventHub(NamePrefix)
+                    .AddConsumerGroup(consumerGroupName)
+                    .SetEnvironmentVariableToConsumerGroupName(environmentVariable)
+                    .CreateAsync();
+
+                // Assert
+                var actualName = actualResource.Name;
+
+                var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
+                actualEnvironmentValue.Should().Be(consumerGroupName);
+            }
         }
     }
 }
