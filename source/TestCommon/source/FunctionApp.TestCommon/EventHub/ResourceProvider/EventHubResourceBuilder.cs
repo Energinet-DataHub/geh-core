@@ -106,11 +106,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 
         private async Task CreateConsumerGroupsAsync(EventHubResource eventHubResource)
         {
+            var managementClient = await ResourceProvider.LazyManagementClient
+                .ConfigureAwait(false);
+
             foreach (var consumerGroupBuilderPair in ConsumerGroupBuilders)
             {
                 var consumerGroup = consumerGroupBuilderPair.Value;
 
-                var createdConsumerGroup = await (await ResourceProvider.LazyManagementClient).ConsumerGroups
+                var createdConsumerGroup = await managementClient.ConsumerGroups
                     .CreateOrUpdateAsync(
                         ResourceProvider.ResourceManagementSettings.ResourceGroup,
                         ResourceProvider.EventHubNamespace,
