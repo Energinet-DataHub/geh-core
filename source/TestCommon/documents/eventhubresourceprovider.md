@@ -20,6 +20,10 @@ The fluent API chain always starts with a `BuildEventHub()` operation, and ends 
 
 The `CreateAsync()` operation returns the resource type `EventHubResource`. This type give us access to the full resource name created, and a producer client configured to send events to the created resource.
 
+### `AddConsumerGroup()`
+
+When building an EventHub its possible to add consumer groups.
+
 ### `Do()` and `SetEnvironmentVariableTo` extensions
 
 The `EventHubBuilder` type support the `Do()` operation which allows us to register *post actions*. Each post action will be called just after the event hub has been created, with the properties of the event hub.
@@ -42,9 +46,10 @@ var resourceProvider = new EventHubResourceProvider(
 Example 1 - creating an event hub:
 
 ```csharp
-// Create an event hub prefixed with the name "eventhub".
+// Create an event hub prefixed with the name "eventhub" and a consumergroup with name "consumer_group" (without optional user metadata).
 var eventHubResource = await resourceProvider
     .BuildEventHub("eventhub")
+    .AddConsumerGroup("consumer_group")
     .CreateAsync();
 
 // We can access the full event hub name...
