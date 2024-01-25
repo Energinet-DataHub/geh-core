@@ -23,13 +23,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
     /// <summary>
     /// Fluent API for creating an event hub resource.
     /// </summary>
-    public class EventHubResourceBuilder
+    public class EventHubResourceBuilder : IEventHubResourceBuilder
     {
         internal EventHubResourceBuilder(EventHubResourceProvider resourceProvider, string eventHubName, Eventhub createEventHubOptions)
         {
             ResourceProvider = resourceProvider;
             EventHubName = eventHubName;
             CreateEventHubOptions = createEventHubOptions;
+            ConsumerGroupBuilders = new Dictionary<string, EventHubConsumerGroupBuilder>();
 
             PostActions = new List<Action<Eventhub>>();
         }
@@ -39,6 +40,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
         private string EventHubName { get; }
 
         private Eventhub CreateEventHubOptions { get; }
+
+        private IDictionary<string, EventHubConsumerGroupBuilder> ConsumerGroupBuilders { get; }
 
         private IList<Action<Eventhub>> PostActions { get; }
 
@@ -59,6 +62,23 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
         /// </summary>
         /// <returns>Instance with information about the created event hub.</returns>
         public async Task<EventHubResource> CreateAsync()
+        {
+            var eventhubResource = await CreateEventhubResourceAsync().ConfigureAwait(false);
+
+            await CreateConsumerGroupsAsync(eventhubResource).ConfigureAwait(false);
+
+            return eventhubResource;
+        }
+
+        /// <inheritdoc/>
+        public EventHubConsumerGroupBuilder AddConsumerGroup(string consumerGroupName, string? userMetaData = default)
+        {
+            var consumerGroupBuilder = new EventHubConsumerGroupBuilder(this, consumerGroupName, userMetaData);
+            ConsumerGroupBuilders.Add(consumerGroupName, consumerGroupBuilder);
+            return consumerGroupBuilder;
+        }
+
+        private async Task<EventHubResource> CreateEventhubResourceAsync()
         {
             ResourceProvider.TestLogger.WriteLine($"Creating event hub '{EventHubName}'");
 
@@ -82,6 +102,25 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             }
 
             return eventHubResource;
+        }
+
+        private async Task CreateConsumerGroupsAsync(EventHubResource eventHubResource)
+        {
+            foreach (var consumerGroupBuilderPair in ConsumerGroupBuilders)
+            {
+                var consumerGroup = consumerGroupBuilderPair.Value;
+
+                var createdConsumerGroup = await (await ResourceProvider.LazyManagementClient).ConsumerGroups
+                    .CreateOrUpdateAsync(
+                        ResourceProvider.ResourceManagementSettings.ResourceGroup,
+                        ResourceProvider.EventHubNamespace,
+                        eventHubResource.Name,
+                        consumerGroup.ConsumerGroupName,
+                        consumerGroup.UserMetadata)
+                    .ConfigureAwait(false);
+
+                eventHubResource.AddConsumerGroup(createdConsumerGroup);
+            }
         }
     }
 }

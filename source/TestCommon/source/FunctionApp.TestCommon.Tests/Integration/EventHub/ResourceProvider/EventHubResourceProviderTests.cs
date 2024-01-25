@@ -174,6 +174,30 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
                 var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
                 actualEnvironmentValue.Should().Be(actualName);
             }
+
+            [Theory]
+            [InlineData("some user metadata")]
+            [InlineData(null)]
+            public async Task When_AddConsumerGroup_Then_CreatedEventHubHasConsumerGroup(string userMetadata)
+            {
+                // Arrange
+                var consumerGroupName = "consumer_group_name";
+
+                // Act
+                var actualResource = await Sut
+                    .BuildEventHub(NamePrefix)
+                    .AddConsumerGroup(consumerGroupName, userMetadata)
+                    .CreateAsync();
+
+                // Assert
+                using var response = await ResourceProviderFixture.ManagementClient.ConsumerGroups.GetWithHttpMessagesAsync(
+                    actualResource.ResourceGroup,
+                    actualResource.EventHubNamespace,
+                    actualResource.Name,
+                    consumerGroupName);
+                response.Body.Name.Should().Be(consumerGroupName);
+                response.Body.UserMetadata.Should().Be(userMetadata);
+            }
         }
     }
 }
