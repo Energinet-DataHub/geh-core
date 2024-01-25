@@ -5,6 +5,7 @@ The `EventHubResourceProvider` and its related types, support us with the follow
 - The `EventHubResourceProvider` is the fluent API builder root. It automatically tracks and cleanup any resources created, when it is disposed.
 - The `EventHubResourceBuilder` type encapsulate the creation of an event hub in an existing Azure Event Hub namespace.
 - The `EventHubResource` type support lazy creation of a producer client.
+- The `EventHubConsumerGroupBuilder` type to encapsulate the creation of `ConsumerGroup`'s and adding to event hubs during creation of these.
 
 > For usage, see `EventHubResourceProviderTests` or [Aggregations](https://github.com/Energinet-DataHub/geh-aggregations) repository/domain.
 
