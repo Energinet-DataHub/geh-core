@@ -5,6 +5,7 @@ The `EventHubResourceProvider` and its related types, support us with the follow
 - The `EventHubResourceProvider` is the fluent API builder root. It automatically tracks and cleanup any resources created, when it is disposed.
 - The `EventHubResourceBuilder` type encapsulate the creation of an event hub in an existing Azure Event Hub namespace.
 - The `EventHubResource` type support lazy creation of a producer client.
+- The `EventHubConsumerGroupBuilder` type to encapsulate the creation of `ConsumerGroup`'s and adding to event hubs during creation of these.
 
 > For usage, see `EventHubResourceProviderTests` or [Aggregations](https://github.com/Energinet-DataHub/geh-aggregations) repository/domain.
 
@@ -19,6 +20,10 @@ Event hubs created using the resource provider will be created using a combinati
 The fluent API chain always starts with a `BuildEventHub()` operation, and ends with `CreateAsync()`.
 
 The `CreateAsync()` operation returns the resource type `EventHubResource`. This type give us access to the full resource name created, and a producer client configured to send events to the created resource.
+
+### `AddConsumerGroup()`
+
+When building an EventHub its possible to add consumer groups.
 
 ### `Do()` and `SetEnvironmentVariableTo` extensions
 
@@ -42,9 +47,10 @@ var resourceProvider = new EventHubResourceProvider(
 Example 1 - creating an event hub:
 
 ```csharp
-// Create an event hub prefixed with the name "eventhub".
+// Create an event hub prefixed with the name "eventhub" and a consumergroup with name "consumer_group" (without optional user metadata).
 var eventHubResource = await resourceProvider
     .BuildEventHub("eventhub")
+    .AddConsumerGroup("consumer_group")
     .CreateAsync();
 
 // We can access the full event hub name...

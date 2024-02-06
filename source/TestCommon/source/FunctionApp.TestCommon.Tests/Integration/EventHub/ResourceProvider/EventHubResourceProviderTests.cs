@@ -24,6 +24,7 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Azure.Management.EventHub.Models;
 using Xunit;
 
@@ -173,6 +174,51 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventH
 
                 var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
                 actualEnvironmentValue.Should().Be(actualName);
+            }
+
+            [Theory]
+            [InlineData("some user metadata")]
+            [InlineData(null)]
+            public async Task When_AddConsumerGroup_Then_CreatedEventHubHasConsumerGroup(string userMetadata)
+            {
+                // Arrange
+                var consumerGroupName = "consumer_group_name";
+
+                // Act
+                var actualResource = await Sut
+                    .BuildEventHub(NamePrefix)
+                    .AddConsumerGroup(consumerGroupName, userMetadata)
+                    .CreateAsync();
+
+                // Assert
+                using var response = await ResourceProviderFixture.ManagementClient.ConsumerGroups.GetWithHttpMessagesAsync(
+                    actualResource.ResourceGroup,
+                    actualResource.EventHubNamespace,
+                    actualResource.Name,
+                    consumerGroupName);
+
+                using var assertionScope = new AssertionScope();
+                response.Body.Name.Should().Be(consumerGroupName);
+                response.Body.UserMetadata.Should().Be(userMetadata);
+            }
+
+            [Fact]
+            public async Task When_SetEnvironmentVariableToConsumerGroupName_Then_EnvironmentVariableContainsActualName()
+            {
+                // Arrange
+                const string environmentVariable = "env_consumer_group_name";
+                const string consumerGroupName = "consumer_group_name";
+
+                // Act
+                var actualResource = await Sut
+                    .BuildEventHub(NamePrefix)
+                    .AddConsumerGroup(consumerGroupName)
+                    .SetEnvironmentVariableToConsumerGroupName(environmentVariable)
+                    .CreateAsync();
+
+                // Assert
+                var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
+                actualEnvironmentValue.Should().Be(consumerGroupName);
             }
         }
     }

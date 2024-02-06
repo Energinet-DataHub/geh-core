@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.6.0
+
+- Extended `EventHubResource` with possibility to add consumer groups
+
 ## Version 4.5.0
 
 - Added property `ApplicationInsightsConnectionString` to `IntegrationTestConfiguration` to support use of connection string when using Application Insights.

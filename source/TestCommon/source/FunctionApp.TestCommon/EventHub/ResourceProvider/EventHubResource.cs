@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Azure.Messaging.EventHubs.Producer;
 using Microsoft.Azure.Management.EventHub;
@@ -24,6 +26,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
     {
         private readonly Eventhub _properties;
         private readonly Lazy<EventHubProducerClient> _lazyProducerClient;
+        private readonly IList<ConsumerGroup> _consumerGroups;
 
         internal EventHubResource(EventHubResourceProvider resourceProvider, Eventhub properties)
         {
@@ -31,6 +34,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 
             _properties = properties;
             _lazyProducerClient = new Lazy<EventHubProducerClient>(CreateProducerClient);
+            _consumerGroups = new List<ConsumerGroup>();
+
+            ConsumerGroups = new ReadOnlyCollection<ConsumerGroup>(_consumerGroups);
         }
 
         public string ResourceGroup => ResourceProvider.ResourceManagementSettings.ResourceGroup;
@@ -41,6 +47,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 
         public EventHubProducerClient ProducerClient => _lazyProducerClient.Value;
 
+        public IReadOnlyCollection<ConsumerGroup>? ConsumerGroups { get; }
+
         public bool IsDisposed { get; private set; }
 
         private EventHubResourceProvider ResourceProvider { get; }
@@ -50,6 +58,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
             await DisposeAsyncCore()
                 .ConfigureAwait(false);
             GC.SuppressFinalize(this);
+        }
+
+        internal void AddConsumerGroup(ConsumerGroup consumerGroup)
+        {
+            _consumerGroups.Add(consumerGroup);
         }
 
         private EventHubProducerClient CreateProducerClient()
