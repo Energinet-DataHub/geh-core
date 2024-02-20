@@ -42,12 +42,6 @@ public class DatabricksSqlStatementOptions
     public string WarehouseId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Seconds we allow the Databricks Statement Execution Api to respond.
-    /// </summary>
-    [Required]
-    public int TimeoutInSeconds { get; set; } = 30;
-
-    /// <summary>
     /// Defines the hour of the day when the health check DataLake should start.
     /// The default value is 6:00 AM.
     /// </summary>

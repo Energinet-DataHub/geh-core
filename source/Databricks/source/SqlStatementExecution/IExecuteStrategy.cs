@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
@@ -35,6 +36,7 @@ internal interface IExecuteStrategy
     /// </summary>
     /// <param name="content"></param>
     /// <param name="response"></param>
-    /// <returns>IAsyncEnumerable&lt;dynamic&gt;</returns>
-    IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response);
+    /// <param name="cancellationToken"></param>
+    /// <returns><see cref="IAsyncEnumerable{T}"/></returns>
+    IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response, CancellationToken cancellationToken);
 }

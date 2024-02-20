@@ -55,7 +55,6 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixt
                         options.WarehouseId = "baz";
                         options.WorkspaceToken = "bar";
                         options.WorkspaceUrl = "https://foo.com";
-                        options.TimeoutInSeconds = 5;
                         options.DatabricksHealthCheckStartHour = 0;
                         options.DatabricksHealthCheckEndHour = 23;
                     });

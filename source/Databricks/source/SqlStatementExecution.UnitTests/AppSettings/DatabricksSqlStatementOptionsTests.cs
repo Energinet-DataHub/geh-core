@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.AppS
 public class DatabricksSqlStatementOptionsTests
 {
     [Theory]
-    [InlineAutoMoqData(typeof(DatabricksSqlStatementOptions), 6, "WorkspaceUrl", "WorkspaceToken", "WarehouseId", "TimeoutInSeconds", "DatabricksHealthCheckStartHour", "DatabricksHealthCheckEndHour")]
+    [InlineAutoMoqData(typeof(DatabricksSqlStatementOptions), 5, "WorkspaceUrl", "WorkspaceToken", "WarehouseId", "DatabricksHealthCheckStartHour", "DatabricksHealthCheckEndHour")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act
