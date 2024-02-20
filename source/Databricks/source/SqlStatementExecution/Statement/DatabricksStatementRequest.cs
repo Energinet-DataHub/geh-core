@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -67,6 +68,8 @@ internal class DatabricksStatementRequest
         {
             response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken);
             if (response.IsSucceeded) return response;
+
+            cancellationToken.ThrowIfCancellationRequested();
         }
         while (response.IsPending || response.IsRunning);
 
@@ -81,18 +84,20 @@ internal class DatabricksStatementRequest
     {
         if (response == null)
         {
-            using var httpResponse = await client.PostAsJsonAsync(endpoint, this);
-            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>();
+            using var httpResponse = await client.PostAsJsonAsync(endpoint, this, cancellationToken);
+            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>(cancellationToken: cancellationToken);
         }
         else
         {
-            await Task.Delay(10, cancellationToken); // Wait for a short time before checking for the result again
+            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+
             var path = $"{endpoint}/{response.statement_id}";
-            using var httpResponse = await client.GetAsync(path);
-            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>();
+            using var httpResponse = await client.GetAsync(path, cancellationToken);
+            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>(cancellationToken: cancellationToken);
         }
 
-        if (response == null) throw new DatabricksException("Unable to fetch result from Databricks", this);
+        if (response == null)
+            throw new DatabricksException("Unable to fetch result from Databricks", this);
 
         return response;
     }
