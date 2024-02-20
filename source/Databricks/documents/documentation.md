@@ -8,7 +8,7 @@ The implementation uses solely `disposition=EXTERNAL_LINKS` despite that inlinin
 
 ### Usage
 
-Install `Energinet.DataHub.Core.Databricks.SqlStatementExecution` package.~~~~
+Install `Energinet.DataHub.Core.Databricks.SqlStatementExecution` package.
 
 Example of how to setup the Databricks Sql Statement Execution in `startup.cs`.
 
