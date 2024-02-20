@@ -70,7 +70,7 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// </remarks>
     public virtual IAsyncEnumerable<dynamic> ExecuteStatementAsync(
         DatabricksStatement statement,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
         => ExecuteStatementAsync(statement, Format.ApacheArrow, cancellationToken);
 
     /// <summary>
@@ -92,7 +92,7 @@ public class DatabricksSqlWarehouseQueryExecutor
     public virtual async IAsyncEnumerable<dynamic> ExecuteStatementAsync(
         DatabricksStatement statement,
         Format format,
-        [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        [EnumeratorCancellation]CancellationToken cancellationToken)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format, cancellationToken))
         {
@@ -104,6 +104,7 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
+    /// <param name="cancellationToken"></param>
     /// <typeparam name="T">Target type</typeparam>
     /// <returns>An asynchronous enumerable of <typeparamref name="T"/> representing the result of the query.</returns>
     /// <remarks>
@@ -115,12 +116,14 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// - Must only have a single constructor<br/>
     /// - Must be annotated with <see cref="ArrowFieldAttribute"/> to indicate the order of the constructor parameters
     /// </remarks>
-    public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement)
+    public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(
+        DatabricksStatement statement,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
         where T : class
     {
         var strategy = new StronglyTypedApacheArrowFormat(_options);
-        var request = strategy.GetStatementRequest(statement);
-        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath);
+        var request = strategy.GetStatementRequest(statement, );
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken);
 
         if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
 

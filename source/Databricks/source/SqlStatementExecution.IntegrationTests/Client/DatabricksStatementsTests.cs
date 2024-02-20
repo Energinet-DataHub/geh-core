@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Client.Statements;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
@@ -137,6 +138,30 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
 
         // Act
         var result = client.ExecuteStatementAsync(statement, format);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(1000000);
+    }
+
+    /// <summary>
+    /// Given a query that takes more than 10 seconds
+    /// And the initial timeout is set to 3 second
+    /// When the cancellation token of the execution is cancelled after 1 second
+    /// Then the execution is cancelled
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementAsync_WhenCancelled_IsCancelledDuringTheInitialHttpPost(Format format)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new AtLeast10SecStatement();
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(TimeSpan.FromSeconds(1));
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, format, new Configuration(Timeout: 30, loopDelay: 10), cts.Token);
         var rowCount = await result.CountAsync();
 
         // Assert

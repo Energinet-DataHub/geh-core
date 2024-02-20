@@ -28,14 +28,20 @@ internal class DatabricksStatementRequest
     internal const string JsonFormat = "JSON_ARRAY";
     internal const string ArrowFormat = "ARROW_STREAM";
 
-    internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format)
+    internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format, TimeSpan initialTimeout, TimeSpan loopDelay)
     {
         Statement = statement.GetSqlStatement();
         Parameters = statement.GetParameters().ToArray();
         WarehouseId = warehouseId;
         Disposition = "EXTERNAL_LINKS";
-        WaitTimeout = "30s";
+        WaitTimeout = $"{initialTimeout.TotalSeconds}s";
         Format = format;
+        LoopDelay = loopDelay;
+    }
+
+    internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format)
+        : this(warehouseId, statement, format, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(10))
+    {
     }
 
     [JsonPropertyName("parameters")]
@@ -56,12 +62,17 @@ internal class DatabricksStatementRequest
     /// check for the result until it's available.
     /// </summary>
     [JsonPropertyName("wait_timeout")]
-    public string WaitTimeout { get; }
+    public string WaitTimeout { get; init; }
+
+    /// <summary>
+    /// Controls the delay between each call to the Databricks API to check for the result availability.
+    /// </summary>
+    public TimeSpan LoopDelay { get; }
 
     [JsonPropertyName("format")]
     public string Format { get; set; }
 
-    public async ValueTask<DatabricksStatementResponse> WaitForSqlWarehouseResultAsync(HttpClient client, string endpoint, CancellationToken cancellationToken = default)
+    public async ValueTask<DatabricksStatementResponse> WaitForSqlWarehouseResultAsync(HttpClient client, string endpoint, CancellationToken cancellationToken)
     {
         DatabricksStatementResponse? response = null;
         do
