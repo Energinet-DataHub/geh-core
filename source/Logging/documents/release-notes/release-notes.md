@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 3.1.3
+
+- No functional change.
+
 ## Version 3.1.2
 
 - No functional change.
