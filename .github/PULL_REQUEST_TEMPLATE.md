@@ -1,6 +1,6 @@
 ## Description
 
-<!--- Please leave a helpful description of the pull request here. --->
+<!--- Please leave a helpful description of the pull request here --->
 
 ## Quality
 
