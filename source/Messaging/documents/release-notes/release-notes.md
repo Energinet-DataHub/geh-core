@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 3.3.1
+
+- No functional change
+
 ## Version 3.3.0
 
 - Extend `PublisherOptions` and `SubscriberWorkerOptions` with `TransportType` to allow consumers to decide the transport used when communicating with Service Bus.

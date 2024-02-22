@@ -49,24 +49,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v12
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
         with:
           solution_file_path: ./source/Logging/Logging.sln
           publish_test_report: "true"
 
       - name: Pack Logging project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
           project_path: ./source/Logging/source/Logging/Logging.csproj
 
       - name: Pack LoggingMiddleware project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
           project_path: ./source/Logging/source/LoggingMiddleware/LoggingMiddleware.csproj
 
@@ -80,7 +80,7 @@ jobs:
             .github/workflows/logging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v13
         with:
           push_packages: ${{ env.PUSH_PACKAGES }}
           content_changed: ${{ steps.changed-content.outputs.any_changed }}
