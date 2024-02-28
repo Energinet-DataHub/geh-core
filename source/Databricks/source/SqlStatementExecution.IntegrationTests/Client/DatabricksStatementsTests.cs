@@ -161,7 +161,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         cts.CancelAfter(TimeSpan.FromSeconds(1));
 
         // Act
-        var result = client.ExecuteStatementAsync(statement, format, new Configuration(Timeout: 30, loopDelay: 10), cts.Token);
+        var result = client.ExecuteStatementAsync(statement, format, initialTimeout: 30, loopDelay: 10, cts.Token);
         var rowCount = await result.CountAsync();
 
         // Assert
