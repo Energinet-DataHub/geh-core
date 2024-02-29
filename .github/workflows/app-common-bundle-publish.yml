@@ -66,15 +66,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v12
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
         with:
           use_azure_functions_tools: "true"
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
         with:
           solution_file_path: ./source/App/App.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
@@ -83,27 +83,27 @@ jobs:
           publish_test_report: "true"
 
       - name: Pack Common project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
           project_path: ./source/App/source/Common/Common.csproj
 
       - name: Pack Common.Abstractions project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
           project_path: ./source/App/source/Common.Abstractions/Common.Abstractions.csproj
 
       - name: Pack Common.Security project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
           project_path: ./source/App/source/Common.Security/Common.Security.csproj
 
       - name: Pack FunctionApp project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
           project_path: ./source/App/source/FunctionApp/FunctionApp.csproj
 
       - name: Pack WebApp project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
           project_path: ./source/App/source/WebApp/WebApp.csproj
 
@@ -120,7 +120,7 @@ jobs:
             .github/workflows/app-common-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v12
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v13
         with:
           push_packages: ${{ env.PUSH_PACKAGES }}
           content_changed: ${{ steps.changed-content.outputs.any_changed }}

@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 4.6.1
+
+- No functional change
+
 ## Version 4.6.0
 
 - Extended `EventHubResource` with possibility to add consumer groups

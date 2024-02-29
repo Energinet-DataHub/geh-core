@@ -23,9 +23,9 @@ jobs:
   # License and Markdown Check
   #
   ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v13
     secrets:
-      pat_token: ${{ secrets.internal_github_pat }}
+      dh3serviceaccount_privatekey: ${{ secrets.dh3serviceaccount_privatekey }}
 
   #
   # Detect changes to start relevant workflows

@@ -8,6 +8,10 @@ So it was misleading. It has been replaced by the usage of cancellation tokens.
 
 There are no changes to the jobs API.
 
+## Version 8.2.2
+
+- No functional change
+
 ## Version 8.2.1
 
 - No functional change
