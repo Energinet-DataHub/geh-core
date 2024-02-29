@@ -69,7 +69,7 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// </remarks>
     public virtual IAsyncEnumerable<dynamic> ExecuteStatementAsync(
         DatabricksStatement statement,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
         => ExecuteStatementAsync(statement, Format.ApacheArrow, cancellationToken);
 
     /// <summary>
@@ -91,7 +91,7 @@ public class DatabricksSqlWarehouseQueryExecutor
     public virtual async IAsyncEnumerable<dynamic> ExecuteStatementAsync(
         DatabricksStatement statement,
         Format format,
-        [EnumeratorCancellation]CancellationToken cancellationToken)
+        [EnumeratorCancellation]CancellationToken cancellationToken = default)
     {
         await foreach (var record in DoExecuteStatementAsync(statement, format, cancellationToken))
         {
@@ -117,21 +117,43 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// </remarks>
     public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(
         DatabricksStatement statement,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
         where T : class
     {
-        await foreach (var record in DoExecuteStatementAsync(statement, Format.ApacheArrow, cancellationToken))
+        var strategy = new StronglyTypedApacheArrowFormat(_options);
+        var request = strategy.GetStatementRequest(statement);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken);
+
+        if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
+
+        if (response.manifest.total_row_count <= 0)
         {
-            yield return record;
+            yield break;
+        }
+
+        foreach (var chunk in response.manifest.chunks)
+        {
+            var uri = StatementsEndpointPath +
+                      $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken);
+
+            if (chunkResponse?.external_links == null) continue;
+
+            await using var stream = await _externalHttpClient.GetStreamAsync(
+                chunkResponse.external_links[0].external_link,
+                cancellationToken);
+
+            await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken))
+            {
+                yield return row;
+            }
         }
     }
 
     internal async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(
         DatabricksStatement statement,
         Format format,
-        [EnumeratorCancellation]CancellationToken cancellationToken,
-        int initialTimeoutInSeconds = 50,
-        int loopDelayInSeconds = 10)
+        [EnumeratorCancellation]CancellationToken cancellationToken)
     {
         var strategy = format.GetStrategy(_options);
         var request = strategy.GetStatementRequest(statement);

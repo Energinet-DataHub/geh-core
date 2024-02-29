@@ -108,7 +108,9 @@ internal class DatabricksStatementRequest
         }
 
         if (response == null)
+        {
             throw new DatabricksException("Unable to fetch result from Databricks", this);
+        }
 
         return response;
     }

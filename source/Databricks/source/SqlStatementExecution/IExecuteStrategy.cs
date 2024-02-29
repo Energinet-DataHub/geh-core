@@ -38,5 +38,8 @@ internal interface IExecuteStrategy
     /// <param name="response"></param>
     /// <param name="cancellationToken"></param>
     /// <returns><see cref="IAsyncEnumerable{T}"/></returns>
-    IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response, CancellationToken cancellationToken);
+    IAsyncEnumerable<dynamic> ExecuteAsync(
+        Stream content,
+        DatabricksStatementResponse response,
+        CancellationToken cancellationToken);
 }
