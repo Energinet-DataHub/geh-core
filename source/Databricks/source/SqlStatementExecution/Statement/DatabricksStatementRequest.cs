@@ -28,20 +28,14 @@ internal class DatabricksStatementRequest
     internal const string JsonFormat = "JSON_ARRAY";
     internal const string ArrowFormat = "ARROW_STREAM";
 
-    internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format, TimeSpan initialTimeout, TimeSpan loopDelay)
+    internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format)
     {
         Statement = statement.GetSqlStatement();
         Parameters = statement.GetParameters().ToArray();
         WarehouseId = warehouseId;
         Disposition = "EXTERNAL_LINKS";
-        WaitTimeout = $"{initialTimeout.TotalSeconds}s";
+        WaitTimeout = "30s";
         Format = format;
-        LoopDelay = loopDelay;
-    }
-
-    internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format)
-        : this(warehouseId, statement, format, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(10))
-    {
     }
 
     [JsonPropertyName("parameters")]
