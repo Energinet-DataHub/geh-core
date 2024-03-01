@@ -56,7 +56,9 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results using <see cref="Format.ApacheArrow"/> format.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
+    /// The cancellation token can be used to implement time out as well.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
     /// </returns>
@@ -77,7 +79,9 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
     /// <param name="format">The desired format of the data returned.</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
+    /// The cancellation token can be used to implement time out as well.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
     /// </returns>
@@ -103,7 +107,9 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
+    /// The cancellation token can be used to implement time out as well.</param>
     /// <typeparam name="T">Target type</typeparam>
     /// <returns>An asynchronous enumerable of <typeparamref name="T"/> representing the result of the query.</returns>
     /// <remarks>
