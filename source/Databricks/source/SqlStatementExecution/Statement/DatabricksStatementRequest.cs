@@ -23,6 +23,10 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
+/// <summary>
+/// Some properties are being serialized and passed to the Databricks SQL Statement Execution API.
+/// Learn more about the API here: https://docs.databricks.com/api/azure/workspace/statementexecution.
+/// </summary>
 internal class DatabricksStatementRequest
 {
     internal const string JsonFormat = "JSON_ARRAY";
