@@ -62,11 +62,6 @@ internal class DatabricksStatementRequest
     [JsonPropertyName("wait_timeout")]
     public string WaitTimeout { get; init; }
 
-    /// <summary>
-    /// Controls the delay between each call to the Databricks API to check for the result availability.
-    /// </summary>
-    public TimeSpan LoopDelay { get; }
-
     [JsonPropertyName("format")]
     public string Format { get; set; }
 
@@ -98,7 +93,7 @@ internal class DatabricksStatementRequest
         }
         else
         {
-            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
 
             var path = $"{endpoint}/{response.statement_id}";
             using var httpResponse = await client.GetAsync(path, cancellationToken);
