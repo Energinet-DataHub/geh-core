@@ -62,11 +62,6 @@ internal class DatabricksStatementRequest
     [JsonPropertyName("wait_timeout")]
     public string WaitTimeout { get; init; }
 
-    /// <summary>
-    /// Controls the delay between each call to the Databricks API to check for the result availability.
-    /// </summary>
-    public TimeSpan LoopDelay { get; }
-
     [JsonPropertyName("format")]
     public string Format { get; set; }
 
