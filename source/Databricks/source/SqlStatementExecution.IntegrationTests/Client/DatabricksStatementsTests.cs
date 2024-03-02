@@ -143,6 +143,31 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         rowCount.Should().Be(1000000);
     }
 
+    /// <summary>
+    /// Given a query that takes more than 10 seconds
+    /// And the initial timeout is set to 1 second
+    /// When the cancellation token of the execution is cancelled after 1 second
+    /// Then the execution is cancelled
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementAsync_WhenCancelled_IsCancelledDuringTheInitialHttpPost(Format format)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new AtLeast10SecStatement();
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(TimeSpan.FromSeconds(1));
+        var result = client.ExecuteStatementAsync(statement, format, cts.Token);
+
+        // Act: Trigger the actual execution, but don't wait for the result
+        var task = result.CountAsync();
+
+        // Assert
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        task.IsCanceled.Should().BeTrue();
+    }
+
     public static IEnumerable<object[]> GetFormats()
     {
         yield return new object[] { Format.ApacheArrow };

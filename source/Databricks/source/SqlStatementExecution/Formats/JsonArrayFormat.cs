@@ -15,7 +15,9 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
@@ -30,11 +32,16 @@ internal class JsonArrayFormat : IExecuteStrategy
     }
 
     public DatabricksStatementRequest GetStatementRequest(DatabricksStatement statement)
-        => new(_options.TimeoutInSeconds, _options.WarehouseId, statement, DatabricksStatementRequest.JsonFormat);
+        => new(_options.WarehouseId, statement, DatabricksStatementRequest.JsonFormat);
 
-    public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)
+    public async IAsyncEnumerable<dynamic> ExecuteAsync(
+        Stream content,
+        DatabricksStatementResponse response,
+        [EnumeratorCancellation]CancellationToken cancellationToken)
     {
-        await foreach (var record in JsonSerializer.DeserializeAsyncEnumerable<string[]>(content))
+        await foreach (var record in JsonSerializer.DeserializeAsyncEnumerable<string[]>(
+                           content,
+                           cancellationToken: cancellationToken))
         {
             if (record == null) continue;
 

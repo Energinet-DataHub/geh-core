@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Apache.Arrow.Ipc;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
@@ -27,12 +27,14 @@ internal class StronglyTypedApacheArrowFormat : ApacheArrowFormat
     {
     }
 
-    public async IAsyncEnumerable<T> ExecuteAsync<T>(Stream content)
+    public async IAsyncEnumerable<T> ExecuteAsync<T>(
+        Stream content,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
         where T : class
     {
         using var reader = new ArrowStreamReader(content);
 
-        var batch = await reader.ReadNextRecordBatchAsync();
+        var batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
         while (batch != null)
         {
             for (var i = 0; i < batch.Length; i++)
@@ -40,7 +42,7 @@ internal class StronglyTypedApacheArrowFormat : ApacheArrowFormat
                 yield return batch.ReadRecord<T>(i);
             }
 
-            batch = await reader.ReadNextRecordBatchAsync();
+            batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
         }
     }
 }

@@ -1,5 +1,13 @@
 # Databricks Release Notes
 
+## Version 9.0.0
+
+The `DatabricksSqlStatementOptions.TimeoutInSeconds` is removed. It didn't represent the total timeout for a request,
+but rather constituted a part of the overall time out where the rest of the timeout was hardcoded.
+So it was misleading. It has been replaced by the usage of cancellation tokens.
+
+There are no changes to the jobs API.
+
 ## Version 8.2.2
 
 - No functional change

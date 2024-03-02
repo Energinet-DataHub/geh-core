@@ -15,6 +15,8 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Apache.Arrow.Ipc;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
@@ -30,13 +32,13 @@ internal class ApacheArrowFormat : IExecuteStrategy
     }
 
     public DatabricksStatementRequest GetStatementRequest(DatabricksStatement statement)
-        => new(_options.TimeoutInSeconds, _options.WarehouseId, statement, DatabricksStatementRequest.ArrowFormat);
+        => new(_options.WarehouseId, statement, DatabricksStatementRequest.ArrowFormat);
 
-    public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response)
+    public async IAsyncEnumerable<dynamic> ExecuteAsync(Stream content, DatabricksStatementResponse response, [EnumeratorCancellation]CancellationToken cancellationToken)
     {
         using var reader = new ArrowStreamReader(content);
 
-        var batch = await reader.ReadNextRecordBatchAsync();
+        var batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
         while (batch != null)
         {
             for (var i = 0; i < batch.Length; i++)
@@ -53,7 +55,7 @@ internal class ApacheArrowFormat : IExecuteStrategy
                 yield return record;
             }
 
-            batch = await reader.ReadNextRecordBatchAsync();
+            batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
         }
     }
 }

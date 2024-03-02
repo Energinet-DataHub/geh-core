@@ -29,7 +29,7 @@ public class DatabricksExceptionTests
     {
         // Arrange
         const string message = "foo";
-        var databricksStatementRequest = new DatabricksStatementRequest(1, "2", statement, Format.ApacheArrow.Value);
+        var databricksStatementRequest = new DatabricksStatementRequest("2", statement, Format.ApacheArrow.Value);
         var response = new DatabricksStatementResponse();
 
         // Act

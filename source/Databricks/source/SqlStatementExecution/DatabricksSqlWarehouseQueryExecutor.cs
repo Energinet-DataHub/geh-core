@@ -14,10 +14,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 using Microsoft.Extensions.Options;
@@ -55,6 +56,9 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results using <see cref="Format.ApacheArrow"/> format.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
+    /// The cancellation token can be used to implement time out as well.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
     /// </returns>
@@ -65,14 +69,19 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    public virtual IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement)
-        => ExecuteStatementAsync(statement, Format.ApacheArrow);
+    public virtual IAsyncEnumerable<dynamic> ExecuteStatementAsync(
+        DatabricksStatement statement,
+        CancellationToken cancellationToken = default)
+        => ExecuteStatementAsync(statement, Format.ApacheArrow, cancellationToken);
 
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
     /// <param name="format">The desired format of the data returned.</param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
+    /// The cancellation token can be used to implement time out as well.</param>
     /// <returns>
     /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
     /// </returns>
@@ -83,9 +92,12 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
     /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
     /// </remarks>
-    public virtual async IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format)
+    public virtual async IAsyncEnumerable<dynamic> ExecuteStatementAsync(
+        DatabricksStatement statement,
+        Format format,
+        [EnumeratorCancellation]CancellationToken cancellationToken = default)
     {
-        await foreach (var record in DoExecuteStatementAsync(statement, format))
+        await foreach (var record in DoExecuteStatementAsync(statement, format, cancellationToken))
         {
             yield return record;
         }
@@ -95,6 +107,9 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
+    /// The cancellation token can be used to implement time out as well.</param>
     /// <typeparam name="T">Target type</typeparam>
     /// <returns>An asynchronous enumerable of <typeparamref name="T"/> representing the result of the query.</returns>
     /// <remarks>
@@ -106,12 +121,14 @@ public class DatabricksSqlWarehouseQueryExecutor
     /// - Must only have a single constructor<br/>
     /// - Must be annotated with <see cref="ArrowFieldAttribute"/> to indicate the order of the constructor parameters
     /// </remarks>
-    public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(DatabricksStatement statement)
+    public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(
+        DatabricksStatement statement,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
         where T : class
     {
         var strategy = new StronglyTypedApacheArrowFormat(_options);
         var request = strategy.GetStatementRequest(statement);
-        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken);
 
         if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
 
@@ -124,24 +141,29 @@ public class DatabricksSqlWarehouseQueryExecutor
         {
             var uri = StatementsEndpointPath +
                       $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
-            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri);
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken);
 
             if (chunkResponse?.external_links == null) continue;
 
-            await using var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link);
+            await using var stream = await _externalHttpClient.GetStreamAsync(
+                chunkResponse.external_links[0].external_link,
+                cancellationToken);
 
-            await foreach (var row in strategy.ExecuteAsync<T>(stream))
+            await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken))
             {
                 yield return row;
             }
         }
     }
 
-    private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(DatabricksStatement statement, Format format)
+    private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(
+        DatabricksStatement statement,
+        Format format,
+        [EnumeratorCancellation]CancellationToken cancellationToken)
     {
         var strategy = format.GetStrategy(_options);
         var request = strategy.GetStatementRequest(statement);
-        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken);
 
         if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
 
@@ -154,13 +176,13 @@ public class DatabricksSqlWarehouseQueryExecutor
         {
             var uri = StatementsEndpointPath +
                       $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
-            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri);
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken);
 
             if (chunkResponse?.external_links == null) continue;
 
-            await using var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link);
+            await using var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link, cancellationToken);
 
-            await foreach (var row in strategy.ExecuteAsync(stream, response))
+            await foreach (var row in strategy.ExecuteAsync(stream, response, cancellationToken))
             {
                 yield return row;
             }
