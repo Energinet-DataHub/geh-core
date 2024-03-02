@@ -31,6 +31,7 @@ internal class DatabricksStatementRequest
 {
     internal const string JsonFormat = "JSON_ARRAY";
     internal const string ArrowFormat = "ARROW_STREAM";
+    private const int MaxWaitTimeForLoopInSeconds = 10;
 
     internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format)
     {
@@ -68,9 +69,11 @@ internal class DatabricksStatementRequest
     public async ValueTask<DatabricksStatementResponse> WaitForSqlWarehouseResultAsync(HttpClient client, string endpoint, CancellationToken cancellationToken)
     {
         DatabricksStatementResponse? response = null;
+        var fibonacci = new Fibonacci();
         do
         {
-            response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken);
+            var delayInSeconds = Math.Min(fibonacci.GetNextNumber(), MaxWaitTimeForLoopInSeconds);
+            response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, delayInSeconds, cancellationToken);
             if (response.IsSucceeded) return response;
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -84,6 +87,7 @@ internal class DatabricksStatementRequest
         HttpClient client,
         string endpoint,
         DatabricksStatementResponse? response,
+        int delayInSeconds,
         CancellationToken cancellationToken)
     {
         if (response == null)
@@ -93,7 +97,7 @@ internal class DatabricksStatementRequest
         }
         else
         {
-            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(delayInSeconds), cancellationToken);
 
             var path = $"{endpoint}/{response.statement_id}";
             using var httpResponse = await client.GetAsync(path, cancellationToken);
