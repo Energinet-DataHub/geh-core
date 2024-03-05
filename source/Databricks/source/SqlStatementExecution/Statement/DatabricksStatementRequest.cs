@@ -93,6 +93,7 @@ internal class DatabricksStatementRequest
         if (response == null)
         {
             // No cancellation token is used because we want to wait for the result
+            // With the response we are able to cancel the statement if needed
             using var httpResponse = await client.PostAsJsonAsync(endpoint, this);
             response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>();
         }
