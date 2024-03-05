@@ -48,7 +48,14 @@ public class DatabricksJobsApiHealthCheck : IHealthCheck
         if (_options.DatabricksHealthCheckStartHour <= currentHour
             && currentHour <= _options.DatabricksHealthCheckEndHour)
         {
-            await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                return HealthCheckResult.Unhealthy("Databricks Jobs API is unhealthy", ex);
+            }
         }
 
         return HealthCheckResult.Healthy();

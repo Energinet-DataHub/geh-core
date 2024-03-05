@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 9.0.1
+
+Added try-catch block to health checks to prevent both logging exceptions and indicate unhealthy state.
+
 ## Version 9.0.0
 
 The `DatabricksSqlStatementOptions.TimeoutInSeconds` is removed. It didn't represent the total timeout for a request,

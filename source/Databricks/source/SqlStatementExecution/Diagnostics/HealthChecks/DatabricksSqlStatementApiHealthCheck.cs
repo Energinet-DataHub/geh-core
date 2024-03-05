@@ -50,13 +50,20 @@ public class DatabricksSqlStatementApiHealthCheck : IHealthCheck
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
         if (_options.DatabricksHealthCheckStartHour <= currentHour && currentHour <= _options.DatabricksHealthCheckEndHour)
         {
-            var httpClient = CreateHttpClient();
-            var url = $"{_options.WorkspaceUrl}/api/2.0/sql/warehouses/{_options.WarehouseId}";
-            var response = await httpClient
-                .GetAsync(url, cancellationToken)
-                .ConfigureAwait(false);
+            try
+            {
+                var httpClient = CreateHttpClient();
+                var url = $"{_options.WorkspaceUrl}/api/2.0/sql/warehouses/{_options.WarehouseId}";
+                var response = await httpClient
+                    .GetAsync(url, cancellationToken)
+                    .ConfigureAwait(false);
 
-            return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+                return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+            }
+            catch (Exception ex)
+            {
+                return HealthCheckResult.Unhealthy("Databricks Sql Statement Execution API is unhealthy", ex);
+            }
         }
 
         return HealthCheckResult.Healthy();
