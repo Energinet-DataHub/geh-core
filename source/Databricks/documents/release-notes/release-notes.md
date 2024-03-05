@@ -1,5 +1,11 @@
 # Databricks Release Notes
 
+## Version 9.0.2
+
+Cancel statement if token cancellation is requested.
+
+When the request is canceled the cluster is notified to also cancel execution of that statement.
+
 ## Version 9.0.1
 
 Added try-catch block to health checks to prevent both logging exceptions and indicate unhealthy state.
