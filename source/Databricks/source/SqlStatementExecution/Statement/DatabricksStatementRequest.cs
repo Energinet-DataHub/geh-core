@@ -38,7 +38,7 @@ internal class DatabricksStatementRequest
         Parameters = statement.GetParameters().ToArray();
         WarehouseId = warehouseId;
         Disposition = "EXTERNAL_LINKS";
-        WaitTimeout = "30s";
+        WaitTimeout = "0s";
         Format = format;
     }
 
@@ -73,6 +73,10 @@ internal class DatabricksStatementRequest
             response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken);
             if (response.IsSucceeded) return response;
 
+            if (cancellationToken.IsCancellationRequested == false) continue;
+            if (string.IsNullOrEmpty(response.statement_id)) throw new InvalidOperationException("The statement_id is missing from databricks response");
+
+            await CancelStatementAsync(client, endpoint, response.statement_id); // Cancel the statement without cancellation token since it is already cancelled
             cancellationToken.ThrowIfCancellationRequested();
         }
         while (response.IsPending || response.IsRunning);
@@ -88,8 +92,9 @@ internal class DatabricksStatementRequest
     {
         if (response == null)
         {
-            using var httpResponse = await client.PostAsJsonAsync(endpoint, this, cancellationToken);
-            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>(cancellationToken: cancellationToken);
+            // No cancellation token is used because we want to wait for the result
+            using var httpResponse = await client.PostAsJsonAsync(endpoint, this);
+            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>();
         }
         else
         {
@@ -106,5 +111,12 @@ internal class DatabricksStatementRequest
         }
 
         return response;
+    }
+
+    private static async Task CancelStatementAsync(HttpClient client, string endpoint, string statementId)
+    {
+        var path = $"{endpoint}/{statementId}/cancel";
+        using var httpResponse = await client.PostAsync(path, new StringContent(string.Empty));
+        httpResponse.EnsureSuccessStatusCode();
     }
 }
