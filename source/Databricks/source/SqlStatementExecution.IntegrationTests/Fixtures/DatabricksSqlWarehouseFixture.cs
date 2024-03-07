@@ -29,6 +29,15 @@ public sealed class DatabricksSqlWarehouseFixture
         return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
     }
 
+    public HttpClient CreateHttpClient()
+    {
+        var services = CreateServiceCollection();
+        var serviceProvider = services.BuildServiceProvider();
+        var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+
+        return factory.CreateClient("Databricks");
+    }
+
     private static ServiceCollection CreateServiceCollection()
     {
         var integrationTestConfiguration = _lazyConfiguration.Value;

@@ -19,8 +19,15 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTes
 /// </summary>
 public class AtLeast10SecStatement : DatabricksStatement
 {
+    public AtLeast10SecStatement()
+    {
+        HelperId = Guid.NewGuid();
+    }
+
+    public Guid HelperId { get; private set; }
+
     protected internal override string GetSqlStatement()
     {
-        return "SELECT concat_ws('-', M.id, N.id, random()) as ID FROM range(1000000) AS M, range(1000000) AS N";
+        return $"SELECT concat_ws('-', M.id, N.id, random()) as ID FROM range(1000000) AS M, range(1000000) AS N; --HelperId:{HelperId}";
     }
 }

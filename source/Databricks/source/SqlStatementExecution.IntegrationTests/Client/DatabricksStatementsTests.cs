@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Client.Statements;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
@@ -168,9 +170,69 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         task.IsCanceled.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task Given_Cancellation_Token_When_Token_Is_Cancelled_Then_Cluster_Job_Is_Cancelled()
+    {
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new AtLeast10SecStatement();
+
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(TimeSpan.FromSeconds(1));
+
+        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
+        {
+            var result = client.ExecuteStatementAsync(statement, cts.Token);
+            _ = await result.CountAsync(cts.Token);
+        });
+
+        await AssertThatStatementIsCancelled(_sqlWarehouseFixture.CreateHttpClient(), statement.HelperId.ToString());
+    }
+
     public static IEnumerable<object[]> GetFormats()
     {
         yield return new object[] { Format.ApacheArrow };
         yield return new object[] { Format.JsonArray };
+    }
+
+    public class QueryHistory
+    {
+        [JsonPropertyName("next_page_token")]
+        public string NextPageToken { get; init; } = string.Empty;
+
+        [JsonPropertyName("has_next_page")]
+        public bool HasNextPage { get; init; }
+
+        [JsonPropertyName("res")]
+        public Query[] Queries { get; set; } = Array.Empty<Query>();
+    }
+
+    public class Query
+    {
+        [JsonPropertyName("query_id")]
+        public string QueryId { get; init; } = string.Empty;
+
+        [JsonPropertyName("status")]
+        public string Status { get; init; } = string.Empty;
+
+        [JsonPropertyName("query_text")]
+        public string QueryText { get; init; } = string.Empty;
+    }
+
+    private static async Task AssertThatStatementIsCancelled(HttpClient client, string statementId)
+    {
+        var retriesLeft = 6;
+        while (retriesLeft-- > 0)
+        {
+            await Task.Delay(750);
+            var response = await client.GetAsync($"api/2.0/sql/history/queries?include_metrics=false");
+            var history = await response.Content.ReadFromJsonAsync<QueryHistory>();
+
+            var query = history?.Queries.FirstOrDefault(q => q.QueryText.EndsWith(statementId, StringComparison.InvariantCultureIgnoreCase));
+            if (query == null) continue;
+
+            if (query.Status.Equals("Canceled", StringComparison.OrdinalIgnoreCase)) return;
+        }
+
+        Assert.Fail("No cancelled query found in history for statementId: " + statementId);
     }
 }
