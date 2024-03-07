@@ -75,11 +75,14 @@ internal class DatabricksStatementRequest
                 response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken);
                 if (response.IsSucceeded) return response;
 
-                if (cancellationToken.IsCancellationRequested == false) continue;
-                if (string.IsNullOrEmpty(response.statement_id)) throw new InvalidOperationException("The statement_id is missing from databricks response");
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    if (string.IsNullOrEmpty(response.statement_id)) throw new InvalidOperationException("The statement_id is missing from databricks response");
 
-                await CancelStatementAsync(client, endpoint, response.statement_id); // Cancel the statement without cancellation token since it is already cancelled
-                cancellationToken.ThrowIfCancellationRequested();
+                    // Cancel the statement without cancellation token since it is already cancelled
+                    await CancelStatementAsync(client, endpoint, response.statement_id); 
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
             }
             catch (TaskCanceledException tce)
             {
