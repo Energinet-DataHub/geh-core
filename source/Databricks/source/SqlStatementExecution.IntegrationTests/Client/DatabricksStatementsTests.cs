@@ -171,7 +171,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     }
 
     [Fact]
-    public async Task Given_Cancellation_Token_When_Token_Is_Cancelled_Then_Cluster_Job_Is_Cancelled()
+    public async Task GivenCancellationToken_WhenTokenIsCancelled_ThenClusterJobIsCancelled()
     {
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
         var statement = new AtLeast10SecStatement();
@@ -185,7 +185,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
             _ = await result.CountAsync(cts.Token);
         });
 
-        await AssertThatStatementIsCancelled(_sqlWarehouseFixture.CreateHttpClient(), statement.HelperId.ToString());
+        await AssertThatStatementIsCancelledAsync(_sqlWarehouseFixture.CreateHttpClient(), statement.HelperId.ToString());
     }
 
     public static IEnumerable<object[]> GetFormats()
@@ -218,7 +218,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         public string QueryText { get; init; } = string.Empty;
     }
 
-    private static async Task AssertThatStatementIsCancelled(HttpClient client, string statementId)
+    private static async Task AssertThatStatementIsCancelledAsync(HttpClient client, string statementId)
     {
         var retriesLeft = 6;
         while (retriesLeft-- > 0)
