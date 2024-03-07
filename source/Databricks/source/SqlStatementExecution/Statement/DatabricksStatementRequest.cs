@@ -80,12 +80,13 @@ internal class DatabricksStatementRequest
                     if (string.IsNullOrEmpty(response.statement_id)) throw new InvalidOperationException("The statement_id is missing from databricks response");
 
                     // Cancel the statement without cancellation token since it is already cancelled
-                    await CancelStatementAsync(client, endpoint, response.statement_id); 
+                    await CancelStatementAsync(client, endpoint, response.statement_id);
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
             catch (TaskCanceledException tce)
             {
+                if (!string.IsNullOrEmpty(response?.statement_id)) await CancelStatementAsync(client, endpoint, response.statement_id);
                 throw new OperationCanceledException("The operation was cancelled", tce, cancellationToken);
             }
         }
@@ -128,6 +129,5 @@ internal class DatabricksStatementRequest
     {
         var path = $"{endpoint}/{statementId}/cancel";
         using var httpResponse = await client.PostAsync(path, new StringContent(string.Empty));
-        httpResponse.EnsureSuccessStatusCode();
     }
 }
