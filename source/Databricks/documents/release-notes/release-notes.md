@@ -1,5 +1,13 @@
 # Databricks Release Notes
 
+## Version 9.0.2
+
+Cancel statement if token cancellation is requested.
+
+When the request is canceled the cluster is notified to also cancel execution of that statement.
+
+With this change the communication with the job cluster is using the [**Asynchronous mode**](https://docs.databricks.com/api/azure/workspace/statementexecution/executestatement#wait_timeout).
+
 ## Version 9.0.1
 
 Added try-catch block to health checks to prevent both logging exceptions and indicate unhealthy state.
