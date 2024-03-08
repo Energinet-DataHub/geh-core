@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using System.Dynamic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Threading;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;

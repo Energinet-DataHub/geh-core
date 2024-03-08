@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;

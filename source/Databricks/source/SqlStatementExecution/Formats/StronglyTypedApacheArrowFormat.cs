@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Apache.Arrow.Ipc;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
