@@ -35,7 +35,7 @@ internal class ApacheArrowFormat : IExecuteStrategy
     {
         using var reader = new ArrowStreamReader(content);
 
-        var batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
+        var batch = await reader.ReadNextRecordBatchAsync(cancellationToken).ConfigureAwait(false);
         while (batch != null)
         {
             for (var i = 0; i < batch.Length; i++)
@@ -52,7 +52,7 @@ internal class ApacheArrowFormat : IExecuteStrategy
                 yield return record;
             }
 
-            batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
+            batch = await reader.ReadNextRecordBatchAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

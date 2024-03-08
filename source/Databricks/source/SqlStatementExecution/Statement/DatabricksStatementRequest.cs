@@ -67,7 +67,7 @@ internal class DatabricksStatementRequest
         {
             try
             {
-                response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken);
+                response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken).ConfigureAwait(false);
                 if (response.IsSucceeded) return response;
 
                 if (cancellationToken.IsCancellationRequested)
@@ -75,13 +75,13 @@ internal class DatabricksStatementRequest
                     if (string.IsNullOrEmpty(response.statement_id)) throw new InvalidOperationException("The statement_id is missing from databricks response");
 
                     // Cancel the statement without cancellation token since it is already cancelled
-                    await CancelStatementAsync(client, endpoint, response.statement_id);
+                    await CancelStatementAsync(client, endpoint, response.statement_id).ConfigureAwait(false);
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
             catch (TaskCanceledException tce)
             {
-                if (!string.IsNullOrEmpty(response?.statement_id)) await CancelStatementAsync(client, endpoint, response.statement_id);
+                if (!string.IsNullOrEmpty(response?.statement_id)) await CancelStatementAsync(client, endpoint, response.statement_id).ConfigureAwait(false);
                 throw new OperationCanceledException("The operation was cancelled", tce, cancellationToken);
             }
         }
@@ -100,16 +100,16 @@ internal class DatabricksStatementRequest
         {
             // No cancellation token is used because we want to wait for the result
             // With the response we are able to cancel the statement if needed
-            using var httpResponse = await client.PostAsJsonAsync(endpoint, this);
-            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>();
+            using var httpResponse = await client.PostAsJsonAsync(endpoint, this).ConfigureAwait(false);
+            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>().ConfigureAwait(false);
         }
         else
         {
-            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken).ConfigureAwait(false);
 
             var path = $"{endpoint}/{response.statement_id}";
-            using var httpResponse = await client.GetAsync(path, cancellationToken);
-            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>(cancellationToken: cancellationToken);
+            using var httpResponse = await client.GetAsync(path, cancellationToken).ConfigureAwait(false);
+            response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         if (response == null)
@@ -123,6 +123,6 @@ internal class DatabricksStatementRequest
     private static async Task CancelStatementAsync(HttpClient client, string endpoint, string statementId)
     {
         var path = $"{endpoint}/{statementId}/cancel";
-        using var httpResponse = await client.PostAsync(path, new StringContent(string.Empty));
+        using var httpResponse = await client.PostAsync(path, new StringContent(string.Empty)).ConfigureAwait(false);
     }
 }

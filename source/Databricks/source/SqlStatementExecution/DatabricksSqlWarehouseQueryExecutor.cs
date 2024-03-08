@@ -124,7 +124,7 @@ public class DatabricksSqlWarehouseQueryExecutor
     {
         var strategy = new StronglyTypedApacheArrowFormat(_options);
         var request = strategy.GetStatementRequest(statement);
-        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken).ConfigureAwait(false);
 
         if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
 
@@ -137,17 +137,19 @@ public class DatabricksSqlWarehouseQueryExecutor
         {
             var uri = StatementsEndpointPath +
                       $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
-            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken);
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken).ConfigureAwait(false);
 
             if (chunkResponse?.external_links == null) continue;
 
-            await using var stream = await _externalHttpClient.GetStreamAsync(
+            var stream = await _externalHttpClient.GetStreamAsync(
                 chunkResponse.external_links[0].external_link,
-                cancellationToken);
-
-            await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken))
+                cancellationToken).ConfigureAwait(false);
+            await using (stream.ConfigureAwait(false))
             {
-                yield return row;
+                await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken))
+                {
+                    yield return row;
+                }
             }
         }
     }
@@ -159,7 +161,7 @@ public class DatabricksSqlWarehouseQueryExecutor
     {
         var strategy = format.GetStrategy(_options);
         var request = strategy.GetStatementRequest(statement);
-        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken).ConfigureAwait(false);
 
         if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
 
@@ -172,15 +174,17 @@ public class DatabricksSqlWarehouseQueryExecutor
         {
             var uri = StatementsEndpointPath +
                       $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
-            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken);
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken).ConfigureAwait(false);
 
             if (chunkResponse?.external_links == null) continue;
 
-            await using var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link, cancellationToken);
-
-            await foreach (var row in strategy.ExecuteAsync(stream, response, cancellationToken))
+            var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link, cancellationToken).ConfigureAwait(false);
+            await using (stream.ConfigureAwait(false))
             {
-                yield return row;
+                await foreach (var row in strategy.ExecuteAsync(stream, response, cancellationToken))
+                {
+                    yield return row;
+                }
             }
         }
     }
