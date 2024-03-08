@@ -52,9 +52,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
 
             var frontendAppId = SecretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(Environment, "frontend-app-id"));
             FrontendApp = new B2CAppSettings(frontendAppId);
-            FrontendOpenIdConfigurationUrl = SecretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(Environment, "frontend-open-id-url"));
-
-            ApiManagementBaseAddress = SecretsConfiguration.GetValue<Uri>(BuildApiManagementEnvironmentSecretName(Environment, "host-url"));
         }
 
         /// <summary>
@@ -86,16 +83,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
         /// Frontend application ID and scope.
         /// </summary>
         public B2CAppSettings FrontendApp { get; }
-
-        /// <summary>
-        /// URL of the Open ID configuration for the frontend (necessary when validating tokens).
-        /// </summary>
-        public string FrontendOpenIdConfigurationUrl { get; }
-
-        /// <summary>
-        /// The base address for the API Management in the configured environment.
-        /// </summary>
-        public Uri ApiManagementBaseAddress { get; }
 
         private IConfigurationRoot RootConfiguration { get; }
 
@@ -145,11 +132,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
                 .AddJsonFile(localSettingsJsonFilename, optional: true)
                 .AddEnvironmentVariables()
                 .Build();
-        }
-
-        private static string BuildApiManagementEnvironmentSecretName(string environment, string secret)
-        {
-            return $"APIM-{environment}-{secret}";
         }
 
         private static string BuildB2CClientSecretName(string environment, string client, string secret)
