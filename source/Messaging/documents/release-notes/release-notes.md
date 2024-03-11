@@ -3,6 +3,8 @@
 ## Version 4.0.0
 
 - Upgrade to .NET 8
+- Upgrade nuget packages
+- No functional changes
 
 ## Version 3.3.1
 
