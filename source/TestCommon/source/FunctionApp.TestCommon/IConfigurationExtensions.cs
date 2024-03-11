@@ -28,7 +28,7 @@ public static class IConfigurationExtensions
     {
         var value = configuration[$"Values:{settingName}"];
         return string.IsNullOrEmpty(value)
-            ? configuration[settingName]
+            ? configuration[settingName]!
             : value;
     }
 }

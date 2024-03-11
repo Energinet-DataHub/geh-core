@@ -177,7 +177,7 @@ public class EventHubResourceProviderTests
         [Theory]
         [InlineData("some user metadata")]
         [InlineData(null)]
-        public async Task When_AddConsumerGroup_Then_CreatedEventHubHasConsumerGroup(string userMetadata)
+        public async Task When_AddConsumerGroup_Then_CreatedEventHubHasConsumerGroup(string? userMetadata)
         {
             // Arrange
             var consumerGroupName = "consumer_group_name";
