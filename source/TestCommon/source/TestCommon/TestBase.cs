@@ -32,9 +32,9 @@ public abstract class TestBase<TSut>
         LazySut = new Lazy<TSut>(CreateSut);
 
         Fixture = new Fixture();
-#pragma warning disable S1699 // Remove this call from a constructor to the overridable 'OnCustomizeFixture' method.
+#pragma warning disable CA2214 // Do not call overridable methods in constructors
         OnCustomizeFixture(Fixture);
-#pragma warning restore S1699
+#pragma warning restore CA2214 // Do not call overridable methods in constructors
     }
 
     protected TSut Sut => LazySut.Value;

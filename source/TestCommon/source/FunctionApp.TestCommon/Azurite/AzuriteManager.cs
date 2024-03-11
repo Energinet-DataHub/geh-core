@@ -173,9 +173,11 @@ public class AzuriteManager : IDisposable
         return "UseDevelopmentStorage=true";
     }
 
+#pragma warning disable CA1416 // Validate platform compatibility: The following only supported in WIndows
     private static void KillProcessAndChildrenRecursively(int processId)
     {
         var queryChildren = $"Select * From Win32_Process Where ParentProcessID = {processId}";
+
         using var childProcessManagementObjectSearcher = new ManagementObjectSearcher(queryChildren);
         using var childProcessManagementObjectCollection = childProcessManagementObjectSearcher.Get();
 
@@ -194,6 +196,7 @@ public class AzuriteManager : IDisposable
             // Process already exited.
         }
     }
+#pragma warning restore CA1416 // Validate platform compatibility
 
     /// <summary>
     /// Azure Storage Emulator is still started/used when starting the function app locally from some IDE's.
@@ -265,6 +268,7 @@ public class AzuriteManager : IDisposable
         process.Dispose();
     }
 
+#pragma warning disable CA1416 // Validate platform compatibility: The following only supported in WIndows
     private static uint GetParentProcessId(Process process)
     {
         var queryParentId = $"SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {process.Id}";
@@ -274,6 +278,7 @@ public class AzuriteManager : IDisposable
         using var queryObj = searchResults.Current;
         return (uint)queryObj["ParentProcessId"];
     }
+#pragma warning restore CA1416 // Validate platform compatibility
 
     private void StartAzuriteProcess()
     {

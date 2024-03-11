@@ -165,7 +165,9 @@ public abstract class SqlServerDatabaseManager<TContextImplementation>
             (ctx, ct) =>
             {
                 using var masterDbConnection = new SqlConnection(_sqlServerConnectionStringProvider.BuildConnectionStringForDatabaseName("master"));
+#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
                 using var command = new SqlCommand(createDatabaseCommandText, masterDbConnection);
+#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
                 masterDbConnection.Open();
                 try
                 {

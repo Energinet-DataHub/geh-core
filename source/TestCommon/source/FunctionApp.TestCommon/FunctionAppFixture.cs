@@ -37,7 +37,9 @@ public abstract class FunctionAppFixture : IAsyncLifetime
         HostStartupLog = new List<string>();
 
         var hostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
+#pragma warning disable CA2214 // Do not call overridable methods in constructors
         OnConfigureHostSettings(hostSettings);
+#pragma warning restore CA2214 // Do not call overridable methods in constructors
         HostManager = new FunctionAppHostManager(hostSettings, TestLogger);
     }
 

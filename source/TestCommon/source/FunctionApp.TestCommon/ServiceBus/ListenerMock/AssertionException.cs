@@ -35,9 +35,4 @@ public class AssertionException : Exception
         : base(message, inner)
     {
     }
-
-    protected AssertionException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-    }
 }
