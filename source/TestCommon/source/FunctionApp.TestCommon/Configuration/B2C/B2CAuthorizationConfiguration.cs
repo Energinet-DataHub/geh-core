@@ -35,10 +35,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
             string environment,
             IEnumerable<string> clientNames)
         {
-            var localSettingsJsonFilename = usedForSystemTests
-                ? "systemtest.local.settings.json"
-                : "integrationtest.local.settings.json";
-            RootConfiguration = BuildKeyVaultConfigurationRoot(localSettingsJsonFilename);
+            RootConfiguration = BuildKeyVaultConfigurationRoot();
             SecretsConfiguration = BuildSecretsKeyVaultConfiguration(RootConfiguration.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL"));
 
             Environment = environment;
@@ -126,10 +123,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
                 .Build();
         }
 
-        private static IConfigurationRoot BuildKeyVaultConfigurationRoot(string localSettingsJsonFilename)
+        private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
         {
             return new ConfigurationBuilder()
-                .AddJsonFile(localSettingsJsonFilename, optional: true)
+                .AddJsonFile("integrationtest.local.settings.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
         }
