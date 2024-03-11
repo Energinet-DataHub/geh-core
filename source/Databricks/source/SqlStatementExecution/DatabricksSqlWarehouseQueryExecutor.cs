@@ -146,7 +146,7 @@ public class DatabricksSqlWarehouseQueryExecutor
                 cancellationToken).ConfigureAwait(false);
             await using (stream.ConfigureAwait(false))
             {
-                await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken))
+                await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken).ConfigureAwait(false))
                 {
                     yield return row;
                 }
