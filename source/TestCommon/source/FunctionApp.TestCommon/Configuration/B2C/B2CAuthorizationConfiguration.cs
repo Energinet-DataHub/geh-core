@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +21,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
     /// <summary>
     /// Responsible for extracting secrets for authorization needed for performing tests using B2C access tokens.
     ///
-    /// On developer machines we use a '*.local.settings.json' to set values.
+    /// On developer machines we use a 'integrationtest.local.settings.json' to set values.
     /// On hosted agents we must set these using environment variables.
     ///
     /// Developers, and the service principal under which the tests are executed, must have access
@@ -31,7 +30,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C
     public class B2CAuthorizationConfiguration
     {
         public B2CAuthorizationConfiguration(
-            bool usedForSystemTests,
             string environment,
             IEnumerable<string> clientNames)
         {

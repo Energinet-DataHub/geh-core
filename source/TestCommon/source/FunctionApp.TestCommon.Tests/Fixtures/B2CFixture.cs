@@ -34,7 +34,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
         public B2CFixture()
         {
             AuthorizationConfiguration = new B2CAuthorizationConfiguration(
-                usedForSystemTests: false,
                 environment: Environment,
                 new List<string> { SystemOperator });
 
