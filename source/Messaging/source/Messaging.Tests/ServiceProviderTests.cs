@@ -63,6 +63,8 @@ public class ServiceProviderTests
 
     private static IConfiguration GetPublisherConfiguration()
     {
+        // This is as simple as it gets, but it is enough for the test to pass.
+        // Extend this method to return a more realistic configuration if needed.
         var configuration = new ConfigurationBuilder()
             .Build();
         return configuration;
