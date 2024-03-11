@@ -38,7 +38,7 @@ internal class JsonArrayFormat : IExecuteStrategy
     {
         await foreach (var record in JsonSerializer.DeserializeAsyncEnumerable<string[]>(
                            content,
-                           cancellationToken: cancellationToken))
+                           cancellationToken: cancellationToken).ConfigureAwait(false))
         {
             if (record == null) continue;
 
