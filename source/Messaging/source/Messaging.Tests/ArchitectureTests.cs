@@ -14,7 +14,9 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using FluentAssertions;
+using Google.Protobuf.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -38,6 +40,20 @@ public class ArchitectureTests
         var publisher = scope.ServiceProvider.GetService<IPublisher>();
 
         publisher.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void ServiceCollection_CallAddSubscriber_ISubscriberIsResolvable()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        serviceCollection.AddSubscriber<IntegrationEventHandlerStub>(Array.Empty<MessageDescriptor>());
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        using var scope = serviceProvider.CreateScope();
+        var subscriber = scope.ServiceProvider.GetService<ISubscriber>();
+
+        subscriber.Should().NotBeNull();
     }
 
     private static IConfiguration GetPublisherConfiguration()
