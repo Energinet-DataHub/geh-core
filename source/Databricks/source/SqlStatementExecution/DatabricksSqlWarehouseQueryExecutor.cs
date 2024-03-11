@@ -93,7 +93,7 @@ public class DatabricksSqlWarehouseQueryExecutor
         Format format,
         [EnumeratorCancellation]CancellationToken cancellationToken = default)
     {
-        await foreach (var record in DoExecuteStatementAsync(statement, format, cancellationToken))
+        await foreach (var record in DoExecuteStatementAsync(statement, format, cancellationToken).ConfigureAwait(false))
         {
             yield return record;
         }
@@ -181,7 +181,7 @@ public class DatabricksSqlWarehouseQueryExecutor
             var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link, cancellationToken).ConfigureAwait(false);
             await using (stream.ConfigureAwait(false))
             {
-                await foreach (var row in strategy.ExecuteAsync(stream, response, cancellationToken))
+                await foreach (var row in strategy.ExecuteAsync(stream, response, cancellationToken).ConfigureAwait(false))
                 {
                     yield return row;
                 }
