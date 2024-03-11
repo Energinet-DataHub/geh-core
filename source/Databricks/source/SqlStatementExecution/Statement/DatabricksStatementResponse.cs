@@ -15,6 +15,7 @@
 // ReSharper disable InconsistentNaming
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 #pragma warning disable SA1300 // Element should begin with upper-case letter.
+#pragma warning disable SA1402 // File may only contain a single class. Justification: This is a json mapping class.
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 /// <summary>
@@ -121,3 +122,4 @@ internal class External_links
 
 #pragma warning restore SA1300
 #pragma warning restore CS8618
+#pragma warning restore SA1402

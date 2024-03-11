@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 10.0.0
+
+Bump to .NET 8.0 for TargetFramework.
+
 ## Version 9.0.2
 
 Cancel statement if token cancellation is requested.

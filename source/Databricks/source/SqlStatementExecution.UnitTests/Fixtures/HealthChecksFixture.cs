@@ -25,84 +25,83 @@ using Moq;
 using Moq.Protected;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixtures
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixtures;
+
+public sealed class HealthChecksFixture : IDisposable
 {
-    public sealed class HealthChecksFixture : IDisposable
+    private readonly TestServer _server;
+
+    public HealthChecksFixture()
     {
-        private readonly TestServer _server;
+        var webHostBuilder = CreateWebHostBuilder();
+        _server = new TestServer(webHostBuilder);
+        HttpClient = _server.CreateClient();
+    }
 
-        public HealthChecksFixture()
-        {
-            var webHostBuilder = CreateWebHostBuilder();
-            _server = new TestServer(webHostBuilder);
-            HttpClient = _server.CreateClient();
-        }
+    public HttpClient HttpClient { get; }
 
-        public HttpClient HttpClient { get; }
+    public void Dispose()
+    {
+        _server.Dispose();
+    }
 
-        public void Dispose()
-        {
-            _server.Dispose();
-        }
-
-        private static IWebHostBuilder CreateWebHostBuilder()
-        {
-            return new WebHostBuilder()
-                .ConfigureServices(services =>
+    private static IWebHostBuilder CreateWebHostBuilder()
+    {
+        return new WebHostBuilder()
+            .ConfigureServices(services =>
+            {
+                services.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
                 {
-                    services.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
-                    {
-                        options.WarehouseId = "baz";
-                        options.WorkspaceToken = "bar";
-                        options.WorkspaceUrl = "https://foo.com";
-                        options.DatabricksHealthCheckStartHour = 0;
-                        options.DatabricksHealthCheckEndHour = 23;
-                    });
-
-                    services.AddRouting();
-                    services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
-
-                    RegisterHttpClientFactoryMock(services);
-
-                    services.AddHealthChecks()
-                        .AddLiveCheck()
-                        .AddDatabricksSqlStatementApiHealthCheck();
-                })
-                .Configure(app =>
-                {
-                    app.UseRouting();
-
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapLiveHealthChecks();
-                        endpoints.MapReadyHealthChecks();
-                    });
+                    options.WarehouseId = "baz";
+                    options.WorkspaceToken = "bar";
+                    options.WorkspaceUrl = "https://foo.com";
+                    options.DatabricksHealthCheckStartHour = 0;
+                    options.DatabricksHealthCheckEndHour = 23;
                 });
-        }
 
-        private static void RegisterHttpClientFactoryMock(IServiceCollection services)
-        {
-            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+                services.AddRouting();
+                services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
 
-            var response = new HttpResponseMessage { StatusCode = HttpStatusCode.OK };
+                RegisterHttpClientFactoryMock(services);
 
-            httpMessageHandlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(response);
+                services.AddHealthChecks()
+                    .AddLiveCheck()
+                    .AddDatabricksSqlStatementApiHealthCheck();
+            })
+            .Configure(app =>
+            {
+                app.UseRouting();
 
-            var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-            services.AddScoped<HttpClient>(_ => httpClient);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapLiveHealthChecks();
+                    endpoints.MapReadyHealthChecks();
+                });
+            });
+    }
 
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            httpClientFactoryMock
-                .Setup(x => x.CreateClient(Options.DefaultName))
-                .Returns(() => httpClient);
+    private static void RegisterHttpClientFactoryMock(IServiceCollection services)
+    {
+        var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
 
-            services.AddScoped<IHttpClientFactory>(_ => httpClientFactoryMock.Object);
-        }
+        var response = new HttpResponseMessage { StatusCode = HttpStatusCode.OK };
+
+        httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        var httpClient = new HttpClient(httpMessageHandlerMock.Object);
+        services.AddScoped<HttpClient>(_ => httpClient);
+
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+        httpClientFactoryMock
+            .Setup(x => x.CreateClient(Options.DefaultName))
+            .Returns(() => httpClient);
+
+        services.AddScoped<IHttpClientFactory>(_ => httpClientFactoryMock.Object);
     }
 }

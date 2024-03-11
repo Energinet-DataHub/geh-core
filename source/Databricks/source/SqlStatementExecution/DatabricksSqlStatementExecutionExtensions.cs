@@ -12,58 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+
+public static class DatabricksSqlStatementExecutionExtensions
 {
-    public static class DatabricksSqlStatementExecutionExtensions
+    /// <summary>
+    /// Adds the <see cref="DatabricksSqlWarehouseQueryExecutor"/> and related services to the service collection.
+    /// </summary>
+    /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
+    public static IServiceCollection AddDatabricksSqlStatementExecution(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        /// <summary>
-        /// Adds the <see cref="DatabricksSqlWarehouseQueryExecutor"/> and related services to the service collection.
-        /// </summary>
-        /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
-        public static IServiceCollection AddDatabricksSqlStatementExecution(this IServiceCollection serviceCollection, IConfiguration configuration)
-        {
-            serviceCollection
-                .AddOptions<DatabricksSqlStatementOptions>()
-                .Bind(configuration)
-                .ValidateDataAnnotations()
-                .Validate(
-                    options =>
-                    {
-                        return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
-                    },
-                    "Databricks Jobs Health Check end hour must be greater than start hour.");
-
-            return serviceCollection.AddSqlStatementExecutionInner();
-        }
-
-        private static IServiceCollection AddSqlStatementExecutionInner(this IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddHttpClient(
-                HttpClientNameConstants.Databricks,
-                (serviceProvider, client) =>
+        serviceCollection
+            .AddOptions<DatabricksSqlStatementOptions>()
+            .Bind(configuration)
+            .ValidateDataAnnotations()
+            .Validate(
+                options =>
                 {
-                    var options = serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
+                    return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
+                },
+                "Databricks Jobs Health Check end hour must be greater than start hour.");
 
-                    client.BaseAddress = new Uri(options.WorkspaceUrl);
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-                });
+        return serviceCollection.AddSqlStatementExecutionInner();
+    }
 
-            serviceCollection.AddSingleton(sp =>
-                new DatabricksSqlWarehouseQueryExecutor(
-                    sp.GetRequiredService<IHttpClientFactory>(),
-                    sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));
+    private static IServiceCollection AddSqlStatementExecutionInner(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddHttpClient(
+            HttpClientNameConstants.Databricks,
+            (serviceProvider, client) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
 
-            return serviceCollection;
-        }
+                client.BaseAddress = new Uri(options.WorkspaceUrl);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            });
+
+        serviceCollection.AddSingleton(sp =>
+            new DatabricksSqlWarehouseQueryExecutor(
+                sp.GetRequiredService<IHttpClientFactory>(),
+                sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));
+
+        return serviceCollection;
     }
 }
