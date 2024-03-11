@@ -16,15 +16,9 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>10</LangVersion>
-    <Nullable>enable</Nullable>
     <ProjectGuid>{06B44BDA-BE24-4828-B415-9676B744D9B1}</ProjectGuid>
     <AssemblyName>Energinet.DataHub.Core.FunctionApp.TestCommon</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.FunctionApp.TestCommon</RootNamespace>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
