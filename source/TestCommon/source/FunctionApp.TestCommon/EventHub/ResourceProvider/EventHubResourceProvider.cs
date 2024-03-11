@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Microsoft.Azure.Management.EventHub;
 using Microsoft.Azure.Management.EventHub.Models;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Identity.Client;
 using Microsoft.Rest;
 using Nito.AsyncEx;
 
@@ -107,19 +107,25 @@ public class EventHubResourceProvider : IAsyncDisposable
 
     private async Task<IEventHubManagementClient> CreateManagementClientAsync()
     {
-        var context = new AuthenticationContext($"https://login.microsoftonline.com/{ResourceManagementSettings.TenantId}");
-        var clientCredential = new ClientCredential(ResourceManagementSettings.ClientId, ResourceManagementSettings.ClientSecret);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-        var authenticationResult = await context.AcquireTokenAsync("https://management.azure.com/", clientCredential)
-            .ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
-
+        var authenticationResult = await GetTokenAsync().ConfigureAwait(false);
         var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken);
         return new EventHubManagementClient(tokenCredentials)
         {
             SubscriptionId = ResourceManagementSettings.SubscriptionId,
         };
+    }
+
+    private Task<AuthenticationResult> GetTokenAsync()
+    {
+        var confidentialClientApp = ConfidentialClientApplicationBuilder
+            .Create(ResourceManagementSettings.ClientId)
+            .WithClientSecret(ResourceManagementSettings.ClientSecret)
+            .WithAuthority($"https://login.microsoftonline.com/{ResourceManagementSettings.TenantId}")
+            .Build();
+
+        return confidentialClientApp
+            .AcquireTokenForClient(new[] { $"https://management.core.windows.net/.default" })
+            .ExecuteAsync();
     }
 
     private string BuildResourceName(string namePrefix)
