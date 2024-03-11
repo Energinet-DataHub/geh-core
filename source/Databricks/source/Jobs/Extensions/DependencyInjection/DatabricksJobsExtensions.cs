@@ -22,49 +22,48 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection
+namespace Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
+
+public static class DatabricksJobsExtensions
 {
-    public static class DatabricksJobsExtensions
+    /// <summary>
+    /// Adds the <see cref="IJobsApiClient"/> and required options to the service collection.
+    /// </summary>
+    /// <returns>IServiceCollection containing elements needed to request Databricks Jobs API.</returns>
+    public static IServiceCollection AddDatabricksJobs(this IServiceCollection serviceCollection, IConfiguration configuration, long timeout = 30)
     {
-        /// <summary>
-        /// Adds the <see cref="IJobsApiClient"/> and required options to the service collection.
-        /// </summary>
-        /// <returns>IServiceCollection containing elements needed to request Databricks Jobs API.</returns>
-        public static IServiceCollection AddDatabricksJobs(this IServiceCollection serviceCollection, IConfiguration configuration, long timeout = 30)
-        {
-            serviceCollection.AddSingleton<IJobsApiClient, JobsApiClient>();
+        serviceCollection.AddSingleton<IJobsApiClient, JobsApiClient>();
 
-            serviceCollection
-                .AddOptions<DatabricksJobsOptions>()
-                .Bind(configuration)
-                .ValidateDataAnnotations()
-                .Validate(
-                    options =>
-                    {
-                        return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
-                    },
-                    "Databricks Jobs Health Check end hour must be greater than start hour.");
+        serviceCollection
+            .AddOptions<DatabricksJobsOptions>()
+            .Bind(configuration)
+            .ValidateDataAnnotations()
+            .Validate(
+                options =>
+                {
+                    return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
+                },
+                "Databricks Jobs Health Check end hour must be greater than start hour.");
 
-            serviceCollection
-                .AddHttpClient(
-                    HttpClientNameConstants.DatabricksJobsApi,
-                    (services, httpClient) =>
-                    {
-                        var options = services.GetRequiredService<IOptions<DatabricksJobsOptions>>().Value;
-                        var url = new Uri(new Uri(options.WorkspaceUrl), "api/");
-                        httpClient.BaseAddress = url;
-                        httpClient.Timeout = TimeSpan.FromSeconds(timeout);
-                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
-                        httpClient.DefaultRequestHeaders.Accept.Clear();
-                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-                    })
-                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-                    {
-                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                    });
+        serviceCollection
+            .AddHttpClient(
+                HttpClientNameConstants.DatabricksJobsApi,
+                (services, httpClient) =>
+                {
+                    var options = services.GetRequiredService<IOptions<DatabricksJobsOptions>>().Value;
+                    var url = new Uri(new Uri(options.WorkspaceUrl), "api/");
+                    httpClient.BaseAddress = url;
+                    httpClient.Timeout = TimeSpan.FromSeconds(timeout);
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
+                    httpClient.DefaultRequestHeaders.Accept.Clear();
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                })
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                });
 
-            return serviceCollection;
-        }
+        return serviceCollection;
     }
 }

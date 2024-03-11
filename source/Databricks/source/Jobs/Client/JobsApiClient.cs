@@ -16,42 +16,41 @@ using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.Constants;
 using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.Client
+namespace Energinet.DataHub.Core.Databricks.Jobs.Client;
+
+/// <summary>
+/// A databricks client based on the Microsoft.Azure.JobsApiClient, which is using Job API 2.0.
+/// The client is extended with a method for reading jobs created using Python Wheels, using Job API 2.1.
+/// Because the Job API 2.0 does not support reading python wheel settings.
+/// Which is used when we run new jobs and need to know the existing parameters of the job.
+/// The code is based on https://github.com/Azure/azure-databricks-client and can be replaced by the official
+/// package when support for Job API 2.1 is added.
+/// </summary>
+public sealed class JobsApiClient : IDisposable, IJobsApiClient
 {
     /// <summary>
-    /// A databricks client based on the Microsoft.Azure.JobsApiClient, which is using Job API 2.0.
-    /// The client is extended with a method for reading jobs created using Python Wheels, using Job API 2.1.
-    /// Because the Job API 2.0 does not support reading python wheel settings.
-    /// Which is used when we run new jobs and need to know the existing parameters of the job.
-    /// The code is based on https://github.com/Azure/azure-databricks-client and can be replaced by the official
-    /// package when support for Job API 2.1 is added.
+    /// Create Databricks Jobs client object with a Http client.
     /// </summary>
-    public sealed class JobsApiClient : IDisposable, IJobsApiClient
+    /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/>.</param>
+    public JobsApiClient(IHttpClientFactory httpClientFactory)
     {
-        /// <summary>
-        /// Create Databricks Jobs client object with a Http client.
-        /// </summary>
-        /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/>.</param>
-        public JobsApiClient(IHttpClientFactory httpClientFactory)
-        {
-            var httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.DatabricksJobsApi);
-            Jobs = new Microsoft.Azure.Databricks.Client.JobsApiClient(httpClient);
-        }
+        var httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.DatabricksJobsApi);
+        Jobs = new Microsoft.Azure.Databricks.Client.JobsApiClient(httpClient);
+    }
 
-        public IJobsApi Jobs { get; }
+    public IJobsApi Jobs { get; }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        private void Dispose(bool disposing)
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            if (disposing)
-            {
-                Jobs.Dispose();
-            }
+            Jobs.Dispose();
         }
     }
 }
