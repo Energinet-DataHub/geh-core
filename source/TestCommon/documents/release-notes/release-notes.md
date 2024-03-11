@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 5.0.0
+
+- Deleted `FunctionApp.TestCommon.B2C` namespace with classes.
+
 ## Version 4.6.1
 
 - No functional change
