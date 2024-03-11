@@ -29,9 +29,8 @@ public static class EmbeddedResources
     {
         var resourceName = $"{typeof(Root).Namespace}.{relativeDocumentPath}";
 
-        var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-
-        if (stream == null) throw new ArgumentException($"Resource '{resourceName}' not found.");
+        var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName)
+                     ?? throw new ArgumentException($"Resource '{resourceName}' not found.");
         return stream;
     }
 }
