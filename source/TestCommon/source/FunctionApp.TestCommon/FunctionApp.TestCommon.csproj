@@ -23,6 +23,12 @@ limitations under the License.
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- ProjectCapability:
+      Ensure Visual Studio doesn't see this as a test project (https://stackoverflow.com/a/72775838)-->
+    <ProjectCapability Remove="TestContainer" />
+  </ItemGroup>
+
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.FunctionApp.TestCommon</PackageId>
     <PackageVersion>5.0.0$(VersionSuffix)</PackageVersion>
