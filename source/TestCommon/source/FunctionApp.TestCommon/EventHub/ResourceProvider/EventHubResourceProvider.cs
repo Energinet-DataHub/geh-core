@@ -110,8 +110,10 @@ public class EventHubResourceProvider : IAsyncDisposable
         var context = new AuthenticationContext($"https://login.microsoftonline.com/{ResourceManagementSettings.TenantId}");
         var clientCredential = new ClientCredential(ResourceManagementSettings.ClientId, ResourceManagementSettings.ClientSecret);
 
+#pragma warning disable CS0618 // Type or member is obsolete
         var authenticationResult = await context.AcquireTokenAsync("https://management.azure.com/", clientCredential)
             .ConfigureAwait(false);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken);
         return new EventHubManagementClient(tokenCredentials)
