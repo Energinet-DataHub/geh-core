@@ -25,16 +25,15 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Core.Messaging.Tests;
 
 [UnitTest]
-public class ArchitectureTests
+public class ServiceProviderTests
 {
     [Fact]
-    public void ServiceCollection_CallAddPublisher_IPublisherIsResolvable()
+    public void ConfiguredServiceProvider_CanResolve_IPublisher()
     {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddLogging();
-        serviceCollection.Configure<PublisherOptions>(GetPublisherConfiguration());
-        serviceCollection.AddPublisher<IntegrationEventProviderStub>();
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceProvider = CreateAndConfigureServiceCollectionDefaults()
+            .Configure<PublisherOptions>(GetPublisherConfiguration())
+            .AddPublisher<IntegrationEventProviderStub>()
+            .BuildServiceProvider();
 
         using var scope = serviceProvider.CreateScope();
         var publisher = scope.ServiceProvider.GetService<IPublisher>();
@@ -43,17 +42,23 @@ public class ArchitectureTests
     }
 
     [Fact]
-    public void ServiceCollection_CallAddSubscriber_ISubscriberIsResolvable()
+    public void ConfiguredServiceProvider_CanResolve_ISubscriber()
     {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddLogging();
-        serviceCollection.AddSubscriber<IntegrationEventHandlerStub>(Array.Empty<MessageDescriptor>());
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceProvider = CreateAndConfigureServiceCollectionDefaults()
+            .AddSubscriber<IntegrationEventHandlerStub>(Array.Empty<MessageDescriptor>())
+            .BuildServiceProvider();
 
         using var scope = serviceProvider.CreateScope();
         var subscriber = scope.ServiceProvider.GetService<ISubscriber>();
 
         subscriber.Should().NotBeNull();
+    }
+
+    private static ServiceCollection CreateAndConfigureServiceCollectionDefaults()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        return serviceCollection;
     }
 
     private static IConfiguration GetPublisherConfiguration()
