@@ -17,36 +17,35 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests;
+
+public class AutoMoqDataAttributeTests
 {
-    public class AutoMoqDataAttributeTests
+    [Theory]
+    [AutoMoqData]
+    public void When_ParameterInTestIsPresent_Then_TheyAreNotNull(
+        [Frozen] AutoMoqObject autoMoqObject,
+        AutoMoqClass sut)
     {
-        [Theory]
-        [AutoMoqData]
-        public void When_ParameterInTestIsPresent_Then_TheyAreNotNull(
-            [Frozen] AutoMoqObject autoMoqObject,
-            AutoMoqClass sut)
-        {
-            // Assert
-            autoMoqObject.Should().NotBeNull();
-            sut.Should().NotBeNull();
-        }
+        // Assert
+        autoMoqObject.Should().NotBeNull();
+        sut.Should().NotBeNull();
+    }
 
-        [Theory]
-        [AutoMoqData]
-        public void When_ParameterInTestIsPresent_Then_SutCanBeUsed(
-            [Frozen] AutoMoqObject autoMoqObject,
-            AutoMoqClass sut)
-        {
-            // Arrange
-            var addNumber = 1;
-            var expected = autoMoqObject.Number + 1;
+    [Theory]
+    [AutoMoqData]
+    public void When_ParameterInTestIsPresent_Then_SutCanBeUsed(
+        [Frozen] AutoMoqObject autoMoqObject,
+        AutoMoqClass sut)
+    {
+        // Arrange
+        var addNumber = 1;
+        var expected = autoMoqObject.Number + 1;
 
-            // Act
-            var result = sut.Add(autoMoqObject, addNumber);
+        // Act
+        var result = sut.Add(autoMoqObject, addNumber);
 
-            // Assert
-            result.Number.Should().Be(expected);
-        }
+        // Assert
+        result.Number.Should().Be(expected);
     }
 }

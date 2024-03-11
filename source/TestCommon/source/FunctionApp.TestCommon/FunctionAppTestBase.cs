@@ -12,33 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Diagnostics;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon;
+
+[DebuggerStepThrough]
+public abstract class FunctionAppTestBase<TFixture> : IDisposable
+    where TFixture : FunctionAppFixture
 {
-    [DebuggerStepThrough]
-    public abstract class FunctionAppTestBase<TFixture> : IDisposable
-        where TFixture : FunctionAppFixture
+    protected FunctionAppTestBase(TFixture fixture, ITestOutputHelper testOutputHelper)
     {
-        protected FunctionAppTestBase(TFixture fixture, ITestOutputHelper testOutputHelper)
-        {
-            Fixture = fixture;
-            Fixture.SetTestOutputHelper(testOutputHelper);
-        }
+        Fixture = fixture;
+        Fixture.SetTestOutputHelper(testOutputHelper);
+    }
 
-        protected TFixture Fixture { get; }
+    protected TFixture Fixture { get; }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            Fixture.SetTestOutputHelper(null!);
-        }
+    protected virtual void Dispose(bool disposing)
+    {
+        Fixture.SetTestOutputHelper(null!);
     }
 }

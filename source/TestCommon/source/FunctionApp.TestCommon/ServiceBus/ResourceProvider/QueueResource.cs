@@ -12,65 +12,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+
+public class QueueResource : IAsyncDisposable
 {
-    public class QueueResource : IAsyncDisposable
+    private readonly QueueProperties _properties;
+    private readonly Lazy<ServiceBusSender> _lazySenderClient;
+
+    internal QueueResource(ServiceBusResourceProvider resourceProvider, QueueProperties properties)
     {
-        private readonly QueueProperties _properties;
-        private readonly Lazy<ServiceBusSender> _lazySenderClient;
+        ResourceProvider = resourceProvider;
 
-        internal QueueResource(ServiceBusResourceProvider resourceProvider, QueueProperties properties)
-        {
-            ResourceProvider = resourceProvider;
+        _properties = properties;
+        _lazySenderClient = new Lazy<ServiceBusSender>(CreateSenderClient);
+    }
 
-            _properties = properties;
-            _lazySenderClient = new Lazy<ServiceBusSender>(CreateSenderClient);
-        }
+    public string Name => _properties.Name;
 
-        public string Name => _properties.Name;
+    public ServiceBusSender SenderClient => _lazySenderClient.Value;
 
-        public ServiceBusSender SenderClient => _lazySenderClient.Value;
+    public bool IsDisposed { get; private set; }
 
-        public bool IsDisposed { get; private set; }
+    private ServiceBusResourceProvider ResourceProvider { get; }
 
-        private ServiceBusResourceProvider ResourceProvider { get; }
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+        GC.SuppressFinalize(this);
+    }
 
-        public async ValueTask DisposeAsync()
-        {
-            await DisposeAsyncCore()
-                .ConfigureAwait(false);
-            GC.SuppressFinalize(this);
-        }
-
-        private ServiceBusSender CreateSenderClient()
-        {
-            return ResourceProvider.Client.CreateSender(Name);
-        }
+    private ServiceBusSender CreateSenderClient()
+    {
+        return ResourceProvider.Client.CreateSender(Name);
+    }
 
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
-        private async ValueTask DisposeAsyncCore()
+    private async ValueTask DisposeAsyncCore()
 #pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
+    {
+        if (IsDisposed)
         {
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            if (_lazySenderClient.IsValueCreated)
-            {
-                await _lazySenderClient.Value.DisposeAsync()
-                    .ConfigureAwait(false);
-            }
-
-            await ResourceProvider.AdministrationClient.DeleteQueueAsync(Name)
-                .ConfigureAwait(false);
-
-            IsDisposed = true;
+            return;
         }
+
+        if (_lazySenderClient.IsValueCreated)
+        {
+            await _lazySenderClient.Value.DisposeAsync()
+                .ConfigureAwait(false);
+        }
+
+        await ResourceProvider.AdministrationClient.DeleteQueueAsync(Name)
+            .ConfigureAwait(false);
+
+        IsDisposed = true;
     }
 }

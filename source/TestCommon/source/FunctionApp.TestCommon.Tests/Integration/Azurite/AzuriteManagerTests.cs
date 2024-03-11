@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using Azure.Data.Tables;
 using Azure.Identity;
 using Azure.Storage.Blobs;
@@ -23,387 +21,386 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurite
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Azurite;
+
+public class AzuriteManagerTests
 {
-    public class AzuriteManagerTests
+    /// <summary>
+    /// Only one Azurite process can be running at the same time.
+    /// But since we have set 'DisableTestParallelization' to 'true'
+    /// no test in current test assembly is executed in parallel,
+    /// and as such we don't have to use collection fixtures here.
+    /// </summary>
+    public class VerifyAzuriteCanBeStartedTwice
     {
-        /// <summary>
-        /// Only one Azurite process can be running at the same time.
-        /// But since we have set 'DisableTestParallelization' to 'true'
-        /// no test in current test assembly is executed in parallel,
-        /// and as such we don't have to use collection fixtures here.
-        /// </summary>
-        public class VerifyAzuriteCanBeStartedTwice
+        [Fact]
+        public async Task When_AzuriteProcessIsDisposed_Then_ItCanStartAgain()
         {
-            [Fact]
-            public async Task When_AzuriteProcessIsDisposed_Then_ItCanStartAgain()
+            // Arrange
+            var azuriteManagerToStartFirst = new AzuriteManager();
+            try
             {
-                // Arrange
-                var azuriteManagerToStartFirst = new AzuriteManager();
-                try
-                {
-                    azuriteManagerToStartFirst.StartAzurite();
-                }
-                finally
-                {
-                    // Act
-                    azuriteManagerToStartFirst.Dispose();
-                }
-
-                // Assert
-                var azuriteManagerToStartSecond = new AzuriteManager();
-                try
-                {
-                    azuriteManagerToStartSecond.StartAzurite();
-                    var exception = await Record.ExceptionAsync(CreateStorageContainerAsync);
-                    exception.Should().BeNull();
-                }
-                finally
-                {
-                    azuriteManagerToStartSecond.Dispose();
-                }
+                azuriteManagerToStartFirst.StartAzurite();
+            }
+            finally
+            {
+                // Act
+                azuriteManagerToStartFirst.Dispose();
             }
 
-            [Fact]
-            public void When_AzuriteProcessIsNotDisposed_Then_ItCanStillStartAgain()
+            // Assert
+            var azuriteManagerToStartSecond = new AzuriteManager();
+            try
             {
-                // Arrange
-                var azuriteManagerToStartFirst = new AzuriteManager();
-                var azuriteManagerToStartSecond = new AzuriteManager();
-                try
-                {
-                    azuriteManagerToStartFirst.StartAzurite();
-
-                    // Act
-                    var exception = Record.Exception(() => azuriteManagerToStartSecond.StartAzurite());
-
-                    // Assert
-                    exception.Should().BeNull();
-                }
-                finally
-                {
-                    azuriteManagerToStartFirst.Dispose();
-                    azuriteManagerToStartSecond.Dispose();
-                }
+                azuriteManagerToStartSecond.StartAzurite();
+                var exception = await Record.ExceptionAsync(CreateStorageContainerAsync);
+                exception.Should().BeNull();
             }
-
-            private static async Task CreateStorageContainerAsync()
+            finally
             {
-                var storageConnectionString = "UseDevelopmentStorage=true";
-                var containerName = $"Test{Guid.NewGuid()}".ToLower();
-
-                var blobServiceClient = new BlobServiceClient(storageConnectionString);
-                var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
-                await blobContainerClient.CreateAsync();
+                azuriteManagerToStartSecond.Dispose();
             }
         }
 
-        /// <summary>
-        /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
-        ///
-        /// We use a class fixture to ensure we can use this same AzuriteManager instance
-        /// for multiple tests, to avoid starting and disposing Azurite many times.
-        /// </summary>
-        public class Given_OAuthIsTrue : IClassFixture<AzuriteManagerFixture>
+        [Fact]
+        public void When_AzuriteProcessIsNotDisposed_Then_ItCanStillStartAgain()
         {
-            public Given_OAuthIsTrue(AzuriteManagerFixture fixture)
+            // Arrange
+            var azuriteManagerToStartFirst = new AzuriteManager();
+            var azuriteManagerToStartSecond = new AzuriteManager();
+            try
             {
-                Fixture = fixture;
-                Fixture.StartAzuriteOnce(useOAuth: true);
-            }
-
-            private AzuriteManagerFixture Fixture { get; }
-
-            [Fact]
-            public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
-            {
-                // Arrange
-                var client = new BlobServiceClient(
-                    connectionString: "UseDevelopmentStorage=true",
-                    CreateBlobNoRetryOptions());
+                azuriteManagerToStartFirst.StartAzurite();
 
                 // Act
-                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
-
-                // Assert
-                exception.Should().NotBeNull();
-            }
-
-            [Fact]
-            public async Task When_BlobServiceClient_UsingConnectionString_Then_CanCreateContainer()
-            {
-                // Arrange
-                var client = new BlobServiceClient(
-                    connectionString: Fixture.AzuriteManager!.BlobStorageConnectionString,
-                    CreateBlobNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+                var exception = Record.Exception(() => azuriteManagerToStartSecond.StartAzurite());
 
                 // Assert
                 exception.Should().BeNull();
             }
-
-            [Fact]
-            public async Task When_BlobServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateContainer()
+            finally
             {
-                // Arrange
-                var client = new BlobServiceClient(
-                    serviceUri: Fixture.AzuriteManager!.BlobStorageServiceUri,
-                    credential: new DefaultAzureCredential(),
-                    CreateBlobNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CreateQueueShouldFail()
-            {
-                // Arrange
-                var client = new QueueServiceClient(
-                    connectionString: "UseDevelopmentStorage=true",
-                    CreateQueueNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
-
-                // Assert
-                exception.Should().NotBeNull();
-            }
-
-            [Fact]
-            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateQueue()
-            {
-                // Arrange
-                var client = new QueueServiceClient(
-                    connectionString: Fixture.AzuriteManager!.QueueStorageConnectionString,
-                    CreateQueueNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_QueueServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateQueue()
-            {
-                // Arrange
-                var client = new QueueServiceClient(
-                    serviceUri: Fixture.AzuriteManager!.QueueStorageServiceUri,
-                    credential: new DefaultAzureCredential(),
-                    CreateQueueNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_TableServiceClient_UseDevelopmentStorageShortcut_Then_CreateTableShouldFail()
-            {
-                // Arrange
-                var client = new TableServiceClient(
-                    connectionString: "UseDevelopmentStorage=true",
-                    CreateTableNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
-
-                // Assert
-                exception.Should().NotBeNull();
-            }
-
-            [Fact]
-            public async Task When_TableServiceClient_UsingConnectionString_Then_CanCreateTable()
-            {
-                // Arrange
-                var client = new TableServiceClient(
-                    connectionString: Fixture.AzuriteManager!.TableStorageConnectionString,
-                    CreateTableNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_TableServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateTable()
-            {
-                // Arrange
-                var client = new TableServiceClient(
-                    endpoint: Fixture.AzuriteManager!.TableStorageServiceUri,
-                    tokenCredential: new DefaultAzureCredential(),
-                    CreateTableNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
+                azuriteManagerToStartFirst.Dispose();
+                azuriteManagerToStartSecond.Dispose();
             }
         }
 
-        /// <summary>
-        /// We use a class fixture to ensure we can use this same AzuriteManager instance
-        /// for multiple tests, to avoid starting and disposing Azurite many times.
-        /// </summary>
-        public class Given_OAuthIsFalse : IClassFixture<AzuriteManagerFixture>
+        private static async Task CreateStorageContainerAsync()
         {
-            public Given_OAuthIsFalse(AzuriteManagerFixture fixture)
-            {
-                Fixture = fixture;
-                Fixture.StartAzuriteOnce(useOAuth: false);
-            }
-
-            private AzuriteManagerFixture Fixture { get; }
-
-            [Fact]
-            public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
-            {
-                // Arrange
-                var client = new BlobServiceClient(
-                    connectionString: "UseDevelopmentStorage=true",
-                    CreateBlobNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_BlobServiceClient_UsingConnectionString_Then_CanCreateContainer()
-            {
-                // Arrange
-                var client = new BlobServiceClient(
-                    connectionString: Fixture.AzuriteManager!.BlobStorageConnectionString,
-                    CreateBlobNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateQueue()
-            {
-                // Arrange
-                var client = new QueueServiceClient(
-                    connectionString: "UseDevelopmentStorage=true",
-                    CreateQueueNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateQueue()
-            {
-                // Arrange
-                var client = new QueueServiceClient(
-                    connectionString: Fixture.AzuriteManager!.QueueStorageConnectionString,
-                    CreateQueueNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_TableServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateTable()
-            {
-                // Arrange
-                var client = new TableServiceClient(
-                    connectionString: "UseDevelopmentStorage=true",
-                    CreateTableNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task When_TableServiceClient_UsingConnectionString_Then_CanCreateTable()
-            {
-                // Arrange
-                var client = new TableServiceClient(
-                    connectionString: Fixture.AzuriteManager!.TableStorageConnectionString,
-                    CreateTableNoRetryOptions());
-
-                // Act
-                var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
-
-                // Assert
-                exception.Should().BeNull();
-            }
-        }
-
-        private static BlobClientOptions CreateBlobNoRetryOptions()
-        {
-            var retryOptions = new BlobClientOptions();
-            retryOptions.Retry.MaxRetries = 0;
-
-            return retryOptions;
-        }
-
-        private static Task CreateBlobContainerAsync(BlobServiceClient blobServiceClient)
-        {
+            var storageConnectionString = "UseDevelopmentStorage=true";
             var containerName = $"Test{Guid.NewGuid()}".ToLower();
 
+            var blobServiceClient = new BlobServiceClient(storageConnectionString);
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
-            return blobContainerClient.CreateAsync();
+            await blobContainerClient.CreateAsync();
         }
+    }
 
-        private static QueueClientOptions CreateQueueNoRetryOptions()
+    /// <summary>
+    /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
+    ///
+    /// We use a class fixture to ensure we can use this same AzuriteManager instance
+    /// for multiple tests, to avoid starting and disposing Azurite many times.
+    /// </summary>
+    public class Given_OAuthIsTrue : IClassFixture<AzuriteManagerFixture>
+    {
+        public Given_OAuthIsTrue(AzuriteManagerFixture fixture)
         {
-            var retryOptions = new QueueClientOptions();
-            retryOptions.Retry.MaxRetries = 0;
-
-            return retryOptions;
+            Fixture = fixture;
+            Fixture.StartAzuriteOnce(useOAuth: true);
         }
 
-        private static Task CreateQueueAsync(QueueServiceClient queueServiceClient)
+        private AzuriteManagerFixture Fixture { get; }
+
+        [Fact]
+        public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CreateContainerShouldFail()
         {
-            var queueName = $"Test{Guid.NewGuid()}".ToLower();
+            // Arrange
+            var client = new BlobServiceClient(
+                connectionString: "UseDevelopmentStorage=true",
+                CreateBlobNoRetryOptions());
 
-            var queueClient = queueServiceClient.GetQueueClient(queueName);
-            return queueClient.CreateAsync();
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+
+            // Assert
+            exception.Should().NotBeNull();
         }
 
-        private static TableClientOptions CreateTableNoRetryOptions()
+        [Fact]
+        public async Task When_BlobServiceClient_UsingConnectionString_Then_CanCreateContainer()
         {
-            var retryOptions = new TableClientOptions();
-            retryOptions.Retry.MaxRetries = 0;
+            // Arrange
+            var client = new BlobServiceClient(
+                connectionString: Fixture.AzuriteManager!.BlobStorageConnectionString,
+                CreateBlobNoRetryOptions());
 
-            return retryOptions;
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
         }
 
-        private static Task CreateTableAsync(TableServiceClient tableServiceClient)
+        [Fact]
+        public async Task When_BlobServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateContainer()
         {
-            var tableName = $"Test{Guid.NewGuid().ToString("N")}".ToLower();
+            // Arrange
+            var client = new BlobServiceClient(
+                serviceUri: Fixture.AzuriteManager!.BlobStorageServiceUri,
+                credential: new DefaultAzureCredential(),
+                CreateBlobNoRetryOptions());
 
-            var tableClient = tableServiceClient.GetTableClient(tableName);
-            return tableClient.CreateAsync();
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
         }
+
+        [Fact]
+        public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CreateQueueShouldFail()
+        {
+            // Arrange
+            var client = new QueueServiceClient(
+                connectionString: "UseDevelopmentStorage=true",
+                CreateQueueNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+            // Assert
+            exception.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateQueue()
+        {
+            // Arrange
+            var client = new QueueServiceClient(
+                connectionString: Fixture.AzuriteManager!.QueueStorageConnectionString,
+                CreateQueueNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_QueueServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateQueue()
+        {
+            // Arrange
+            var client = new QueueServiceClient(
+                serviceUri: Fixture.AzuriteManager!.QueueStorageServiceUri,
+                credential: new DefaultAzureCredential(),
+                CreateQueueNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_TableServiceClient_UseDevelopmentStorageShortcut_Then_CreateTableShouldFail()
+        {
+            // Arrange
+            var client = new TableServiceClient(
+                connectionString: "UseDevelopmentStorage=true",
+                CreateTableNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+            // Assert
+            exception.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task When_TableServiceClient_UsingConnectionString_Then_CanCreateTable()
+        {
+            // Arrange
+            var client = new TableServiceClient(
+                connectionString: Fixture.AzuriteManager!.TableStorageConnectionString,
+                CreateTableNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_TableServiceClient_UsingHttpsAndTokenCredential_Then_CanCreateTable()
+        {
+            // Arrange
+            var client = new TableServiceClient(
+                endpoint: Fixture.AzuriteManager!.TableStorageServiceUri,
+                tokenCredential: new DefaultAzureCredential(),
+                CreateTableNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+    }
+
+    /// <summary>
+    /// We use a class fixture to ensure we can use this same AzuriteManager instance
+    /// for multiple tests, to avoid starting and disposing Azurite many times.
+    /// </summary>
+    public class Given_OAuthIsFalse : IClassFixture<AzuriteManagerFixture>
+    {
+        public Given_OAuthIsFalse(AzuriteManagerFixture fixture)
+        {
+            Fixture = fixture;
+            Fixture.StartAzuriteOnce(useOAuth: false);
+        }
+
+        private AzuriteManagerFixture Fixture { get; }
+
+        [Fact]
+        public async Task When_BlobServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateContainer()
+        {
+            // Arrange
+            var client = new BlobServiceClient(
+                connectionString: "UseDevelopmentStorage=true",
+                CreateBlobNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_BlobServiceClient_UsingConnectionString_Then_CanCreateContainer()
+        {
+            // Arrange
+            var client = new BlobServiceClient(
+                connectionString: Fixture.AzuriteManager!.BlobStorageConnectionString,
+                CreateBlobNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateBlobContainerAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_QueueServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateQueue()
+        {
+            // Arrange
+            var client = new QueueServiceClient(
+                connectionString: "UseDevelopmentStorage=true",
+                CreateQueueNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_QueueServiceClient_UsingConnectionString_Then_CanCreateQueue()
+        {
+            // Arrange
+            var client = new QueueServiceClient(
+                connectionString: Fixture.AzuriteManager!.QueueStorageConnectionString,
+                CreateQueueNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateQueueAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_TableServiceClient_UseDevelopmentStorageShortcut_Then_CanCreateTable()
+        {
+            // Arrange
+            var client = new TableServiceClient(
+                connectionString: "UseDevelopmentStorage=true",
+                CreateTableNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task When_TableServiceClient_UsingConnectionString_Then_CanCreateTable()
+        {
+            // Arrange
+            var client = new TableServiceClient(
+                connectionString: Fixture.AzuriteManager!.TableStorageConnectionString,
+                CreateTableNoRetryOptions());
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => CreateTableAsync(client));
+
+            // Assert
+            exception.Should().BeNull();
+        }
+    }
+
+    private static BlobClientOptions CreateBlobNoRetryOptions()
+    {
+        var retryOptions = new BlobClientOptions();
+        retryOptions.Retry.MaxRetries = 0;
+
+        return retryOptions;
+    }
+
+    private static Task CreateBlobContainerAsync(BlobServiceClient blobServiceClient)
+    {
+        var containerName = $"Test{Guid.NewGuid()}".ToLower();
+
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        return blobContainerClient.CreateAsync();
+    }
+
+    private static QueueClientOptions CreateQueueNoRetryOptions()
+    {
+        var retryOptions = new QueueClientOptions();
+        retryOptions.Retry.MaxRetries = 0;
+
+        return retryOptions;
+    }
+
+    private static Task CreateQueueAsync(QueueServiceClient queueServiceClient)
+    {
+        var queueName = $"Test{Guid.NewGuid()}".ToLower();
+
+        var queueClient = queueServiceClient.GetQueueClient(queueName);
+        return queueClient.CreateAsync();
+    }
+
+    private static TableClientOptions CreateTableNoRetryOptions()
+    {
+        var retryOptions = new TableClientOptions();
+        retryOptions.Retry.MaxRetries = 0;
+
+        return retryOptions;
+    }
+
+    private static Task CreateTableAsync(TableServiceClient tableServiceClient)
+    {
+        var tableName = $"Test{Guid.NewGuid().ToString("N")}".ToLower();
+
+        var tableClient = tableServiceClient.GetTableClient(tableName);
+        return tableClient.CreateAsync();
     }
 }

@@ -12,34 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Runtime.Serialization;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+
+/// <summary>
+/// Used with assertions of expected messages sent to the service bus listener mock.
+/// </summary>
+[Serializable]
+public class AssertionException : Exception
 {
-    /// <summary>
-    /// Used with assertions of expected messages sent to the service bus listener mock.
-    /// </summary>
-    [Serializable]
-    public class AssertionException : Exception
+    public AssertionException()
     {
-        public AssertionException()
-        {
-        }
+    }
 
-        public AssertionException(string message)
-            : base(message)
-        {
-        }
+    public AssertionException(string message)
+        : base(message)
+    {
+    }
 
-        public AssertionException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    public AssertionException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
 
-        protected AssertionException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected AssertionException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

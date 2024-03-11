@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.FluentAssertionsExtensions;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.FluentAssertionsExtensions
+public class RecursiveTestHelperWithOnePropAndOneList
 {
-    public class RecursiveTestHelperWithOnePropAndOneList
-    {
-        public int? Number { get; set; }
+    public int? Number { get; set; }
 
-        public IEnumerable<RecursiveTestHelperWithOneProp> RecursiveTestHelperWithOneProps { get; set; } = null!;
-    }
+    public IEnumerable<RecursiveTestHelperWithOneProp> RecursiveTestHelperWithOneProps { get; set; } = null!;
 }

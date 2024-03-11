@@ -12,133 +12,131 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+
+/// <summary>
+/// Responsible for extracting secrets necessary for using Azure resources the Integration Test environment.
+///
+/// On developer machines we use the 'integrationtest.local.settings.json' to set the Key Vault url.
+/// On hosted agents we use an environment variable to set the Key Vault url.
+///
+/// Developers, and the service principal under which the tests are executed, has access to the Key Vault
+/// and can extract secrets.
+/// </summary>
+public class IntegrationTestConfiguration
 {
-    /// <summary>
-    /// Responsible for extracting secrets necessary for using Azure resources the Integration Test environment.
-    ///
-    /// On developer machines we use the 'integrationtest.local.settings.json' to set the Key Vault url.
-    /// On hosted agents we use an environment variable to set the Key Vault url.
-    ///
-    /// Developers, and the service principal under which the tests are executed, has access to the Key Vault
-    /// and can extract secrets.
-    /// </summary>
-    public class IntegrationTestConfiguration
+    public IntegrationTestConfiguration()
     {
-        public IntegrationTestConfiguration()
-        {
-            Configuration = BuildKeyVaultConfigurationRoot();
+        Configuration = BuildKeyVaultConfigurationRoot();
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
+        ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
 #pragma warning restore CS0618 // Type or member is obsolete
-            ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
-            LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
-            EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
-            ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
+        ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
+        LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
+        EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
+        ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
 
-            ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
-            B2CSettings = CreateB2CSettings(Configuration);
-            DatabricksSettings = CreateDatabricksSettings(Configuration);
-        }
+        ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
+        B2CSettings = CreateB2CSettings(Configuration);
+        DatabricksSettings = CreateDatabricksSettings(Configuration);
+    }
 
-        /// <summary>
-        /// Can be used to extract secrets from the Key Vault in the Integration Test environment.
-        /// </summary>
-        public IConfigurationRoot Configuration { get; }
+    /// <summary>
+    /// Can be used to extract secrets from the Key Vault in the Integration Test environment.
+    /// </summary>
+    public IConfigurationRoot Configuration { get; }
 
-        /// <summary>
-        /// Instrumentation Key to the Application Insights in the Integration Test environment.
-        /// </summary>
-        [Obsolete("The official support for instrumentation key is ending on March 31 2025. Use ApplicationInsightsConnectionString instead.", false)]
-        public string ApplicationInsightsInstrumentationKey { get; }
+    /// <summary>
+    /// Instrumentation Key to the Application Insights in the Integration Test environment.
+    /// </summary>
+    [Obsolete("The official support for instrumentation key is ending on March 31 2025. Use ApplicationInsightsConnectionString instead.", false)]
+    public string ApplicationInsightsInstrumentationKey { get; }
 
-        /// <summary>
-        /// Connection string to the Application Insights in the Integration Test environment.
-        /// </summary>
-        public string ApplicationInsightsConnectionString { get; }
+    /// <summary>
+    /// Connection string to the Application Insights in the Integration Test environment.
+    /// </summary>
+    public string ApplicationInsightsConnectionString { get; }
 
-        /// <summary>
-        /// ID of the Log Analytics Workspace in the Integration Test environment.
-        /// </summary>
-        public string LogAnalyticsWorkspaceId { get; }
+    /// <summary>
+    /// ID of the Log Analytics Workspace in the Integration Test environment.
+    /// </summary>
+    public string LogAnalyticsWorkspaceId { get; }
 
-        /// <summary>
-        /// Connection string to the Azure Event Hub in the Integration Test environment.
-        /// </summary>
-        public string EventHubConnectionString { get; }
+    /// <summary>
+    /// Connection string to the Azure Event Hub in the Integration Test environment.
+    /// </summary>
+    public string EventHubConnectionString { get; }
 
-        /// <summary>
-        /// Connection string to the Azure Service Bus in the Integration Test environment.
-        /// </summary>
-        public string ServiceBusConnectionString { get; }
+    /// <summary>
+    /// Connection string to the Azure Service Bus in the Integration Test environment.
+    /// </summary>
+    public string ServiceBusConnectionString { get; }
 
-        /// <summary>
-        /// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.
-        /// </summary>
-        public AzureResourceManagementSettings ResourceManagementSettings { get; }
+    /// <summary>
+    /// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.
+    /// </summary>
+    public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
-        /// <summary>
-        /// Settings necessary for managing the Azure AD B2C.
-        /// </summary>
-        public AzureB2CSettings B2CSettings { get; }
+    /// <summary>
+    /// Settings necessary for managing the Azure AD B2C.
+    /// </summary>
+    public AzureB2CSettings B2CSettings { get; }
 
-        /// <summary>
-        /// Settings necessary for using the Databricks workspace and SQL Warehouse.
-        /// </summary>
-        public DatabricksSettings DatabricksSettings { get; }
+    /// <summary>
+    /// Settings necessary for using the Databricks workspace and SQL Warehouse.
+    /// </summary>
+    public DatabricksSettings DatabricksSettings { get; }
 
-        private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
+    private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
+    {
+        var integrationtestConfiguration = new ConfigurationBuilder()
+            .AddJsonFile("integrationtest.local.settings.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        var keyVaultUrl = integrationtestConfiguration.GetValue("AZURE_KEYVAULT_URL");
+
+        return new ConfigurationBuilder()
+            .AddAuthenticatedAzureKeyVault(keyVaultUrl)
+            .Build();
+    }
+
+    private static AzureResourceManagementSettings CreateResourceManagementSettings(IConfigurationRoot configuration)
+    {
+        return new AzureResourceManagementSettings
         {
-            var integrationtestConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("integrationtest.local.settings.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
+            TenantId = configuration.GetValue("AZURE-SHARED-TENANTID"),
+            SubscriptionId = configuration.GetValue("AZURE-SHARED-SUBSCRIPTIONID"),
+            ResourceGroup = configuration.GetValue("AZURE-SHARED-RESOURCEGROUP"),
+            ClientId = configuration.GetValue("AZURE-SHARED-SPNID"),
+            ClientSecret = configuration.GetValue("AZURE-SHARED-SPNSECRET"),
+        };
+    }
 
-            var keyVaultUrl = integrationtestConfiguration.GetValue("AZURE_KEYVAULT_URL");
-
-            return new ConfigurationBuilder()
-                .AddAuthenticatedAzureKeyVault(keyVaultUrl)
-                .Build();
-        }
-
-        private static AzureResourceManagementSettings CreateResourceManagementSettings(IConfigurationRoot configuration)
+    private static AzureB2CSettings CreateB2CSettings(IConfigurationRoot configuration)
+    {
+        return new AzureB2CSettings
         {
-            return new AzureResourceManagementSettings
-            {
-                TenantId = configuration.GetValue("AZURE-SHARED-TENANTID"),
-                SubscriptionId = configuration.GetValue("AZURE-SHARED-SUBSCRIPTIONID"),
-                ResourceGroup = configuration.GetValue("AZURE-SHARED-RESOURCEGROUP"),
-                ClientId = configuration.GetValue("AZURE-SHARED-SPNID"),
-                ClientSecret = configuration.GetValue("AZURE-SHARED-SPNSECRET"),
-            };
-        }
+            Tenant = configuration.GetValue("AZURE-B2C-TENANT"),
+            ServicePrincipalId = configuration.GetValue("AZURE-B2C-SPN-ID"),
+            ServicePrincipalSecret = configuration.GetValue("AZURE-B2C-SPN-SECRET"),
+            BackendAppId = configuration.GetValue("AZURE-B2C-BACKEND-APP-ID"),
+            BackendServicePrincipalObjectId = configuration.GetValue("AZURE-B2C-BACKEND-SPN-OBJECTID"),
+            BackendAppObjectId = configuration.GetValue("AZURE-B2C-BACKEND-APP-OBJECTID"),
+        };
+    }
 
-        private static AzureB2CSettings CreateB2CSettings(IConfigurationRoot configuration)
+    private DatabricksSettings CreateDatabricksSettings(IConfigurationRoot configuration)
+    {
+        return new DatabricksSettings
         {
-            return new AzureB2CSettings
-            {
-                Tenant = configuration.GetValue("AZURE-B2C-TENANT"),
-                ServicePrincipalId = configuration.GetValue("AZURE-B2C-SPN-ID"),
-                ServicePrincipalSecret = configuration.GetValue("AZURE-B2C-SPN-SECRET"),
-                BackendAppId = configuration.GetValue("AZURE-B2C-BACKEND-APP-ID"),
-                BackendServicePrincipalObjectId = configuration.GetValue("AZURE-B2C-BACKEND-SPN-OBJECTID"),
-                BackendAppObjectId = configuration.GetValue("AZURE-B2C-BACKEND-APP-OBJECTID"),
-            };
-        }
-
-        private DatabricksSettings CreateDatabricksSettings(IConfigurationRoot configuration)
-        {
-            return new DatabricksSettings
-            {
-                // We have to build the URL here in code as currently this is also what happens in the infrastructure code (terraform).
-                WorkspaceUrl = $"https://{configuration.GetValue("dbw-domain-test-workspace-url")}",
-                WorkspaceAccessToken = configuration.GetValue("dbw-domain-test-workspace-token"),
-                WarehouseId = configuration.GetValue("dbw-sql-endpoint-id"),
-            };
-        }
+            // We have to build the URL here in code as currently this is also what happens in the infrastructure code (terraform).
+            WorkspaceUrl = $"https://{configuration.GetValue("dbw-domain-test-workspace-url")}",
+            WorkspaceAccessToken = configuration.GetValue("dbw-domain-test-workspace-token"),
+            WarehouseId = configuration.GetValue("dbw-sql-endpoint-id"),
+        };
     }
 }

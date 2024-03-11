@@ -12,56 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.Data.SqlClient;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
+
+public class SqlServerConnectionStringProvider
 {
-    public class SqlServerConnectionStringProvider
+    private readonly RuntimeEnvironment _environment;
+
+    public SqlServerConnectionStringProvider(RuntimeEnvironment environment)
     {
-        private readonly RuntimeEnvironment _environment;
+        _environment = environment;
+    }
 
-        public SqlServerConnectionStringProvider(RuntimeEnvironment environment)
-        {
-            _environment = environment;
-        }
+    /// <summary>
+    /// We create a unique database name to ensure tests using this fixture has their own database.
+    /// </summary>
+    public string BuildConnectionStringForDatabaseWithPrefix(string prefixForDatabaseName)
+    {
+        var databaseName = $"{prefixForDatabaseName}Database_{Guid.NewGuid()}";
 
-        /// <summary>
-        /// We create a unique database name to ensure tests using this fixture has their own database.
-        /// </summary>
-        public string BuildConnectionStringForDatabaseWithPrefix(string prefixForDatabaseName)
-        {
-            var databaseName = $"{prefixForDatabaseName}Database_{Guid.NewGuid()}";
+        return BuildConnectionStringForDatabaseName(databaseName);
+    }
 
-            return BuildConnectionStringForDatabaseName(databaseName);
-        }
+    /// <summary>
+    /// Build a connection string for a database name. Uses <see cref="RuntimeEnvironment.TestCommonConnectionString"/>.
+    /// If null or empty, it will fallback to use localDb
+    /// </summary>
+    /// <param name="databaseName">Name of database</param>
+    /// <returns>Connection string to a database</returns>
+    public string BuildConnectionStringForDatabaseName(string databaseName)
+    {
+        return
+            BuildConnectionStringFromEnvironmentVariable(_environment, databaseName) ??
+            BuildConnectionStringForLocalDb(databaseName);
+    }
 
-        /// <summary>
-        /// Build a connection string for a database name. Uses <see cref="RuntimeEnvironment.TestCommonConnectionString"/>.
-        /// If null or empty, it will fallback to use localDb
-        /// </summary>
-        /// <param name="databaseName">Name of database</param>
-        /// <returns>Connection string to a database</returns>
-        public string BuildConnectionStringForDatabaseName(string databaseName)
-        {
-            return
-                BuildConnectionStringFromEnvironmentVariable(_environment, databaseName) ??
-                BuildConnectionStringForLocalDb(databaseName);
-        }
+    private static string BuildConnectionStringForLocalDb(string databaseName)
+    {
+        return $"Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=true;Database={databaseName};";
+    }
 
-        private static string BuildConnectionStringForLocalDb(string databaseName)
-        {
-            return $"Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=true;Database={databaseName};";
-        }
+    private static string? BuildConnectionStringFromEnvironmentVariable(RuntimeEnvironment environment, string databaseName)
+    {
+        var env = environment.TestCommonConnectionString;
+        if (string.IsNullOrEmpty(env))
+            return null;
 
-        private static string? BuildConnectionStringFromEnvironmentVariable(RuntimeEnvironment environment, string databaseName)
-        {
-            var env = environment.TestCommonConnectionString;
-            if (string.IsNullOrEmpty(env)) return null;
+        var connectionStringBuilder = new SqlConnectionStringBuilder(env) { InitialCatalog = databaseName };
 
-            var connectionStringBuilder = new SqlConnectionStringBuilder(env) { InitialCatalog = databaseName };
-
-            return connectionStringBuilder.ConnectionString;
-        }
+        return connectionStringBuilder.ConnectionString;
     }
 }

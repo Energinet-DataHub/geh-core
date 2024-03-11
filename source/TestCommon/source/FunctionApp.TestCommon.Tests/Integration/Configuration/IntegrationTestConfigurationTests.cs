@@ -18,123 +18,122 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Configuration
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Configuration;
+
+public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
 {
-    public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
+    [Fact]
+    public void Given_IdentityHasAccess_When_DatabricksSettings_Then_EachPropertyHasValue()
     {
-        [Fact]
-        public void Given_IdentityHasAccess_When_DatabricksSettings_Then_EachPropertyHasValue()
-        {
-            // Arrange
+        // Arrange
 
-            // Act
-            var actualValue = Sut.DatabricksSettings;
+        // Act
+        var actualValue = Sut.DatabricksSettings;
 
-            // Assert
-            using var assertionScope = new AssertionScope();
-            actualValue.Should().NotBeNull();
-            actualValue.WorkspaceUrl.Should().NotBeNullOrEmpty();
-            actualValue.WorkspaceAccessToken.Should().NotBeNullOrEmpty();
-            actualValue.WarehouseId.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualValue.Should().NotBeNull();
+        actualValue.WorkspaceUrl.Should().NotBeNullOrEmpty();
+        actualValue.WorkspaceAccessToken.Should().NotBeNullOrEmpty();
+        actualValue.WarehouseId.Should().NotBeNullOrEmpty();
+    }
 
-        [Fact]
-        public void Given_IdentityHasAccess_When_B2CSettings_Then_EachPropertyHasValue()
-        {
-            // Arrange
+    [Fact]
+    public void Given_IdentityHasAccess_When_B2CSettings_Then_EachPropertyHasValue()
+    {
+        // Arrange
 
-            // Act
-            var actualValue = Sut.B2CSettings;
+        // Act
+        var actualValue = Sut.B2CSettings;
 
-            // Assert
-            using var assertionScope = new AssertionScope();
-            actualValue.Should().NotBeNull();
-            actualValue.Tenant.Should().NotBeNullOrEmpty();
-            actualValue.ServicePrincipalId.Should().NotBeNullOrEmpty();
-            actualValue.ServicePrincipalSecret.Should().NotBeNullOrEmpty();
-            actualValue.BackendAppId.Should().NotBeNullOrEmpty();
-            actualValue.BackendServicePrincipalObjectId.Should().NotBeNullOrEmpty();
-            actualValue.BackendAppObjectId.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualValue.Should().NotBeNull();
+        actualValue.Tenant.Should().NotBeNullOrEmpty();
+        actualValue.ServicePrincipalId.Should().NotBeNullOrEmpty();
+        actualValue.ServicePrincipalSecret.Should().NotBeNullOrEmpty();
+        actualValue.BackendAppId.Should().NotBeNullOrEmpty();
+        actualValue.BackendServicePrincipalObjectId.Should().NotBeNullOrEmpty();
+        actualValue.BackendAppObjectId.Should().NotBeNullOrEmpty();
+    }
 
-        [Fact]
-        public void Given_IdentityHasAccess_When_ResourceManagementSettings_Then_EachPropertyHasValue()
-        {
-            // Arrange
+    [Fact]
+    public void Given_IdentityHasAccess_When_ResourceManagementSettings_Then_EachPropertyHasValue()
+    {
+        // Arrange
 
-            // Act
-            var actualValue = Sut.ResourceManagementSettings;
+        // Act
+        var actualValue = Sut.ResourceManagementSettings;
 
-            // Assert
-            using var assertionScope = new AssertionScope();
-            actualValue.Should().NotBeNull();
-            actualValue.TenantId.Should().NotBeNullOrEmpty();
-            actualValue.SubscriptionId.Should().NotBeNullOrEmpty();
-            actualValue.ResourceGroup.Should().NotBeNullOrEmpty();
-            actualValue.ClientId.Should().NotBeNullOrEmpty();
-            actualValue.ClientSecret.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualValue.Should().NotBeNull();
+        actualValue.TenantId.Should().NotBeNullOrEmpty();
+        actualValue.SubscriptionId.Should().NotBeNullOrEmpty();
+        actualValue.ResourceGroup.Should().NotBeNullOrEmpty();
+        actualValue.ClientId.Should().NotBeNullOrEmpty();
+        actualValue.ClientSecret.Should().NotBeNullOrEmpty();
+    }
 
-        [Fact]
-        public void Given_IdentityHasAccess_When_ApplicationInsightsInstrumentationKey_Then_HasValue()
-        {
-            // Arrange
+    [Fact]
+    public void Given_IdentityHasAccess_When_ApplicationInsightsInstrumentationKey_Then_HasValue()
+    {
+        // Arrange
 
-            // Act
+        // Act
 #pragma warning disable CS0618 // Type or member is obsolete
-            var actualValue = Sut.ApplicationInsightsInstrumentationKey;
+        var actualValue = Sut.ApplicationInsightsInstrumentationKey;
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            // Assert
-            actualValue.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
+    }
 
-        [Fact]
-        public void Given_IdentityHasAccess_When_ApplicationInsightsConnectionString_Then_HasValue()
-        {
-            // Arrange
+    [Fact]
+    public void Given_IdentityHasAccess_When_ApplicationInsightsConnectionString_Then_HasValue()
+    {
+        // Arrange
 
-            // Act
-            var actualValue = Sut.ApplicationInsightsConnectionString;
+        // Act
+        var actualValue = Sut.ApplicationInsightsConnectionString;
 
-            // Assert
-            actualValue.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
+    }
 
-        [Fact]
-        public void Given_IdentityHasAccess_When_LogAnalyticsWorkspaceId_Then_HasValue()
-        {
-            // Arrange
+    [Fact]
+    public void Given_IdentityHasAccess_When_LogAnalyticsWorkspaceId_Then_HasValue()
+    {
+        // Arrange
 
-            // Act
-            var actualValue = Sut.LogAnalyticsWorkspaceId;
+        // Act
+        var actualValue = Sut.LogAnalyticsWorkspaceId;
 
-            // Assert
-            actualValue.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
+    }
 
-        [Fact]
-        public void Given_IdentityHasAccess_When_EventHubConnectionString_Then_HasValue()
-        {
-            // Arrange
+    [Fact]
+    public void Given_IdentityHasAccess_When_EventHubConnectionString_Then_HasValue()
+    {
+        // Arrange
 
-            // Act
-            var actualValue = Sut.EventHubConnectionString;
+        // Act
+        var actualValue = Sut.EventHubConnectionString;
 
-            // Assert
-            actualValue.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
+    }
 
-        [Fact]
-        public void Given_IdentityHasAccess_When_ServiceBusConnectionString_Then_HasValue()
-        {
-            // Arrange
+    [Fact]
+    public void Given_IdentityHasAccess_When_ServiceBusConnectionString_Then_HasValue()
+    {
+        // Arrange
 
-            // Act
-            var actualValue = Sut.ServiceBusConnectionString;
+        // Act
+        var actualValue = Sut.ServiceBusConnectionString;
 
-            // Assert
-            actualValue.Should().NotBeNullOrEmpty();
-        }
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
     }
 }

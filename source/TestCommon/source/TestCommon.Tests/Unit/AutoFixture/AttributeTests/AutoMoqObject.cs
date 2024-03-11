@@ -12,10 +12,9 @@
 // // See the License for the specific language governing permissions and
 // // limitations under the License.
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests;
+
+public class AutoMoqObject
 {
-    public class AutoMoqObject
-    {
-        public int Number { get; set; }
-    }
+    public int Number { get; set; }
 }

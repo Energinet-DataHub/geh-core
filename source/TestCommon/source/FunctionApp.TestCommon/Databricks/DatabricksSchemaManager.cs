@@ -12,12 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -150,7 +145,8 @@ public class DatabricksSchemaManager
     private async Task ExecuteSqlAsync(string sqlStatement)
     {
         sqlStatement = sqlStatement.Trim();
-        if (string.IsNullOrEmpty(sqlStatement)) return;
+        if (string.IsNullOrEmpty(sqlStatement))
+            return;
 
         var jsonRequest = PrepareJsonRequest(sqlStatement);
         var httpResponse = await PostSqlAsync(jsonRequest).ConfigureAwait(false);

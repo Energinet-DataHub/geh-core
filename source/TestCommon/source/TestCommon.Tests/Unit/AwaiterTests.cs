@@ -12,120 +12,117 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit;
+
+public class AwaiterTests
 {
-    public class AwaiterTests
+    public class WaitUntilConditionAsync
     {
-        public class WaitUntilConditionAsync
+        [Fact]
+        public async Task When_FuncConditionIsMet_Then_MethodReturn()
         {
-            [Fact]
-            public async Task When_FuncConditionIsMet_Then_MethodReturn()
-            {
-                // Arrange
-                var condition = 0;
+            // Arrange
+            var condition = 0;
 
-                // Act
-                Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => condition++ == 1, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(50));
+            // Act
+            Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => condition++ == 1, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(50));
 
-                // Assert
-                await act.Should().NotThrowAsync();
-            }
-
-            [Fact]
-            public async Task When_FuncConditionIsNotMetWithinMaxWait_Then_ExceptionIsThrown()
-            {
-                // Arrange
-
-                // Act
-                Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => false, TimeSpan.FromMilliseconds(200));
-
-                // Assert
-                await act.Should().ThrowAsync<XunitException>();
-            }
-
-            [Fact]
-            public async Task When_FuncTaskConditionIsMet_Then_MethodReturn()
-            {
-                // Arrange
-                var condition = 0;
-
-                // Act
-                Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => Task.FromResult(condition++ == 1), TimeSpan.FromMilliseconds(200));
-
-                // Assert
-                await act.Should().NotThrowAsync();
-            }
-
-            [Fact]
-            public async Task When_FuncTaskConditionIsNotMetWithinMaxWait_Then_ExceptionIsThrown()
-            {
-                // Arrange
-
-                // Act
-                Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => Task.FromResult(false), TimeSpan.FromMilliseconds(200));
-
-                // Assert
-                await act.Should().ThrowAsync<XunitException>();
-            }
+            // Assert
+            await act.Should().NotThrowAsync();
         }
 
-        public class TryWaitUntilConditionAsync
+        [Fact]
+        public async Task When_FuncConditionIsNotMetWithinMaxWait_Then_ExceptionIsThrown()
         {
-            [Fact]
-            public async Task When_FuncConditionIsMet_Then_MethodReturnTrue()
-            {
-                // Arrange
-                var condition = 0;
+            // Arrange
 
-                // Act
-                var result = await Awaiter.TryWaitUntilConditionAsync(() => condition++ == 1, TimeSpan.FromMilliseconds(200));
+            // Act
+            Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => false, TimeSpan.FromMilliseconds(200));
 
-                // Assert
-                result.Should().BeTrue();
-            }
+            // Assert
+            await act.Should().ThrowAsync<XunitException>();
+        }
 
-            [Fact]
-            public async Task When_FuncConditionIsNotMetWithinMaxWait_Then_MethodReturnFalse()
-            {
-                // Arrange
+        [Fact]
+        public async Task When_FuncTaskConditionIsMet_Then_MethodReturn()
+        {
+            // Arrange
+            var condition = 0;
 
-                // Act
-                var result = await Awaiter.TryWaitUntilConditionAsync(() => false, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(50));
+            // Act
+            Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => Task.FromResult(condition++ == 1), TimeSpan.FromMilliseconds(200));
 
-                // Assert
-                result.Should().BeFalse();
-            }
+            // Assert
+            await act.Should().NotThrowAsync();
+        }
 
-            [Fact]
-            public async Task When_FuncTaskConditionIsMet_Then_MethodReturnTrue()
-            {
-                // Arrange
-                var condition = 0;
+        [Fact]
+        public async Task When_FuncTaskConditionIsNotMetWithinMaxWait_Then_ExceptionIsThrown()
+        {
+            // Arrange
 
-                // Act
-                var result = await Awaiter.TryWaitUntilConditionAsync(() => Task.FromResult(condition++ == 1), TimeSpan.FromMilliseconds(200));
+            // Act
+            Func<Task> act = () => Awaiter.WaitUntilConditionAsync(() => Task.FromResult(false), TimeSpan.FromMilliseconds(200));
 
-                // Assert
-                result.Should().BeTrue();
-            }
+            // Assert
+            await act.Should().ThrowAsync<XunitException>();
+        }
+    }
 
-            [Fact]
-            public async Task When_FuncTaskConditionIsNotMetWithinMaxWait_Then_MethodReturnTrue()
-            {
-                // Arrange
+    public class TryWaitUntilConditionAsync
+    {
+        [Fact]
+        public async Task When_FuncConditionIsMet_Then_MethodReturnTrue()
+        {
+            // Arrange
+            var condition = 0;
 
-                // Act
-                var result = await Awaiter.TryWaitUntilConditionAsync(() => Task.FromResult(false), TimeSpan.FromMilliseconds(200));
+            // Act
+            var result = await Awaiter.TryWaitUntilConditionAsync(() => condition++ == 1, TimeSpan.FromMilliseconds(200));
 
-                // Assert
-                result.Should().BeFalse();
-            }
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task When_FuncConditionIsNotMetWithinMaxWait_Then_MethodReturnFalse()
+        {
+            // Arrange
+
+            // Act
+            var result = await Awaiter.TryWaitUntilConditionAsync(() => false, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(50));
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task When_FuncTaskConditionIsMet_Then_MethodReturnTrue()
+        {
+            // Arrange
+            var condition = 0;
+
+            // Act
+            var result = await Awaiter.TryWaitUntilConditionAsync(() => Task.FromResult(condition++ == 1), TimeSpan.FromMilliseconds(200));
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task When_FuncTaskConditionIsNotMetWithinMaxWait_Then_MethodReturnTrue()
+        {
+            // Arrange
+
+            // Act
+            var result = await Awaiter.TryWaitUntilConditionAsync(() => Task.FromResult(false), TimeSpan.FromMilliseconds(200));
+
+            // Assert
+            result.Should().BeFalse();
         }
     }
 }

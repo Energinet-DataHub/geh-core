@@ -12,46 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Diagnostics;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 
-namespace Energinet.DataHub.Core.TestCommon
+namespace Energinet.DataHub.Core.TestCommon;
+
+/// <summary>
+/// Base class for test classes, which provides a number of features:
+/// * Fixture, an instance of IFixture which provides access to AutoFixture configured with AutoMoq.
+/// * Use the <see cref="Sut"/> property to get a system-under-test instance.
+/// </summary>
+[DebuggerStepThrough]
+public abstract class TestBase<TSut>
+    where TSut : class
 {
-    /// <summary>
-    /// Base class for test classes, which provides a number of features:
-    /// * Fixture, an instance of IFixture which provides access to AutoFixture configured with AutoMoq.
-    /// * Use the <see cref="Sut"/> property to get a system-under-test instance.
-    /// </summary>
-    [DebuggerStepThrough]
-    public abstract class TestBase<TSut>
-        where TSut : class
+    protected TestBase()
     {
-        protected TestBase()
-        {
-            LazySut = new Lazy<TSut>(CreateSut);
+        LazySut = new Lazy<TSut>(CreateSut);
 
-            Fixture = new Fixture();
+        Fixture = new Fixture();
 #pragma warning disable S1699 // Remove this call from a constructor to the overridable 'OnCustomizeFixture' method.
-            OnCustomizeFixture(Fixture);
+        OnCustomizeFixture(Fixture);
 #pragma warning restore S1699
-        }
+    }
 
-        protected TSut Sut => LazySut.Value;
+    protected TSut Sut => LazySut.Value;
 
-        protected IFixture Fixture { get; }
+    protected IFixture Fixture { get; }
 
-        private Lazy<TSut> LazySut { get; }
+    private Lazy<TSut> LazySut { get; }
 
-        protected virtual TSut CreateSut()
-        {
-            return Fixture.Create<TSut>();
-        }
+    protected virtual TSut CreateSut()
+    {
+        return Fixture.Create<TSut>();
+    }
 
-        protected virtual void OnCustomizeFixture(IFixture fixture)
-        {
-            fixture.Customize(new AutoMoqCustomization());
-        }
+    protected virtual void OnCustomizeFixture(IFixture fixture)
+    {
+        fixture.Customize(new AutoMoqCustomization());
     }
 }

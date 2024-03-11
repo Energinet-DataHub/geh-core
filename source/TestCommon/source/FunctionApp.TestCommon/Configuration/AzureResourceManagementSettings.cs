@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+
+/// <summary>
+/// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.
+/// </summary>
+public class AzureResourceManagementSettings
 {
-    /// <summary>
-    /// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.
-    /// </summary>
-    public class AzureResourceManagementSettings
-    {
-        public string TenantId { get; internal set; }
-            = string.Empty;
+    public string TenantId { get; internal set; }
+        = string.Empty;
 
-        public string SubscriptionId { get; internal set; }
-            = string.Empty;
+    public string SubscriptionId { get; internal set; }
+        = string.Empty;
 
-        public string ResourceGroup { get; internal set; }
-            = string.Empty;
+    public string ResourceGroup { get; internal set; }
+        = string.Empty;
 
-        public string ClientId { get; internal set; }
-            = string.Empty;
+    public string ClientId { get; internal set; }
+        = string.Empty;
 
-        public string ClientSecret { get; internal set; }
-            = string.Empty;
-    }
+    public string ClientSecret { get; internal set; }
+        = string.Empty;
 }

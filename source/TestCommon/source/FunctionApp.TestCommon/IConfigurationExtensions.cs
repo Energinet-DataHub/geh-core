@@ -14,22 +14,21 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon;
+
+public static class IConfigurationExtensions
 {
-    public static class IConfigurationExtensions
+    /// <summary>
+    /// This extension method first try to read the setting value as if it was stored in "local.setting.json";
+    /// if the value is empty, it then try to retrieve it directly in the configuration container.
+    ///
+    /// NOTICE: Azure Function App settings in "local.settings.json" are stored in the section "Values".
+    /// </summary>
+    public static string GetValue(this IConfiguration configuration, string settingName)
     {
-        /// <summary>
-        /// This extension method first try to read the setting value as if it was stored in "local.setting.json";
-        /// if the value is empty, it then try to retrieve it directly in the configuration container.
-        ///
-        /// NOTICE: Azure Function App settings in "local.settings.json" are stored in the section "Values".
-        /// </summary>
-        public static string GetValue(this IConfiguration configuration, string settingName)
-        {
-            var value = configuration[$"Values:{settingName}"];
-            return string.IsNullOrEmpty(value)
-                ? configuration[settingName]
-                : value;
-        }
+        var value = configuration[$"Values:{settingName}"];
+        return string.IsNullOrEmpty(value)
+            ? configuration[settingName]
+            : value;
     }
 }

@@ -12,34 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
+/// <summary>
+/// Part of fluent API for creating a Service Bus topic resource with subscriptions.
+/// </summary>
+public interface ITopicResourceBuilder
 {
     /// <summary>
-    /// Part of fluent API for creating a Service Bus topic resource with subscriptions.
+    /// Add a subscription to the topic we are building.
     /// </summary>
-    public interface ITopicResourceBuilder
-    {
-        /// <summary>
-        /// Add a subscription to the topic we are building.
-        /// </summary>
-        /// <param name="subscriptionName">The subscription name.</param>
-        /// <param name="maxDeliveryCount"></param>
-        /// <param name="lockDuration"></param>
-        /// <param name="requiresSession"></param>
-        /// <returns>Subscription resource builder.</returns>
-        TopicSubscriptionBuilder AddSubscription(
-            string subscriptionName,
-            int maxDeliveryCount = 1,
-            TimeSpan? lockDuration = null,
-            bool requiresSession = false);
+    /// <param name="subscriptionName">The subscription name.</param>
+    /// <param name="maxDeliveryCount"></param>
+    /// <param name="lockDuration"></param>
+    /// <param name="requiresSession"></param>
+    /// <returns>Subscription resource builder.</returns>
+    TopicSubscriptionBuilder AddSubscription(
+        string subscriptionName,
+        int maxDeliveryCount = 1,
+        TimeSpan? lockDuration = null,
+        bool requiresSession = false);
 
-        /// <summary>
-        /// Create Service Bus topic and subscription according to configured builder.
-        /// </summary>
-        /// <returns>Instance with information about the created topic.</returns>
-        Task<TopicResource> CreateAsync();
-    }
+    /// <summary>
+    /// Create Service Bus topic and subscription according to configured builder.
+    /// </summary>
+    /// <returns>Instance with information about the created topic.</returns>
+    Task<TopicResource> CreateAsync();
 }

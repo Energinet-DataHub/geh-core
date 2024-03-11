@@ -12,99 +12,96 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using Xunit.Sdk;
 
-namespace Energinet.DataHub.Core.TestCommon
+namespace Energinet.DataHub.Core.TestCommon;
+
+// TODO: Would rather have something like the following: https://stackoverflow.com/questions/29089417/c-sharp-wait-until-condition-is-true
+public static class Awaiter
 {
-    // TODO: Would rather have something like the following: https://stackoverflow.com/questions/29089417/c-sharp-wait-until-condition-is-true
-    public static class Awaiter
+    /// <summary>
+    /// Completes when the "condition" returns true or
+    /// when the time limit is exceeded and a XUnitException is thrown.
+    /// </summary>
+    /// <param name="condition">Boolean condition that is checked.</param>
+    /// <param name="timeLimit">Time limit until exception is thrown</param>
+    /// <param name="delay">Delay between each check on the condition</param>
+    public static async Task WaitUntilConditionAsync(Func<bool> condition, TimeSpan timeLimit, TimeSpan? delay = null)
     {
-        /// <summary>
-        /// Completes when the "condition" returns true or
-        /// when the time limit is exceeded and a XUnitException is thrown.
-        /// </summary>
-        /// <param name="condition">Boolean condition that is checked.</param>
-        /// <param name="timeLimit">Time limit until exception is thrown</param>
-        /// <param name="delay">Delay between each check on the condition</param>
-        public static async Task WaitUntilConditionAsync(Func<bool> condition, TimeSpan timeLimit, TimeSpan? delay = null)
+        if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay))
         {
-            if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay))
+            throw new XunitException("Condition not reached before time limit.");
+        }
+    }
+
+    /// <summary>
+    /// Completes when the "condition" returns true or
+    /// when the time limit is exceeded and a XUnitException is thrown.
+    /// </summary>
+    /// <param name="condition">Boolean condition that is checked.</param>
+    /// <param name="timeLimit">Time limit until exception is thrown</param>
+    /// <param name="delay">Delay between each check on the condition</param>
+    public static async Task WaitUntilConditionAsync(Func<Task<bool>> condition, TimeSpan timeLimit, TimeSpan? delay = null)
+    {
+        if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay))
+        {
+            throw new XunitException("Condition not reached before time limit.");
+        }
+    }
+
+    /// <summary>
+    /// Completes when the "condition" returns true or
+    /// when the time limit is exceeded and then false is returned.
+    /// </summary>
+    /// <param name="condition">Boolean condition that is checked.</param>
+    /// <param name="timeLimit">Time limit until false is returned</param>
+    /// <param name="delay">Delay between each check on the condition</param>
+    /// <returns>True when condition resolves to true and false when the time limit is exceeded</returns>
+    public static async Task<bool> TryWaitUntilConditionAsync(Func<bool> condition, TimeSpan timeLimit, TimeSpan? delay = null)
+    {
+        var startTime = Environment.TickCount;
+        while (!condition())
+        {
+            if (!await CheckMaxWaitAndDelayAsync(timeLimit.TotalMilliseconds, startTime, delay).ConfigureAwait(false))
             {
-                throw new XunitException("Condition not reached before time limit.");
+                return false;
             }
         }
 
-        /// <summary>
-        /// Completes when the "condition" returns true or
-        /// when the time limit is exceeded and a XUnitException is thrown.
-        /// </summary>
-        /// <param name="condition">Boolean condition that is checked.</param>
-        /// <param name="timeLimit">Time limit until exception is thrown</param>
-        /// <param name="delay">Delay between each check on the condition</param>
-        public static async Task WaitUntilConditionAsync(Func<Task<bool>> condition, TimeSpan timeLimit, TimeSpan? delay = null)
+        return true;
+    }
+
+    /// <summary>
+    /// Completes when the "condition" returns true or
+    /// when the time limit is exceeded and then false is returned.
+    /// </summary>
+    /// <param name="condition">Boolean condition that is checked.</param>
+    /// <param name="timeLimit">Time limit until false is returned</param>
+    /// <param name="delay">Delay between each check on the condition</param>
+    /// <returns>True when condition resolves to true and false when the time limit is exceeded</returns>
+    public static async Task<bool> TryWaitUntilConditionAsync(Func<Task<bool>> condition, TimeSpan timeLimit, TimeSpan? delay = null)
+    {
+        var startTime = Environment.TickCount;
+        while (!await condition().ConfigureAwait(false))
         {
-            if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay))
+            if (!await CheckMaxWaitAndDelayAsync(timeLimit.TotalMilliseconds, startTime, delay).ConfigureAwait(false))
             {
-                throw new XunitException("Condition not reached before time limit.");
+                return false;
             }
         }
 
-        /// <summary>
-        /// Completes when the "condition" returns true or
-        /// when the time limit is exceeded and then false is returned.
-        /// </summary>
-        /// <param name="condition">Boolean condition that is checked.</param>
-        /// <param name="timeLimit">Time limit until false is returned</param>
-        /// <param name="delay">Delay between each check on the condition</param>
-        /// <returns>True when condition resolves to true and false when the time limit is exceeded</returns>
-        public static async Task<bool> TryWaitUntilConditionAsync(Func<bool> condition, TimeSpan timeLimit, TimeSpan? delay = null)
-        {
-            var startTime = Environment.TickCount;
-            while (!condition())
-            {
-                if (!await CheckMaxWaitAndDelayAsync(timeLimit.TotalMilliseconds, startTime, delay).ConfigureAwait(false))
-                {
-                    return false;
-                }
-            }
+        return true;
+    }
 
+    private static async Task<bool> CheckMaxWaitAndDelayAsync(double maxWaitMilliseconds, int startTime, TimeSpan? delay = null)
+    {
+        if (maxWaitMilliseconds >= Environment.TickCount - startTime)
+        {
+            delay ??= TimeSpan.FromMilliseconds(100);
+            await Task.Delay(delay.Value).ConfigureAwait(false);
             return true;
         }
 
-        /// <summary>
-        /// Completes when the "condition" returns true or
-        /// when the time limit is exceeded and then false is returned.
-        /// </summary>
-        /// <param name="condition">Boolean condition that is checked.</param>
-        /// <param name="timeLimit">Time limit until false is returned</param>
-        /// <param name="delay">Delay between each check on the condition</param>
-        /// <returns>True when condition resolves to true and false when the time limit is exceeded</returns>
-        public static async Task<bool> TryWaitUntilConditionAsync(Func<Task<bool>> condition, TimeSpan timeLimit, TimeSpan? delay = null)
-        {
-            var startTime = Environment.TickCount;
-            while (!await condition().ConfigureAwait(false))
-            {
-                if (!await CheckMaxWaitAndDelayAsync(timeLimit.TotalMilliseconds, startTime, delay).ConfigureAwait(false))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static async Task<bool> CheckMaxWaitAndDelayAsync(double maxWaitMilliseconds, int startTime, TimeSpan? delay = null)
-        {
-            if (maxWaitMilliseconds >= Environment.TickCount - startTime)
-            {
-                delay ??= TimeSpan.FromMilliseconds(100);
-                await Task.Delay(delay.Value).ConfigureAwait(false);
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 }

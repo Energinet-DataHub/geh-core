@@ -12,17 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
+public static class QueueResourceBuilderExtensions
 {
-    public static class QueueResourceBuilderExtensions
+    public static QueueResourceBuilder SetEnvironmentVariableToQueueName(this QueueResourceBuilder builder, string variable)
     {
-        public static QueueResourceBuilder SetEnvironmentVariableToQueueName(this QueueResourceBuilder builder, string variable)
-        {
-            builder.Do(queueProperties => Environment.SetEnvironmentVariable(variable, queueProperties.Name));
+        builder.Do(queueProperties => Environment.SetEnvironmentVariable(variable, queueProperties.Name));
 
-            return builder;
-        }
+        return builder;
     }
 }

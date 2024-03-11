@@ -14,35 +14,34 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+
+public class FunctionAppHostConfigurationBuilder
 {
-    public class FunctionAppHostConfigurationBuilder
+    public FunctionAppHostSettings CreateFunctionAppHostSettings()
     {
-        public FunctionAppHostSettings CreateFunctionAppHostSettings()
-        {
-            var configurationRoot = new ConfigurationBuilder()
-                .AddJsonFile("functionapphost.settings.json")
-                .AddEnvironmentVariables()
-                .Build();
+        var configurationRoot = new ConfigurationBuilder()
+            .AddJsonFile("functionapphost.settings.json")
+            .AddEnvironmentVariables()
+            .Build();
 
-            var functionAppHostSettings = new FunctionAppHostSettings();
-            configurationRoot.Bind(functionAppHostSettings);
+        var functionAppHostSettings = new FunctionAppHostSettings();
+        configurationRoot.Bind(functionAppHostSettings);
 
-            return functionAppHostSettings;
-        }
+        return functionAppHostSettings;
+    }
 
-        /// <summary>
-        /// Load settings from "local.settings.json" if available, but also allow
-        /// those settings to be overriden using environment variables.
-        /// </summary>
-        public IConfiguration BuildLocalSettingsConfiguration()
-        {
-            var localSettingsConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("local.settings.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
+    /// <summary>
+    /// Load settings from "local.settings.json" if available, but also allow
+    /// those settings to be overriden using environment variables.
+    /// </summary>
+    public IConfiguration BuildLocalSettingsConfiguration()
+    {
+        var localSettingsConfiguration = new ConfigurationBuilder()
+            .AddJsonFile("local.settings.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
 
-            return localSettingsConfiguration;
-        }
+        return localSettingsConfiguration;
     }
 }

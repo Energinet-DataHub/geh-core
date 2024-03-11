@@ -12,12 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Databricks;
 using FluentAssertions;
@@ -212,7 +207,9 @@ public sealed class DatabricksSchemaManagerTests
     }
 }
 
+#pragma warning disable SA1402 // File may only contain a single type
 public class MockHttpMessageHandler : HttpMessageHandler
+#pragma warning restore SA1402 // File may only contain a single type
 {
     public HttpRequestMessage? LastRequest { get; private set; }
 

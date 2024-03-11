@@ -12,49 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Azure.Messaging.EventHubs;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
+
+public static class DoProviderExtensions
 {
-    public static class DoProviderExtensions
+    public static async Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount, Func<EventData, Task> eventHandler)
     {
-        public static async Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount, Func<EventData, Task> eventHandler)
+        var whenAllReceivedEvent = new CountdownEvent(expectedCount);
+
+        await provider.DoAsync(async (eventData) =>
         {
-            var whenAllReceivedEvent = new CountdownEvent(expectedCount);
+            await eventHandler(eventData).ConfigureAwait(false);
+            whenAllReceivedEvent.Signal();
+        }).ConfigureAwait(false);
 
-            await provider.DoAsync(async (eventData) =>
-            {
-                await eventHandler(eventData).ConfigureAwait(false);
-                whenAllReceivedEvent.Signal();
-            }).ConfigureAwait(false);
+        return whenAllReceivedEvent;
+    }
 
-            return whenAllReceivedEvent;
-        }
+    public static Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount)
+    {
+        return VerifyCountAsync(provider, expectedCount, _ => Task.CompletedTask);
+    }
 
-        public static Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount)
+    public static async Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider, Func<EventData, Task> eventHandler)
+    {
+        var whenOnceEvent = new ManualResetEventSlim(false);
+
+        await provider.DoAsync(async (eventData) =>
         {
-            return VerifyCountAsync(provider, expectedCount, _ => Task.CompletedTask);
-        }
+            await eventHandler(eventData).ConfigureAwait(false);
+            whenOnceEvent.Set();
+        }).ConfigureAwait(false);
 
-        public static async Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider, Func<EventData, Task> eventHandler)
-        {
-            var whenOnceEvent = new ManualResetEventSlim(false);
+        return whenOnceEvent;
+    }
 
-            await provider.DoAsync(async (eventData) =>
-            {
-                await eventHandler(eventData).ConfigureAwait(false);
-                whenOnceEvent.Set();
-            }).ConfigureAwait(false);
-
-            return whenOnceEvent;
-        }
-
-        public static Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider)
-        {
-            return VerifyOnceAsync(provider, _ => Task.CompletedTask);
-        }
+    public static Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider)
+    {
+        return VerifyOnceAsync(provider, _ => Task.CompletedTask);
     }
 }
