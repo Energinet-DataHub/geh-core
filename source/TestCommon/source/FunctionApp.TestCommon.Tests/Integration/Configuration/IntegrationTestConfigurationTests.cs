@@ -13,15 +13,21 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Core.TestCommon;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Configuration;
 
-public class IntegrationTestConfigurationTests : TestBase<IntegrationTestConfiguration>
+public class IntegrationTestConfigurationTests : IClassFixture<IntegrationTestConfiguration>
 {
+    public IntegrationTestConfigurationTests(IntegrationTestConfiguration sut)
+    {
+        Sut = sut;
+    }
+
+    public IntegrationTestConfiguration Sut { get; }
+
     [Fact]
     public void Given_IdentityHasAccess_When_DatabricksSettings_Then_EachPropertyHasValue()
     {

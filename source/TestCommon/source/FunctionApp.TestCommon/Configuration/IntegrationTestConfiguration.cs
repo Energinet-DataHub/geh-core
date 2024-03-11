@@ -98,10 +98,19 @@ public class IntegrationTestConfiguration
             .Build();
 
         var keyVaultUrl = integrationtestConfiguration.GetValue("AZURE_KEYVAULT_URL");
+        GuardKeyVaultUrl(keyVaultUrl);
 
         return new ConfigurationBuilder()
             .AddAuthenticatedAzureKeyVault(keyVaultUrl)
             .Build();
+    }
+
+    private static void GuardKeyVaultUrl(string keyVaultUrl)
+    {
+        if (string.IsNullOrWhiteSpace(keyVaultUrl))
+        {
+            throw new InvalidOperationException("The 'AZURE_KEYVAULT_URL' is not set. If tests are excuted locally it should be configured in the 'integrationtest.local.settings.json'; otherwise it should be set as an environment variable.");
+        }
     }
 
     private static AzureResourceManagementSettings CreateResourceManagementSettings(IConfigurationRoot configuration)
