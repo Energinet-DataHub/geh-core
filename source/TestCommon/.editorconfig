@@ -533,6 +533,6 @@ dotnet_diagnostic.SX1309.severity = error
 # that is part of a test project. This includes fixtures and
 # code that supports tests.
 #
-[**{Test,test}**.cs]
+[**{Tests,tests}**.cs]
 
 dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task

@@ -28,7 +28,7 @@ public static class Awaiter
     /// <param name="delay">Delay between each check on the condition</param>
     public static async Task WaitUntilConditionAsync(Func<bool> condition, TimeSpan timeLimit, TimeSpan? delay = null)
     {
-        if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay))
+        if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay).ConfigureAwait(false))
         {
             throw new XunitException("Condition not reached before time limit.");
         }
@@ -43,7 +43,7 @@ public static class Awaiter
     /// <param name="delay">Delay between each check on the condition</param>
     public static async Task WaitUntilConditionAsync(Func<Task<bool>> condition, TimeSpan timeLimit, TimeSpan? delay = null)
     {
-        if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay))
+        if (!await TryWaitUntilConditionAsync(condition, timeLimit, delay).ConfigureAwait(false))
         {
             throw new XunitException("Condition not reached before time limit.");
         }

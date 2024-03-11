@@ -56,7 +56,7 @@ public abstract class FunctionAppFixture : IAsyncLifetime
         OnConfigureEnvironment();
 
         var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
-        await OnInitializeFunctionAppDependenciesAsync(localSettingsSnapshot);
+        await OnInitializeFunctionAppDependenciesAsync(localSettingsSnapshot).ConfigureAwait(false);
 
         try
         {
@@ -65,21 +65,21 @@ public abstract class FunctionAppFixture : IAsyncLifetime
         catch (Exception ex)
         {
             HostStartupLog = HostManager.GetHostLogSnapshot();
-            await OnFunctionAppHostFailedAsync(HostStartupLog, ex);
+            await OnFunctionAppHostFailedAsync(HostStartupLog, ex).ConfigureAwait(false);
 
             // Rethrow
             throw;
         }
 
         HostStartupLog = HostManager.GetHostLogSnapshot();
-        await OnFunctionAppHostStartedAsync(HostStartupLog);
+        await OnFunctionAppHostStartedAsync(HostStartupLog).ConfigureAwait(false);
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
         HostManager.Dispose();
 
-        await OnDisposeFunctionAppDependenciesAsync();
+        return OnDisposeFunctionAppDependenciesAsync();
     }
 
     /// <summary>

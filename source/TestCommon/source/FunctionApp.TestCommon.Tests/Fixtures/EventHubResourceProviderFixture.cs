@@ -49,8 +49,7 @@ public class EventHubResourceProviderFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        ManagementClient = await CreateManagementClientAsync()
-            .ConfigureAwait(false);
+        ManagementClient = await CreateManagementClientAsync();
     }
 
     public Task DisposeAsync()
@@ -62,7 +61,7 @@ public class EventHubResourceProviderFixture : IAsyncLifetime
 
     private async Task<IEventHubManagementClient> CreateManagementClientAsync()
     {
-        var authenticationResult = await GetTokenAsync().ConfigureAwait(false);
+        var authenticationResult = await GetTokenAsync();
         var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken);
         return new EventHubManagementClient(tokenCredentials)
         {
