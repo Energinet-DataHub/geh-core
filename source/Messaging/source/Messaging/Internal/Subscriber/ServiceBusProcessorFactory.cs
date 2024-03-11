@@ -43,7 +43,7 @@ internal sealed class ServiceBusProcessorFactory : IServiceBusProcessorFactory, 
     {
         if (_serviceBusClient != null)
         {
-            await _serviceBusClient.DisposeAsync();
+            await _serviceBusClient.DisposeAsync().ConfigureAwait(false);
             _serviceBusClient = null;
         }
     }

@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 4.0.0
+
+- Upgrade to .NET 8
+
 ## Version 3.3.1
 
 - No functional change
