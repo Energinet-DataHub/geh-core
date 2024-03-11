@@ -3,6 +3,7 @@
 ## Version 5.0.0
 
 - Deleted `FunctionApp.TestCommon.B2C` namespace with classes.
+- Upgraded to .NET 8 SDK
 
 ## Version 4.6.1
 
