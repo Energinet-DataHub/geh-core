@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using System.Dynamic;
-using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Apache.Arrow.Ipc;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
@@ -38,7 +35,7 @@ internal class ApacheArrowFormat : IExecuteStrategy
     {
         using var reader = new ArrowStreamReader(content);
 
-        var batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
+        var batch = await reader.ReadNextRecordBatchAsync(cancellationToken).ConfigureAwait(false);
         while (batch != null)
         {
             for (var i = 0; i < batch.Length; i++)
@@ -55,7 +52,7 @@ internal class ApacheArrowFormat : IExecuteStrategy
                 yield return record;
             }
 
-            batch = await reader.ReadNextRecordBatchAsync(cancellationToken);
+            batch = await reader.ReadNextRecordBatchAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

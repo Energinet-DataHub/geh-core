@@ -17,12 +17,12 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <LangVersion>10</LangVersion>
+    <LangVersion>12</LangVersion>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Energinet.DataHub.Core.Databricks.Jobs</AssemblyName>
@@ -31,7 +31,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Databricks.Jobs</PackageId>
-    <PackageVersion>9.0.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>10.0.0$(VersionSuffix)</PackageVersion>
     <Title>Databricks Jobs</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>

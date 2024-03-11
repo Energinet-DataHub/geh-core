@@ -17,13 +17,14 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <LangVersion>12</LangVersion>
     <AssemblyName>Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests</RootNamespace>
   </PropertyGroup>
