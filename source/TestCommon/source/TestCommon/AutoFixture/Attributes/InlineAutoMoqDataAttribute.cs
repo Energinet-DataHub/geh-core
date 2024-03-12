@@ -14,11 +14,10 @@
 
 using AutoFixture.Xunit2;
 
-namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+
+public class InlineAutoMoqDataAttribute : InlineAutoDataAttribute
 {
-    public class InlineAutoMoqDataAttribute : InlineAutoDataAttribute
-    {
-        public InlineAutoMoqDataAttribute(params object[] objects)
-            : base(new AutoMoqDataAttribute(), objects) { }
-    }
+    public InlineAutoMoqDataAttribute(params object[] objects)
+        : base(new AutoMoqDataAttribute(), objects) { }
 }

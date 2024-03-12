@@ -14,28 +14,27 @@
 
 using AutoFixture;
 
-namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
+
+public static class AutoFixtureExtensions
 {
-    public static class AutoFixtureExtensions
+    /// <summary>
+    /// Fluent API for configuring object builder to use a given value for a constructor parameter.
+    ///
+    /// Inspired by: https://stackoverflow.com/questions/16819470/autofixture-automoq-supply-a-known-value-for-one-constructor-parameter/16954699#16954699
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// Notice generic brackets cannot be used in xml documentation example, so we use {}.
+    /// var sut = new Fixture()
+    ///     .ForConstructorOn{TClass}()
+    ///     .SetParameter("value1").To(aValue)
+    ///     .SetParameter("value2").ToEnumerableOf(22, 33)
+    ///     .Create();
+    /// </code>
+    /// </example>
+    public static SetParameterCreateProvider<TTypeToConstruct> ForConstructorOn<TTypeToConstruct>(this IFixture fixture)
     {
-        /// <summary>
-        /// Fluent API for configuring object builder to use a given value for a constructor parameter.
-        ///
-        /// Inspired by: https://stackoverflow.com/questions/16819470/autofixture-automoq-supply-a-known-value-for-one-constructor-parameter/16954699#16954699
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// Notice generic brackets cannot be used in xml documentation example, so we use {}.
-        /// var sut = new Fixture()
-        ///     .ForConstructorOn{TClass}()
-        ///     .SetParameter("value1").To(aValue)
-        ///     .SetParameter("value2").ToEnumerableOf(22, 33)
-        ///     .Create();
-        /// </code>
-        /// </example>
-        public static SetParameterCreateProvider<TTypeToConstruct> ForConstructorOn<TTypeToConstruct>(this IFixture fixture)
-        {
-            return new SetParameterCreateProvider<TTypeToConstruct>(fixture);
-        }
+        return new SetParameterCreateProvider<TTypeToConstruct>(fixture);
     }
 }

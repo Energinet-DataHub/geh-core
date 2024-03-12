@@ -12,34 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+
+public static class ConfigurationBuilderExtensions
 {
-    public static class ConfigurationBuilderExtensions
+    /// <summary>
+    /// Adds an <see cref="IConfigurationProvider"/> that reads configuration values from the Azure KeyVault.
+    ///
+    /// Using <see cref="DefaultAzureCredential"/> it automatically requests access tokens for reading
+    /// from the Key Vault. For this to work the identity under which the tests are executied, must have
+    /// Get and List permissions to secrets in the Key Vault.
+    /// </summary>
+    /// <param name="builder">The configuration builder.</param>
+    /// <param name="keyVaultUrl">KeyVault URL eg. https://myexamplekeyvault.vault.azure.net/</param>
+    public static IConfigurationBuilder AddAuthenticatedAzureKeyVault(this IConfigurationBuilder builder, string keyVaultUrl)
     {
-        /// <summary>
-        /// Adds an <see cref="IConfigurationProvider"/> that reads configuration values from the Azure KeyVault.
-        ///
-        /// Using <see cref="DefaultAzureCredential"/> it automatically requests access tokens for reading
-        /// from the Key Vault. For this to work the identity under which the tests are executied, must have
-        /// Get and List permissions to secrets in the Key Vault.
-        /// </summary>
-        /// <param name="builder">The configuration builder.</param>
-        /// <param name="keyVaultUrl">KeyVault URL eg. https://myexamplekeyvault.vault.azure.net/</param>
-        public static IConfigurationBuilder AddAuthenticatedAzureKeyVault(this IConfigurationBuilder builder, string keyVaultUrl)
+        if (string.IsNullOrEmpty(keyVaultUrl))
         {
-            if (string.IsNullOrEmpty(keyVaultUrl))
-            {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(keyVaultUrl));
-            }
-
-            var credential = new DefaultAzureCredential();
-            builder.AddAzureKeyVault(new Uri(keyVaultUrl), credential);
-
-            return builder;
+            throw new ArgumentException("Value cannot be null or empty.", nameof(keyVaultUrl));
         }
+
+        var credential = new DefaultAzureCredential();
+        builder.AddAzureKeyVault(new Uri(keyVaultUrl), credential);
+
+        return builder;
     }
 }

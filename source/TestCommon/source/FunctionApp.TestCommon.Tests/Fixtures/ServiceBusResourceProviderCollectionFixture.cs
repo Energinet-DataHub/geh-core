@@ -14,16 +14,15 @@
 
 using Xunit;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+
+/// <summary>
+/// A xUnit collection fixture for ensuring tests don't run in parallel.
+///
+/// xUnit documentation of collection fixtures:
+///  * https://xunit.net/docs/shared-context#collection-fixture
+/// </summary>
+[CollectionDefinition(nameof(ServiceBusResourceProviderCollectionFixture))]
+public class ServiceBusResourceProviderCollectionFixture : ICollectionFixture<ServiceBusResourceProviderFixture>
 {
-    /// <summary>
-    /// A xUnit collection fixture for ensuring tests don't run in parallel.
-    ///
-    /// xUnit documentation of collection fixtures:
-    ///  * https://xunit.net/docs/shared-context#collection-fixture
-    /// </summary>
-    [CollectionDefinition(nameof(ServiceBusResourceProviderCollectionFixture))]
-    public class ServiceBusResourceProviderCollectionFixture : ICollectionFixture<ServiceBusResourceProviderFixture>
-    {
-    }
 }

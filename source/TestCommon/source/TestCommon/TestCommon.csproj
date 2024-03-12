@@ -16,22 +16,22 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>10</LangVersion>
-    <Nullable>enable</Nullable>
     <ProjectGuid>{0D91CD97-4BEC-4DE3-891E-FFF1042C492E}</ProjectGuid>
     <AssemblyName>Energinet.DataHub.Core.TestCommon</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.TestCommon</RootNamespace>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- ProjectCapability:
+      Ensure Visual Studio doesn't see this as a test project (https://stackoverflow.com/a/72775838)-->
+    <ProjectCapability Remove="TestContainer" />
+  </ItemGroup>
+
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.TestCommon</PackageId>
-    <PackageVersion>4.6.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>5.0.0$(VersionSuffix)</PackageVersion>
     <Title>TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -72,19 +72,18 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.18.0" />
-    <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.0" />
-    <PackageReference Include="AutoFixture.Idioms" Version="4.18.0" />
-    <PackageReference Include="AutoFixture.Xunit2" Version="4.18.0" />
-    <PackageReference Include="FluentAssertions" Version="6.11.0" />
+    <PackageReference Include="AutoFixture" Version="4.18.1" />
+    <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1" />
+    <PackageReference Include="AutoFixture.Idioms" Version="4.18.1" />
+    <PackageReference Include="AutoFixture.Xunit2" Version="4.18.1" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="MicroElements.AutoFixture.NodaTime" Version="1.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Moq" Version="4.18.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
-    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="xunit" Version="2.7.0" />
   </ItemGroup>
 
 </Project>

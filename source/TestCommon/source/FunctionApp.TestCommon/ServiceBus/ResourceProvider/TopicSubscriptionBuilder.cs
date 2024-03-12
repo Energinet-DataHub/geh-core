@@ -12,64 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+
+/// <summary>
+/// Part of fluent API for creating a Service Bus topic resource with subscriptions.
+/// </summary>
+public class TopicSubscriptionBuilder : ITopicResourceBuilder
 {
-    /// <summary>
-    /// Part of fluent API for creating a Service Bus topic resource with subscriptions.
-    /// </summary>
-    public class TopicSubscriptionBuilder : ITopicResourceBuilder
+    internal TopicSubscriptionBuilder(
+        TopicResourceBuilder topicResourceBuilder,
+        CreateSubscriptionOptions createSubscriptionOptions)
     {
-        internal TopicSubscriptionBuilder(
-            TopicResourceBuilder topicResourceBuilder,
-            CreateSubscriptionOptions createSubscriptionOptions)
-        {
-            TopicResourceBuilder = topicResourceBuilder;
-            CreateSubscriptionOptions = createSubscriptionOptions;
-            CreateRuleOptions = new CreateRuleOptions();
+        TopicResourceBuilder = topicResourceBuilder;
+        CreateSubscriptionOptions = createSubscriptionOptions;
+        CreateRuleOptions = new CreateRuleOptions();
 
-            PostActions = new List<Action<SubscriptionProperties>>();
-        }
+        PostActions = new List<Action<SubscriptionProperties>>();
+    }
 
-        internal CreateSubscriptionOptions CreateSubscriptionOptions { get; }
+    internal CreateSubscriptionOptions CreateSubscriptionOptions { get; }
 
-        internal CreateRuleOptions CreateRuleOptions { get; set; }
+    internal CreateRuleOptions CreateRuleOptions { get; set; }
 
-        internal IList<Action<SubscriptionProperties>> PostActions { get; }
+    internal IList<Action<SubscriptionProperties>> PostActions { get; }
 
-        private TopicResourceBuilder TopicResourceBuilder { get; }
+    private TopicResourceBuilder TopicResourceBuilder { get; }
 
-        /// <summary>
-        /// Add an action that will be called after the subscription has been created.
-        /// </summary>
-        /// <param name="postAction">Action to call with subscription properties when subscription has been created.</param>
-        /// <returns>Subscription builder.</returns>
-        public TopicSubscriptionBuilder Do(Action<SubscriptionProperties> postAction)
-        {
-            PostActions.Add(postAction);
+    /// <summary>
+    /// Add an action that will be called after the subscription has been created.
+    /// </summary>
+    /// <param name="postAction">Action to call with subscription properties when subscription has been created.</param>
+    /// <returns>Subscription builder.</returns>
+    public TopicSubscriptionBuilder Do(Action<SubscriptionProperties> postAction)
+    {
+        PostActions.Add(postAction);
 
-            return this;
-        }
+        return this;
+    }
 
-        /// <inheritdoc/>
-        public TopicSubscriptionBuilder AddSubscription(
-            string subscriptionName,
-            int maxDeliveryCount = 1,
-            TimeSpan? lockDuration = null,
-            bool requiresSession = false)
-        {
-            return TopicResourceBuilder.AddSubscription(
-                subscriptionName, maxDeliveryCount, lockDuration, requiresSession);
-        }
+    /// <inheritdoc/>
+    public TopicSubscriptionBuilder AddSubscription(
+        string subscriptionName,
+        int maxDeliveryCount = 1,
+        TimeSpan? lockDuration = null,
+        bool requiresSession = false)
+    {
+        return TopicResourceBuilder.AddSubscription(
+            subscriptionName, maxDeliveryCount, lockDuration, requiresSession);
+    }
 
-        /// <inheritdoc/>
-        public Task<TopicResource> CreateAsync()
-        {
-            return TopicResourceBuilder.CreateAsync();
-        }
+    /// <inheritdoc/>
+    public Task<TopicResource> CreateAsync()
+    {
+        return TopicResourceBuilder.CreateAsync();
     }
 }

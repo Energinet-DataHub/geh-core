@@ -12,29 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+
+/// <summary>
+/// Actually service bus listener mock extensions, but we want to separate the fluent API
+/// and make it stand out on its own.
+/// </summary>
+public static class WhenProviderExtensions
 {
-    /// <summary>
-    /// Actually service bus listener mock extensions, but we want to separate the fluent API
-    /// and make it stand out on its own.
-    /// </summary>
-    public static class WhenProviderExtensions
+    public static DoProvider WhenAny(this ServiceBusListenerMock provider)
     {
-        public static DoProvider WhenAny(this ServiceBusListenerMock provider)
-        {
-            return provider.When(_ => true);
-        }
+        return provider.When(_ => true);
+    }
 
-        public static DoProvider WhenMessageId(this ServiceBusListenerMock provider, string? messageId = null)
-        {
-            return provider.When(message =>
-                message.MessageId == messageId);
-        }
+    public static DoProvider WhenMessageId(this ServiceBusListenerMock provider, string? messageId = null)
+    {
+        return provider.When(message =>
+            message.MessageId == messageId);
+    }
 
-        public static DoProvider WhenSubject(this ServiceBusListenerMock provider, string? subject = null)
-        {
-            return provider.When(message =>
-                message.Subject == subject);
-        }
+    public static DoProvider WhenSubject(this ServiceBusListenerMock provider, string? subject = null)
+    {
+        return provider.When(message =>
+            message.Subject == subject);
     }
 }

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Databricks;

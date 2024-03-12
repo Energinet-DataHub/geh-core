@@ -12,52 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Reflection;
 using AutoFixture.Kernel;
 
-namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Customizations
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Customizations;
+
+/// <summary>
+/// If creating a type <typeparamref name="TTypeToConstruct"/> using a constructor,
+/// then return <see cref="ParameterValue"/>,
+/// for any parameter of type <typeparamref name="TValueType"/> with name <see cref="ParameterName"/>.
+///
+/// Inspired by: https://stackoverflow.com/questions/16819470/autofixture-automoq-supply-a-known-value-for-one-constructor-parameter/16954699#16954699
+/// </summary>
+public class ConstructorParameterRelay<TTypeToConstruct, TValueType> : ISpecimenBuilder
 {
-    /// <summary>
-    /// If creating a type <typeparamref name="TTypeToConstruct"/> using a constructor,
-    /// then return <see cref="ParameterValue"/>,
-    /// for any parameter of type <typeparamref name="TValueType"/> with name <see cref="ParameterName"/>.
-    ///
-    /// Inspired by: https://stackoverflow.com/questions/16819470/autofixture-automoq-supply-a-known-value-for-one-constructor-parameter/16954699#16954699
-    /// </summary>
-    public class ConstructorParameterRelay<TTypeToConstruct, TValueType> : ISpecimenBuilder
+    public ConstructorParameterRelay(string parameterName, TValueType parameterValue)
     {
-        public ConstructorParameterRelay(string parameterName, TValueType parameterValue)
+        ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
+        ParameterValue = parameterValue;
+    }
+
+    public string ParameterName { get; }
+
+    public TValueType ParameterValue { get; }
+
+    public object Create(object request, ISpecimenContext context)
+    {
+        if (context == null)
         {
-            ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
-            ParameterValue = parameterValue;
+            throw new ArgumentNullException(nameof(context));
         }
 
-        public string ParameterName { get; }
-
-        public TValueType ParameterValue { get; }
-
-        public object Create(object request, ISpecimenContext context)
+        if (!(request is ParameterInfo parameter))
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (!(request is ParameterInfo parameter))
-            {
-                return new NoSpecimen();
-            }
-
-            if (parameter.Member.DeclaringType != typeof(TTypeToConstruct) ||
-                parameter.Member.MemberType != MemberTypes.Constructor ||
-                parameter.ParameterType != typeof(TValueType) ||
-                parameter.Name != ParameterName)
-            {
-                return new NoSpecimen();
-            }
-
-            return ParameterValue!;
+            return new NoSpecimen();
         }
+
+        if (parameter.Member.DeclaringType != typeof(TTypeToConstruct) ||
+            parameter.Member.MemberType != MemberTypes.Constructor ||
+            parameter.ParameterType != typeof(TValueType) ||
+            parameter.Name != ParameterName)
+        {
+            return new NoSpecimen();
+        }
+
+        return ParameterValue!;
     }
 }

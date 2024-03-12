@@ -12,41 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Customizations;
 
-namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
+
+/// <summary>
+/// Fluent API for configuring object builder to use a given value for a constructor parameter.
+///
+/// Inspired by: https://stackoverflow.com/questions/16819470/autofixture-automoq-supply-a-known-value-for-one-constructor-parameter/16954699#16954699
+/// </summary>
+public class SetParameterProvider<TTypeToConstruct>
 {
-    /// <summary>
-    /// Fluent API for configuring object builder to use a given value for a constructor parameter.
-    ///
-    /// Inspired by: https://stackoverflow.com/questions/16819470/autofixture-automoq-supply-a-known-value-for-one-constructor-parameter/16954699#16954699
-    /// </summary>
-    public class SetParameterProvider<TTypeToConstruct>
+    public SetParameterProvider(SetParameterCreateProvider<TTypeToConstruct> father, string parameterName)
     {
-        public SetParameterProvider(SetParameterCreateProvider<TTypeToConstruct> father, string parameterName)
-        {
-            Father = father;
-            ParameterName = parameterName;
-        }
+        Father = father;
+        ParameterName = parameterName;
+    }
 
-        private SetParameterCreateProvider<TTypeToConstruct> Father { get; }
+    private SetParameterCreateProvider<TTypeToConstruct> Father { get; }
 
-        private string ParameterName { get; }
+    private string ParameterName { get; }
 
-        public SetParameterCreateProvider<TTypeToConstruct> To<TTypeOfParam>(TTypeOfParam parameterValue)
-        {
-            var constructorParameter = new ConstructorParameterRelay<TTypeToConstruct, TTypeOfParam>(ParameterName, parameterValue);
-            Father.AddConstructorParameter(constructorParameter);
-            return Father;
-        }
+    public SetParameterCreateProvider<TTypeToConstruct> To<TTypeOfParam>(TTypeOfParam parameterValue)
+    {
+        var constructorParameter = new ConstructorParameterRelay<TTypeToConstruct, TTypeOfParam>(ParameterName, parameterValue);
+        Father.AddConstructorParameter(constructorParameter);
+        return Father;
+    }
 
-        public SetParameterCreateProvider<TTypeToConstruct> ToEnumerableOf<TTypeOfParam>(params TTypeOfParam[] parametersValues)
-        {
-            IEnumerable<TTypeOfParam> actualParamValue = parametersValues;
-            var constructorParameter = new ConstructorParameterRelay<TTypeToConstruct, IEnumerable<TTypeOfParam>>(ParameterName, actualParamValue);
-            Father.AddConstructorParameter(constructorParameter);
-            return Father;
-        }
+    public SetParameterCreateProvider<TTypeToConstruct> ToEnumerableOf<TTypeOfParam>(params TTypeOfParam[] parametersValues)
+    {
+        IEnumerable<TTypeOfParam> actualParamValue = parametersValues;
+        var constructorParameter = new ConstructorParameterRelay<TTypeToConstruct, IEnumerable<TTypeOfParam>>(ParameterName, actualParamValue);
+        Father.AddConstructorParameter(constructorParameter);
+        return Father;
     }
 }

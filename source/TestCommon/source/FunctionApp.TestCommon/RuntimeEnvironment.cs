@@ -12,25 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon
+public class RuntimeEnvironment
 {
-    public class RuntimeEnvironment
-    {
-        public static RuntimeEnvironment Default => new();
+    public static RuntimeEnvironment Default => new();
 
-        /// <summary>
-        /// Represent a connection string to overwrite default behaviour of using LocalDB
-        /// </summary>
-        public virtual string? TestCommonConnectionString => GetEnvironmentVariable(nameof(TestCommonConnectionString));
+    /// <summary>
+    /// Represent a connection string to overwrite default behaviour of using LocalDB
+    /// </summary>
+    public virtual string? TestCommonConnectionString => GetEnvironmentVariable(nameof(TestCommonConnectionString));
 
-        /// <summary>
-        /// Get value from host environment
-        /// </summary>
-        /// <param name="variableName">name of environment variable</param>
-        /// <returns>Value of environment variable</returns>
-        protected virtual string? GetEnvironmentVariable(string variableName)
-            => Environment.GetEnvironmentVariable(variableName);
-    }
+    /// <summary>
+    /// Get value from host environment
+    /// </summary>
+    /// <param name="variableName">name of environment variable</param>
+    /// <returns>Value of environment variable</returns>
+    protected virtual string? GetEnvironmentVariable(string variableName)
+        => Environment.GetEnvironmentVariable(variableName);
 }

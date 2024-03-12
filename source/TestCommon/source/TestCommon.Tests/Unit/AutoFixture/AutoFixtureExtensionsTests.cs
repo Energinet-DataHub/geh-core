@@ -18,94 +18,93 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture;
+
+public class AutoFixtureExtensionsTests
 {
-    public class AutoFixtureExtensionsTests
+    public class ForConstructorOn
     {
-        public class ForConstructorOn
+        [Fact]
+        public void When_SettingAllParameters_Then_ParameterValuesAreUsedForCreation()
         {
-            [Fact]
-            public void When_SettingAllParameters_Then_ParameterValuesAreUsedForCreation()
+            // Arrange
+            var sut = new Fixture();
+
+            // Act
+            var actual = sut.ForConstructorOn<HasNumberAndTest>()
+                .SetParameter("number").To(5)
+                .SetParameter("text").To("example text")
+                .Create();
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actual.Number.Should().Be(5);
+            actual.Text.Should().Be("example text");
+        }
+
+        [Fact]
+        public void When_SettingOneOfMultipleParameters_Then_ParameterValueIsUsedForCreation()
+        {
+            // Arrange
+            var sut = new Fixture();
+
+            // Act
+            var actual = sut.ForConstructorOn<HasNumberAndTest>()
+                .SetParameter("number").To(5)
+                .Create();
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actual.Number.Should().Be(5);
+            actual.Text.Should().NotBeNullOrEmpty();
+        }
+
+        [Theory]
+        [InlineData(Priority.Second)]
+        [InlineData(Priority.Third)]
+        [InlineData(Priority.First)]
+        public void When_SettingEnumParameter_Then_ParameterValueIsUsedForCreation(Priority priority)
+        {
+            // Arrange
+            var sut = new Fixture();
+
+            // Act
+            var actual = sut.ForConstructorOn<HasEnum>()
+                .SetParameter("priority").To(priority)
+                .Create();
+
+            // Assert
+            actual.Priority.Should().Be(priority);
+        }
+
+        public class HasNumberAndTest
+        {
+            public HasNumberAndTest(int number, string text)
             {
-                // Arrange
-                var sut = new Fixture();
-
-                // Act
-                var actual = sut.ForConstructorOn<HasNumberAndTest>()
-                    .SetParameter("number").To(5)
-                    .SetParameter("text").To("example text")
-                    .Create();
-
-                // Assert
-                using var assertionScope = new AssertionScope();
-                actual.Number.Should().Be(5);
-                actual.Text.Should().Be("example text");
+                Number = number;
+                Text = text;
             }
 
-            [Fact]
-            public void When_SettingOneOfMultipleParameters_Then_ParameterValueIsUsedForCreation()
+            public int Number { get; }
+
+            public string Text { get; }
+        }
+
+        public class HasEnum
+        {
+            public HasEnum(Priority priority)
             {
-                // Arrange
-                var sut = new Fixture();
-
-                // Act
-                var actual = sut.ForConstructorOn<HasNumberAndTest>()
-                    .SetParameter("number").To(5)
-                    .Create();
-
-                // Assert
-                using var assertionScope = new AssertionScope();
-                actual.Number.Should().Be(5);
-                actual.Text.Should().NotBeNullOrEmpty();
+                Priority = priority;
             }
 
-            [Theory]
-            [InlineData(Priority.Second)]
-            [InlineData(Priority.Third)]
-            [InlineData(Priority.First)]
-            public void When_SettingEnumParameter_Then_ParameterValueIsUsedForCreation(Priority priority)
-            {
-                // Arrange
-                var sut = new Fixture();
+            public Priority Priority { get; }
+        }
 
-                // Act
-                var actual = sut.ForConstructorOn<HasEnum>()
-                    .SetParameter("priority").To(priority)
-                    .Create();
-
-                // Assert
-                actual.Priority.Should().Be(priority);
-            }
-
-            public class HasNumberAndTest
-            {
-                public HasNumberAndTest(int number, string text)
-                {
-                    Number = number;
-                    Text = text;
-                }
-
-                public int Number { get; }
-
-                public string Text { get; }
-            }
-
-            public class HasEnum
-            {
-                public HasEnum(Priority priority)
-                {
-                    Priority = priority;
-                }
-
-                public Priority Priority { get; }
-            }
-
-            public enum Priority
-            {
-                First = 0,
-                Second = 1,
-                Third = 2,
-            }
+        public enum Priority
+        {
+            First = 0,
+            Second = 1,
+            Third = 2,
         }
     }
 }

@@ -12,72 +12,69 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Diagnostics;
-using System.Threading;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+
+/// <summary>
+/// Can be used to wait for a Host to start within a process,
+/// by listening on all Output and expect a specific message to appear
+/// when the host is ready.
+/// </summary>
+public class HostStartedOutputListener
 {
-    /// <summary>
-    /// Can be used to wait for a Host to start within a process,
-    /// by listening on all Output and expect a specific message to appear
-    /// when the host is ready.
-    /// </summary>
-    public class HostStartedOutputListener
+    public HostStartedOutputListener(Process process, Func<DataReceivedEventArgs, bool> isStartedEventPredicate)
     {
-        public HostStartedOutputListener(Process process, Func<DataReceivedEventArgs, bool> isStartedEventPredicate)
+        Process = process ?? throw new ArgumentNullException(nameof(process));
+        IsStartedEventPredicate = isStartedEventPredicate ?? throw new ArgumentNullException(nameof(isStartedEventPredicate));
+
+        if (!Process.StartInfo.RedirectStandardOutput)
         {
-            Process = process ?? throw new ArgumentNullException(nameof(process));
-            IsStartedEventPredicate = isStartedEventPredicate ?? throw new ArgumentNullException(nameof(isStartedEventPredicate));
-
-            if (!Process.StartInfo.RedirectStandardOutput)
-            {
-                throw new InvalidOperationException($"Process must have '{nameof(Process.StartInfo.RedirectStandardOutput)}' enabled.");
-            }
-
-            StartedWaitHandle = new ManualResetEventSlim(false);
-            WaitForStartedEvent = true;
-
-            Process.OutputDataReceived += OnListenForStartedEvent;
+            throw new InvalidOperationException($"Process must have '{nameof(Process.StartInfo.RedirectStandardOutput)}' enabled.");
         }
 
-        private Process Process { get; }
+        StartedWaitHandle = new ManualResetEventSlim(false);
+        WaitForStartedEvent = true;
 
-        private Func<DataReceivedEventArgs, bool> IsStartedEventPredicate { get; }
+        Process.OutputDataReceived += OnListenForStartedEvent;
+    }
 
-        private ManualResetEventSlim StartedWaitHandle { get; }
+    private Process Process { get; }
 
-        /// <summary>
-        /// Ensure we don't have a race condition when unregistering <see cref="OnListenForStartedEvent"/>
-        /// and disposing <see cref="StartedWaitHandle "/> (e.g. which would cause object disposed exception).
-        /// </summary>
-        private bool WaitForStartedEvent { get; set; }
+    private Func<DataReceivedEventArgs, bool> IsStartedEventPredicate { get; }
 
-        /// <summary>
-        /// Validate if Host is started and ready within timeout.
-        /// </summary>
-        /// <param name="timeout">Represents the max. time to wait for the Host to be ready.</param>
-        /// <returns>True if the Host is started and ready to serve; otherwise, false.</returns>
-        public bool WaitForStarted(TimeSpan timeout)
+    private ManualResetEventSlim StartedWaitHandle { get; }
+
+    /// <summary>
+    /// Ensure we don't have a race condition when unregistering <see cref="OnListenForStartedEvent"/>
+    /// and disposing <see cref="StartedWaitHandle "/> (e.g. which would cause object disposed exception).
+    /// </summary>
+    private bool WaitForStartedEvent { get; set; }
+
+    /// <summary>
+    /// Validate if Host is started and ready within timeout.
+    /// </summary>
+    /// <param name="timeout">Represents the max. time to wait for the Host to be ready.</param>
+    /// <returns>True if the Host is started and ready to serve; otherwise, false.</returns>
+    public bool WaitForStarted(TimeSpan timeout)
+    {
+        var isHostStarted = StartedWaitHandle.Wait(timeout);
+        WaitForStartedEvent = false;
+
+        // Cleanup
+        Process.OutputDataReceived -= OnListenForStartedEvent;
+        StartedWaitHandle.Dispose();
+
+        return isHostStarted;
+    }
+
+    private void OnListenForStartedEvent(object sender, DataReceivedEventArgs outputEvent)
+    {
+        if (outputEvent.Data != null
+            && WaitForStartedEvent
+            && IsStartedEventPredicate(outputEvent))
         {
-            var isHostStarted = StartedWaitHandle.Wait(timeout);
-            WaitForStartedEvent = false;
-
-            // Cleanup
-            Process.OutputDataReceived -= OnListenForStartedEvent;
-            StartedWaitHandle.Dispose();
-
-            return isHostStarted;
-        }
-
-        private void OnListenForStartedEvent(object sender, DataReceivedEventArgs outputEvent)
-        {
-            if (outputEvent.Data != null
-                && WaitForStartedEvent
-                && IsStartedEventPredicate(outputEvent))
-            {
-                StartedWaitHandle.Set();
-            }
+            StartedWaitHandle.Set();
         }
     }
 }

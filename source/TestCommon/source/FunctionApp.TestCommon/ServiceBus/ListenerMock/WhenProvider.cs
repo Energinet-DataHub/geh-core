@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+
+/// <summary>
+/// Actually service bus listener mock extensions, but we want to separate the fluent API
+/// and make it stand out on its own.
+/// </summary>
+public static class WhenProvider
 {
-    /// <summary>
-    /// Actually service bus listener mock extensions, but we want to separate the fluent API
-    /// and make it stand out on its own.
-    /// </summary>
-    public static class WhenProvider
+    public static DoProvider When(this ServiceBusListenerMock provider, Func<ServiceBusReceivedMessage, bool> messageMatcher)
     {
-        public static DoProvider When(this ServiceBusListenerMock provider, Func<ServiceBusReceivedMessage, bool> messageMatcher)
-        {
-            return new DoProvider(provider, messageMatcher);
-        }
+        return new DoProvider(provider, messageMatcher);
     }
 }

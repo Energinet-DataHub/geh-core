@@ -1,5 +1,11 @@
 # TestCommon Release notes
 
+## Version 5.0.0
+
+- Deleted `FunctionApp.TestCommon.B2C` namespace with classes.
+- Upgraded to .NET 8 SDK
+- Refactored EventHub related classes to use the latest `Microsoft.Identity.Client` for token retrieval.
+
 ## Version 4.6.1
 
 - No functional change

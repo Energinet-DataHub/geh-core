@@ -12,86 +12,82 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Azure.Messaging.EventHubs.Producer;
 using Microsoft.Azure.Management.EventHub;
 using Microsoft.Azure.Management.EventHub.Models;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
+
+public class EventHubResource : IAsyncDisposable
 {
-    public class EventHubResource : IAsyncDisposable
+    private readonly Eventhub _properties;
+    private readonly Lazy<EventHubProducerClient> _lazyProducerClient;
+    private readonly IList<ConsumerGroup> _consumerGroups;
+
+    internal EventHubResource(EventHubResourceProvider resourceProvider, Eventhub properties)
     {
-        private readonly Eventhub _properties;
-        private readonly Lazy<EventHubProducerClient> _lazyProducerClient;
-        private readonly IList<ConsumerGroup> _consumerGroups;
+        ResourceProvider = resourceProvider;
 
-        internal EventHubResource(EventHubResourceProvider resourceProvider, Eventhub properties)
-        {
-            ResourceProvider = resourceProvider;
+        _properties = properties;
+        _lazyProducerClient = new Lazy<EventHubProducerClient>(CreateProducerClient);
+        _consumerGroups = new List<ConsumerGroup>();
 
-            _properties = properties;
-            _lazyProducerClient = new Lazy<EventHubProducerClient>(CreateProducerClient);
-            _consumerGroups = new List<ConsumerGroup>();
+        ConsumerGroups = new ReadOnlyCollection<ConsumerGroup>(_consumerGroups);
+    }
 
-            ConsumerGroups = new ReadOnlyCollection<ConsumerGroup>(_consumerGroups);
-        }
+    public string ResourceGroup => ResourceProvider.ResourceManagementSettings.ResourceGroup;
 
-        public string ResourceGroup => ResourceProvider.ResourceManagementSettings.ResourceGroup;
+    public string EventHubNamespace => ResourceProvider.EventHubNamespace;
 
-        public string EventHubNamespace => ResourceProvider.EventHubNamespace;
+    public string Name => _properties.Name;
 
-        public string Name => _properties.Name;
+    public EventHubProducerClient ProducerClient => _lazyProducerClient.Value;
 
-        public EventHubProducerClient ProducerClient => _lazyProducerClient.Value;
+    public IReadOnlyCollection<ConsumerGroup>? ConsumerGroups { get; }
 
-        public IReadOnlyCollection<ConsumerGroup>? ConsumerGroups { get; }
+    public bool IsDisposed { get; private set; }
 
-        public bool IsDisposed { get; private set; }
+    private EventHubResourceProvider ResourceProvider { get; }
 
-        private EventHubResourceProvider ResourceProvider { get; }
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+        GC.SuppressFinalize(this);
+    }
 
-        public async ValueTask DisposeAsync()
-        {
-            await DisposeAsyncCore()
-                .ConfigureAwait(false);
-            GC.SuppressFinalize(this);
-        }
+    internal void AddConsumerGroup(ConsumerGroup consumerGroup)
+    {
+        _consumerGroups.Add(consumerGroup);
+    }
 
-        internal void AddConsumerGroup(ConsumerGroup consumerGroup)
-        {
-            _consumerGroups.Add(consumerGroup);
-        }
-
-        private EventHubProducerClient CreateProducerClient()
-        {
-            return new EventHubProducerClient(ResourceProvider.ConnectionString, Name);
-        }
+    private EventHubProducerClient CreateProducerClient()
+    {
+        return new EventHubProducerClient(ResourceProvider.ConnectionString, Name);
+    }
 
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
-        private async ValueTask DisposeAsyncCore()
+    private async ValueTask DisposeAsyncCore()
 #pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
+    {
+        if (IsDisposed)
         {
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            if (_lazyProducerClient.IsValueCreated)
-            {
-                await _lazyProducerClient.Value.DisposeAsync()
-                    .ConfigureAwait(false);
-            }
-
-            var managementClient = await ResourceProvider.LazyManagementClient
-                .ConfigureAwait(false);
-
-            await managementClient.EventHubs.DeleteAsync(ResourceGroup, EventHubNamespace, Name)
-                .ConfigureAwait(false);
-
-            IsDisposed = true;
+            return;
         }
+
+        if (_lazyProducerClient.IsValueCreated)
+        {
+            await _lazyProducerClient.Value.DisposeAsync()
+                .ConfigureAwait(false);
+        }
+
+        var managementClient = await ResourceProvider.LazyManagementClient
+            .ConfigureAwait(false);
+
+        await managementClient.EventHubs.DeleteAsync(ResourceGroup, EventHubNamespace, Name)
+            .ConfigureAwait(false);
+
+        IsDisposed = true;
     }
 }

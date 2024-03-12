@@ -12,22 +12,19 @@
 // // See the License for the specific language governing permissions and
 // // limitations under the License.
 
-using System;
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests
+public class AutoMoqClass
 {
-    public class AutoMoqClass
+    public AutoMoqObject Add(AutoMoqObject autoMoqObject, int number)
     {
-        public AutoMoqObject Add(AutoMoqObject autoMoqObject, int number)
-        {
-            autoMoqObject.Number = autoMoqObject.Number + number;
-            return autoMoqObject;
-        }
+        autoMoqObject.Number = autoMoqObject.Number + number;
+        return autoMoqObject;
+    }
 
-        public int RandomNumber()
-        {
-            var rand = new Random();
-            return rand.Next(1, 100);
-        }
+    public int RandomNumber()
+    {
+        var rand = new Random();
+        return rand.Next(1, 100);
     }
 }
