@@ -128,7 +128,7 @@ namespace ExampleHost.FunctionApp.Tests.Fixtures
             var buildConfiguration = GetBuildConfiguration();
 
             var appHostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-            appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net6.0";
+            appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net8.0";
             appHostSettings.Port = ++port;
 
             appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
