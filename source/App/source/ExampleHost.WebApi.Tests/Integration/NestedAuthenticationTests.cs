@@ -68,7 +68,7 @@ public sealed class NestedAuthenticationTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Fact(Skip = "Client app secret is expired; we need to configure new ones in the correct integration test B2C")]
     public async Task CallingApi04Get_AuthWithToken_Allowed()
     {
         // Arrange
@@ -106,7 +106,7 @@ public sealed class NestedAuthenticationTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Fact(Skip = "Client app secret is expired; we need to configure new ones in the correct integration test B2C")]
     public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
     {
         // Arrange
