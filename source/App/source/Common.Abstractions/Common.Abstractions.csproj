@@ -63,12 +63,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Identity\UserIdentityExtensions.cs" />
-    <Compile Remove="Identity\UserIdentity.cs" />
-    <Compile Remove="Identity\IUserContext.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
