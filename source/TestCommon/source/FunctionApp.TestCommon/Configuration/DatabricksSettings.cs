@@ -12,30 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+
+/// <summary>
+/// Settings necessary for using the Databricks workspace and SQL warehouse.
+/// </summary>
+public class DatabricksSettings
 {
     /// <summary>
-    /// Settings necessary for using the Databricks workspace and SQL warehouse.
+    /// The hostname of the databricks resource.
+    /// E.g. 'https://adb-1000.azuredatabricks.net'
     /// </summary>
-    public class DatabricksSettings
-    {
-        /// <summary>
-        /// The hostname of the databricks resource.
-        /// E.g. 'https://adb-1000.azuredatabricks.net'
-        /// </summary>
-        public string WorkspaceUrl { get; internal set; }
-            = string.Empty;
+    public string WorkspaceUrl { get; internal set; }
+        = string.Empty;
 
-        /// <summary>
-        /// The access token for the workspace.
-        /// </summary>
-        public string WorkspaceAccessToken { get; internal set; }
-            = string.Empty;
+    /// <summary>
+    /// The access token for the workspace.
+    /// </summary>
+    public string WorkspaceAccessToken { get; internal set; }
+        = string.Empty;
 
-        /// <summary>
-        /// The databricks SQL warehouse id.
-        /// </summary>
-        public string WarehouseId { get; internal set; }
-            = string.Empty;
-    }
+    /// <summary>
+    /// The databricks SQL warehouse id.
+    /// </summary>
+    public string WarehouseId { get; internal set; }
+        = string.Empty;
 }

@@ -12,138 +12,136 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon;
+
+/// <summary>
+/// An xUnit fixture for supporting integration testing of an Azure Function App (container of functions).
+///
+/// By inheriting from this and override it's hooks, it can be used to ensure:
+///  * The Azure Functions host is started and the Azure functions are ready for serving requests.
+///  * The host and integration tests uses the same instances of resources (e.g. a database instance).
+/// </summary>
+public abstract class FunctionAppFixture : IAsyncLifetime
 {
-    /// <summary>
-    /// An xUnit fixture for supporting integration testing of an Azure Function App (container of functions).
-    ///
-    /// By inheriting from this and override it's hooks, it can be used to ensure:
-    ///  * The Azure Functions host is started and the Azure functions are ready for serving requests.
-    ///  * The host and integration tests uses the same instances of resources (e.g. a database instance).
-    /// </summary>
-    public abstract class FunctionAppFixture : IAsyncLifetime
+    protected FunctionAppFixture()
     {
-        protected FunctionAppFixture()
+        TestLogger = new TestDiagnosticsLogger();
+
+        HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
+        HostStartupLog = new List<string>();
+
+        var hostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
+#pragma warning disable CA2214 // Do not call overridable methods in constructors
+        OnConfigureHostSettings(hostSettings);
+#pragma warning restore CA2214 // Do not call overridable methods in constructors
+        HostManager = new FunctionAppHostManager(hostSettings, TestLogger);
+    }
+
+    public FunctionAppHostManager HostManager { get; }
+
+    public ITestDiagnosticsLogger TestLogger { get; }
+
+    protected FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
+
+    private IReadOnlyList<string> HostStartupLog { get; set; }
+
+    public async Task InitializeAsync()
+    {
+        OnConfigureEnvironment();
+
+        var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
+        await OnInitializeFunctionAppDependenciesAsync(localSettingsSnapshot).ConfigureAwait(false);
+
+        try
         {
-            TestLogger = new TestDiagnosticsLogger();
-
-            HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
-            HostStartupLog = new List<string>();
-
-            var hostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-            OnConfigureHostSettings(hostSettings);
-            HostManager = new FunctionAppHostManager(hostSettings, TestLogger);
+            HostManager.StartHost();
         }
-
-        public FunctionAppHostManager HostManager { get; }
-
-        public ITestDiagnosticsLogger TestLogger { get; }
-
-        protected FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
-
-        private IReadOnlyList<string> HostStartupLog { get; set; }
-
-        public async Task InitializeAsync()
+        catch (Exception ex)
         {
-            OnConfigureEnvironment();
-
-            var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
-            await OnInitializeFunctionAppDependenciesAsync(localSettingsSnapshot);
-
-            try
-            {
-                HostManager.StartHost();
-            }
-            catch (Exception ex)
-            {
-                HostStartupLog = HostManager.GetHostLogSnapshot();
-                await OnFunctionAppHostFailedAsync(HostStartupLog, ex);
-
-                // Rethrow
-                throw;
-            }
-
             HostStartupLog = HostManager.GetHostLogSnapshot();
-            await OnFunctionAppHostStartedAsync(HostStartupLog);
+            await OnFunctionAppHostFailedAsync(HostStartupLog, ex).ConfigureAwait(false);
+
+            // Rethrow
+            throw;
         }
 
-        public async Task DisposeAsync()
-        {
-            HostManager.Dispose();
+        HostStartupLog = HostManager.GetHostLogSnapshot();
+        await OnFunctionAppHostStartedAsync(HostStartupLog).ConfigureAwait(false);
+    }
 
-            await OnDisposeFunctionAppDependenciesAsync();
-        }
+    public Task DisposeAsync()
+    {
+        HostManager.Dispose();
 
-        /// <summary>
-        /// Use this method to attach <paramref name="testOutputHelper"/> to the host logging pipeline.
-        /// While attached, any entries written to host log pipeline will also be logged to xUnit test output.
-        /// It is important that it is only attached while a test i active. Hence, it should be attached in
-        /// the test class constructor; and detached in the test class Dispose method (using 'null').
-        /// </summary>
-        /// <param name="testOutputHelper">If a xUnit test is active, this should be the instance of xUnit's <see cref="ITestOutputHelper"/>; otherwise it should be 'null'.</param>
-        public void SetTestOutputHelper(ITestOutputHelper testOutputHelper)
-        {
-            TestLogger.TestOutputHelper = testOutputHelper;
-        }
+        return OnDisposeFunctionAppDependenciesAsync();
+    }
 
-        /// <summary>
-        /// Configure host settings to match the name, framework and configuration (debug/release) of the
-        /// function app under test.
-        /// </summary>
-        protected virtual void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
-        {
-        }
+    /// <summary>
+    /// Use this method to attach <paramref name="testOutputHelper"/> to the host logging pipeline.
+    /// While attached, any entries written to host log pipeline will also be logged to xUnit test output.
+    /// It is important that it is only attached while a test i active. Hence, it should be attached in
+    /// the test class constructor; and detached in the test class Dispose method (using 'null').
+    /// </summary>
+    /// <param name="testOutputHelper">If a xUnit test is active, this should be the instance of xUnit's <see cref="ITestOutputHelper"/>; otherwise it should be 'null'.</param>
+    public void SetTestOutputHelper(ITestOutputHelper testOutputHelper)
+    {
+        TestLogger.TestOutputHelper = testOutputHelper;
+    }
 
-        /// <summary>
-        /// Before starting the host or creating supporting manager/services, we set environment variables
-        /// to e.g. ensure the host uses the same instances of resources (e.g. a database instance).
-        /// </summary>
-        protected virtual void OnConfigureEnvironment()
-        {
-        }
+    /// <summary>
+    /// Configure host settings to match the name, framework and configuration (debug/release) of the
+    /// function app under test.
+    /// </summary>
+    protected virtual void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
+    {
+    }
 
-        /// <summary>
-        /// Settings have been frozen, meaning loaded settings will not get updated
-        /// if environment variables are changed from here on.
-        /// </summary>
-        /// <param name="localSettingsSnapshot">Loaded settings from "local.settings.json",
-        /// which might have been overriden using environment variables.</param>
-        protected virtual Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
-        {
-            return Task.CompletedTask;
-        }
+    /// <summary>
+    /// Before starting the host or creating supporting manager/services, we set environment variables
+    /// to e.g. ensure the host uses the same instances of resources (e.g. a database instance).
+    /// </summary>
+    protected virtual void OnConfigureEnvironment()
+    {
+    }
 
-        /// <summary>
-        /// Function App Host started.
-        /// </summary>
-        /// <param name="hostLogSnapshot">Contains snapshot of the output generated by the Function App Host during startup. There is not need to log this to output, as this happens already.</param>
-        protected virtual Task OnFunctionAppHostStartedAsync(IReadOnlyList<string> hostLogSnapshot)
-        {
-            return Task.CompletedTask;
-        }
+    /// <summary>
+    /// Settings have been frozen, meaning loaded settings will not get updated
+    /// if environment variables are changed from here on.
+    /// </summary>
+    /// <param name="localSettingsSnapshot">Loaded settings from "local.settings.json",
+    /// which might have been overriden using environment variables.</param>
+    protected virtual Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
+    {
+        return Task.CompletedTask;
+    }
 
-        /// <summary>
-        /// Function App Host failed during startup.
-        /// </summary>
-        /// <param name="hostLogSnapshot">Contains snapshot of the output generated by the Function App Host during startup. There is not need to log this to output, as this happens already.</param>
-        /// <param name="exception">The exception thrown during startup.</param>
-        protected virtual Task OnFunctionAppHostFailedAsync(IReadOnlyList<string> hostLogSnapshot, Exception exception)
-        {
-            return Task.CompletedTask;
-        }
+    /// <summary>
+    /// Function App Host started.
+    /// </summary>
+    /// <param name="hostLogSnapshot">Contains snapshot of the output generated by the Function App Host during startup. There is not need to log this to output, as this happens already.</param>
+    protected virtual Task OnFunctionAppHostStartedAsync(IReadOnlyList<string> hostLogSnapshot)
+    {
+        return Task.CompletedTask;
+    }
 
-        protected virtual Task OnDisposeFunctionAppDependenciesAsync()
-        {
-            return Task.CompletedTask;
-        }
+    /// <summary>
+    /// Function App Host failed during startup.
+    /// </summary>
+    /// <param name="hostLogSnapshot">Contains snapshot of the output generated by the Function App Host during startup. There is not need to log this to output, as this happens already.</param>
+    /// <param name="exception">The exception thrown during startup.</param>
+    protected virtual Task OnFunctionAppHostFailedAsync(IReadOnlyList<string> hostLogSnapshot, Exception exception)
+    {
+        return Task.CompletedTask;
+    }
+
+    protected virtual Task OnDisposeFunctionAppDependenciesAsync()
+    {
+        return Task.CompletedTask;
     }
 }

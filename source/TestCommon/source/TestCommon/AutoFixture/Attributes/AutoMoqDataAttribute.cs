@@ -17,24 +17,23 @@ using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
 using MicroElements.AutoFixture.NodaTime;
 
-namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes
+namespace Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+
+public class AutoMoqDataAttribute : AutoDataAttribute
 {
-    public class AutoMoqDataAttribute : AutoDataAttribute
-    {
-        public AutoMoqDataAttribute()
-            : base(() =>
-            {
-                var fixture = new Fixture();
-                fixture.Customize(
-                    new CompositeCustomization(
-                        new AutoMoqCustomization(),
-                        new NodaTimeCustomization()));
-
-                fixture.Behaviors.Add(new OmitOnRecursionBehavior(1));
-
-                return fixture;
-            })
+    public AutoMoqDataAttribute()
+        : base(() =>
         {
-        }
+            var fixture = new Fixture();
+            fixture.Customize(
+                new CompositeCustomization(
+                    new AutoMoqCustomization(),
+                    new NodaTimeCustomization()));
+
+            fixture.Behaviors.Add(new OmitOnRecursionBehavior(1));
+
+            return fixture;
+        })
+    {
     }
 }

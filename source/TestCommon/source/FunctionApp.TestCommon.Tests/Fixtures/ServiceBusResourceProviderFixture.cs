@@ -16,29 +16,28 @@ using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+
+/// <summary>
+/// This fixtures ensures we reuse <see cref="ConnectionString"/> and
+/// relevant instances, so we only have to retrieve an access token
+/// and values in Key Vault one time.
+/// </summary>
+public class ServiceBusResourceProviderFixture
 {
-    /// <summary>
-    /// This fixtures ensures we reuse <see cref="ConnectionString"/> and
-    /// relevant instances, so we only have to retrieve an access token
-    /// and values in Key Vault one time.
-    /// </summary>
-    public class ServiceBusResourceProviderFixture
+    public ServiceBusResourceProviderFixture()
     {
-        public ServiceBusResourceProviderFixture()
-        {
-            TestLogger = new TestDiagnosticsLogger();
+        TestLogger = new TestDiagnosticsLogger();
 
-            var integrationTestConfiguration = new IntegrationTestConfiguration();
-            ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
+        var integrationTestConfiguration = new IntegrationTestConfiguration();
+        ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
 
-            AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
-        }
-
-        public ITestDiagnosticsLogger TestLogger { get; }
-
-        public string ConnectionString { get; }
-
-        public ServiceBusAdministrationClient AdministrationClient { get; }
+        AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
     }
+
+    public ITestDiagnosticsLogger TestLogger { get; }
+
+    public string ConnectionString { get; }
+
+    public ServiceBusAdministrationClient AdministrationClient { get; }
 }

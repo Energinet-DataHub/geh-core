@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+
+public class DoProvider
 {
-    public class DoProvider
+    internal DoProvider(ServiceBusListenerMock parent, Func<ServiceBusReceivedMessage, bool> messageMatcher)
     {
-        internal DoProvider(ServiceBusListenerMock parent, Func<ServiceBusReceivedMessage, bool> messageMatcher)
-        {
-            Parent = parent;
-            MessageMatcher = messageMatcher;
-        }
+        Parent = parent;
+        MessageMatcher = messageMatcher;
+    }
 
-        private ServiceBusListenerMock Parent { get; }
+    private ServiceBusListenerMock Parent { get; }
 
-        private Func<ServiceBusReceivedMessage, bool> MessageMatcher { get; }
+    private Func<ServiceBusReceivedMessage, bool> MessageMatcher { get; }
 
-        /// <summary>
-        /// Add message handler.
-        /// </summary>
-        public async Task<ServiceBusListenerMock> DoAsync(Func<ServiceBusReceivedMessage, Task> messageHandler)
-        {
-            await Parent.AddMessageHandlerAsync(MessageMatcher, messageHandler).ConfigureAwait(false);
-            return Parent;
-        }
+    /// <summary>
+    /// Add message handler.
+    /// </summary>
+    public async Task<ServiceBusListenerMock> DoAsync(Func<ServiceBusReceivedMessage, Task> messageHandler)
+    {
+        await Parent.AddMessageHandlerAsync(MessageMatcher, messageHandler).ConfigureAwait(false);
+        return Parent;
     }
 }

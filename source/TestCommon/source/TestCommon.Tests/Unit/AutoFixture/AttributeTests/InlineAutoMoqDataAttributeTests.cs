@@ -16,20 +16,19 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests
-{
-    public class InlineAutoMoqDataAttributeTests
-    {
-        [Theory]
-        [InlineAutoMoqData]
-        public void When_ParameterInTestIsPresent_Then_SutCanBeUsed(AutoMoqClass sut)
-        {
-            // Act
-            var rand = sut.RandomNumber();
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.AutoFixture.AttributeTests;
 
-            // Assert
-            rand.Should().BeOfType(typeof(int));
-            rand.Should().BeGreaterThan(0);
-        }
+public class InlineAutoMoqDataAttributeTests
+{
+    [Theory]
+    [InlineAutoMoqData]
+    public void When_ParameterInTestIsPresent_Then_SutCanBeUsed(AutoMoqClass sut)
+    {
+        // Act
+        var rand = sut.RandomNumber();
+
+        // Assert
+        rand.Should().BeOfType(typeof(int));
+        rand.Should().BeGreaterThan(0);
     }
 }

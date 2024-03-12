@@ -12,12 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -54,7 +49,7 @@ public class DatabricksSchemaManager
     public async Task CreateSchemaAsync()
     {
         var sqlStatement = $"CREATE SCHEMA IF NOT EXISTS {SchemaName}";
-        await ExecuteSqlAsync(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
         _schemaExists = true;
     }
 
@@ -65,7 +60,7 @@ public class DatabricksSchemaManager
     public async Task DropSchemaAsync()
     {
         var sqlStatement = $"DROP SCHEMA {SchemaName} CASCADE";
-        await ExecuteSqlAsync(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
         _schemaExists = false;
     }
 
@@ -80,7 +75,7 @@ public class DatabricksSchemaManager
                 $"{c.Key} {c.Value.DataType}{(c.Value.IsNullable ? string.Empty : " NOT NULL")}"));
 
         var sqlStatement = $"CREATE TABLE IF NOT EXISTS {SchemaName}.{tableName} ({columnDefinitions})";
-        await ExecuteSqlAsync(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -102,7 +97,7 @@ public class DatabricksSchemaManager
     {
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
         var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} VALUES {values}";
-        await ExecuteSqlAsync(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -117,7 +112,7 @@ public class DatabricksSchemaManager
         var columnsNames = string.Join(", ", columnNames);
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
         var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES {values}";
-        await ExecuteSqlAsync(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -131,7 +126,7 @@ public class DatabricksSchemaManager
     {
         var columnsNames = string.Join(", ", columnNames);
         var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES ({string.Join(", ", row)})";
-        await ExecuteSqlAsync(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -144,13 +139,14 @@ public class DatabricksSchemaManager
     public async Task InsertAsync(string tableName, IEnumerable<string> row)
     {
         var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(", ", row)})";
-        await ExecuteSqlAsync(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
     }
 
     private async Task ExecuteSqlAsync(string sqlStatement)
     {
         sqlStatement = sqlStatement.Trim();
-        if (string.IsNullOrEmpty(sqlStatement)) return;
+        if (string.IsNullOrEmpty(sqlStatement))
+            return;
 
         var jsonRequest = PrepareJsonRequest(sqlStatement);
         var httpResponse = await PostSqlAsync(jsonRequest).ConfigureAwait(false);

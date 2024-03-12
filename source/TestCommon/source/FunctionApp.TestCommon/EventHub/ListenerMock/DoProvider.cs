@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using Azure.Messaging.EventHubs;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
+
+public class DoProvider
 {
-    public class DoProvider
+    internal DoProvider(EventHubListenerMock parent, Func<EventData, bool> eventMatcher)
     {
-        internal DoProvider(EventHubListenerMock parent, Func<EventData, bool> eventMatcher)
-        {
-            Parent = parent;
-            EventMatcher = eventMatcher;
-        }
+        Parent = parent;
+        EventMatcher = eventMatcher;
+    }
 
-        private EventHubListenerMock Parent { get; }
+    private EventHubListenerMock Parent { get; }
 
-        private Func<EventData, bool> EventMatcher { get; }
+    private Func<EventData, bool> EventMatcher { get; }
 
-        /// <summary>
-        /// Add message handler.
-        /// </summary>
-        public async Task<EventHubListenerMock> DoAsync(Func<EventData, Task> eventHandler)
-        {
-            await Parent.AddEventHandlerAsync(EventMatcher, eventHandler).ConfigureAwait(false);
-            return Parent;
-        }
+    /// <summary>
+    /// Add message handler.
+    /// </summary>
+    public async Task<EventHubListenerMock> DoAsync(Func<EventData, Task> eventHandler)
+    {
+        await Parent.AddEventHandlerAsync(EventMatcher, eventHandler).ConfigureAwait(false);
+        return Parent;
     }
 }

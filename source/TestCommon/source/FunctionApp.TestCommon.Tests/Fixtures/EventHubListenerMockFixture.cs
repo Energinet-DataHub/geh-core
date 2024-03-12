@@ -12,56 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Xunit;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+
+/// <summary>
+/// This fixtures ensures we reuse <see cref="EventHubConnectionString"/> and
+/// relevant instances, so we only have to retrieve an access token
+/// and values in Key Vault one time.
+/// It also ensures we use the local storage emulator for our blob container.
+/// </summary>
+public class EventHubListenerMockFixture : IAsyncLifetime
 {
-    /// <summary>
-    /// This fixtures ensures we reuse <see cref="EventHubConnectionString"/> and
-    /// relevant instances, so we only have to retrieve an access token
-    /// and values in Key Vault one time.
-    /// It also ensures we use the local storage emulator for our blob container.
-    /// </summary>
-    public class EventHubListenerMockFixture : IAsyncLifetime
+    public EventHubListenerMockFixture()
     {
-        public EventHubListenerMockFixture()
-        {
-            TestLogger = new TestDiagnosticsLogger();
+        TestLogger = new TestDiagnosticsLogger();
 
-            AzuriteManager = new AzuriteManager();
-            StorageConnectionString = "UseDevelopmentStorage=true";
+        AzuriteManager = new AzuriteManager();
+        StorageConnectionString = "UseDevelopmentStorage=true";
 
-            var integrationTestConfiguration = new IntegrationTestConfiguration();
-            EventHubConnectionString = integrationTestConfiguration.EventHubConnectionString;
-            ResourceManagementSettings = integrationTestConfiguration.ResourceManagementSettings;
-        }
+        var integrationTestConfiguration = new IntegrationTestConfiguration();
+        EventHubConnectionString = integrationTestConfiguration.EventHubConnectionString;
+        ResourceManagementSettings = integrationTestConfiguration.ResourceManagementSettings;
+    }
 
-        public ITestDiagnosticsLogger TestLogger { get; }
+    public ITestDiagnosticsLogger TestLogger { get; }
 
-        public string StorageConnectionString { get; }
+    public string StorageConnectionString { get; }
 
-        public string EventHubConnectionString { get; }
+    public string EventHubConnectionString { get; }
 
-        public AzureResourceManagementSettings ResourceManagementSettings { get; }
+    public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
-        private AzuriteManager AzuriteManager { get; }
+    private AzuriteManager AzuriteManager { get; }
 
-        public Task InitializeAsync()
-        {
-            AzuriteManager.StartAzurite();
+    public Task InitializeAsync()
+    {
+        AzuriteManager.StartAzurite();
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        public Task DisposeAsync()
-        {
-            AzuriteManager.Dispose();
+    public Task DisposeAsync()
+    {
+        AzuriteManager.Dispose();
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

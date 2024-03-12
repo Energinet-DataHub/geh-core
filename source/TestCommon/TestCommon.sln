@@ -5,7 +5,6 @@ VisualStudioVersion = 17.2.32802.462
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{3596B88D-1C47-4D10-AFE8-0EE81AD6B968}"
 	ProjectSection(SolutionItems) = preProject
-		documents\b2ctokenretrieval.md = documents\b2ctokenretrieval.md
 		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
 		documents\eventhublistenermock.md = documents\eventhublistenermock.md
@@ -29,6 +28,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{1A45D1B9-D8D4-47A4-A201-D2D585089F68}"
 	ProjectSection(SolutionItems) = preProject
 		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_ConfigurationFiles", "{64BDA1D4-CF5E-4528-994F-00F81D596ED2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Global

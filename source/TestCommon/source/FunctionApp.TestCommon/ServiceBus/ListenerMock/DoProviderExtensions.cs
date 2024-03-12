@@ -12,49 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+
+public static class DoProviderExtensions
 {
-    public static class DoProviderExtensions
+    public static async Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount, Func<ServiceBusReceivedMessage, Task> messageHandler)
     {
-        public static async Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount, Func<ServiceBusReceivedMessage, Task> messageHandler)
+        var whenAllReceivedEvent = new CountdownEvent(expectedCount);
+
+        await provider.DoAsync(async (message) =>
         {
-            var whenAllReceivedEvent = new CountdownEvent(expectedCount);
+            await messageHandler(message).ConfigureAwait(false);
+            whenAllReceivedEvent.Signal();
+        }).ConfigureAwait(false);
 
-            await provider.DoAsync(async (message) =>
-            {
-                await messageHandler(message).ConfigureAwait(false);
-                whenAllReceivedEvent.Signal();
-            }).ConfigureAwait(false);
+        return whenAllReceivedEvent;
+    }
 
-            return whenAllReceivedEvent;
-        }
+    public static Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount)
+    {
+        return VerifyCountAsync(provider, expectedCount, _ => Task.CompletedTask);
+    }
 
-        public static Task<CountdownEvent> VerifyCountAsync(this DoProvider provider, int expectedCount)
+    public static async Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider, Func<ServiceBusReceivedMessage, Task> messageHandler)
+    {
+        var whenOnceEvent = new ManualResetEventSlim(false);
+
+        await provider.DoAsync(async (message) =>
         {
-            return VerifyCountAsync(provider, expectedCount, _ => Task.CompletedTask);
-        }
+            await messageHandler(message).ConfigureAwait(false);
+            whenOnceEvent.Set();
+        }).ConfigureAwait(false);
 
-        public static async Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider, Func<ServiceBusReceivedMessage, Task> messageHandler)
-        {
-            var whenOnceEvent = new ManualResetEventSlim(false);
+        return whenOnceEvent;
+    }
 
-            await provider.DoAsync(async (message) =>
-            {
-                await messageHandler(message).ConfigureAwait(false);
-                whenOnceEvent.Set();
-            }).ConfigureAwait(false);
-
-            return whenOnceEvent;
-        }
-
-        public static Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider)
-        {
-            return VerifyOnceAsync(provider, _ => Task.CompletedTask);
-        }
+    public static Task<ManualResetEventSlim> VerifyOnceAsync(this DoProvider provider)
+    {
+        return VerifyOnceAsync(provider, _ => Task.CompletedTask);
     }
 }

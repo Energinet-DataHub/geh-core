@@ -12,100 +12,98 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using FluentAssertions;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.FluentAssertionsExtensions
+namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.FluentAssertionsExtensions;
+
+public class ObjectAssertionsExtensionsTest
 {
-    public class ObjectAssertionsExtensionsTest
+    [Fact]
+    public void PropertyIsNotNull()
     {
-        [Fact]
-        public void PropertyIsNotNull()
+        // Arrange
+        var sut = new RecursiveTestHelperWithOneProp
         {
-            // Arrange
-            var sut = new RecursiveTestHelperWithOneProp
-            {
-                Number = 1,
-            };
+            Number = 1,
+        };
 
-            // Assert
-            sut.Should().NotContainNullsOrEmptyEnumerables();
-        }
+        // Assert
+        sut.Should().NotContainNullsOrEmptyEnumerables();
+    }
 
-        [Fact]
-        public void PropertyIsNull()
+    [Fact]
+    public void PropertyIsNull()
+    {
+        // Arrange
+        var sut = new RecursiveTestHelperWithOneProp
         {
-            // Arrange
-            var sut = new RecursiveTestHelperWithOneProp
-            {
-                Number = null,
-            };
+            Number = null,
+        };
 
-            // Assert
-            Assert.Throws<XunitException>(() => sut.Should().NotContainNullsOrEmptyEnumerables());
-        }
+        // Assert
+        Assert.Throws<XunitException>(() => sut.Should().NotContainNullsOrEmptyEnumerables());
+    }
 
-        [Fact]
-        public void NestedPropertyIsNull()
+    [Fact]
+    public void NestedPropertyIsNull()
+    {
+        // Arrange
+        var sut = new RecursiveTestHelperWithOnePropAndOneList { Number = 1, RecursiveTestHelperWithOneProps = null! };
+
+        // Assert
+        Assert.Throws<XunitException>(() => sut.Should().NotContainNullsOrEmptyEnumerables());
+    }
+
+    [Fact]
+    public void NestedPropertyIsEmpty()
+    {
+        // Arrange
+        var sut = new RecursiveTestHelperWithOnePropAndOneList { Number = 1, RecursiveTestHelperWithOneProps = new List<RecursiveTestHelperWithOneProp>() };
+
+        // Assert
+        Assert.Throws<XunitException>(() => sut.Should().NotContainNullsOrEmptyEnumerables());
+    }
+
+    [Fact]
+    public void NestedPropertyIsNotNullContainedObjectAndItsProbIsNotNull()
+    {
+        // Arrange
+        var sut = new RecursiveTestHelperWithOnePropAndOneList
         {
-            // Arrange
-            var sut = new RecursiveTestHelperWithOnePropAndOneList { Number = 1, RecursiveTestHelperWithOneProps = null! };
+            Number = 1,
+            RecursiveTestHelperWithOneProps = new List<RecursiveTestHelperWithOneProp> { new RecursiveTestHelperWithOneProp { Number = 1 } },
+        };
 
-            // Assert
-            Assert.Throws<XunitException>(() => sut.Should().NotContainNullsOrEmptyEnumerables());
-        }
+        // Assert
+        sut.Should().NotContainNullsOrEmptyEnumerables();
+    }
 
-        [Fact]
-        public void NestedPropertyIsEmpty()
-        {
-            // Arrange
-            var sut = new RecursiveTestHelperWithOnePropAndOneList { Number = 1, RecursiveTestHelperWithOneProps = new List<RecursiveTestHelperWithOneProp>() };
+    [Fact]
+    public void StackOverflowGuard()
+    {
+        // Arrange
+        var testHelper1 = new RecursiveTestHelper();
+        var testHelper2 = new RecursiveTestHelper();
+        testHelper1.TestHelperHelper = testHelper2;
+        testHelper2.TestHelperHelper = testHelper1;
 
-            // Assert
-            Assert.Throws<XunitException>(() => sut.Should().NotContainNullsOrEmptyEnumerables());
-        }
+        // Assert
+        testHelper1.Should().NotContainNullsOrEmptyEnumerables();
+    }
 
-        [Fact]
-        public void NestedPropertyIsNotNullContainedObjectAndItsProbIsNotNull()
-        {
-            // Arrange
-            var sut = new RecursiveTestHelperWithOnePropAndOneList
-            {
-                Number = 1,
-                RecursiveTestHelperWithOneProps = new List<RecursiveTestHelperWithOneProp> { new RecursiveTestHelperWithOneProp { Number = 1 } },
-            };
+    [Fact]
+    public void StackOverflowListGuard()
+    {
+        // Arrange
+        var testHelper1 = new RecursiveTestListHelper { List = new List<RecursiveTestListHelper>() };
+        var testHelper2 = new RecursiveTestListHelper { List = new List<RecursiveTestListHelper>() };
+        testHelper1.List.Add(testHelper2);
+        testHelper2.List.Add(testHelper1);
 
-            // Assert
-            sut.Should().NotContainNullsOrEmptyEnumerables();
-        }
-
-        [Fact]
-        public void StackOverflowGuard()
-        {
-            // Arrange
-            var testHelper1 = new RecursiveTestHelper();
-            var testHelper2 = new RecursiveTestHelper();
-            testHelper1.TestHelperHelper = testHelper2;
-            testHelper2.TestHelperHelper = testHelper1;
-
-            // Assert
-            testHelper1.Should().NotContainNullsOrEmptyEnumerables();
-        }
-
-        [Fact]
-        public void StackOverflowListGuard()
-        {
-            // Arrange
-            var testHelper1 = new RecursiveTestListHelper { List = new List<RecursiveTestListHelper>() };
-            var testHelper2 = new RecursiveTestListHelper { List = new List<RecursiveTestListHelper>() };
-            testHelper1.List.Add(testHelper2);
-            testHelper2.List.Add(testHelper1);
-
-            // Assert
-            testHelper1.Should().NotContainNullsOrEmptyEnumerables();
-        }
+        // Assert
+        testHelper1.Should().NotContainNullsOrEmptyEnumerables();
     }
 }

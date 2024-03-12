@@ -12,29 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
+
+/// <summary>
+/// Actually event hub listener mock extensions, but we want to separate the fluent API
+/// and make it stand out on its own.
+/// </summary>
+public static class WhenProviderExtensions
 {
-    /// <summary>
-    /// Actually event hub listener mock extensions, but we want to separate the fluent API
-    /// and make it stand out on its own.
-    /// </summary>
-    public static class WhenProviderExtensions
+    public static DoProvider WhenAny(this EventHubListenerMock provider)
     {
-        public static DoProvider WhenAny(this EventHubListenerMock provider)
-        {
-            return provider.When(_ => true);
-        }
+        return provider.When(_ => true);
+    }
 
-        public static DoProvider WhenMessageId(this EventHubListenerMock provider, string? messageId = null)
-        {
-            return provider.When(eventData =>
-                eventData.MessageId == messageId);
-        }
+    public static DoProvider WhenMessageId(this EventHubListenerMock provider, string? messageId = null)
+    {
+        return provider.When(eventData =>
+            eventData.MessageId == messageId);
+    }
 
-        public static DoProvider WhenCorrelationId(this EventHubListenerMock provider, string? correlationId = null)
-        {
-            return provider.When(eventData =>
-                eventData.CorrelationId == correlationId);
-        }
+    public static DoProvider WhenCorrelationId(this EventHubListenerMock provider, string? correlationId = null)
+    {
+        return provider.When(eventData =>
+            eventData.CorrelationId == correlationId);
     }
 }

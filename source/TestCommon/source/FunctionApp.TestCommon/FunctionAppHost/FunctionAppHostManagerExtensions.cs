@@ -12,49 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+
+public static class FunctionAppHostManagerExtensions
 {
-    public static class FunctionAppHostManagerExtensions
+    /// <summary>
+    /// Determine if the <paramref name="functionName"/> was executed by searching the log.
+    /// </summary>
+    /// <param name="hostManager"></param>
+    /// <param name="functionName">For some azure function tool versions, this name must contain 'Functions.' as a prefix for the actual function name.</param>
+    /// <returns>True if the log contains any enry indicating the function was executed; otherwise false.</returns>
+    public static bool CheckIfFunctionWasExecuted(this FunctionAppHostManager hostManager, string functionName)
     {
-        /// <summary>
-        /// Determine if the <paramref name="functionName"/> was executed by searching the log.
-        /// </summary>
-        /// <param name="hostManager"></param>
-        /// <param name="functionName">For some azure function tool versions, this name must contain 'Functions.' as a prefix for the actual function name.</param>
-        /// <returns>True if the log contains any enry indicating the function was executed; otherwise false.</returns>
-        public static bool CheckIfFunctionWasExecuted(this FunctionAppHostManager hostManager, string functionName)
+        if (hostManager is null)
         {
-            if (hostManager is null)
-            {
-                throw new ArgumentNullException(nameof(hostManager));
-            }
-
-            return hostManager.GetHostLogSnapshot()
-                .Any(log => log.Contains($"Executed '{functionName}'", StringComparison.OrdinalIgnoreCase));
+            throw new ArgumentNullException(nameof(hostManager));
         }
 
-        /// <summary>
-        /// Manually trigger a function. Especially usefull for testing timer triggered functions.
-        /// </summary>
-        /// <param name="hostManager"></param>
-        /// <param name="functionName"></param>
-        /// <returns>The task object representing the asynchronous operation.</returns>
-        public static Task<HttpResponseMessage> TriggerFunctionAsync(this FunctionAppHostManager hostManager, string functionName)
-        {
-            if (hostManager is null)
-            {
-                throw new ArgumentNullException(nameof(hostManager));
-            }
+        return hostManager.GetHostLogSnapshot()
+            .Any(log => log.Contains($"Executed '{functionName}'", StringComparison.OrdinalIgnoreCase));
+    }
 
-            return hostManager.HttpClient.PostAsync(
-                new Uri($"/admin/functions/{functionName}", UriKind.Relative),
-                new StringContent("{\"input\":\"\"}", Encoding.UTF8, "application/json"));
+    /// <summary>
+    /// Manually trigger a function. Especially usefull for testing timer triggered functions.
+    /// </summary>
+    /// <param name="hostManager"></param>
+    /// <param name="functionName"></param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    public static Task<HttpResponseMessage> TriggerFunctionAsync(this FunctionAppHostManager hostManager, string functionName)
+    {
+        if (hostManager is null)
+        {
+            throw new ArgumentNullException(nameof(hostManager));
         }
+
+        return hostManager.HttpClient.PostAsync(
+            new Uri($"/admin/functions/{functionName}", UriKind.Relative),
+            new StringContent("{\"input\":\"\"}", Encoding.UTF8, "application/json"));
     }
 }

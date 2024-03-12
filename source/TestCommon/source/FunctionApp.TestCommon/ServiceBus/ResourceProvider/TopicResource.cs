@@ -12,78 +12,74 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+
+public class TopicResource : IAsyncDisposable
 {
-    public class TopicResource : IAsyncDisposable
+    private readonly TopicProperties _properties;
+    private readonly Lazy<ServiceBusSender> _lazySenderClient;
+    private readonly IList<SubscriptionProperties> _subscriptions;
+
+    internal TopicResource(ServiceBusResourceProvider resourceProvider, TopicProperties properties)
     {
-        private readonly TopicProperties _properties;
-        private readonly Lazy<ServiceBusSender> _lazySenderClient;
-        private readonly IList<SubscriptionProperties> _subscriptions;
+        ResourceProvider = resourceProvider;
 
-        internal TopicResource(ServiceBusResourceProvider resourceProvider, TopicProperties properties)
-        {
-            ResourceProvider = resourceProvider;
+        _properties = properties;
+        _lazySenderClient = new Lazy<ServiceBusSender>(CreateSenderClient);
+        _subscriptions = new List<SubscriptionProperties>();
 
-            _properties = properties;
-            _lazySenderClient = new Lazy<ServiceBusSender>(CreateSenderClient);
-            _subscriptions = new List<SubscriptionProperties>();
+        Subscriptions = new ReadOnlyCollection<SubscriptionProperties>(_subscriptions);
+    }
 
-            Subscriptions = new ReadOnlyCollection<SubscriptionProperties>(_subscriptions);
-        }
+    public string Name => _properties.Name;
 
-        public string Name => _properties.Name;
+    public ServiceBusSender SenderClient => _lazySenderClient.Value;
 
-        public ServiceBusSender SenderClient => _lazySenderClient.Value;
+    public IReadOnlyCollection<SubscriptionProperties> Subscriptions { get; }
 
-        public IReadOnlyCollection<SubscriptionProperties> Subscriptions { get; }
+    public bool IsDisposed { get; private set; }
 
-        public bool IsDisposed { get; private set; }
+    private ServiceBusResourceProvider ResourceProvider { get; }
 
-        private ServiceBusResourceProvider ResourceProvider { get; }
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+        GC.SuppressFinalize(this);
+    }
 
-        public async ValueTask DisposeAsync()
-        {
-            await DisposeAsyncCore()
-                .ConfigureAwait(false);
-            GC.SuppressFinalize(this);
-        }
+    internal void AddSubscription(SubscriptionProperties subscriptionProperties)
+    {
+        _subscriptions.Add(subscriptionProperties);
+    }
 
-        internal void AddSubscription(SubscriptionProperties subscriptionProperties)
-        {
-            _subscriptions.Add(subscriptionProperties);
-        }
-
-        private ServiceBusSender CreateSenderClient()
-        {
-            return ResourceProvider.Client.CreateSender(Name);
-        }
+    private ServiceBusSender CreateSenderClient()
+    {
+        return ResourceProvider.Client.CreateSender(Name);
+    }
 
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
-        private async ValueTask DisposeAsyncCore()
+    private async ValueTask DisposeAsyncCore()
 #pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
+    {
+        if (IsDisposed)
         {
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            if (_lazySenderClient.IsValueCreated)
-            {
-                await _lazySenderClient.Value.DisposeAsync()
-                    .ConfigureAwait(false);
-            }
-
-            await ResourceProvider.AdministrationClient.DeleteTopicAsync(Name)
-                .ConfigureAwait(false);
-
-            IsDisposed = true;
+            return;
         }
+
+        if (_lazySenderClient.IsValueCreated)
+        {
+            await _lazySenderClient.Value.DisposeAsync()
+                .ConfigureAwait(false);
+        }
+
+        await ResourceProvider.AdministrationClient.DeleteTopicAsync(Name)
+            .ConfigureAwait(false);
+
+        IsDisposed = true;
     }
 }

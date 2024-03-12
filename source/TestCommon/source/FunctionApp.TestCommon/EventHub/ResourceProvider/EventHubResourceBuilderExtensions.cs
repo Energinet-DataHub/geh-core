@@ -12,17 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider
+public static class EventHubResourceBuilderExtensions
 {
-    public static class EventHubResourceBuilderExtensions
+    public static EventHubResourceBuilder SetEnvironmentVariableToEventHubName(this EventHubResourceBuilder builder, string variable)
     {
-        public static EventHubResourceBuilder SetEnvironmentVariableToEventHubName(this EventHubResourceBuilder builder, string variable)
-        {
-            builder.Do(eventHubProperties => Environment.SetEnvironmentVariable(variable, eventHubProperties.Name));
+        builder.Do(eventHubProperties => Environment.SetEnvironmentVariable(variable, eventHubProperties.Name));
 
-            return builder;
-        }
+        return builder;
     }
 }
