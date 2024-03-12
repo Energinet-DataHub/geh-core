@@ -1,13 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <LangVersion>latest</LangVersion>
     <AssemblyName>Energinet.DataHub.Core.Messaging.Communication</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Messaging.Communication</RootNamespace>
   </PropertyGroup>
