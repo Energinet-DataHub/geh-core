@@ -85,7 +85,7 @@ public sealed class AuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationResult = await Fixture.GetTokenAsync();
         var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
 
         // Act
@@ -105,7 +105,7 @@ public sealed class AuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationResult = await Fixture.GetTokenAsync();
         var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
 
         // Act
@@ -122,7 +122,7 @@ public sealed class AuthenticationTests
     public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
     {
         // Arrange
-        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationResult = await Fixture.GetTokenAsync();
         var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
 
         // Act
