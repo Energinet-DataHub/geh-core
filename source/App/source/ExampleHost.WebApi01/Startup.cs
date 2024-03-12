@@ -47,7 +47,7 @@ namespace ExampleHost.WebApi01
             services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
             {
                 var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
-                httpClient.BaseAddress = new Uri(baseUrl);
+                httpClient.BaseAddress = new Uri(baseUrl!);
             });
 
             services.AddHostedService<SomeTrigger>();
