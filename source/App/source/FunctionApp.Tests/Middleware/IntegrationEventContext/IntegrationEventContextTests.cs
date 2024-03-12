@@ -94,13 +94,13 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void ReadMetadata_WhenMessageTypeNotSet_ThrowsException(string invalidMessageType)
+        public void ReadMetadata_WhenMessageTypeNotSet_ThrowsException(string? invalidMessageType)
         {
             // Arrange
             var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             // Act
-            target.SetMetadata(invalidMessageType, Instant.MaxValue, "8CD445F0-786B-4F8A-ACC5-F9E23339448E");
+            target.SetMetadata(invalidMessageType!, Instant.MaxValue, "8CD445F0-786B-4F8A-ACC5-F9E23339448E");
 
             // Act + Assert
             target
@@ -113,13 +113,13 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Middleware.IntegrationEve
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void ReadMetadata_WhenCorrelationIdNotSet_ThrowsException(string invalidCorrelationId)
+        public void ReadMetadata_WhenCorrelationIdNotSet_ThrowsException(string? invalidCorrelationId)
         {
             // Arrange
             var target = new App.Common.Abstractions.IntegrationEventContext.IntegrationEventContext();
 
             // Act
-            target.SetMetadata("some_message_type", Instant.MaxValue, invalidCorrelationId);
+            target.SetMetadata("some_message_type", Instant.MaxValue, invalidCorrelationId!);
 
             // Act + Assert
             target
