@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 9.0.0
+
+- Upgraded to .NET 8.0 and updated NuGet packages to match.
+- Removed obsolete project `Common.Security` and other obsolete code.
+
 ## Version 8.3.2
 
 - No functional change
