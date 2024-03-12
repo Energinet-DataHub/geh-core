@@ -35,7 +35,7 @@ public sealed class Startup
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key")),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key")),
             });
 
         services.AddControllers();
