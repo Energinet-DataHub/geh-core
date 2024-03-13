@@ -23,7 +23,6 @@ on:
     paths:
       - source/App/source/Common/**
       - source/App/source/Common.Abstractions/**
-      - source/App/source/Common.Security/**
       - source/App/source/FunctionApp/**
       - source/App/source/WebApp/**
       - .github/workflows/app-common-bundle-publish.yml
@@ -92,11 +91,6 @@ jobs:
         with:
           project_path: ./source/App/source/Common.Abstractions/Common.Abstractions.csproj
 
-      - name: Pack Common.Security project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
-        with:
-          project_path: ./source/App/source/Common.Security/Common.Security.csproj
-
       - name: Pack FunctionApp project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
@@ -114,7 +108,6 @@ jobs:
           files: |
             source/App/source/Common/**/*.*
             source/App/source/Common.Abstractions/**/*.*
-            source/App/source/Common.Security/**/*.*
             source/App/source/FunctionApp/**/*.*
             source/App/source/WebApp/**/*.*
             .github/workflows/app-common-bundle-publish.yml
