@@ -67,6 +67,10 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
         public HttpClient Web04HttpClient { get; }
 
+        /// <summary>
+        /// This is not the actual BFF but a test app registration that allows
+        /// us to verify some of the JWT code.
+        /// </summary>
         private string BffAppId { get; }
 
         private IWebHost Web04Host { get; }
