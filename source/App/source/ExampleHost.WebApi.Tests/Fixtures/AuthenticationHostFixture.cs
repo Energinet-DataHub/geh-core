@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using Xunit;
 
@@ -29,6 +30,9 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
         {
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
+
+            ////BffAppId = IntegrationTestConfiguration.Configuration.GetValue<string>("AZURE-B2C-BFF-APP-ID");
+            BffAppId = "3648e1ec-a357-4684-ab21-65433642e5dd";
 
             Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
@@ -60,9 +64,11 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
         public string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
 
-        public string Audience => IntegrationTestConfiguration.B2CSettings.BackendAppId;
+        public string Audience => BffAppId;
 
         public HttpClient Web04HttpClient { get; }
+
+        private string BffAppId { get; }
 
         private IWebHost Web04Host { get; }
 
@@ -73,19 +79,14 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         /// </summary>
         public Task<AuthenticationResult> GetTokenAsync()
         {
-            // TODO: Might have to create another client app for these tests(?)
-            var clientId = IntegrationTestConfiguration.B2CSettings.ServicePrincipalId;
-            var clientSecret = IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret;
-
             var confidentialClientApp = ConfidentialClientApplicationBuilder
-                .Create(clientId)
-                .WithClientSecret(clientSecret)
+                .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
+                .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
                 .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
                 .Build();
 
-            // TODO: Might have to create another backend app for these tests(?)
             return confidentialClientApp
-                .AcquireTokenForClient(scopes: new[] { $"{IntegrationTestConfiguration.B2CSettings.BackendAppId}/.default" })
+                .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
                 .ExecuteAsync();
         }
 

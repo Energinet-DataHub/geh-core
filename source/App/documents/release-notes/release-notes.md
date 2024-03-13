@@ -3,11 +3,11 @@
 ## Version 9.0.0
 
 - Removed code that was not used any where:
-  - The `Common.Security` project.
-  - In `Common` project the namespaces and types `Identity.*`, `Parsers.*`, `ActorContext`.
-  - In `Common.Abstractions` project the namespaces and types `Actors.*`, `Identity.*`, `IntegrationEventContext.*`, `Security.*` and `ServieBus.*`.
-  - In `FunctionApp` project the namespaces and types `Middleware.*`.
-  - In `WebApp` project the namespaces and types `Hosting.*`.
+    - The `Common.Security` project.
+    - In `Common` project the namespaces and types `Identity.*`, `Parsers.*`, `ActorContext`.
+    - In `Common.Abstractions` project the namespaces and types `Actors.*`, `Identity.*`, `IntegrationEventContext.*`, `Security.*` and `ServieBus.*`.
+    - In `FunctionApp` project the namespaces and types `Middleware.*`.
+    - In `WebApp` project the namespaces and types `Hosting.*`.
 
 ## Version 8.3.2
 
