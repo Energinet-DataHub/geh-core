@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using Xunit;
 
@@ -31,6 +29,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         {
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
+            //// TODO: Retrieve App Id from KV secret when it's available
             ////BffAppId = IntegrationTestConfiguration.Configuration.GetValue<string>("AZURE-B2C-BFF-APP-ID");
             BffAppId = "3648e1ec-a357-4684-ab21-65433642e5dd";
 
