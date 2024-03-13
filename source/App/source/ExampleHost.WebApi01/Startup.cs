@@ -50,15 +50,9 @@ namespace ExampleHost.WebApi01
                 httpClient.BaseAddress = new Uri(baseUrl);
             });
 
-            services.AddHostedService<SomeTrigger>();
-            services.AddSingleton<SomeTrigger.SomeWorker>();
-            // Ensure we register the "Thrower" if we start the hot locally, but not if this was already registered by tests.
-            services.TryAddSingleton<SomeTrigger.SomeWorker.Thrower>();
-
             services
                 .AddHealthChecks()
-                .AddLiveCheck()
-                .AddRepeatingTriggerHealthCheck<SomeTrigger>(TimeSpan.FromMilliseconds(500));
+                .AddLiveCheck();
         }
 
         /// <summary>

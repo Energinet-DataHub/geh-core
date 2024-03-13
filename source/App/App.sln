@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{FC132C56-E963-4AE8-AA5B-4F78C2FCD3DB}"
 	ProjectSection(SolutionItems) = preProject
 		documents\authorization.md = documents\authorization.md
-		documents\correlationIdMiddleware.md = documents\correlationIdMiddleware.md
 		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
 		documents\extensions.md = documents\extensions.md

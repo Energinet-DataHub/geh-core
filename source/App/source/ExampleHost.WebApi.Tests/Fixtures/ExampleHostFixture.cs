@@ -45,7 +45,6 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             Environment.SetEnvironmentVariable(WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl, web02BaseUrl);
             Web01Host = WebHost.CreateDefaultBuilder()
                 .UseStartup<WebApi01.Startup>()
-                .ConfigureServices(collection => collection.AddSingleton<SomeTrigger.SomeWorker.Thrower>(_ => Thrower))
                 .UseUrls(web01BaseUrl)
                 .Build();
 
@@ -56,8 +55,6 @@ namespace ExampleHost.WebApi.Tests.Fixtures
 
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         }
-
-        public SomeTrigger.SomeWorker.Thrower Thrower { get; } = new();
 
         public HttpClient Web01HttpClient { get; }
 
