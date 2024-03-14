@@ -76,7 +76,7 @@ public class MockedTokenController : ControllerBase
     public async Task<IActionResult> GetTokenAsync()
     {
         using var body = new StreamReader(Request.Body);
-        var rawExternalToken = await body.ReadToEndAsync();
+        var rawExternalToken = await body.ReadToEndAsync().ConfigureAwait(false);
 
         var externalToken = new JwtSecurityToken(rawExternalToken);
         var tokenClaim = new Claim(TokenClaim, rawExternalToken);

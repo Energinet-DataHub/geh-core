@@ -12,22 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks
+namespace Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+
+/// <summary>
+/// Handler to support health checks endpoint in a function app.
+/// </summary>
+public interface IHealthCheckEndpointHandler
 {
     /// <summary>
-    /// Handler to support health checks endpoint in a function app.
+    /// Handle health checks based on <paramref name="endpoint"/>.
     /// </summary>
-    public interface IHealthCheckEndpointHandler
-    {
-        /// <summary>
-        /// Handle health checks based on <paramref name="endpoint"/>.
-        /// </summary>
-        /// <param name="httpRequest">Incoming health check request.</param>
-        /// <param name="endpoint">Incoming health check endpoint. Can be "live" for liveness check, or "ready" for readiness check.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        Task<HttpResponseData> HandleAsync(HttpRequestData httpRequest, string endpoint);
-    }
+    /// <param name="httpRequest">Incoming health check request.</param>
+    /// <param name="endpoint">Incoming health check endpoint. Can be "live" for liveness check, or "ready" for readiness check.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+    Task<HttpResponseData> HandleAsync(HttpRequestData httpRequest, string endpoint);
 }

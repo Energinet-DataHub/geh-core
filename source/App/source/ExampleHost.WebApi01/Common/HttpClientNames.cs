@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.WebApi01.Common
+namespace ExampleHost.WebApi01.Common;
+
+public static class HttpClientNames
 {
-    public static class HttpClientNames
-    {
-        public const string WebApi02 = "WebApi02";
-    }
+    public const string WebApi02 = "WebApi02";
 }

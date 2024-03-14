@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Reflection;
 
-namespace Energinet.DataHub.Core.App.Common.Reflection
+namespace Energinet.DataHub.Core.App.Common.Reflection;
+
+public static class AssemblyExtensions
 {
-    public static class AssemblyExtensions
+    public static AssemblyInformationalVersionAttribute? GetAssemblyInformationalVersionAttribute(this Assembly assembly)
     {
-        public static AssemblyInformationalVersionAttribute? GetAssemblyInformationalVersionAttribute(this Assembly assembly)
-        {
-            return Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute))
-                as AssemblyInformationalVersionAttribute;
-        }
+        return Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute))
+            as AssemblyInformationalVersionAttribute;
     }
 }

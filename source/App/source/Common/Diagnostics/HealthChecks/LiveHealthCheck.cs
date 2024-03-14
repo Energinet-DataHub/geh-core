@@ -12,24 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
+namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+
+public class LiveHealthCheck : IHealthCheck
 {
-    public class LiveHealthCheck : IHealthCheck
+    public LiveHealthCheck(string versionInformation)
     {
-        public LiveHealthCheck(string versionInformation)
-        {
-            VersionInformation = versionInformation;
-        }
+        VersionInformation = versionInformation;
+    }
 
-        public string VersionInformation { get; }
+    public string VersionInformation { get; }
 
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(HealthCheckResult.Healthy(VersionInformation));
-        }
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(HealthCheckResult.Healthy(VersionInformation));
     }
 }

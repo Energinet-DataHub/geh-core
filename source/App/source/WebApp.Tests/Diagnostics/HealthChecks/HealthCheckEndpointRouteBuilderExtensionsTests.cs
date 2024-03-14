@@ -13,42 +13,40 @@
 // limitations under the License.
 
 using System.Net;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.WebApp.Tests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 
-namespace Energinet.DataHub.Core.App.WebApp.Tests.Diagnostics.HealthChecks
+namespace Energinet.DataHub.Core.App.WebApp.Tests.Diagnostics.HealthChecks;
+
+public class HealthCheckEndpointRouteBuilderExtensionsTests
+    : IClassFixture<HealthChecksFixture>
 {
-    public class HealthCheckEndpointRouteBuilderExtensionsTests
-        : IClassFixture<HealthChecksFixture>
+    private readonly HealthChecksFixture _fixture;
+
+    public HealthCheckEndpointRouteBuilderExtensionsTests(HealthChecksFixture fixture)
     {
-        private readonly HealthChecksFixture _fixture;
+        _fixture = fixture;
+    }
 
-        public HealthCheckEndpointRouteBuilderExtensionsTests(HealthChecksFixture fixture)
-        {
-            _fixture = fixture;
-        }
+    /// <summary>
+    /// Verify the response contains JSON in a format that the Health Checks UI supports.
+    /// </summary>
+    [Theory]
+    [InlineData("live")]
+    [InlineData("ready")]
+    public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
+    {
+        // Act
+        using var actualResponse = await _fixture.HttpClient.GetAsync($"/monitor/{healthCheckEndpoint}");
 
-        /// <summary>
-        /// Verify the response contains JSON in a format that the Health Checks UI supports.
-        /// </summary>
-        [Theory]
-        [InlineData("live")]
-        [InlineData("ready")]
-        public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
-        {
-            // Act
-            using var actualResponse = await _fixture.HttpClient.GetAsync($"/monitor/{healthCheckEndpoint}");
+        // Assert
+        using var assertionScope = new AssertionScope();
 
-            // Assert
-            using var assertionScope = new AssertionScope();
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().StartWith("{\"status\":\"Healthy\"");
-        }
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().StartWith("{\"status\":\"Healthy\"");
     }
 }

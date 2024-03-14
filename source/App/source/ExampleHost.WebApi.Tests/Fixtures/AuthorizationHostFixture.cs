@@ -17,44 +17,43 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Xunit;
 
-namespace ExampleHost.WebApi.Tests.Fixtures
+namespace ExampleHost.WebApi.Tests.Fixtures;
+
+public sealed class AuthorizationHostFixture : IAsyncLifetime
 {
-    public sealed class AuthorizationHostFixture : IAsyncLifetime
+    public AuthorizationHostFixture()
     {
-        public AuthorizationHostFixture()
+        var web03BaseUrl = "http://localhost:5002";
+
+        IntegrationTestConfiguration = new IntegrationTestConfiguration();
+        Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+
+        // We cannot use TestServer as this would not work with Application Insights.
+        Web03Host = WebHost.CreateDefaultBuilder()
+            .UseStartup<WebApi03.Startup>()
+            .UseUrls(web03BaseUrl)
+            .Build();
+
+        Web03HttpClient = new HttpClient
         {
-            var web03BaseUrl = "http://localhost:5002";
+            BaseAddress = new Uri(web03BaseUrl),
+        };
+    }
 
-            IntegrationTestConfiguration = new IntegrationTestConfiguration();
-            Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+    public HttpClient Web03HttpClient { get; }
 
-            // We cannot use TestServer as this would not work with Application Insights.
-            Web03Host = WebHost.CreateDefaultBuilder()
-                .UseStartup<WebApi03.Startup>()
-                .UseUrls(web03BaseUrl)
-                .Build();
+    private IWebHost Web03Host { get; }
 
-            Web03HttpClient = new HttpClient
-            {
-                BaseAddress = new Uri(web03BaseUrl),
-            };
-        }
+    private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
-        public HttpClient Web03HttpClient { get; }
+    public async Task InitializeAsync()
+    {
+        await Web03Host.StartAsync();
+    }
 
-        private IWebHost Web03Host { get; }
-
-        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
-
-        public async Task InitializeAsync()
-        {
-            await Web03Host.StartAsync();
-        }
-
-        public async Task DisposeAsync()
-        {
-            Web03HttpClient.Dispose();
-            await Web03Host.StopAsync();
-        }
+    public async Task DisposeAsync()
+    {
+        Web03HttpClient.Dispose();
+        await Web03Host.StopAsync();
     }
 }

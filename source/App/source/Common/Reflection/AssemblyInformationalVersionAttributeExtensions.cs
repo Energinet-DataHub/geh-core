@@ -15,24 +15,23 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace Energinet.DataHub.Core.App.Common.Reflection
+namespace Energinet.DataHub.Core.App.Common.Reflection;
+
+public static class AssemblyInformationalVersionAttributeExtensions
 {
-    public static class AssemblyInformationalVersionAttributeExtensions
+    /// <summary>
+    /// Our workflow in GitHub adds DH3 source version information to the <see cref="AssemblyInformationalVersionAttribute"/>
+    /// during build. This method parses the value of the attribute to an <see cref="SourceVersionInformation"/>.
+    /// If the attribute contains the full DH3 source version information in the format '[productVersion]+PR_[prNumber]+SHA_[sha]'
+    /// then all properties of <see cref="SourceVersionInformation"/> will be used; otherwise the raw attribute value is
+    /// set as <see cref="SourceVersionInformation.ProductVersion"/>.
+    /// </summary>
+    public static SourceVersionInformation GetSourceVersionInformation(this AssemblyInformationalVersionAttribute attribute)
     {
-        /// <summary>
-        /// Our workflow in GitHub adds DH3 source version information to the <see cref="AssemblyInformationalVersionAttribute"/>
-        /// during build. This method parses the value of the attribute to an <see cref="SourceVersionInformation"/>.
-        /// If the attribute contains the full DH3 source version information in the format '[productVersion]+PR_[prNumber]+SHA_[sha]'
-        /// then all properties of <see cref="SourceVersionInformation"/> will be used; otherwise the raw attribute value is
-        /// set as <see cref="SourceVersionInformation.ProductVersion"/>.
-        /// </summary>
-        public static SourceVersionInformation GetSourceVersionInformation(this AssemblyInformationalVersionAttribute attribute)
-        {
-            var sourceVersionMatchPattern = @"^(.+)\+PR_(.+)\+SHA_(.+)$";
-            var match = Regex.Match(attribute.InformationalVersion, sourceVersionMatchPattern);
-            return match.Success
-                ? new SourceVersionInformation(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value)
-                : new SourceVersionInformation(attribute.InformationalVersion);
-        }
+        var sourceVersionMatchPattern = @"^(.+)\+PR_(.+)\+SHA_(.+)$";
+        var match = Regex.Match(attribute.InformationalVersion, sourceVersionMatchPattern);
+        return match.Success
+            ? new SourceVersionInformation(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value)
+            : new SourceVersionInformation(attribute.InformationalVersion);
     }
 }

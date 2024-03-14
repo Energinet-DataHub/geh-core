@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.FunctionApp01.Common
+namespace ExampleHost.FunctionApp01.Common;
+
+/// <summary>
+/// Contains names of settings used by functions.
+/// </summary>
+public static class EnvironmentSettingNames
 {
-    /// <summary>
-    /// Contains names of settings used by functions.
-    /// </summary>
-    public static class EnvironmentSettingNames
-    {
-        public const string IntegrationEventConnectionString = "INTEGRATIONEVENT_CONNECTION_STRING";
-        public const string IntegrationEventTopicName = "INTEGRATIONEVENT_TOPIC_NAME";
-    }
+    public const string IntegrationEventConnectionString = "INTEGRATIONEVENT_CONNECTION_STRING";
+    public const string IntegrationEventTopicName = "INTEGRATIONEVENT_TOPIC_NAME";
 }

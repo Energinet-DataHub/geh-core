@@ -19,88 +19,87 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Identity.Client;
 using Xunit;
 
-namespace ExampleHost.WebApi.Tests.Fixtures
+namespace ExampleHost.WebApi.Tests.Fixtures;
+
+public class AuthenticationHostFixture : IAsyncLifetime
 {
-    public class AuthenticationHostFixture : IAsyncLifetime
+    public AuthenticationHostFixture()
+        : this("http://localhost:5003", false) { }
+
+    protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
     {
-        public AuthenticationHostFixture()
-            : this("http://localhost:5003", false) { }
+        IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
-        protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
+        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
+
+        Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+
+        var innerMetadataArg = $"--innerMetadata={Metadata}";
+        var outerMetadataArg = $"--outerMetadata=";
+        var audienceArg = $"--audience={Audience}";
+
+        if (supportNestedTokens)
         {
-            IntegrationTestConfiguration = new IntegrationTestConfiguration();
+            outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
+        }
 
-            BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
-
-            Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
-
-            var innerMetadataArg = $"--innerMetadata={Metadata}";
-            var outerMetadataArg = $"--outerMetadata=";
-            var audienceArg = $"--audience={Audience}";
-
-            if (supportNestedTokens)
+        // We cannot use TestServer as this would not work with Application Insights.
+        Web04Host = WebHost.CreateDefaultBuilder(new[]
             {
-                outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
-            }
+                innerMetadataArg,
+                outerMetadataArg,
+                audienceArg,
+            })
+            .UseStartup<WebApi04.Startup>()
+            .UseUrls(web04BaseUrl)
+            .Build();
 
-            // We cannot use TestServer as this would not work with Application Insights.
-            Web04Host = WebHost.CreateDefaultBuilder(new[]
-                {
-                    innerMetadataArg,
-                    outerMetadataArg,
-                    audienceArg,
-                })
-                .UseStartup<WebApi04.Startup>()
-                .UseUrls(web04BaseUrl)
-                .Build();
-
-            Web04HttpClient = new HttpClient
-            {
-                BaseAddress = new Uri(web04BaseUrl),
-            };
-        }
-
-        public string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
-
-        public string Audience => BffAppId;
-
-        public HttpClient Web04HttpClient { get; }
-
-        /// <summary>
-        /// This is not the actual BFF but a test app registration that allows
-        /// us to verify some of the JWT code.
-        /// </summary>
-        private string BffAppId { get; }
-
-        private IWebHost Web04Host { get; }
-
-        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
-
-        /// <summary>
-        /// Get an access token that allows the "client app" to call the "backend app".
-        /// </summary>
-        public Task<AuthenticationResult> GetTokenAsync()
+        Web04HttpClient = new HttpClient
         {
-            var confidentialClientApp = ConfidentialClientApplicationBuilder
-                .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
-                .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
-                .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
-                .Build();
+            BaseAddress = new Uri(web04BaseUrl),
+        };
+    }
 
-            return confidentialClientApp
-                .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
-                .ExecuteAsync();
-        }
+    public string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
 
-        public async Task InitializeAsync()
-        {
-            await Web04Host.StartAsync();
-        }
+    public string Audience => BffAppId;
 
-        public async Task DisposeAsync()
-        {
-            Web04HttpClient.Dispose();
-            await Web04Host.StopAsync();
-        }
+    public HttpClient Web04HttpClient { get; }
+
+    /// <summary>
+    /// This is not the actual BFF but a test app registration that allows
+    /// us to verify some of the JWT code.
+    /// </summary>
+    private string BffAppId { get; }
+
+    private IWebHost Web04Host { get; }
+
+    private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+
+    /// <summary>
+    /// Get an access token that allows the "client app" to call the "backend app".
+    /// </summary>
+    public Task<AuthenticationResult> GetTokenAsync()
+    {
+        var confidentialClientApp = ConfidentialClientApplicationBuilder
+            .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
+            .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
+            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
+            .Build();
+
+        return confidentialClientApp
+            .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
+            .ExecuteAsync();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await Web04Host.StartAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        Web04HttpClient.Dispose();
+        await Web04Host.StopAsync();
     }
 }

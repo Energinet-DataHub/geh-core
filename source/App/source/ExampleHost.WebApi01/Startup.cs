@@ -15,63 +15,61 @@
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using ExampleHost.WebApi01.Common;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ExampleHost.WebApi01
+namespace ExampleHost.WebApi01;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    private IConfiguration Configuration { get; }
+
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container.
+    /// </summary>
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+
+        // CONCLUSION:
+        //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to appear in Application Insights (can be configured).
+        //    See "How do I customize ILogger logs collection" at https://docs.microsoft.com/en-us/azure/azure-monitor/faq#how-do-i-customize-ilogger-logs-collection-
+
+        // CONCLUSION:
+        //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
+        //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
+        services.AddApplicationInsightsTelemetry();
+
+        services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
         {
-            Configuration = configuration;
-        }
+            var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
+            httpClient.BaseAddress = new Uri(baseUrl!);
+        });
 
-        private IConfiguration Configuration { get; }
+        services
+            .AddHealthChecks()
+            .AddLiveCheck();
+    }
 
-        /// <summary>
-        /// This method gets called by the runtime. Use this method to add services to the container.
-        /// </summary>
-        public void ConfigureServices(IServiceCollection services)
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    /// </summary>
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
+    {
+        // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
+        ////app.UseHttpsRedirection();
+
+        app.UseRouting();
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
         {
-            services.AddControllers();
-
-            // CONCLUSION:
-            //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to appear in Application Insights (can be configured).
-            //    See "How do I customize ILogger logs collection" at https://docs.microsoft.com/en-us/azure/azure-monitor/faq#how-do-i-customize-ilogger-logs-collection-
-
-            // CONCLUSION:
-            //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
-            //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
-            services.AddApplicationInsightsTelemetry();
-
-            services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
-            {
-                var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
-                httpClient.BaseAddress = new Uri(baseUrl);
-            });
-
-            services
-                .AddHealthChecks()
-                .AddLiveCheck();
-        }
-
-        /// <summary>
-        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        /// </summary>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
-        {
-            // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
-            ////app.UseHttpsRedirection();
-
-            app.UseRouting();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapLiveHealthChecks();
-                endpoints.MapReadyHealthChecks();
-            });
-        }
+            endpoints.MapControllers();
+            endpoints.MapLiveHealthChecks();
+            endpoints.MapReadyHealthChecks();
+        });
     }
 }

@@ -47,11 +47,7 @@ public sealed class UserMiddleware<TUser> : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext == null)
-        {
-            throw new InvalidOperationException("UserMiddleware running without HttpContext.");
-        }
+        var httpContext = _httpContextAccessor.HttpContext ?? throw new InvalidOperationException("UserMiddleware running without HttpContext.");
 
         var endpoint = context.GetEndpoint();
         if (endpoint == null)

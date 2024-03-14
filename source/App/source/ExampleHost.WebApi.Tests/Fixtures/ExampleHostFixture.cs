@@ -14,72 +14,68 @@
 
 using Azure.Identity;
 using Azure.Monitor.Query;
-using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using ExampleHost.WebApi01;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace ExampleHost.WebApi.Tests.Fixtures
+namespace ExampleHost.WebApi.Tests.Fixtures;
+
+public class ExampleHostFixture : IAsyncLifetime
 {
-    public class ExampleHostFixture : IAsyncLifetime
+    public ExampleHostFixture()
     {
-        public ExampleHostFixture()
+        var web02BaseUrl = "http://localhost:5001";
+        var web01BaseUrl = "http://localhost:5000";
+
+        IntegrationTestConfiguration = new IntegrationTestConfiguration();
+        Environment.SetEnvironmentVariable(
+            "APPLICATIONINSIGHTS_CONNECTION_STRING",
+            IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+
+        // We cannot use TestServer as this would not work with Application Insights.
+        Web02Host = WebHost.CreateDefaultBuilder()
+            .UseStartup<WebApi02.Startup>()
+            .UseUrls(web02BaseUrl)
+            .Build();
+
+        Environment.SetEnvironmentVariable(WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl, web02BaseUrl);
+        Web01Host = WebHost.CreateDefaultBuilder()
+            .UseStartup<WebApi01.Startup>()
+            .UseUrls(web01BaseUrl)
+            .Build();
+
+        Web01HttpClient = new HttpClient
         {
-            var web02BaseUrl = "http://localhost:5001";
-            var web01BaseUrl = "http://localhost:5000";
+            BaseAddress = new Uri(web01BaseUrl),
+        };
 
-            IntegrationTestConfiguration = new IntegrationTestConfiguration();
-            Environment.SetEnvironmentVariable(
-                "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+        LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+    }
 
-            // We cannot use TestServer as this would not work with Application Insights.
-            Web02Host = WebHost.CreateDefaultBuilder()
-                .UseStartup<WebApi02.Startup>()
-                .UseUrls(web02BaseUrl)
-                .Build();
+    public HttpClient Web01HttpClient { get; }
 
-            Environment.SetEnvironmentVariable(WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl, web02BaseUrl);
-            Web01Host = WebHost.CreateDefaultBuilder()
-                .UseStartup<WebApi01.Startup>()
-                .UseUrls(web01BaseUrl)
-                .Build();
+    public LogsQueryClient LogsQueryClient { get; }
 
-            Web01HttpClient = new HttpClient
-            {
-                BaseAddress = new Uri(web01BaseUrl),
-            };
+    public string LogAnalyticsWorkspaceId
+        => IntegrationTestConfiguration.LogAnalyticsWorkspaceId;
 
-            LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
-        }
+    private IWebHost Web01Host { get; }
 
-        public HttpClient Web01HttpClient { get; }
+    private IWebHost Web02Host { get; }
 
-        public LogsQueryClient LogsQueryClient { get; }
+    private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
-        public string LogAnalyticsWorkspaceId
-            => IntegrationTestConfiguration.LogAnalyticsWorkspaceId;
+    public async Task InitializeAsync()
+    {
+        await Web02Host.StartAsync();
+        await Web01Host.StartAsync();
+    }
 
-        private IWebHost Web01Host { get; }
-
-        private IWebHost Web02Host { get; }
-
-        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
-
-        public async Task InitializeAsync()
-        {
-            await Web02Host.StartAsync();
-            await Web01Host.StartAsync();
-        }
-
-        public async Task DisposeAsync()
-        {
-            Web01HttpClient.Dispose();
-            await Web01Host.StopAsync();
-            await Web02Host.StopAsync();
-        }
+    public async Task DisposeAsync()
+    {
+        Web01HttpClient.Dispose();
+        await Web01Host.StopAsync();
+        await Web02Host.StopAsync();
     }
 }
