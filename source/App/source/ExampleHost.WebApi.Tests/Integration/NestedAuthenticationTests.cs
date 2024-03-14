@@ -131,7 +131,7 @@ public sealed class NestedAuthenticationTests
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key"));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key"));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var subClaim = new Claim("sub", Guid.NewGuid().ToString());
 
