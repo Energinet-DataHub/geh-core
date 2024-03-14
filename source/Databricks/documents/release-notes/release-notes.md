@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 10.0.1
+
+- No functional change
+
 ## Version 10.0.0
 
 Bump to .NET 8.0 for TargetFramework.
