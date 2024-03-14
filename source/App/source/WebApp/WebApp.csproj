@@ -16,18 +16,14 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>true</WarningsAsErrors>
     <AssemblyName>Energinet.DataHub.Core.App.WebApp</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.WebApp</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.WebApp</PackageId>
-    <PackageVersion>9.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>10.0.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Web App Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -71,10 +67,10 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.25.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.12" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.17" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

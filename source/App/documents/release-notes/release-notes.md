@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 10.0.0
+
+- Upgraded to .NET 7
+
 ## Version 9.0.0
 
 - Removed code that was not used any where:

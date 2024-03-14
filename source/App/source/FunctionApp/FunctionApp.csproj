@@ -16,18 +16,14 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
     <AssemblyName>Energinet.DataHub.Core.App.FunctionApp</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.FunctionApp</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.FunctionApp</PackageId>
-    <PackageVersion>9.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>10.0.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Function App Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -67,9 +63,9 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Core" Version="6.0.5" />
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
-    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.9" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Core" Version="7.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
+    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.10" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -77,7 +73,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.10.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.21.0" />
   </ItemGroup>
 
   <ItemGroup>
