@@ -6,7 +6,6 @@ The bundle contains the following packages:
 
 * `Energinet.DataHub.Core.App.Common`
 * `Energinet.DataHub.Core.App.Common.Abstractions`
-* `Energinet.DataHub.Core.App.Common.Security`
 * `Energinet.DataHub.Core.App.FunctionApp`
 * `Energinet.DataHub.Core.App.WebApp`
 

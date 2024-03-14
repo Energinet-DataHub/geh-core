@@ -12,27 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Identity.Client;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixtures
 {
     public class AuthenticationHostFixture : IAsyncLifetime
     {
-        /// <summary>
-        /// We can use any of the allowed environments.
-        /// </summary>
-        private const string B2CEnvironment = "u001";
-
-        /// <summary>
-        /// We don't require a certain client app, we can use any for which we can
-        /// get a valid access token.
-        /// </summary>
-        private const string SystemOperator = "endk-tso";
-
         public AuthenticationHostFixture()
             : this("http://localhost:5003", false) { }
 
@@ -40,17 +30,9 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         {
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
+            BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
+
             Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
-
-            AuthorizationConfiguration = new B2CAuthorizationConfiguration(
-                usedForSystemTests: false,
-                environment: B2CEnvironment,
-                new List<string> { SystemOperator });
-
-            BackendAppAuthenticationClient = new B2CAppAuthenticationClient(
-                AuthorizationConfiguration.TenantId,
-                AuthorizationConfiguration.BackendApp,
-                AuthorizationConfiguration.ClientApps[SystemOperator]);
 
             var innerMetadataArg = $"--innerMetadata={Metadata}";
             var outerMetadataArg = $"--outerMetadata=";
@@ -78,19 +60,37 @@ namespace ExampleHost.WebApi.Tests.Fixtures
             };
         }
 
-        public string Metadata => AuthorizationConfiguration.BackendOpenIdConfigurationUrl;
+        public string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
 
-        public string Audience => AuthorizationConfiguration.BackendApp.AppId;
+        public string Audience => BffAppId;
 
         public HttpClient Web04HttpClient { get; }
 
-        public B2CAppAuthenticationClient BackendAppAuthenticationClient { get; }
-
-        public B2CAuthorizationConfiguration AuthorizationConfiguration { get; }
+        /// <summary>
+        /// This is not the actual BFF but a test app registration that allows
+        /// us to verify some of the JWT code.
+        /// </summary>
+        private string BffAppId { get; }
 
         private IWebHost Web04Host { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+
+        /// <summary>
+        /// Get an access token that allows the "client app" to call the "backend app".
+        /// </summary>
+        public Task<AuthenticationResult> GetTokenAsync()
+        {
+            var confidentialClientApp = ConfidentialClientApplicationBuilder
+                .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
+                .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
+                .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
+                .Build();
+
+            return confidentialClientApp
+                .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
+                .ExecuteAsync();
+        }
 
         public async Task InitializeAsync()
         {
