@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -29,9 +30,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures
         {
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
-            //// TODO: Retrieve App Id from KV secret when it's available
-            ////BffAppId = IntegrationTestConfiguration.Configuration.GetValue<string>("AZURE-B2C-BFF-APP-ID");
-            BffAppId = "3648e1ec-a357-4684-ab21-65433642e5dd";
+            BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
 
             Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
