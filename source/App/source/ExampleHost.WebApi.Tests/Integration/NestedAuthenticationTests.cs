@@ -73,7 +73,7 @@ public sealed class NestedAuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationResult = await Fixture.GetTokenAsync();
         var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
 
         // Act
@@ -93,7 +93,7 @@ public sealed class NestedAuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationResult = await Fixture.GetTokenAsync();
         var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
 
         // Act
@@ -110,7 +110,7 @@ public sealed class NestedAuthenticationTests
     public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
     {
         // Arrange
-        var authenticationResult = await Fixture.BackendAppAuthenticationClient.GetAuthenticationTokenAsync();
+        var authenticationResult = await Fixture.GetTokenAsync();
         var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
 
         // Act

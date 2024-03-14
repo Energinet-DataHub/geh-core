@@ -23,7 +23,6 @@ on:
     paths:
       - source/App/source/Common/**
       - source/App/source/Common.Abstractions/**
-      - source/App/source/Common.Security/**
       - source/App/source/FunctionApp/**
       - source/App/source/WebApp/**
       - .github/workflows/app-common-bundle-publish.yml
@@ -39,8 +38,6 @@ env:
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Necessary to manage Azure resources from automated tests
   AZURE_KEYVAULT_URL: ${{ vars.integration_test_azure_keyvault_url }}
-  # Necessary to provide B2C information that allows us to retrieve an access token from automated tests
-  AZURE_B2CSECRETS_KEYVAULT_URL: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
   # Set value used by 'AzuriteManager'
   #  Use 'AzuriteBlobFolderPath' for TestCommon version 4.2.0 and lower
   AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
@@ -92,11 +89,6 @@ jobs:
         with:
           project_path: ./source/App/source/Common.Abstractions/Common.Abstractions.csproj
 
-      - name: Pack Common.Security project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
-        with:
-          project_path: ./source/App/source/Common.Security/Common.Security.csproj
-
       - name: Pack FunctionApp project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
@@ -114,7 +106,6 @@ jobs:
           files: |
             source/App/source/Common/**/*.*
             source/App/source/Common.Abstractions/**/*.*
-            source/App/source/Common.Security/**/*.*
             source/App/source/FunctionApp/**/*.*
             source/App/source/WebApp/**/*.*
             .github/workflows/app-common-bundle-publish.yml

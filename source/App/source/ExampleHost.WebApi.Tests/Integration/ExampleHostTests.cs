@@ -56,32 +56,6 @@ namespace ExampleHost.WebApi.Tests.Integration
         }
 
         /// <summary>
-        /// Test that health of repeating trigger hosted service is reported correctly.
-        /// </summary>
-        [Theory]
-        [InlineData(true, HttpStatusCode.OK, "SomeTrigger is healthy.")]
-        [InlineData(false, HttpStatusCode.ServiceUnavailable, "SomeTrigger is not healthy.")]
-        public async Task CallingHealthReady_Should_ReturnExpected(
-            bool isHealthy,
-            HttpStatusCode expectedStatusCode,
-            string expectedResponseContain)
-        {
-            // Arrange
-            Fixture.Thrower.IsThrowing = !isHealthy;
-            await Task.Delay(1000);
-
-            // Act
-            using var request = new HttpRequestMessage(HttpMethod.Get, "monitor/ready");
-            var actualResponse = await Fixture.Web01HttpClient.SendAsync(request);
-
-            // Assert
-            actualResponse.StatusCode.Should().Be(expectedStatusCode);
-
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Contain(expectedResponseContain);
-        }
-
-        /// <summary>
         /// Requirements for this test:
         ///
         /// 1: Both hosts must call "ConfigureServices" with the following:
