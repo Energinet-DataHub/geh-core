@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks
-{
-    public static class HealthChecksConstants
-    {
-        public const string LiveHealthCheckName = "self";
-        public const string LiveHealthCheckEndpointRoute = "/monitor/live";
+namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 
-        public const string ReadyHealthCheckEndpointRoute = "/monitor/ready";
-    }
+public static class HealthChecksConstants
+{
+    public const string LiveHealthCheckName = "self";
+    public const string LiveHealthCheckEndpointRoute = "/monitor/live";
+
+    public const string ReadyHealthCheckEndpointRoute = "/monitor/ready";
 }

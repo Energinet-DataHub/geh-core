@@ -52,6 +52,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.WebApi04", "sou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp.Tests", "source\WebApp.Tests\WebApp.Tests.csproj", "{381D15A6-77F7-4F35-B343-1B79677B8BBD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_ConfigurationFiles", "{5F58BA4F-E821-4C4E-97B1-F61B9C1A7C57}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

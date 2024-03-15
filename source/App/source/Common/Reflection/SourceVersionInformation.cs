@@ -12,53 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+namespace Energinet.DataHub.Core.App.Common.Reflection;
 
-namespace Energinet.DataHub.Core.App.Common.Reflection
+/// <summary>
+/// Our workflow in GitHub adds DH3 source version information to the <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>
+/// during build. Using this we can identify the exact source code version that was used to build the assembly.
+/// This class is used to carry the parsed information.
+/// See also <seealso cref="AssemblyInformationalVersionAttributeExtensions.GetSourceVersionInformation(System.Reflection.AssemblyInformationalVersionAttribute)"/>.
+/// </summary>
+public class SourceVersionInformation
 {
     /// <summary>
-    /// Our workflow in GitHub adds DH3 source version information to the <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>
-    /// during build. Using this we can identify the exact source code version that was used to build the assembly.
-    /// This class is used to carry the parsed information.
-    /// See also <seealso cref="AssemblyInformationalVersionAttributeExtensions.GetSourceVersionInformation(System.Reflection.AssemblyInformationalVersionAttribute)"/>.
+    /// Used for construction if we don't have the full DH3 source version information.
     /// </summary>
-    public class SourceVersionInformation
+    public SourceVersionInformation(string productVersion)
     {
-        /// <summary>
-        /// Used for construction if we don't have the full DH3 source version information.
-        /// </summary>
-        public SourceVersionInformation(string productVersion)
-        {
-            ProductVersion = productVersion ?? throw new ArgumentNullException(nameof(productVersion));
-            PullRequestNumber = string.Empty;
-            LastMergeCommitSha = string.Empty;
-        }
+        ProductVersion = productVersion ?? throw new ArgumentNullException(nameof(productVersion));
+        PullRequestNumber = string.Empty;
+        LastMergeCommitSha = string.Empty;
+    }
 
-        /// <summary>
-        /// Used for construction if we do have the full DH3 source version information.
-        /// </summary>
-        public SourceVersionInformation(string productVersion, string pullRequestNumber, string lastMergeCommitSha)
-        {
-            ProductVersion = productVersion ?? throw new ArgumentNullException(nameof(productVersion));
-            PullRequestNumber = pullRequestNumber ?? throw new ArgumentNullException(nameof(pullRequestNumber));
-            LastMergeCommitSha = lastMergeCommitSha ?? throw new ArgumentNullException(nameof(lastMergeCommitSha));
-        }
+    /// <summary>
+    /// Used for construction if we do have the full DH3 source version information.
+    /// </summary>
+    public SourceVersionInformation(string productVersion, string pullRequestNumber, string lastMergeCommitSha)
+    {
+        ProductVersion = productVersion ?? throw new ArgumentNullException(nameof(productVersion));
+        PullRequestNumber = pullRequestNumber ?? throw new ArgumentNullException(nameof(pullRequestNumber));
+        LastMergeCommitSha = lastMergeCommitSha ?? throw new ArgumentNullException(nameof(lastMergeCommitSha));
+    }
 
-        public string ProductVersion { get; }
+    public string ProductVersion { get; }
 
-        public string PullRequestNumber { get; }
+    public string PullRequestNumber { get; }
 
-        /// <summary>
-        /// Last merge commit on the 'GITHUB_REF' branch (the PR branch, not the feature branch).
-        /// See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
-        /// </summary>
-        public string LastMergeCommitSha { get; }
+    /// <summary>
+    /// Last merge commit on the 'GITHUB_REF' branch (the PR branch, not the feature branch).
+    /// See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+    /// </summary>
+    public string LastMergeCommitSha { get; }
 
-        public override string ToString()
-        {
-            return string.IsNullOrEmpty(PullRequestNumber) || string.IsNullOrEmpty(LastMergeCommitSha)
-                ? ProductVersion
-                : $"Version: {ProductVersion} PR: {PullRequestNumber} SHA: {LastMergeCommitSha}";
-        }
+    public override string ToString()
+    {
+        return string.IsNullOrEmpty(PullRequestNumber) || string.IsNullOrEmpty(LastMergeCommitSha)
+            ? ProductVersion
+            : $"Version: {ProductVersion} PR: {PullRequestNumber} SHA: {LastMergeCommitSha}";
     }
 }

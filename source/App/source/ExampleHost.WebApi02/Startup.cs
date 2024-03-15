@@ -12,42 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.WebApi02
+namespace ExampleHost.WebApi02;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    private IConfiguration Configuration { get; }
+
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container.
+    /// </summary>
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+
+        services.AddApplicationInsightsTelemetry();
+    }
+
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    /// </summary>
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
+    {
+        // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
+        ////app.UseHttpsRedirection();
+
+        app.UseRouting();
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
         {
-            Configuration = configuration;
-        }
-
-        private IConfiguration Configuration { get; }
-
-        /// <summary>
-        /// This method gets called by the runtime. Use this method to add services to the container.
-        /// </summary>
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllers();
-
-            services.AddApplicationInsightsTelemetry();
-        }
-
-        /// <summary>
-        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        /// </summary>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
-        {
-            // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
-            ////app.UseHttpsRedirection();
-
-            app.UseRouting();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
+            endpoints.MapControllers();
+        });
     }
 }

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.WebApi01.Common
+namespace ExampleHost.WebApi01.Common;
+
+public static class EnvironmentSettingNames
 {
-    public static class EnvironmentSettingNames
-    {
-        public const string WebApi02BaseUrl = "WebApi02BaseUrl";
-    }
+    public const string WebApi02BaseUrl = "WebApi02BaseUrl";
 }

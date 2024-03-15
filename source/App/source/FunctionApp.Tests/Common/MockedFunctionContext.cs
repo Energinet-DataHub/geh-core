@@ -12,59 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Common
+namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Common;
+
+public sealed class MockedFunctionContext
 {
-    public sealed class MockedFunctionContext
+    private readonly Mock<FunctionContext> _functionContextMock = new();
+    private readonly Mock<ILoggerFactory> _loggerFactoryMock = new();
+
+    public MockedFunctionContext()
     {
-        private readonly Mock<FunctionContext> _functionContextMock = new();
-        private readonly Mock<BindingContext> _bindingContextMock = new();
-        private readonly Mock<FunctionDefinition> _functionDefinitionMock = new();
-        private readonly Mock<IServiceProvider> _serviceProviderMock = new();
-        private readonly Mock<ILoggerFactory> _loggerFactoryMock = new();
+        _loggerFactoryMock
+            .Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(new Mock<ILogger>().Object);
 
-        public MockedFunctionContext()
-        {
-            _loggerFactoryMock
-                .Setup(x => x.CreateLogger(It.IsAny<string>()))
-                .Returns(new Mock<ILogger>().Object);
+        Services
+            .Setup(x => x.GetService(It.IsAny<Type>()))
+            .Returns((Type t) => CreateMockOfType(t).Object);
 
-            _serviceProviderMock
-                .Setup(x => x.GetService(It.IsAny<Type>()))
-                .Returns((Type t) => CreateMockOfType(t).Object);
+        Services
+            .Setup(x => x.GetService(typeof(ILoggerFactory)))
+            .Returns(_loggerFactoryMock.Object);
 
-            _serviceProviderMock
-                .Setup(x => x.GetService(typeof(ILoggerFactory)))
-                .Returns(_loggerFactoryMock.Object);
+        _functionContextMock
+            .Setup(x => x.InstanceServices)
+            .Returns(Services.Object);
 
-            _functionContextMock
-                .Setup(x => x.InstanceServices)
-                .Returns(_serviceProviderMock.Object);
+        _functionContextMock
+            .Setup(f => f.BindingContext)
+            .Returns(BindingContext.Object);
 
-            _functionContextMock
-                .Setup(f => f.BindingContext)
-                .Returns(_bindingContextMock.Object);
+        _functionContextMock
+            .Setup(f => f.FunctionDefinition)
+            .Returns(FunctionDefinitionMock.Object);
+    }
 
-            _functionContextMock
-                .Setup(f => f.FunctionDefinition)
-                .Returns(_functionDefinitionMock.Object);
-        }
+    public FunctionContext FunctionContext => _functionContextMock.Object;
 
-        public FunctionContext FunctionContext => _functionContextMock.Object;
+    public Mock<IServiceProvider> Services { get; } = new();
 
-        public Mock<IServiceProvider> Services => _serviceProviderMock;
+    public Mock<BindingContext> BindingContext { get; } = new();
 
-        public Mock<BindingContext> BindingContext => _bindingContextMock;
+    public Mock<FunctionDefinition> FunctionDefinitionMock { get; } = new();
 
-        public Mock<FunctionDefinition> FunctionDefinitionMock => _functionDefinitionMock;
-
-        private static Mock CreateMockOfType(Type t)
-        {
-            return (Mock)Activator.CreateInstance(typeof(Mock<>).MakeGenericType(t))!;
-        }
+    private static Mock CreateMockOfType(Type t)
+    {
+        return (Mock)Activator.CreateInstance(typeof(Mock<>).MakeGenericType(t))!;
     }
 }

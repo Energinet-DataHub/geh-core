@@ -16,23 +16,22 @@ using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection
+namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
+
+/// <summary>
+/// Extensions to <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+/// that allow adding Application Insights services to Function App's.
+/// </summary>
+public static class ApplicationInsightsExtensions
 {
     /// <summary>
-    /// Extensions to <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
-    /// that allow adding Application Insights services to Function App's.
+    /// Add services necessary for end-to-end transaction overview within Application Insights.
     /// </summary>
-    public static class ApplicationInsightsExtensions
+    public static IServiceCollection AddApplicationInsights(this IServiceCollection services)
     {
-        /// <summary>
-        /// Add services necessary for end-to-end transaction overview within Application Insights.
-        /// </summary>
-        public static IServiceCollection AddApplicationInsights(this IServiceCollection services)
-        {
-            services.AddApplicationInsightsTelemetryWorkerService();
-            services.TryAddScoped<FunctionTelemetryScopeMiddleware>();
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.TryAddScoped<FunctionTelemetryScopeMiddleware>();
 
-            return services;
-        }
+        return services;
     }
 }

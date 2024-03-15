@@ -19,79 +19,78 @@ using FluentAssertions.Execution;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ExampleHost.FunctionApp.Tests.Integration
+namespace ExampleHost.FunctionApp.Tests.Integration;
+
+/// <summary>
+/// Tests verifying the configuration and behaviour of Health Checks.
+/// </summary>
+[Collection(nameof(ExampleHostsCollectionFixture))]
+public class ExampleHostsHealthChecksTests : IAsyncLifetime
 {
-    /// <summary>
-    /// Tests verifying the configuration and behaviour of Health Checks.
-    /// </summary>
-    [Collection(nameof(ExampleHostsCollectionFixture))]
-    public class ExampleHostsHealthChecksTests : IAsyncLifetime
+    public ExampleHostsHealthChecksTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
     {
-        public ExampleHostsHealthChecksTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
-        {
-            Fixture = fixture;
-            Fixture.SetTestOutputHelper(testOutputHelper);
+        Fixture = fixture;
+        Fixture.SetTestOutputHelper(testOutputHelper);
 
-            Fixture.App01HostManager.ClearHostLog();
-            Fixture.App02HostManager.ClearHostLog();
-        }
+        Fixture.App01HostManager.ClearHostLog();
+        Fixture.App02HostManager.ClearHostLog();
+    }
 
-        private ExampleHostsFixture Fixture { get; }
+    private ExampleHostsFixture Fixture { get; }
 
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
-        public Task DisposeAsync()
-        {
-            Fixture.SetTestOutputHelper(null!);
+    public Task DisposeAsync()
+    {
+        Fixture.SetTestOutputHelper(null!);
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        /// <summary>
-        /// Verify the response contains JSON in a format that the Health Checks UI supports.
-        /// </summary>
-        [Theory]
-        [InlineData("live")]
-        [InlineData("ready")]
-        public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
-        {
-            // Act
-            using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/{healthCheckEndpoint}");
+    /// <summary>
+    /// Verify the response contains JSON in a format that the Health Checks UI supports.
+    /// </summary>
+    [Theory]
+    [InlineData("live")]
+    [InlineData("ready")]
+    public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
+    {
+        // Act
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/{healthCheckEndpoint}");
 
-            // Assert
-            using var assertionScope = new AssertionScope();
+        // Assert
+        using var assertionScope = new AssertionScope();
 
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().StartWith("{\"status\":\"Healthy\"");
-        }
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().StartWith("{\"status\":\"Healthy\"");
+    }
 
-        /// <summary>
-        /// Verify the response contains the executing applications DH3 source version information in the 'description' field.
-        /// The 'Version' and 'SourceRevisionId' is set in the 'ExampleHost.FunctionApp01.csproj' file.
-        /// </summary>
-        [Fact]
-        public async Task CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation()
-        {
-            // Arrange
-            var expectedSourceVersionInformation = "Version: 1.2.3 PR: 4 SHA: 1234";
+    /// <summary>
+    /// Verify the response contains the executing applications DH3 source version information in the 'description' field.
+    /// The 'Version' and 'SourceRevisionId' is set in the 'ExampleHost.FunctionApp01.csproj' file.
+    /// </summary>
+    [Fact]
+    public async Task CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation()
+    {
+        // Arrange
+        var expectedSourceVersionInformation = "Version: 1.2.3 PR: 4 SHA: 1234";
 
-            // Act
-            using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/live");
+        // Act
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/live");
 
-            // Assert
-            using var assertionScope = new AssertionScope();
+        // Assert
+        using var assertionScope = new AssertionScope();
 
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Contain($"description\":\"{expectedSourceVersionInformation}");
-        }
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Contain($"description\":\"{expectedSourceVersionInformation}");
     }
 }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Net.Http;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Builder;
@@ -21,46 +19,45 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.App.WebApp.Tests.Fixtures
+namespace Energinet.DataHub.Core.App.WebApp.Tests.Fixtures;
+
+public sealed class HealthChecksFixture : IDisposable
 {
-    public sealed class HealthChecksFixture : IDisposable
+    private readonly TestServer _server;
+
+    public HealthChecksFixture()
     {
-        private readonly TestServer _server;
+        var webHostBuilder = CreateWebHostBuilder();
+        _server = new TestServer(webHostBuilder);
+        HttpClient = _server.CreateClient();
+    }
 
-        public HealthChecksFixture()
-        {
-            var webHostBuilder = CreateWebHostBuilder();
-            _server = new TestServer(webHostBuilder);
-            HttpClient = _server.CreateClient();
-        }
+    public HttpClient HttpClient { get; }
 
-        public HttpClient HttpClient { get; }
+    public void Dispose()
+    {
+        _server.Dispose();
+    }
 
-        public void Dispose()
-        {
-            _server.Dispose();
-        }
+    private static IWebHostBuilder CreateWebHostBuilder()
+    {
+        return new WebHostBuilder()
+            .ConfigureServices(services =>
+            {
+                services.AddRouting();
 
-        private static IWebHostBuilder CreateWebHostBuilder()
-        {
-            return new WebHostBuilder()
-                .ConfigureServices(services =>
+                services.AddHealthChecks()
+                    .AddLiveCheck();
+            })
+            .Configure(app =>
+            {
+                app.UseRouting();
+
+                app.UseEndpoints(endpoints =>
                 {
-                    services.AddRouting();
-
-                    services.AddHealthChecks()
-                        .AddLiveCheck();
-                })
-                .Configure(app =>
-                {
-                    app.UseRouting();
-
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapLiveHealthChecks();
-                        endpoints.MapReadyHealthChecks();
-                    });
+                    endpoints.MapLiveHealthChecks();
+                    endpoints.MapReadyHealthChecks();
                 });
-        }
+            });
     }
 }

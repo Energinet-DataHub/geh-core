@@ -16,18 +16,14 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
     <AssemblyName>Energinet.DataHub.Core.App.Common.Abstractions</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.App.Common.Abstractions</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.Common.Abstractions</PackageId>
-    <PackageVersion>9.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>10.0.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Function Common Abstractions Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -59,7 +55,7 @@ limitations under the License.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NodaTime" Version="3.1.6" />
+    <PackageReference Include="NodaTime" Version="3.1.11" />
   </ItemGroup>
 
   <ItemGroup>

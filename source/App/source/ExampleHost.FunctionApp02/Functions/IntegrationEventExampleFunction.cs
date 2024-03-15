@@ -16,26 +16,25 @@ using ExampleHost.FunctionApp02.Common;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace ExampleHost.FunctionApp02.Functions
+namespace ExampleHost.FunctionApp02.Functions;
+
+public class IntegrationEventExampleFunction
 {
-    public class IntegrationEventExampleFunction
+    private readonly ILogger _logger;
+
+    public IntegrationEventExampleFunction(ILoggerFactory loggerFactory)
     {
-        private readonly ILogger _logger;
+        _logger = loggerFactory.CreateLogger<IntegrationEventExampleFunction>();
+    }
 
-        public IntegrationEventExampleFunction(ILoggerFactory loggerFactory)
-        {
-            _logger = loggerFactory.CreateLogger<IntegrationEventExampleFunction>();
-        }
-
-        [Function(nameof(ReceiveMessage))]
-        public void ReceiveMessage(
-            [ServiceBusTrigger(
-                $"%{EnvironmentSettingNames.IntegrationEventTopicName}%",
-                $"%{EnvironmentSettingNames.IntegrationEventSubscriptionName}%",
-                Connection = EnvironmentSettingNames.IntegrationEventConnectionString)]
-            string serviceBusMessage)
-        {
-            _logger.LogInformation($"ExampleHost {nameof(ReceiveMessage)}: We should be able to find this log message by following the trace of the request.");
-        }
+    [Function(nameof(ReceiveMessage))]
+    public void ReceiveMessage(
+        [ServiceBusTrigger(
+            $"%{EnvironmentSettingNames.IntegrationEventTopicName}%",
+            $"%{EnvironmentSettingNames.IntegrationEventSubscriptionName}%",
+            Connection = EnvironmentSettingNames.IntegrationEventConnectionString)]
+        string serviceBusMessage)
+    {
+        _logger.LogInformation($"ExampleHost {nameof(ReceiveMessage)}: We should be able to find this log message by following the trace of the request.");
     }
 }

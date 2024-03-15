@@ -14,19 +14,16 @@
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 
-namespace ExampleHost.FunctionApp.Tests.Extensions
-{
-    public static class FunctionAppHostManagerExtensions
-    {
-        public static bool CheckIfFunctionThrewException(this FunctionAppHostManager hostManager)
-        {
-            if (hostManager is null)
-            {
-                throw new ArgumentNullException(nameof(hostManager));
-            }
+namespace ExampleHost.FunctionApp.Tests.Extensions;
 
-            return hostManager.GetHostLogSnapshot()
+public static class FunctionAppHostManagerExtensions
+{
+    public static bool CheckIfFunctionThrewException(this FunctionAppHostManager hostManager)
+    {
+        return hostManager is null
+            ? throw new ArgumentNullException(nameof(hostManager))
+            : hostManager
+                .GetHostLogSnapshot()
                 .Any(log => log.Contains("Exception", StringComparison.OrdinalIgnoreCase));
-        }
     }
 }

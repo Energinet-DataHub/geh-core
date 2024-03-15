@@ -18,48 +18,47 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace ExampleHost.FunctionApp01.Functions
+namespace ExampleHost.FunctionApp01.Functions;
+
+public class RestApiExampleFunction
 {
-    public class RestApiExampleFunction
+    private readonly ILogger _logger;
+    private readonly ServiceBusSender _serviceBusSender;
+
+    public RestApiExampleFunction(ILogger<RestApiExampleFunction> logger, ServiceBusSender serviceBusSender)
     {
-        private readonly ILogger _logger;
-        private readonly ServiceBusSender _serviceBusSender;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _serviceBusSender = serviceBusSender ?? throw new ArgumentNullException(nameof(serviceBusSender));
+    }
 
-        public RestApiExampleFunction(ILogger<RestApiExampleFunction> logger, ServiceBusSender serviceBusSender)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _serviceBusSender = serviceBusSender ?? throw new ArgumentNullException(nameof(serviceBusSender));
-        }
+    [Function(nameof(CreatePetAsync))]
+    public async Task<HttpResponseData> CreatePetAsync(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "post",
+            Route = "v1/pet")]
+        HttpRequestData httpRequest)
+    {
+        _logger.LogInformation($"ExampleHost {nameof(CreatePetAsync)}: We should be able to find this log message by following the trace of the request.");
 
-        [Function(nameof(CreatePetAsync))]
-        public async Task<HttpResponseData> CreatePetAsync(
-            [HttpTrigger(
-                AuthorizationLevel.Anonymous,
-                "post",
-                Route = "v1/pet")]
-            HttpRequestData httpRequest)
-        {
-            _logger.LogInformation($"ExampleHost {nameof(CreatePetAsync)}: We should be able to find this log message by following the trace of the request.");
+        await SendServiceBusMessageAsync(nameof(CreatePetAsync)).ConfigureAwait(false);
 
-            await SendServiceBusMessageAsync(nameof(CreatePetAsync));
+        return CreateResponse(httpRequest);
+    }
 
-            return CreateResponse(httpRequest);
-        }
+    /// <summary>
+    /// Send a Service Bus message for another host to receive.
+    /// In Application Insights we should be able to trace the request end-to-end
+    /// and see it reach the current Host as well as the Host containing the
+    /// Service Bus trigger.
+    /// </summary>
+    private Task SendServiceBusMessageAsync(string messageContent)
+    {
+        return _serviceBusSender.SendMessageAsync(new ServiceBusMessage(messageContent));
+    }
 
-        /// <summary>
-        /// Send a Service Bus message for another host to receive.
-        /// In Application Insights we should be able to trace the request end-to-end
-        /// and see it reach the current Host as well as the Host containing the
-        /// Service Bus trigger.
-        /// </summary>
-        private Task SendServiceBusMessageAsync(string messageContent)
-        {
-            return _serviceBusSender.SendMessageAsync(new ServiceBusMessage(messageContent));
-        }
-
-        private static HttpResponseData CreateResponse(HttpRequestData httpRequest)
-        {
-            return httpRequest.CreateResponse(HttpStatusCode.Accepted);
-        }
+    private static HttpResponseData CreateResponse(HttpRequestData httpRequest)
+    {
+        return httpRequest.CreateResponse(HttpStatusCode.Accepted);
     }
 }

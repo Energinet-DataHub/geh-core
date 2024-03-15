@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.Common.Abstractions.Users
+namespace Energinet.DataHub.Core.App.Common.Abstractions.Users;
+
+/// <summary>
+/// Provides access to current user.
+/// </summary>
+public interface IUserContext<TUser>
+    where TUser : class
 {
     /// <summary>
-    /// Provides access to current user.
+    /// Get current user.
     /// </summary>
-    public interface IUserContext<TUser>
-        where TUser : class
-    {
-        /// <summary>
-        /// Get current user.
-        /// </summary>
-        public TUser CurrentUser { get; }
-    }
+    public TUser CurrentUser { get; }
 }

@@ -19,51 +19,50 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 
-namespace Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks
+namespace Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+
+/// <summary>
+/// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to add DataHub relevant health checks endpoints.
+/// </summary>
+public static class HealthCheckEndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to add DataHub relevant health checks endpoints.
+    /// Adds the "live" health checks endpoint to the <see cref="IEndpointRouteBuilder"/>.
     /// </summary>
-    public static class HealthCheckEndpointRouteBuilderExtensions
+    /// <param name="endpoints">The <see cref="IEndpointRouteBuilder"/> to add the health checks endpoint to.</param>
+    /// <returns>A convention routes for the health checks endpoint.</returns>
+    public static IEndpointConventionBuilder MapLiveHealthChecks(this IEndpointRouteBuilder endpoints)
     {
-        /// <summary>
-        /// Adds the "live" health checks endpoint to the <see cref="IEndpointRouteBuilder"/>.
-        /// </summary>
-        /// <param name="endpoints">The <see cref="IEndpointRouteBuilder"/> to add the health checks endpoint to.</param>
-        /// <returns>A convention routes for the health checks endpoint.</returns>
-        public static IEndpointConventionBuilder MapLiveHealthChecks(this IEndpointRouteBuilder endpoints)
-        {
-            // Health check endpoints must allow anonymous access so we can use them with Azure monitoring:
-            // https://docs.microsoft.com/en-us/azure/app-service/monitor-instances-health-check#authentication-and-security
-            return endpoints
-                .MapHealthChecks(
-                    HealthChecksConstants.LiveHealthCheckEndpointRoute,
-                    new HealthCheckOptions
-                    {
-                        Predicate = r => r.Name.Equals(HealthChecksConstants.LiveHealthCheckName),
-                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-                    })
-                .WithMetadata(new AllowAnonymousAttribute());
-        }
+        // Health check endpoints must allow anonymous access so we can use them with Azure monitoring:
+        // https://docs.microsoft.com/en-us/azure/app-service/monitor-instances-health-check#authentication-and-security
+        return endpoints
+            .MapHealthChecks(
+                HealthChecksConstants.LiveHealthCheckEndpointRoute,
+                new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Equals(HealthChecksConstants.LiveHealthCheckName),
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                })
+            .WithMetadata(new AllowAnonymousAttribute());
+    }
 
-        /// <summary>
-        /// Adds the "ready" health checks endpoint to the <see cref="IEndpointRouteBuilder"/>.
-        /// </summary>
-        /// <param name="endpoints">The <see cref="IEndpointRouteBuilder"/> to add the health checks endpoint to.</param>
-        /// <returns>A convention routes for the health checks endpoint.</returns>
-        public static IEndpointConventionBuilder MapReadyHealthChecks(this IEndpointRouteBuilder endpoints)
-        {
-            // Health check endpoints must allow anonymous access so we can use them with Azure monitoring:
-            // https://docs.microsoft.com/en-us/azure/app-service/monitor-instances-health-check#authentication-and-security
-            return endpoints
-                .MapHealthChecks(
-                    HealthChecksConstants.ReadyHealthCheckEndpointRoute,
-                    new HealthCheckOptions
-                    {
-                        Predicate = r => !r.Name.Equals(HealthChecksConstants.LiveHealthCheckName),
-                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-                    })
-                .WithMetadata(new AllowAnonymousAttribute());
-        }
+    /// <summary>
+    /// Adds the "ready" health checks endpoint to the <see cref="IEndpointRouteBuilder"/>.
+    /// </summary>
+    /// <param name="endpoints">The <see cref="IEndpointRouteBuilder"/> to add the health checks endpoint to.</param>
+    /// <returns>A convention routes for the health checks endpoint.</returns>
+    public static IEndpointConventionBuilder MapReadyHealthChecks(this IEndpointRouteBuilder endpoints)
+    {
+        // Health check endpoints must allow anonymous access so we can use them with Azure monitoring:
+        // https://docs.microsoft.com/en-us/azure/app-service/monitor-instances-health-check#authentication-and-security
+        return endpoints
+            .MapHealthChecks(
+                HealthChecksConstants.ReadyHealthCheckEndpointRoute,
+                new HealthCheckOptions
+                {
+                    Predicate = r => !r.Name.Equals(HealthChecksConstants.LiveHealthCheckName),
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                })
+            .WithMetadata(new AllowAnonymousAttribute());
     }
 }

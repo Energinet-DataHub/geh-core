@@ -12,58 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
-namespace Energinet.DataHub.Core.App.Common.Tests
+namespace Energinet.DataHub.Core.App.Common.Tests;
+
+public sealed class UserContextTests
 {
-    public sealed class UserContextTests
+    [Fact]
+    public void CurrentUser_NoUser_ThrowsException()
     {
-        [Fact]
-        public void CurrentUser_NoUser_ThrowsException()
-        {
-            // Arrange
-            var userContext = new UserContext<object>();
+        // Arrange
+        var userContext = new UserContext<object>();
 
-            // Act + Assert
-            Assert.Throws<InvalidOperationException>(() => userContext.CurrentUser);
-        }
+        // Act + Assert
+        Assert.Throws<InvalidOperationException>(() => userContext.CurrentUser);
+    }
 
-        [Fact]
-        public void CurrentUser_HasUser_ReturnsUser()
-        {
-            // Arrange
-            var domainUser = new object();
-            var userContext = new UserContext<object>();
-            userContext.SetCurrentUser(domainUser);
+    [Fact]
+    public void CurrentUser_HasUser_ReturnsUser()
+    {
+        // Arrange
+        var domainUser = new object();
+        var userContext = new UserContext<object>();
+        userContext.SetCurrentUser(domainUser);
 
-            // Act
-            var currentUser = userContext.CurrentUser;
+        // Act
+        var currentUser = userContext.CurrentUser;
 
-            // Assert
-            Assert.Equal(domainUser, currentUser);
-        }
+        // Assert
+        Assert.Equal(domainUser, currentUser);
+    }
 
-        [Fact]
-        public void SetCurrentUser_HasUser_ThrowsException()
-        {
-            // Arrange
-            var domainUser = new object();
-            var userContext = new UserContext<object>();
-            userContext.SetCurrentUser(domainUser);
+    [Fact]
+    public void SetCurrentUser_HasUser_ThrowsException()
+    {
+        // Arrange
+        var domainUser = new object();
+        var userContext = new UserContext<object>();
+        userContext.SetCurrentUser(domainUser);
 
-            // Act + Assert
-            Assert.Throws<InvalidOperationException>(() => userContext.SetCurrentUser(new object()));
-        }
+        // Act + Assert
+        Assert.Throws<InvalidOperationException>(() => userContext.SetCurrentUser(new object()));
+    }
 
-        [Fact]
-        public void SetCurrentUser_SetNullUser_ThrowsException()
-        {
-            // Arrange
-            var userContext = new UserContext<object>();
+    [Fact]
+    public void SetCurrentUser_SetNullUser_ThrowsException()
+    {
+        // Arrange
+        var userContext = new UserContext<object>();
 
-            // Act + Assert
-            Assert.Throws<ArgumentNullException>(() => userContext.SetCurrentUser(null!));
-        }
+        // Act + Assert
+        Assert.Throws<ArgumentNullException>(() => userContext.SetCurrentUser(null!));
     }
 }

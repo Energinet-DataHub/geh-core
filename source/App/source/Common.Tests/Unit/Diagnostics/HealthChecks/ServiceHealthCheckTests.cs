@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -23,68 +22,67 @@ using WireMock.ResponseBuilders;
 using WireMock.Server;
 using Xunit;
 
-namespace Energinet.DataHub.Core.App.Common.Tests.Unit.Diagnostics.HealthChecks
+namespace Energinet.DataHub.Core.App.Common.Tests.Unit.Diagnostics.HealthChecks;
+
+public class ServiceHealthCheckTests : IAsyncLifetime
 {
-    public class ServiceHealthCheckTests : IAsyncLifetime
+    private Uri? _dependentServiceUri;
+    private WireMockServer? _serverMock;
+    private HealthCheckContext? _healthCheckContext;
+
+    public Task InitializeAsync()
     {
-        private Uri _dependentServiceUri;
-        private WireMockServer _serverMock;
-        private HealthCheckContext _healthCheckContext;
+        var httpLocalhostServer = "http://localhost:8080/DependentService";
+        _dependentServiceUri = new Uri(httpLocalhostServer);
+        _serverMock = WireMockServer.Start(_dependentServiceUri.Port);
 
-        public Task InitializeAsync()
+        // Configure HealthCheckContext.Registration.FailureStatus
+        _healthCheckContext = new HealthCheckContext
         {
-            var httpLocalhostServer = "http://localhost:8080/DependentService";
-            _dependentServiceUri = new Uri(httpLocalhostServer);
-            _serverMock = WireMockServer.Start(_dependentServiceUri.Port);
+            Registration = new HealthCheckRegistration("serviceName", Mock.Of<IHealthCheck>(), HealthStatus.Unhealthy, default),
+        };
 
-            // Configure HealthCheckContext.Registration.FailureStatus
-            _healthCheckContext = new HealthCheckContext
-            {
-                Registration = new HealthCheckRegistration("serviceName", Mock.Of<IHealthCheck>(), HealthStatus.Unhealthy, default),
-            };
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    public Task DisposeAsync()
+    {
+        _serverMock!.Stop();
+        _serverMock.Dispose();
+        return Task.CompletedTask;
+    }
 
-        public Task DisposeAsync()
-        {
-            _serverMock.Stop();
-            _serverMock.Dispose();
-            return Task.CompletedTask;
-        }
+    [Fact]
+    public async Task Should_return_health_status_when_dependent_service_is_ok()
+    {
+        // Arrange
+        _serverMock!
+            .Given(Request.Create().UsingGet())
+            .RespondWith(Response.Create().WithStatusCode(System.Net.HttpStatusCode.OK));
 
-        [Fact]
-        public async Task Should_return_health_status_when_dependent_service_is_ok()
-        {
-            // Arrange
-            _serverMock
-                .Given(Request.Create().UsingGet())
-                .RespondWith(Response.Create().WithStatusCode(System.Net.HttpStatusCode.OK));
+        var sut = new ServiceHealthCheck(_dependentServiceUri!, () => _serverMock.CreateClient());
 
-            var sut = new ServiceHealthCheck(_dependentServiceUri, () => _serverMock.CreateClient());
+        // Act
+        var actualResponse = await sut.CheckHealthAsync(_healthCheckContext!, default);
 
-            // Act
-            var actualResponse = await sut.CheckHealthAsync(_healthCheckContext, default);
+        // Assert
+        actualResponse.Status.ToString().Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
+    }
 
-            // Assert
-            actualResponse.Status.ToString().Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
-        }
+    [Fact]
+    public async Task Should_return_unhealth_status_when_dependent_service_is_unavailable()
+    {
+        // Arrange
+        _serverMock!
+            .Given(Request.Create().UsingGet())
+            .RespondWith(Response.Create().WithStatusCode(System.Net.HttpStatusCode.ServiceUnavailable));
 
-        [Fact]
-        public async Task Should_return_unhealth_status_when_dependent_service_is_unavailable()
-        {
-            // Arrange
-            _serverMock
-                .Given(Request.Create().UsingGet())
-                .RespondWith(Response.Create().WithStatusCode(System.Net.HttpStatusCode.ServiceUnavailable));
+        var sut = new ServiceHealthCheck(_dependentServiceUri!, () => _serverMock.CreateClient());
 
-            var sut = new ServiceHealthCheck(_dependentServiceUri, () => _serverMock.CreateClient());
+        // Act
+        var actualResponse = await sut.CheckHealthAsync(_healthCheckContext!, default);
 
-            // Act
-            var actualResponse = await sut.CheckHealthAsync(_healthCheckContext, default);
-
-            // Assert
-            actualResponse.Status.ToString().Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Unhealthy));
-        }
+        // Assert
+        actualResponse.Status.ToString().Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Unhealthy));
     }
 }

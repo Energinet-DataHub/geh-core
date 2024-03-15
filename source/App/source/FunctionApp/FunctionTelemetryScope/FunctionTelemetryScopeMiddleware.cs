@@ -12,52 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope
+namespace Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
+
+public class FunctionTelemetryScopeMiddleware : IFunctionsWorkerMiddleware
 {
-    public class FunctionTelemetryScopeMiddleware : IFunctionsWorkerMiddleware
+    private readonly TelemetryClient _telemetryClient;
+
+    public FunctionTelemetryScopeMiddleware(
+        TelemetryClient telemetryClient)
     {
-        private readonly TelemetryClient _telemetryClient;
+        _telemetryClient = telemetryClient;
+    }
 
-        public FunctionTelemetryScopeMiddleware(
-            TelemetryClient telemetryClient)
+    public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
+    {
+        if (context == null)
+            throw new ArgumentNullException(nameof(context));
+
+        var traceParent = TraceParent.Parse(context.TraceContext.TraceParent);
+
+        var operation = _telemetryClient.StartOperation<DependencyTelemetry>(
+            context.FunctionDefinition.Name,
+            traceParent.TraceId,
+            traceParent.ParentId);
+
+        operation.Telemetry.Type = "Function";
+        try
         {
-            _telemetryClient = telemetryClient;
+            operation.Telemetry.Success = true;
+            await next(context).ConfigureAwait(false);
         }
-
-        public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
+        catch (Exception exception)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-
-            var traceParent = TraceParent.Parse(context.TraceContext.TraceParent);
-
-            var operation = _telemetryClient.StartOperation<DependencyTelemetry>(
-                context.FunctionDefinition.Name,
-                traceParent.TraceId,
-                traceParent.ParentId);
-
-            operation.Telemetry.Type = "Function";
-            try
-            {
-                operation.Telemetry.Success = true;
-                await next(context).ConfigureAwait(false);
-            }
-            catch (Exception exception)
-            {
-                operation.Telemetry.Success = false;
-                _telemetryClient.TrackException(exception);
-                throw;
-            }
-            finally
-            {
-                _telemetryClient.StopOperation(operation);
-            }
+            operation.Telemetry.Success = false;
+            _telemetryClient.TrackException(exception);
+            throw;
+        }
+        finally
+        {
+            _telemetryClient.StopOperation(operation);
         }
     }
 }

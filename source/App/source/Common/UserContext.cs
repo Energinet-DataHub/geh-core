@@ -12,28 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
-namespace Energinet.DataHub.Core.App.Common
+namespace Energinet.DataHub.Core.App.Common;
+
+public sealed class UserContext<TUser> : IUserContext<TUser>
+    where TUser : class
 {
-    public sealed class UserContext<TUser> : IUserContext<TUser>
-        where TUser : class
+    private TUser? _currentUser;
+
+    public TUser CurrentUser => _currentUser ?? throw new InvalidOperationException("User has not been set, ensure that all required services and middleware have been registered correctly and that you are not in an anonymous context.");
+
+    public void SetCurrentUser(TUser user)
     {
-        private TUser? _currentUser;
+        ArgumentNullException.ThrowIfNull(user);
 
-        public TUser CurrentUser => _currentUser ?? throw new InvalidOperationException("User has not been set, ensure that all required services and middleware have been registered correctly and that you are not in an anonymous context.");
-
-        public void SetCurrentUser(TUser user)
+        if (_currentUser != null)
         {
-            ArgumentNullException.ThrowIfNull(user);
-
-            if (_currentUser != null)
-            {
-                throw new InvalidOperationException("User has already been set, cannot set it again!");
-            }
-
-            _currentUser = user;
+            throw new InvalidOperationException("User has already been set, cannot set it again!");
         }
+
+        _currentUser = user;
     }
 }

@@ -214,7 +214,7 @@ public sealed class AuthorizationTests
 
     private static string CreateBearerToken(params string[] permissions)
     {
-        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-key"));
+        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key"));
 
         var claims = permissions.Select(claim => new Claim("roles", claim, "arr"));
 

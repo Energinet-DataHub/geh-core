@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.FunctionApp
+namespace Energinet.DataHub.Core.App.FunctionApp;
+
+public enum TriggerType
 {
-    public enum TriggerType
-    {
-        HttpTrigger,
-        TimerTrigger,
-        ServiceBusTrigger,
-    }
+    HttpTrigger,
+    TimerTrigger,
+    ServiceBusTrigger,
 }

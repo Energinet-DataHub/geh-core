@@ -15,35 +15,34 @@
 using ExampleHost.WebApi01.Common;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ExampleHost.WebApi01.Controllers
+namespace ExampleHost.WebApi01.Controllers;
+
+[ApiController]
+[Route("webapi01/[controller]")]
+public class WeatherForecastController : ControllerBase
 {
-    [ApiController]
-    [Route("webapi01/[controller]")]
-    public class WeatherForecastController : ControllerBase
+    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory httpClientFactory)
     {
-        private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+    }
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory httpClientFactory)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-        }
+    [HttpGet("{identification}")]
+    public async Task<string> GetAsync(string identification)
+    {
+        var traceparent = HttpContext.Request.Headers["traceparent"].ToString();
+        _logger.LogInformation($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
+        _logger.LogWarning($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
 
-        [HttpGet("{identification}")]
-        public async Task<string> GetAsync(string identification)
-        {
-            var traceparent = HttpContext.Request.Headers["traceparent"].ToString();
-            _logger.LogInformation($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
-            _logger.LogWarning($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
+        var httpClient = _httpClientFactory.CreateClient(HttpClientNames.WebApi02);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/weatherforecast/{identification}");
+        using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
-            var httpClient = _httpClientFactory.CreateClient(HttpClientNames.WebApi02);
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/weatherforecast/{identification}");
-            using var response = await httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
 
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync();
-        }
+        return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
     }
 }
