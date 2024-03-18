@@ -37,19 +37,21 @@ Each bundle has its own:
 * (optional) `development.md` file for additional information (e.g. setup local environment) necessary to be able to develop the specific package or bundle.
 * `release-notes.md` file for documentation of changes between each version.
 * Source code and tests.
+* (optional) `.editorconfig` as mentioned in the `README.md` some bundles have their own because we needed to migrate to another set of rules, which we didn't want to do for all at once.
+* (optional) `Directory.Build.props` as mentioned in the `README.md` some bundles have their own because we needed to migrate to another set of properties, which we didn't want to do for all at once.
 
 The following are shared:
 
 * `development.md` (this) file for documenting how to develop the packages and bundles in general.
-* Directory.Build.props
-* stylecop.json
+* `Directory.Build.props` (some bundles have their own)
+* `stylecop.json`
 
 Here is an example of the package folder structure using the existing `TestCommon` and a `MyNewBundle` bundle:
 
 ``` txt
 <root>
 │
-├───documents
+├───docs
 │      development.md
 │
 └───source
@@ -57,6 +59,8 @@ Here is an example of the package folder structure using the existing `TestCommo
     │  stylecop.json
     │
     ├───TestCommon
+    |   |  .editorconfig
+    |   |  Directory.Build.props
     │   │  TestCommon.sln
     │   │
     │   ├───documents
