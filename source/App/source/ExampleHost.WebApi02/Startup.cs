@@ -23,9 +23,6 @@ public class Startup
 
     private IConfiguration Configuration { get; }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
@@ -33,14 +30,9 @@ public class Startup
         services.AddApplicationInsightsTelemetry();
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    /// </summary>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
-        // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
-        ////app.UseHttpsRedirection();
-
+        // We will not use HTTPS in tests.
         app.UseRouting();
         app.UseAuthorization();
 
