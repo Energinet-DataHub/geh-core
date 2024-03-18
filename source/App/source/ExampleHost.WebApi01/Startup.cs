@@ -29,13 +29,13 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // Http channels
         services.AddControllers();
 
         // CONCLUSION:
         //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to appear in Application Insights (can be configured).
         //    See "How do I customize ILogger logs collection" at https://docs.microsoft.com/en-us/azure/azure-monitor/faq#how-do-i-customize-ilogger-logs-collection-
 
+        // Configuration verified in tests
         // CONCLUSION:
         //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
         //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
@@ -48,7 +48,7 @@ public class Startup
             httpClient.BaseAddress = new Uri(baseUrl!);
         });
 
-        // Health Checks
+        // Health Checks (verified in tests)
         services
             .AddHealthChecks()
             .AddLiveCheck();
@@ -64,7 +64,7 @@ public class Startup
         {
             endpoints.MapControllers();
 
-            // Health Checks
+            // Health Checks (verified in tests)
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
         });

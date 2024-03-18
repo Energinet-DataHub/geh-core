@@ -28,18 +28,18 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddControllers();
+        services.AddApplicationInsightsTelemetry();
+
+        // Configuration supporting tested scenarios
         var innerMetadata = _configuration["innerMetadata"]!;
         var outerMetadata = _configuration["outerMetadata"]!;
         var audience = _configuration["audience"]!;
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        services.AddControllers();
-
         services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
         services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
-
-        services.AddApplicationInsightsTelemetry();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -47,6 +47,7 @@ public class Startup
         // We will not use HTTPS in tests.
         app.UseRouting();
 
+        // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseUserMiddleware<ExampleDomainUser>();

@@ -27,6 +27,7 @@ public class Startup
     {
         services.AddControllers();
 
+        // Configuration verified in tests
         services.AddApplicationInsightsTelemetry();
     }
 

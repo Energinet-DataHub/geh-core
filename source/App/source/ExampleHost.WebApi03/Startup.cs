@@ -30,6 +30,10 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddControllers();
+        services.AddApplicationInsightsTelemetry();
+
+        // Configuration supporting tested scenarios
         // The authorization tests need to generate tokens with different claims.
         // The validation of these tokens is suspended in tests. Use AddJwtBearerAuthentication().
         services
@@ -41,16 +45,15 @@ public class Startup
                 ValidateLifetime = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key")),
             });
-
-        services.AddControllers();
         services.AddPermissionAuthorization();
-        services.AddApplicationInsightsTelemetry();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
         // We will not use HTTPS in tests.
         app.UseRouting();
+
+        // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
 
