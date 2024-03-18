@@ -17,7 +17,24 @@ The packages contain types commonly used by domain teams when implementing Azure
 
 To be able to develop effeciently, especially with regards to dependency injection extensions and other types of startup configuration, we have implemented a number of `ExampleHost` applications.
 
-These allows us to easily debug, as well as implement integration tests, for verifying the runtime behaviour of our code running in the given type of application. This is very important as unit tests of that kind of code doesn't offer sufficient confidence as dependencies outside our control changes all the time and a small change might cause our functionality to break or not behave as expected.
+These allows us to easily debug, as well as implement integration tests, for verifying the runtime behaviour of our code running in the given type of application. This is important as unit tests of that kind of code doesn't offer sufficient confidence as dependencies outside our control changes all the time and a small change might cause our functionality to break or not behave as expected.
+
+### ExampleHost.FunctionApp01 and ExampleHost.FunctionApp02
+
+`ExampleHost.FunctionApp01` is used from integration tests located in `ExampleHost.FunctionApp.Tests` for verifying:
+* Telemtry or Application Insights configuration. It depends on `ExampleHost.FunctionApp02` for the verification scenario.
+* Health Checks configuration.
+
+### ExampleHost.WebApp01 and ExampleHost.WebApp02
+
+`ExampleHost.WebApp01` is used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+* Telemtry or Application Insights configuration. It depends on `ExampleHost.WebApp02` for the verification scenario.
+* Health Checks configuration.
+
+### ExampleHost.WebApp03 and ExampleHost.WebApp04
+
+These applications are used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+* Authentication and authorization configuration.
 
 ## Setup local environment
 
