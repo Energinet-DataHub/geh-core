@@ -27,11 +27,9 @@ public class Startup
 
     private IConfiguration Configuration { get; }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
+        // Http channels
         services.AddControllers();
 
         // CONCLUSION:
@@ -43,31 +41,30 @@ public class Startup
         //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
         services.AddApplicationInsightsTelemetry();
 
+        // Configure HttpClient for calling WebApi02
         services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
         {
             var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
             httpClient.BaseAddress = new Uri(baseUrl!);
         });
 
+        // Health Checks
         services
             .AddHealthChecks()
             .AddLiveCheck();
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    /// </summary>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
-        // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
-        ////app.UseHttpsRedirection();
-
+        // We will not use HTTPS in tests.
         app.UseRouting();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+
+            // Health Checks
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
         });
