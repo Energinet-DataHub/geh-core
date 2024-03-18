@@ -20,12 +20,12 @@ namespace ExampleHost.WebApi01;
 
 public class Startup
 {
+    private readonly IConfiguration _configuration;
+
     public Startup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        _configuration = configuration;
     }
-
-    private IConfiguration Configuration { get; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -44,7 +44,7 @@ public class Startup
         // Configure HttpClient for calling WebApi02
         services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
         {
-            var baseUrl = Configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
+            var baseUrl = _configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
             httpClient.BaseAddress = new Uri(baseUrl!);
         });
 
