@@ -20,10 +20,8 @@ Artifacts should be organized in the following folder structure:
 │
 ├── .vscode/
 │
-├───documents
-│   ├── development.md
-│   └── release-notes
-│       └──release-notes.md
+├───docs
+│   └── development.md
 │
 ├───source/
 │   ├── <NuGet package bundle>
@@ -37,16 +35,6 @@ Artifacts should be organized in the following folder structure:
 └── README.md
 ```
 
-### Root
-
-Contains:
-
-- `.editorconfig` file for configuration of Formatting, Code Style and Analyzers (including StyleCop).
-- `.gitignore` file that defines which files should be ignored (not checked in) by Git.
-- `.licenserc.json` file that defines the expected license header of certain file types.
-- `LICENSE` License information for all code within this repository.
-- `README.md` file that gives an introduction to this repository.
-
 ### Folder: .github
 
 Actions and workflows spanning [NuGet package bundles](./docs/development.md#nuget-package-bundle).
@@ -57,7 +45,7 @@ We use the following workflow postfix format:
 
 - `*--bundle-publish.yml` for workflows that build and tests a package bundle.
 
-#### File: CODEOWNERS
+#### File: .github/CODEOWNERS
 
 Define the maintainers of this repository, one of which must approve any given pull request.
 
@@ -65,7 +53,7 @@ Define the maintainers of this repository, one of which must approve any given p
 
 Contains VS Code workspace configuration which is relevant for any developer working in the repository. E.g. if we want to ensure all obey a certain setting we can configure it in `settings.json`.
 
-### Folder: documents
+### Folder: docs/
 
 Contains notes and documentation stored in `*.md` files.
 
@@ -75,13 +63,23 @@ Each [NuGet package bundles](./docs/development.md#nuget-package-bundle) should 
 
 Any configuration files (e.g. `stylecop.json`) shared by _all_ VS projects must be located in the `source` folder.
 
-#### File: Directory.Build.props
+#### File: source/Directory.Build.props
 
-VS project properties that we want to set on _all_ VS projects must be defined in the `Directory.Build.props`.
+VS project properties that we want to set on _all_ VS projects must be defined in the `Directory.Build.props`. Some [NuGet package bundles](./docs/development.md#nuget-package-bundle) have their own because we needed to migrate to another set of properties, which we didn't want to do for all at once.
 
 Never put NuGet package dependencies (except the style cop analyzers dependency) in this file, keep them in each VS project.
 
-The same goes for VS project properties that could cause breaking changes that we cannot easily detect, like `TargetFramework`.
+The same usually goes for VS project properties that could cause breaking changes that we cannot easily detect, like `TargetFramework`.
+
+### Root
+
+Contains:
+
+- `.editorconfig` file for configuration of Formatting, Code Style and Analyzers (including StyleCop). Some [NuGet package bundles](./docs/development.md#nuget-package-bundle) have their own because we needed to migrate to another set of rules, which we didn't want to do for all at once.
+- `.gitignore` file that defines which files should be ignored (not checked in) by Git.
+- `.licenserc.json` file that defines the expected license header of certain file types.
+- `LICENSE` License information for all code within this repository.
+- `README.md` file that gives an introduction to this repository.
 
 ## Development
 
