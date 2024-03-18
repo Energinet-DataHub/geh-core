@@ -22,18 +22,21 @@ These allows us to easily debug, as well as implement integration tests, for ver
 ### ExampleHost.FunctionApp01 and ExampleHost.FunctionApp02
 
 `ExampleHost.FunctionApp01` is used from integration tests located in `ExampleHost.FunctionApp.Tests` for verifying:
+
 * Telemtry or Application Insights configuration. It depends on `ExampleHost.FunctionApp02` for the verification scenario.
 * Health Checks configuration.
 
 ### ExampleHost.WebApp01 and ExampleHost.WebApp02
 
 `ExampleHost.WebApp01` is used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+
 * Telemtry or Application Insights configuration. It depends on `ExampleHost.WebApp02` for the verification scenario.
 * Health Checks configuration.
 
 ### ExampleHost.WebApp03 and ExampleHost.WebApp04
 
 These applications are used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+
 * Authentication and authorization configuration.
 
 ## Setup local environment
