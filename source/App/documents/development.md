@@ -13,6 +13,12 @@ The packages contain types commonly used by domain teams when implementing Azure
 
 > Also read the general [development.md](../../../docs/development.md) as is contains information that is relevant for all NuGet package bundles.
 
+## ExampleHost applications
+
+To be able to develop effeciently, especially with regards to dependency injection extensions and other types of startup configuration, we have implemented a number of `ExampleHost` applications.
+
+These allows us to easily debug, as well as implement integration tests, for verifying the runtime behaviour of our code running in the given type of application. This is very important as unit tests of that kind of code doesn't offer sufficient confidence as dependencies outside our control changes all the time and a small change might cause our functionality to break or not behave as expected.
+
 ## Setup local environment
 
 First, we must ensure we have followed any general setup of the developer environment for the Energinet DataHub.
