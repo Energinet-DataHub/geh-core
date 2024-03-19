@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.WebApi04;
+using ExampleHost.WebApi04;
 
-public class Program
-{
-    protected Program() { }
+var builder = WebApplication.CreateBuilder(args);
 
-    public static void Main(string[] args)
-    {
-        CreateHostBuilder(args).Build().Run();
-    }
+// We keep the Startup to be able to create Web04Host using TestServer in integration tests.
+var startup = new Startup(builder.Configuration);
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
-}
+/*
+// Add services to the container.
+*/
+startup.ConfigureServices(builder.Services);
+
+var app = builder.Build();
+
+/*
+// Configure the HTTP request pipeline.
+*/
+startup.Configure(app, app.Environment);
+
+app.Run();

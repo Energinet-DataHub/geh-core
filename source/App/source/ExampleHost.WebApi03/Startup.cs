@@ -19,13 +19,21 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ExampleHost.WebApi03;
 
-public sealed class Startup
+public class Startup
 {
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddControllers();
+        services.AddApplicationInsightsTelemetry();
+
+        // Configuration supporting tested scenarios
         // The authorization tests need to generate tokens with different claims.
         // The validation of these tokens is suspended in tests. Use AddJwtBearerAuthentication().
         services
@@ -37,21 +45,15 @@ public sealed class Startup
                 ValidateLifetime = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key")),
             });
-
-        services.AddControllers();
         services.AddPermissionAuthorization();
-        services.AddApplicationInsightsTelemetry();
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    /// </summary>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
-        // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
-        ////app.UseHttpsRedirection();
-
+        // We will not use HTTPS in tests.
         app.UseRouting();
+
+        // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
 

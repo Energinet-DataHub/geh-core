@@ -17,7 +17,7 @@ using ExampleHost.WebApi04.Security;
 
 namespace ExampleHost.WebApi04;
 
-public sealed class Startup
+public class Startup
 {
     private readonly IConfiguration _configuration;
 
@@ -26,32 +26,28 @@ public sealed class Startup
         _configuration = configuration;
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddControllers();
+        services.AddApplicationInsightsTelemetry();
+
+        // Configuration supporting tested scenarios
         var innerMetadata = _configuration["innerMetadata"]!;
         var outerMetadata = _configuration["outerMetadata"]!;
         var audience = _configuration["audience"]!;
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        services.AddControllers();
         services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
         services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
-        services.AddApplicationInsightsTelemetry();
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    /// </summary>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
-        // We will not use HTTPS in tests. For correct enforcement of HTTPS see: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio
-        ////app.UseHttpsRedirection();
-
+        // We will not use HTTPS in tests.
         app.UseRouting();
+
+        // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseUserMiddleware<ExampleDomainUser>();
