@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Core.App.Common.ApplicationInsights;
+using Energinet.DataHub.Core.App.Common.Extensibility.ApplicationInsights;
 using Energinet.DataHub.Core.App.Common.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;

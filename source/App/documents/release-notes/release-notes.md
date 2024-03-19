@@ -3,12 +3,16 @@
 ## Version 11.0.0
 
 - Upgraded to .NET 8
+- Add `Common` extensibility types:
+    - `ApplicationInsights.SubsystemInitializer`
 - Add `Common` reusable dependency injection extensions:
     - `HealthChecksExtensions.TryAddHealthChecks`
     - `NodaTimeExtensions.AddNodaTimeForApplication` with `DateTimeOptions`
 - Add `WebApp` reusable dependency injection extensions:
+    - `ApiVersioningExtensions.AddApiVersioningForWebApplication`
     - `ApplicationInsightsExtensions.AddApplicationInsightsForWebApp`
     - `HealthChecksExtensions.AddHealthChecksForWebApp`
+    - `OpenApiExtensions.AddSwaggerForWebApplication` with `ConfigureSwaggerOptions`
 
 ## Version 10.0.0
 
