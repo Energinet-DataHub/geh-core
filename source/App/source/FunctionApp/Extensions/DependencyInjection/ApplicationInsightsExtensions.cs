@@ -12,25 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+using Energinet.DataHub.Core.App.Common.Extensibility.ApplicationInsights;
+using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 
 /// <summary>
-/// Extensions to <see cref="Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
-/// that allow adding Application Insights services to Function App's.
+/// Extension methods for <see cref="IServiceCollection"/>
+/// that allow adding Application Insights services to a Function App.
 /// </summary>
 public static class ApplicationInsightsExtensions
 {
     /// <summary>
+    /// TODO: Remove - obsolete
     /// Add services necessary for end-to-end transaction overview within Application Insights.
     /// </summary>
     public static IServiceCollection AddApplicationInsights(this IServiceCollection services)
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.TryAddScoped<FunctionTelemetryScopeMiddleware>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Register services necessary for enabling an Azure Function App (isolated worker model)
+    /// to log telemetry to Application Insights.
+    /// Configuration of telemetry (initializers, properties etc.) within the isolated worker
+    /// only affects logs emitted from the isolated worker and not those emitted from the host.
+    /// </summary>
+    public static IServiceCollection AddApplicationInsightsForIsolatedWorker(this IServiceCollection services, string subsystemName)
+    {
+        // Telemetry initializers only adds information to logs emitted by the isolated worker; not logs emitted by the function host.
+        services.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(subsystemName));
+
+        // Configure isolated worker to emit logs directly to Application Insights.
+        // See https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#application-insights
+        services.AddApplicationInsightsTelemetryWorkerService(options =>
+        {
+            options.ApplicationVersion = Assembly
+                .GetEntryAssembly()!
+                .GetAssemblyInformationalVersionAttribute()!
+                .GetSourceVersionInformation()
+                .ToString();
+        });
+        services.ConfigureFunctionsApplicationInsights();
 
         return services;
     }

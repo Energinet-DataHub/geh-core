@@ -8,11 +8,15 @@
 - Add `Common` reusable dependency injection extensions:
     - `HealthChecksExtensions.TryAddHealthChecks`
     - `NodaTimeExtensions.AddNodaTimeForApplication` with `DateTimeOptions`
+- Add `FunctionApp` reusable dependency injection extensions:
+    - `ApplicationInsightsExtensions.AddApplicationInsightsForIsolatedWorker`
+    - `HealthChecksExtensions.AddHealthChecksForIsolatedWorker`
+    - `LoggingBuilderExtensions.AddLoggingConfigurationForIsolatedWorker`
 - Add `WebApp` reusable dependency injection extensions:
-    - `ApiVersioningExtensions.AddApiVersioningForWebApplication`
+    - `ApiVersioningExtensions.AddApiVersioningForWebApp`
     - `ApplicationInsightsExtensions.AddApplicationInsightsForWebApp`
     - `HealthChecksExtensions.AddHealthChecksForWebApp`
-    - `OpenApiExtensions.AddSwaggerForWebApplication` with `ConfigureSwaggerOptions`
+    - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
 
 ## Version 10.0.0
 
