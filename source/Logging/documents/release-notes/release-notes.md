@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 3.1.4
+
+ - Upgrade to net8.0
+
 ## Version 3.1.3
 
 - No functional change.
