@@ -2,7 +2,8 @@
 
 ## Version 5.0.0
 
-- Removed type `PublisherTrigger` and related DI extension `AddPublisherWorker`
+- Removed types `PublisherTrigger` and `PublisherWorkerOptions`
+- Removed DI extension `AddPublisherWorker`
 - Upgrade NuGet packages
 
 ## Version 4.0.0
