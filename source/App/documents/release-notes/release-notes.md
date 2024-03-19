@@ -3,7 +3,12 @@
 ## Version 11.0.0
 
 - Upgraded to .NET 8
-- Add reusable dependency injection extensions
+- Add `Common` reusable dependency injection extensions:
+    - `HealthChecksExtensions.TryAddHealthChecks`
+    - `NodaTimeExtensions.AddNodaTimeForApplication` with `DateTimeOptions`
+- Add `WebApp` reusable dependency injection extensions:
+    - `ApplicationInsightsExtensions.AddApplicationInsightsForWebApp`
+    - `HealthChecksExtensions.AddHealthChecksForWebApp`
 
 ## Version 10.0.0
 
