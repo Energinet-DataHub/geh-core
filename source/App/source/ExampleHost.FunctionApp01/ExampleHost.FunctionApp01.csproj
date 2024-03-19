@@ -17,6 +17,7 @@ limitations under the License.
   <PropertyGroup>
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Setting values in 'Version' and 'SourceRevisionId' to support the test 'CallingLiveEndpoint_Should_ReturnOKAndExpectedSourceVersionInformation' -->
