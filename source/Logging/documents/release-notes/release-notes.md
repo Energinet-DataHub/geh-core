@@ -2,7 +2,7 @@
 
 ## Version 3.1.4
 
- - Upgrade to net8.0
+- Upgrade logging to net8.0
 
 ## Version 3.1.3
 
