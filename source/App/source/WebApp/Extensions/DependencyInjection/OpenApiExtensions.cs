@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System.Reflection;
+using Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
@@ -31,8 +33,6 @@ public static class OpenApiExtensions
     /// </summary>
     public static IServiceCollection AddSwaggerForWebApp(this IServiceCollection services)
     {
-        // The following article is a good read and shows many of the pieces that we have used: https://medium.com/@mo.esmp/api-versioning-and-swagger-in-asp-net-core-7-0-fe45f67d8419
-        // TODO: EDI does this differently but the following has some similar parts: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
         services.ConfigureOptions<ConfigureSwaggerOptions>();
         services.AddSwaggerGen(options =>
         {
@@ -44,24 +44,34 @@ public static class OpenApiExtensions
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
 
-            var securitySchema = new OpenApiSecurityScheme
+            options.AddSecurityDefinition(
+                name: JwtBearerDefaults.AuthenticationScheme,
+                new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer", },
-            };
-            options.AddSecurityDefinition("Bearer", securitySchema);
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Id = JwtBearerDefaults.AuthenticationScheme,
+                            Type = ReferenceType.SecurityScheme,
+                        },
+                    },
+                    new[] { JwtBearerDefaults.AuthenticationScheme }
+                },
+            });
 
-            // TODO: EDI does this differently and so does: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
-            var securityRequirement = new OpenApiSecurityRequirement { { securitySchema, new[] { "Bearer" } }, };
-            options.AddSecurityRequirement(securityRequirement);
-
-            // TODO: Wholesale specific
-            // Support binary content, e.g. for Settlement download
-            ////options.OperationFilter<BinaryContentFilter>();
+            // Support marking return type as binary content
+            options.OperationFilter<BinaryContentFilter>();
         });
 
         return services;
