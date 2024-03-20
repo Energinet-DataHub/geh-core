@@ -17,6 +17,7 @@ using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixtures;
@@ -29,18 +30,29 @@ public class ExampleHostFixture : IAsyncLifetime
         var web01BaseUrl = "http://localhost:5000";
 
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
-        Environment.SetEnvironmentVariable(
-            "APPLICATIONINSIGHTS_CONNECTION_STRING",
-            IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
         // We cannot use TestServer as this would not work with Application Insights.
         Web02Host = WebHost.CreateDefaultBuilder()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
+                });
+            })
             .UseStartup<WebApi02.Startup>()
             .UseUrls(web02BaseUrl)
             .Build();
 
-        Environment.SetEnvironmentVariable(WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl, web02BaseUrl);
         Web01Host = WebHost.CreateDefaultBuilder()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    [WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl] = web02BaseUrl,
+                    ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
+                });
+            })
             .UseStartup<WebApi01.Startup>()
             .UseUrls(web01BaseUrl)
             .Build();

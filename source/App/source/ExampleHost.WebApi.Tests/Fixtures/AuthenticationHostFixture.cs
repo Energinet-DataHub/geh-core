@@ -32,8 +32,6 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
         BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
 
-        Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
-
         var innerMetadataArg = $"--innerMetadata={Metadata}";
         var outerMetadataArg = $"--outerMetadata=";
         var audienceArg = $"--audience={Audience}";
@@ -43,7 +41,6 @@ public class AuthenticationHostFixture : IAsyncLifetime
             outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
         }
 
-        // We cannot use TestServer as this would not work with Application Insights.
         Web04Host = WebHost.CreateDefaultBuilder(new[]
             {
                 innerMetadataArg,

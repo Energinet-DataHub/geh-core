@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -47,6 +48,9 @@ public static class AuthenticationExtensions
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
     {
+        // The UserMiddleware depends on IHttpContextAccessor
+        services.AddHttpContextAccessor();
+
         services.AddScoped<UserContext<TUser>>();
         services.AddScoped<IUserContext<TUser>>(s => s.GetRequiredService<UserContext<TUser>>());
         services.AddScoped<IUserProvider<TUser>, TUserProvider>();
