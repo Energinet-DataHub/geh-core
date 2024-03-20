@@ -22,7 +22,7 @@ using Xunit;
 namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
-/// Tests that documents and prooves how we should setup and configure our
+/// Tests that documents and proves how we should setup and configure our
 /// Asp.Net Core Web Api's (host's) so they log expected telemetry events.
 /// </summary>
 [Collection(nameof(ExampleHostCollectionFixture))]
