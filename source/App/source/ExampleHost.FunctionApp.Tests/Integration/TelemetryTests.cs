@@ -29,12 +29,12 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 
 /// <summary>
 /// Tests that documents and prooves how we should setup and configure our
-/// Azure Function App's (host's) so they behave as we expect.
+/// Azure Function App's (host's) so they log expected telemetry events.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
-public class ExampleHostsFlowTests : IAsyncLifetime
+public class TelemetryTests : IAsyncLifetime
 {
-    public ExampleHostsFlowTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+    public TelemetryTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
@@ -77,17 +77,17 @@ public class ExampleHostsFlowTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// Verify sunshine scenario.
+    /// Verify both host's can run an FunctionApp01 can call FunctionApp02.
     /// </summary>
     [Fact]
-    public async Task CallingCreatePetAsync_Should_CallReceiveMessage()
+    public async Task CallingTelemetryAsync_Should_CallReceiveMessage()
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+        using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/telemetry");
         var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-        await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+        await AssertFunctionExecuted(Fixture.App01HostManager, "TelemetryAsync");
         await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
         AssertNoExceptionsThrown();
@@ -103,10 +103,10 @@ public class ExampleHostsFlowTests : IAsyncLifetime
     {
         const string ExpectedLogMessage = "We should be able to find this log message by following the trace of the request.";
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+        using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/telemetry");
         await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
-        await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+        await AssertFunctionExecuted(Fixture.App01HostManager, "TelemetryAsync");
         await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
         Fixture.App01HostManager.GetHostLogSnapshot()
@@ -134,15 +134,15 @@ public class ExampleHostsFlowTests : IAsyncLifetime
     {
         var expectedEvents = new List<QueryResult>
         {
-            new() { Type = "AppRequests", Name = "CreatePetAsync" },
-            new() { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.CreatePetAsync'" },
-            new() { Type = "AppDependencies", Name = "CreatePetAsync", DependencyType = "Function" },
-            new() { Type = "AppTraces", EventName = "0", Message = "ExampleHost CreatePetAsync: We should be able to find this log message by following the trace of the request." },
+            new() { Type = "AppRequests", Name = "TelemetryAsync" },
+            new() { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.TelemetryAsync'" },
+            new() { Type = "AppDependencies", Name = "TelemetryAsync", DependencyType = "Function" },
+            new() { Type = "AppTraces", EventName = "0", Message = "ExampleHost TelemetryAsync: We should be able to find this log message by following the trace of the request." },
             new() { Type = "AppDependencies", Name = "Message", DependencyType = "Queue Message | Azure Service Bus" },
             new() { Type = "AppDependencies", Name = "ServiceBusSender.Send", DependencyType = "Azure Service Bus" },
 
             new() { Type = "AppRequests", Name = "ReceiveMessage" },
-            new() { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.CreatePetAsync' (Succeeded" },
+            new() { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.TelemetryAsync' (Succeeded" },
             new() { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.ReceiveMessage'" },
             new() { Type = "AppTraces", EventName = null!, Message = "Trigger Details" },
             new() { Type = "AppDependencies", Name = "ReceiveMessage", DependencyType = "Function" },
@@ -159,17 +159,17 @@ public class ExampleHostsFlowTests : IAsyncLifetime
 
         await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
-        await AssertFunctionExecuted(Fixture.App01HostManager, "CreatePetAsync");
+        await AssertFunctionExecuted(Fixture.App01HostManager, "TelemetryAsync");
         await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
 
-        var createPetInvocationId = GetFunctionsInvocationId(Fixture.App01HostManager, "CreatePetAsync");
+        var telemetryInvocationId = GetFunctionsInvocationId(Fixture.App01HostManager, "TelemetryAsync");
         var receiveMessageInvocationId = GetFunctionsInvocationId(Fixture.App02HostManager, "ReceiveMessage");
 
         var queryWithParameters = @"
                 let OperationIds = AppRequests
                   | where AppRoleInstance == '{{$Environment.MachineName}}'
                   | extend parsedProp = parse_json(Properties)
-                  | where parsedProp.InvocationId == '{{$createPetInvocationId}}' or parsedProp.InvocationId == '{{$receiveMessageInvocationId}}'
+                  | where parsedProp.InvocationId == '{{$telemetryInvocationId}}' or parsedProp.InvocationId == '{{$receiveMessageInvocationId}}'
                   | project OperationId;
                 OperationIds
                   | join(union AppRequests, AppDependencies, AppTraces) on OperationId
@@ -179,7 +179,7 @@ public class ExampleHostsFlowTests : IAsyncLifetime
 
         var query = queryWithParameters
             .Replace("{{$Environment.MachineName}}", Environment.MachineName)
-            .Replace("{{$createPetInvocationId}}", createPetInvocationId)
+            .Replace("{{$telemetryInvocationId}}", telemetryInvocationId)
             .Replace("{{$receiveMessageInvocationId}}", receiveMessageInvocationId)
             .Replace("\n", string.Empty);
 

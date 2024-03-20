@@ -25,9 +25,9 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 /// Tests verifying the configuration and behaviour of Health Checks.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
-public class ExampleHostsHealthChecksTests : IAsyncLifetime
+public class HealthChecksTests : IAsyncLifetime
 {
-    public ExampleHostsHealthChecksTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+    public HealthChecksTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
