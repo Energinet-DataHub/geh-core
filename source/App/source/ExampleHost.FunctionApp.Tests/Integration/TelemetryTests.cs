@@ -150,7 +150,7 @@ public class TelemetryTests : IAsyncLifetime
             new() { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.ReceiveMessage' (Succeeded" },
         };
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/pet");
+        using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/telemetry");
         if (traceParentTestData != TraceParentTestData.Empty)
         {
             var traceParent = $"{traceParentTestData.Version}-{traceParentTestData.TraceId}-{traceParentTestData.ParentId}-{traceParentTestData.TraceFlags}";
