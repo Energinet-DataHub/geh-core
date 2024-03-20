@@ -145,20 +145,23 @@ public class TelemetryTests
             {
                 case "AppRequests":
                     actualResults.First(actual =>
-                        actual.Name == expected.Name
+                        actual.Subsystem == expected.Subsystem
+                        && actual.Name == expected.Name
                         && actual.Url == expected.Url);
                     break;
 
                 case "AppDependencies":
                     actualResults.First(actual =>
-                        actual.Name == expected.Name
+                        actual.Subsystem == expected.Subsystem
+                        && actual.Name == expected.Name
                         && actual.DependencyType == expected.DependencyType);
                     break;
 
                 // "AppTraces"
                 default:
                     actualResults.First(actual =>
-                        actual.EventName == expected.EventName
+                        actual.Subsystem == expected.Subsystem
+                        && actual.EventName == expected.EventName
                         && actual.Message.StartsWith(expected.Message));
                     break;
             }
