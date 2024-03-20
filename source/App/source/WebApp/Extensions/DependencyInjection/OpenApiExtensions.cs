@@ -28,11 +28,35 @@ namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 public static class OpenApiExtensions
 {
     /// <summary>
-    /// Register services necessary for enabling an ASP.NET Core app
-    /// to generate Open API specifications and work with Swagger UI.
+    /// Register services necessary for enabling an ASP.NET Core app to generate
+    /// Open API specifications and work with Swagger UI.
+    /// Expects an XML file with C# documentation comments named like the executing assembly.
+    /// The documentation is used for endpoints descriptions.
     /// </summary>
-    public static IServiceCollection AddSwaggerForWebApp(this IServiceCollection services)
+    /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection instance.</param>
+    /// <param name="executingAssembly">Typically the web app assembly.</param>
+    public static IServiceCollection AddSwaggerForWebApp(this IServiceCollection services, Assembly executingAssembly)
     {
+        ArgumentNullException.ThrowIfNull(executingAssembly);
+
+        var xmlFile = $"{executingAssembly.GetName().Name}.xml";
+        services.AddSwaggerForWebApp(xmlFile);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Register services necessary for enabling an ASP.NET Core app to generate
+    /// Open API specifications and work with Swagger UI.
+    /// Expects an XML file with C# documentation comments.
+    /// The documentation is used for endpoints descriptions.
+    /// </summary>
+    /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection instance.</param>
+    /// <param name="xmlCommentsFilename">Filename (with extension) of the XML file containing C# documentation comments.</param>
+    public static IServiceCollection AddSwaggerForWebApp(this IServiceCollection services, string xmlCommentsFilename)
+    {
+        ArgumentNullException.ThrowIfNull(xmlCommentsFilename);
+
         services.ConfigureOptions<ConfigureSwaggerOptions>();
         services.AddSwaggerGen(options =>
         {
@@ -40,8 +64,7 @@ public static class OpenApiExtensions
 
             // Set the comments path for the Swagger JSON and UI.
             // See: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
-            var xmlFile = $"{Assembly.GetEntryAssembly()!.GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFilename);
             options.IncludeXmlComments(xmlPath);
 
             options.AddSecurityDefinition(
