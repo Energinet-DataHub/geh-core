@@ -93,7 +93,7 @@ public static class OpenApiExtensions
                 },
             });
 
-            // Support marking return type as binary content
+            // Support marking endpoint return type as binary content
             options.OperationFilter<BinaryContentFilter>();
         });
 
