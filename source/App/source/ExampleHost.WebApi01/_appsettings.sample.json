@@ -4,14 +4,16 @@
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning"
+    },
+    "ApplicationInsights": {
+      "LogLevel": {
+        "Default": "Information"
+      }
     }
   },
   "AllowedHosts": "*",
   "ApplicationInsights": {
     "EnableAdaptiveSampling": false,
-    "ConnectionString": "<Application Insights Connection String>",
-    "LogLevel": {
-      "Default": "Information"
-    }
+    "ConnectionString": "<Application Insights Connection String>"
   }
 }

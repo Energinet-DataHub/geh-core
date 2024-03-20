@@ -63,7 +63,7 @@ public class TelemetryTests
     ///     services.AddApplicationInsightsTelemetry();
     /// </code>
     ///
-    /// 2: And configure "ApplicationInsights:LogLevel:Default" to "Information"; otherwise default level is "Warning".
+    /// 2: And configure "Logging:ApplicationInsights:LogLevel:Default" to "Information"; otherwise default level is "Warning".
     /// </summary>
     [Fact]
     public async Task Configuration_Should_CauseExpectedEventsToBeLogged()
