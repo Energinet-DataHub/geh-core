@@ -1,5 +1,11 @@
 # Messaging Release notes
 
+## Version 5.0.0
+
+- Removed types `PublisherTrigger` and `PublisherWorkerOptions`
+- Removed DI extension `AddPublisherWorker`
+- Upgrade NuGet packages
+
 ## Version 4.0.0
 
 - Upgrade to .NET 8

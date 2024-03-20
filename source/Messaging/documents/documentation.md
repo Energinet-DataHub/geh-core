@@ -19,8 +19,7 @@ The package is still work in progress.
 
 ## Publishing
 
-The publishing functionality is responsible for publishing integration events. It can be used manually or through a hosted service.
-Regardless of which "mode" is used, the IIntegrationEventProvider implementation has to be implemented.
+The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface has to be implemented.
 
 Below code shows an example of an IIntegrationEventProvider implementation as well as the registration.
 
@@ -60,19 +59,8 @@ services.Configure<PublisherOptions>(builder.Configuration.GetSection(nameof(Pub
 services.AddPublisher<IntegrationEventProvider>();
 ```
 
-### Manual
-
-When publishing manually, the above IIntegrationEventProvider implementation and registration is enough to start publishing integration events.
+When publishing, the above IIntegrationEventProvider interface and registration is enough to start publishing integration events.
 Simply inject IPublisher and call the PublishAsync method, which will then call the IIntegrationEventProvider implementation, and dispatch the returned integration events.
-
-### BackgroundService
-
-When using the hosted BackgroundService, in addition to the registration of the IIntegrationEventProvider implementation shown above, the below code, registering the worker, is also needed.
-
-```csharp
-services.Configure<PublisherWorkerOptions>(builder.Configuration.GetSection(nameof(PublisherWorkerOptions)));
-services.AddPublisherWorker();
-```
 
 ## Subscribing
 
