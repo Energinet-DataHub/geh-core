@@ -56,6 +56,11 @@ public class TelemetryTests
     }
 
     /// <summary>
+    /// Verifies:
+    ///  * Logging using ILogger{T} will work, and we have configured the default level for logging to Application Insights as "Information" in the test fixture.
+    ///  * We can see Trace, Request, Dependencies and other entries in Application Insights.
+    ///  * Telemetry events are enriched with the property "Subsystem".
+    ///
     /// Requirements for this test:
     ///
     /// 1: Both hosts must call "ConfigureServices" with the following:
