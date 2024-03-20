@@ -36,7 +36,7 @@ public class TelemetryTests
     private ExampleHostFixture Fixture { get; }
 
     /// <summary>
-    /// Verify sunshine scenario.
+    /// Verify both host's can run and WebHost01 can call WebHost02.
     /// </summary>
     [Fact]
     public async Task CallingApi01Get_Should_CallApi02Get()
@@ -62,6 +62,8 @@ public class TelemetryTests
     /// <code>
     ///     services.AddApplicationInsightsTelemetry();
     /// </code>
+    ///
+    /// 2: And configure "ApplicationInsights:LogLevel:Default" to "Information"; otherwise default level is "Warning".
     /// </summary>
     [Fact]
     public async Task Configuration_Should_CauseExpectedEventsToBeLogged()
@@ -77,6 +79,7 @@ public class TelemetryTests
 
             new() { Type = "AppDependencies", Name = $"GET /webapi02/telemetry/{requestIdentification}", DependencyType = "HTTP" },
             new() { Type = "AppRequests", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5001/webapi02/telemetry/{requestIdentification}" },
+            new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
             new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
         };
 

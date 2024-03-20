@@ -39,6 +39,7 @@ public class ExampleHostFixture : IAsyncLifetime
                 {
                     // Application Insights
                     ["ApplicationInsights:ConnectionString"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
+                    ["ApplicationInsights:LogLevel:Default"] = "Information",
                 });
             })
             .UseStartup<WebApi02.Startup>()

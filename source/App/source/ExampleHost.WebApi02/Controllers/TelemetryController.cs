@@ -31,6 +31,7 @@ public class TelemetryController : ControllerBase
     public string Get(string identification)
     {
         var traceparent = HttpContext.Request.Headers["traceparent"].ToString();
+        _logger.LogInformation($"ExampleHost WebApi02 {identification} Information: We should be able to find this log message by following the trace of the request '{traceparent}'.");
         _logger.LogWarning($"ExampleHost WebApi02 {identification} Warning: We should be able to find this log message by following the trace of the request '{traceparent}'.");
 
         return identification;
