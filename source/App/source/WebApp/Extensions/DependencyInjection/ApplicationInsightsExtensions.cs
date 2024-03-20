@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.App.Common.Extensibility.ApplicationInsights;
 using Energinet.DataHub.Core.App.Common.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 
@@ -27,12 +28,18 @@ namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 public static class ApplicationInsightsExtensions
 {
     /// <summary>
-    /// Register services necessary for enabling an ASP.NET Core app
-    /// to log telemetry to Application Insights.
+    /// This operation is idempotent.
+    ///
+    /// Register services necessary for enabling an ASP.NET Core app to log telemetry
+    /// to Application Insights.
+    ///
+    /// Tracked events will have the following properties set:
+    ///  - "AppVersion" is set according to the AssemblyInformationalVersion of the host.
+    ///  - "Subsystem" is set to value given by <paramref name="subsystemName"/>.
     /// </summary>
     public static IServiceCollection AddApplicationInsightsForWebApp(this IServiceCollection services, string subsystemName)
     {
-        services.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(subsystemName));
+        services.TryAddSingleton<ITelemetryInitializer>(new SubsystemInitializer(subsystemName));
 
         // See https://learn.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core?tabs=netcorenew%2Cnetcore6#enable-application-insights-server-side-telemetry-no-visual-studio
         services.AddApplicationInsightsTelemetry(options =>
