@@ -28,7 +28,7 @@ public static class OpenApiBuilderExtensions
     /// Register middleware for enabling an ASP.NET Core app
     /// to generate Open API specifications and work with Swagger UI.
     /// </summary>
-    public static IApplicationBuilder UseSwaggerForWebApplication(this IApplicationBuilder app)
+    public static IApplicationBuilder UseSwaggerForWebApp(this IApplicationBuilder app)
     {
         app.UseSwagger();
         app.UseSwaggerUI(options =>

@@ -17,7 +17,7 @@
     - `ApplicationInsightsExtensions.AddApplicationInsightsForWebApp`
     - `HealthChecksExtensions.AddHealthChecksForWebApp`
     - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
-    - `OpenApiBuilderExtensions.UseSwaggerForWebApplication`
+    - `OpenApiBuilderExtensions.UseSwaggerForWebApp`
 
 ## Version 10.0.0
 
