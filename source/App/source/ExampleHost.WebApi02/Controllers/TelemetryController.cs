@@ -18,32 +18,21 @@ namespace ExampleHost.WebApi02.Controllers;
 
 [ApiController]
 [Route("webapi02/[controller]")]
-public class WeatherForecastController : ControllerBase
+public class TelemetryController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching",
-    };
+    private readonly ILogger<TelemetryController> _logger;
 
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public TelemetryController(ILogger<TelemetryController> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpGet("{identification}")]
-    public IEnumerable<WeatherForecast> Get(string identification)
+    public string Get(string identification)
     {
         var traceparent = HttpContext.Request.Headers["traceparent"].ToString();
         _logger.LogWarning($"ExampleHost WebApi02 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
 
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = DateTime.Now.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)],
-        })
-        .ToArray();
+        return identification;
     }
 }

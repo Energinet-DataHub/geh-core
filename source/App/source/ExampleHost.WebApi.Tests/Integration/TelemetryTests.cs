@@ -23,12 +23,12 @@ namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
 /// Tests that documents and prooves how we should setup and configure our
-/// Asp.Net Core Web Api's (host's) so they behave as we expect.
+/// Asp.Net Core Web Api's (host's) so they log expected telemetry events.
 /// </summary>
 [Collection(nameof(ExampleHostCollectionFixture))]
-public class ExampleHostTests
+public class TelemetryTests
 {
-    public ExampleHostTests(ExampleHostFixture fixture)
+    public TelemetryTests(ExampleHostFixture fixture)
     {
         Fixture = fixture;
     }
@@ -45,14 +45,14 @@ public class ExampleHostTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/telemetry/{requestIdentification}");
         var actualResponse = await Fixture.Web01HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Contain("\"temperatureC\":");
+        content.Should().Contain(requestIdentification);
     }
 
     /// <summary>
@@ -70,16 +70,16 @@ public class ExampleHostTests
 
         var expectedEvents = new List<QueryResult>
         {
-            new() { Type = "AppDependencies", Name = $"GET /webapi01/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
-            new() { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"http://localhost:5000/webapi01/weatherforecast/{requestIdentification}" },
+            new() { Type = "AppDependencies", Name = $"GET /webapi01/telemetry/{requestIdentification}", DependencyType = "HTTP" },
+            new() { Type = "AppRequests", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5000/webapi01/telemetry/{requestIdentification}" },
             new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification}: We should be able to find this log message by following the trace of the request" },
 
-            new() { Type = "AppDependencies", Name = $"GET /webapi02/weatherforecast/{requestIdentification}", DependencyType = "HTTP" },
-            new() { Type = "AppRequests", Name = "GET WeatherForecast/Get [identification]", Url = $"http://localhost:5001/webapi02/weatherforecast/{requestIdentification}" },
+            new() { Type = "AppDependencies", Name = $"GET /webapi02/telemetry/{requestIdentification}", DependencyType = "HTTP" },
+            new() { Type = "AppRequests", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5001/webapi02/telemetry/{requestIdentification}" },
             new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification}: We should be able to find this log message by following the trace of the request" },
         };
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/weatherforecast/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/telemetry/{requestIdentification}");
         await Fixture.Web01HttpClient.SendAsync(request);
 
         var queryWithParameters = @"

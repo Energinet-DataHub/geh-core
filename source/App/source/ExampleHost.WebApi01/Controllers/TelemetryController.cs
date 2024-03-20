@@ -19,12 +19,12 @@ namespace ExampleHost.WebApi01.Controllers;
 
 [ApiController]
 [Route("webapi01/[controller]")]
-public class WeatherForecastController : ControllerBase
+public class TelemetryController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<TelemetryController> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory httpClientFactory)
+    public TelemetryController(ILogger<TelemetryController> logger, IHttpClientFactory httpClientFactory)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
@@ -38,7 +38,7 @@ public class WeatherForecastController : ControllerBase
         _logger.LogWarning($"ExampleHost WebApi01 {identification}: We should be able to find this log message by following the trace of the request '{traceparent}'.");
 
         var httpClient = _httpClientFactory.CreateClient(HttpClientNames.WebApi02);
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/weatherforecast/{identification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/telemetry/{identification}");
         using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
         response.EnsureSuccessStatusCode();
