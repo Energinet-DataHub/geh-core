@@ -19,7 +19,7 @@ The package is still work in progress.
 
 ## Publishing
 
-The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider implementation has to be implemented.
+The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface has to be implemented.
 
 Below code shows an example of an IIntegrationEventProvider implementation as well as the registration.
 
@@ -59,7 +59,7 @@ services.Configure<PublisherOptions>(builder.Configuration.GetSection(nameof(Pub
 services.AddPublisher<IntegrationEventProvider>();
 ```
 
-When publishing, the above IIntegrationEventProvider implementation and registration is enough to start publishing integration events.
+When publishing, the above IIntegrationEventProvider interface and registration is enough to start publishing integration events.
 Simply inject IPublisher and call the PublishAsync method, which will then call the IIntegrationEventProvider implementation, and dispatch the returned integration events.
 
 ## Subscribing
