@@ -8,6 +8,9 @@
   "AllowedHosts": "*",
   "ApplicationInsights": {
     "EnableAdaptiveSampling": false,
-    "ConnectionString": "<Application Insights Connection String>"
+    "ConnectionString": "<Application Insights Connection String>",
+    "LogLevel": {
+      "Default": "Information"
+    }
   }
 }

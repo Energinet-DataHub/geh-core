@@ -37,7 +37,8 @@ public class ExampleHostFixture : IAsyncLifetime
             {
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
+                    // Application Insights
+                    ["ApplicationInsights:ConnectionString"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
                 });
             })
             .UseStartup<WebApi02.Startup>()
@@ -50,7 +51,9 @@ public class ExampleHostFixture : IAsyncLifetime
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     [WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl] = web02BaseUrl,
-                    ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
+                    // Application Insights
+                    ["ApplicationInsights:ConnectionString"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
+                    ["ApplicationInsights:LogLevel:Default"] = "Information",
                 });
             })
             .UseStartup<WebApi01.Startup>()
