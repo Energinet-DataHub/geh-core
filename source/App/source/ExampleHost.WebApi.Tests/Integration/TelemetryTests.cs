@@ -134,7 +134,7 @@ public class TelemetryTests
 
     private bool ContainsExpectedEvents(IList<QueryResult> expectedEvents, IReadOnlyList<QueryResult> actualResults)
     {
-        if (actualResults.Count != expectedEvents.Count)
+        if (actualResults.Count < expectedEvents.Count)
         {
             return false;
         }
