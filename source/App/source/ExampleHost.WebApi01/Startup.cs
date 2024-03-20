@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
 
 namespace ExampleHost.WebApi01;
@@ -36,7 +37,8 @@ public class Startup
         //    See "How do I customize ILogger logs collection" at https://learn.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core?tabs=netcorenew#how-do-i-customize-ilogger-logs-collection
         //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
         //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
-        services.AddApplicationInsightsTelemetry();
+        //  * Telemetry events are enriched with property "Subsystem" and configured value
+        services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApp");
 
         // Configure HttpClient for calling WebApi02
         services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>

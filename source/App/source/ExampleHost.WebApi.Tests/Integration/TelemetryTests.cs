@@ -72,15 +72,15 @@ public class TelemetryTests
 
         var expectedEvents = new List<QueryResult>
         {
-            new() { Type = "AppDependencies", Name = $"GET /webapi01/telemetry/{requestIdentification}", DependencyType = "HTTP" },
-            new() { Type = "AppRequests", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5000/webapi01/telemetry/{requestIdentification}" },
-            new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
-            new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.WebApp", Name = $"GET /webapi01/telemetry/{requestIdentification}", DependencyType = "HTTP" },
+            new() { Type = "AppRequests", Subsystem = "ExampleHost.WebApp", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5000/webapi01/telemetry/{requestIdentification}" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
 
-            new() { Type = "AppDependencies", Name = $"GET /webapi02/telemetry/{requestIdentification}", DependencyType = "HTTP" },
-            new() { Type = "AppRequests", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5001/webapi02/telemetry/{requestIdentification}" },
-            new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
-            new() { Type = "AppTraces", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.WebApp", Name = $"GET /webapi02/telemetry/{requestIdentification}", DependencyType = "HTTP" },
+            new() { Type = "AppRequests", Subsystem = "ExampleHost.WebApp", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5001/webapi02/telemetry/{requestIdentification}" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
         };
 
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/telemetry/{requestIdentification}");
@@ -94,7 +94,7 @@ public class TelemetryTests
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces) on OperationId
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
+                | project TimeGenerated, OperationId, ParentId, Id, Type, Subsystem=parsedProp.Subsystem, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
                 | order by TimeGenerated asc";
 
         var query = queryWithParameters
@@ -177,6 +177,9 @@ public class TelemetryTests
             = string.Empty;
 
         public string Type { get; set; }
+            = string.Empty;
+
+        public string Subsystem { get; set; }
             = string.Empty;
 
         public string Name { get; set; }
