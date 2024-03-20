@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
@@ -38,22 +37,6 @@ public static class Registration
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddScoped<IPublisher, Internal.Publisher.Publisher>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
-        return services;
-    }
-
-    /// <summary>
-    /// Method for registering publisher worker.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddPublisherWorker(this IServiceCollection services)
-    {
-        services.AddHostedService<PublisherTrigger>();
-
-        services
-            .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<PublisherTrigger>(TimeSpan.FromMinutes(1));
-
         return services;
     }
 
