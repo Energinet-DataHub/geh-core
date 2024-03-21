@@ -23,7 +23,7 @@ TODO: "Configuration" / implementation
 Development (maintenance):
 
 - TODO: Relevant types
-- TODO: Relevant tests
+- TODO: Relevant tests grouped by scope (unit/integration etc.)
 
 #### ASP.NET Core Web API
 
@@ -33,4 +33,4 @@ TODO: "Configuration" / implementation
 Development (maintenance):
 
 - TODO: Relevant types
-- TODO: Relevant tests
+- TODO: Relevant tests grouped by scope (unit/integration etc.)
