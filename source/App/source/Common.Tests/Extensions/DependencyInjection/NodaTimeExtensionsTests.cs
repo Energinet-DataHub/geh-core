@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
@@ -37,12 +38,38 @@ public class NodaTimeExtensionsTests
         // Act
         Services.AddNodaTimeForApplication();
 
+        // Assert
         using var assertionScope = new AssertionScope();
         var serviceProvider = Services.BuildServiceProvider();
 
         var actualClockService = serviceProvider.GetRequiredService<IClock>();
+        actualClockService.Should().Be(SystemClock.Instance);
 
         var actualDateTimeZone = serviceProvider.GetRequiredService<DateTimeZone>();
         actualDateTimeZone.Id.Should().Be(NodaTimeOptions.DefaultTimeZone);
+    }
+
+    [Fact]
+    public void AddNodaTimeForApplicationWithSectionName_WhenCalled_RegistrationsArePerformedWithConfiguredTimeZone()
+    {
+        // Arrange
+        var configuredTimeZone = "Europe/London";
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>()
+            {
+                [$"{NodaTimeOptions.SectionName}:{nameof(NodaTimeOptions.TimeZone)}"] = configuredTimeZone,
+            })
+            .Build();
+        Services.AddScoped<IConfiguration>(_ => configuration);
+
+        // Act
+        Services.AddNodaTimeForApplication(configSectionPath: NodaTimeOptions.SectionName);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var actualDateTimeZone = serviceProvider.GetRequiredService<DateTimeZone>();
+        actualDateTimeZone.Id.Should().Be(configuredTimeZone);
     }
 }
