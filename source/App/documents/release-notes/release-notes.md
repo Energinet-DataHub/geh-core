@@ -18,6 +18,7 @@
     - `HealthChecksExtensions.AddHealthChecksForWebApp`
     - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
     - `OpenApiBuilderExtensions.UseSwaggerForWebApp`
+- Remove `FunctionApp`
 
 ## Version 10.0.0
 

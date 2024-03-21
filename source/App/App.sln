@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 		documents\authorization.md = documents\authorization.md
 		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
-		documents\extensions.md = documents\extensions.md
-		documents\functionTelemetryScopeMiddleware.md = documents\functionTelemetryScopeMiddleware.md
 		documents\health-checks.md = documents\health-checks.md
 	EndProjectSection
 EndProject

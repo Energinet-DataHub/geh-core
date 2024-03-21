@@ -4,8 +4,8 @@ A library containing common functionality for Azure Functions and ASP.Net Core W
 
 ## Overview
 
-- Extensions
-    - [Application Insights](extensions.md#application-insights)
+- Telemetry/logging
+    - TODO: Application Insights 
 - Monitoring
     - [Health Checks](health-checks.md)
 - Security
