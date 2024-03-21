@@ -2,7 +2,7 @@
 
 Guidelines on implementing health checks for Azure Function App's and ASP.NET Core Web API's.
 
-> For a full implementation, see [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
+> For a full implementation, see [Wholesale](https://github.com/Energinet-DataHub/opengeh-wholesale) repository/subsystem.
 
 ## Overview
 

@@ -10,3 +10,27 @@ A library containing common functionality for Azure Functions and ASP.Net Core W
     - [Health Checks](health-checks.md)
 - Security
     - [JWT Security](authorization.md)
+
+### Telemetry and logging to Application Insights
+
+TODO: (General) Introduktion
+
+#### Azure Functions App
+
+TODO: Introduktion
+TODO: "Configuration" / implementation
+
+Development (maintenance):
+
+- TODO: Relevant types
+- TODO: Relevant tests
+
+#### ASP.NET Core Web API
+
+TODO: Introduktion
+TODO: "Configuration" / implementation
+
+Development (maintenance):
+
+- TODO: Relevant types
+- TODO: Relevant tests
