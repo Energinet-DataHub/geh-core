@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
@@ -35,12 +36,16 @@ public static class OpenApiExtensions
     /// </summary>
     /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection instance.</param>
     /// <param name="executingAssembly">Typically the web app assembly.</param>
-    public static IServiceCollection AddSwaggerForWebApp(this IServiceCollection services, Assembly executingAssembly)
+    /// <param name="swaggerUiTitle">The title which will be display in the swagger UI, independent of the apiVersion</param>
+    public static IServiceCollection AddSwaggerForWebApp(
+        this IServiceCollection services,
+        Assembly executingAssembly,
+        string swaggerUiTitle = "")
     {
         ArgumentNullException.ThrowIfNull(executingAssembly);
 
         var xmlFile = $"{executingAssembly.GetName().Name}.xml";
-        services.AddSwaggerForWebApp(xmlFile);
+        services.AddSwaggerForWebApp(xmlFile, swaggerUiTitle);
 
         return services;
     }
@@ -53,11 +58,17 @@ public static class OpenApiExtensions
     /// </summary>
     /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection instance.</param>
     /// <param name="xmlCommentsFilename">Filename (with extension) of the XML file containing C# documentation comments.</param>
-    public static IServiceCollection AddSwaggerForWebApp(this IServiceCollection services, string xmlCommentsFilename)
+    /// <param name="swaggerUiTitle">The title which will be display in the swagger UI, independent of the apiVersion</param>
+    public static IServiceCollection AddSwaggerForWebApp(
+        this IServiceCollection services,
+        string xmlCommentsFilename,
+        string swaggerUiTitle = "")
     {
         ArgumentNullException.ThrowIfNull(xmlCommentsFilename);
 
         services.ConfigureOptions<ConfigureSwaggerOptions>();
+        services.TryAddSingleton<SwaggerUiTitleDto>(new SwaggerUiTitleDto(title: swaggerUiTitle));
+
         services.AddSwaggerGen(options =>
         {
             options.SupportNonNullableReferenceTypes();

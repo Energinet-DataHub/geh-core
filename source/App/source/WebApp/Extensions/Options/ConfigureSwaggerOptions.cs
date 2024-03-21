@@ -69,9 +69,15 @@ public class ConfigureSwaggerOptions
     {
         var info = new OpenApiInfo()
         {
-            // TODO: Wholesale specific - should this be configurable?
-            Title = "Wholesale Web API",
+            Title = SwaggerUiTitleDto.Title,
             Version = description.ApiVersion.ToString(),
+
+            // TODO: Is this something we want to force upon all subsystems?
+            Contact = new OpenApiContact
+            {
+                Name = "Energinet DataHub A/S",
+                Email = "Energinet@datahub.dk",
+            },
         };
 
         if (description.IsDeprecated)

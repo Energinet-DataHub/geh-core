@@ -27,4 +27,13 @@ limitations under the License.
     <ProjectReference Include="..\WebApp\WebApp.csproj" />
   </ItemGroup>
 
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+      <DocFile Include="bin\*\*\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)"
+          DestinationFolder="$(PublishDir)"
+          SkipUnchangedFiles="false" />
+  </Target>
+
 </Project>

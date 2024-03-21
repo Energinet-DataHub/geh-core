@@ -37,7 +37,7 @@ public class OpenApiExtensionsTests : IClassFixture<OpenApiFixture>
         var majorVersion = int.Parse(Regex.Replace(apiVersion, "[a-zA-Z]", string.Empty));
 
         var url = $"swagger/{apiVersion}/swagger.json";
-        var client = _fixture.GetClientWithApiVersion(majorVersion);
+        var client = _fixture.GetClientWithApiVersionAndTitle(majorVersion);
 
         // Act
         var actualResponse = await client.GetAsync(url);
@@ -59,7 +59,7 @@ public class OpenApiExtensionsTests : IClassFixture<OpenApiFixture>
         var majorVersion = int.Parse(Regex.Replace(apiVersion, "[a-zA-Z]", string.Empty));
 
         var url = $"swagger/{apiVersion}/swagger.json";
-        var client = _fixture.GetClientWithApiVersion(majorVersion + 1);
+        var client = _fixture.GetClientWithApiVersionAndTitle(majorVersion + 1);
 
         // Act
         var actualResponse = await client.GetAsync(url);
@@ -69,17 +69,16 @@ public class OpenApiExtensionsTests : IClassFixture<OpenApiFixture>
         actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    // This should test, that the version and title is configurable.
     [Theory]
-    [InlineData("v1")]
-    [InlineData("v2")]
-    [InlineData("v3")]
-    public async Task UrlIsApiVersionSwaggerJson_WhenGet_ResponseIsOKAndContainsJsonAndCorrespondingVersion(string apiVersion)
+    [InlineData("v1", "Test title 1")]
+    [InlineData("v2", "Test title 2")]
+    [InlineData("v3", "Test title 3")]
+    public async Task UrlIsApiVersionSwaggerJson_WhenGet_ResponseIsOKAndContainsJsonAndCorrespondingVersion(string apiVersion, string title)
     {
         // Arrange
         var url = $"swagger/{apiVersion}/swagger.json";
         var majorVersion = int.Parse(Regex.Replace(apiVersion, "[a-zA-Z]", string.Empty));
-        var client = _fixture.GetClientWithApiVersion(majorVersion);
+        var client = _fixture.GetClientWithApiVersionAndTitle(majorVersion, title);
 
         // Act
         var actualResponse = await client.GetAsync(url);
@@ -89,7 +88,7 @@ public class OpenApiExtensionsTests : IClassFixture<OpenApiFixture>
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Contain($"\"version\": \"{majorVersion}.");
+        content.Should().Contain($"\"info\": {{\n    \"title\": \"{title}\",\n    \"version\": \"{majorVersion}.");
     }
 
     [Fact]

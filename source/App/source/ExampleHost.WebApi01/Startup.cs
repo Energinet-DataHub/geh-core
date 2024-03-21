@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
 
@@ -52,6 +55,13 @@ public class Startup
         services
             .AddHealthChecks()
             .AddLiveCheck();
+
+        // Swagger and api versioning (verified in tests)
+        services
+            .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUiTitle: "ExampleHost.WebApp")
+
+            // Setting default version to 2.0, this will be overwritten if the method has it's own version
+            .AddApiVersioningForWebApp(new ApiVersion(2, 0));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -68,5 +78,8 @@ public class Startup
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
         });
+
+        // Swagger (verified in tests)
+        app.UseSwaggerForWebApp();
     }
 }

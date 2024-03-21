@@ -34,9 +34,9 @@ public sealed class OpenApiFixture : IDisposable
 
     public HttpClient HttpClient { get; }
 
-    public HttpClient GetClientWithApiVersion(int apiVersion)
+    public HttpClient GetClientWithApiVersionAndTitle(int apiVersion, string title = "dummy title")
     {
-        var webHostBuilder = CreateWebHostBuilder(apiVersion);
+        var webHostBuilder = CreateWebHostBuilder(apiVersion, title);
         var server = new TestServer(webHostBuilder);
         return server.CreateClient();
     }
@@ -46,13 +46,13 @@ public sealed class OpenApiFixture : IDisposable
         _server.Dispose();
     }
 
-    private static IWebHostBuilder CreateWebHostBuilder(int apiVersion = 1)
+    private static IWebHostBuilder CreateWebHostBuilder(int apiVersion = 1, string title = "dummy title")
     {
         return new WebHostBuilder()
             .ConfigureServices(services =>
             {
                 services
-                    .AddSwaggerForWebApp(Assembly.GetExecutingAssembly())
+                    .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUiTitle: title)
                     .AddApiVersioningForWebApp(new ApiVersion(apiVersion, 0));
             })
             .Configure(app =>
