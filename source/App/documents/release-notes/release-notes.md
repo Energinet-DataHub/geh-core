@@ -18,7 +18,7 @@
     - `HealthChecksExtensions.AddHealthChecksForWebApp`
     - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
     - `OpenApiBuilderExtensions.UseSwaggerForWebApp`
-- Remove `FunctionApp`
+- In `FunctionApp` project removed the namespaces and types `FunctionTelemetryScope.*`
 
 ## Version 10.0.0
 

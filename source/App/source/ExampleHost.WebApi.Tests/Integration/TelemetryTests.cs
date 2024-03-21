@@ -57,7 +57,8 @@ public class TelemetryTests
 
     /// <summary>
     /// Verifies:
-    ///  * Logging using ILogger{T} will work, and we have configured the default level for logging to Application Insights as "Information" in the test fixture.
+    ///  * Logging using ILogger{T} will work, and we have configured the default level
+    ///    for logging to Application Insights as "Information" in the test fixture.
     ///  * We can see Trace, Request, Dependencies and other entries in Application Insights.
     ///  * Telemetry events are enriched with the property "Subsystem".
     ///
@@ -99,7 +100,7 @@ public class TelemetryTests
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces) on OperationId
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, ParentId, Id, Type, Subsystem=parsedProp.Subsystem, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
+                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, Subsystem=parsedProp.Subsystem, EventName=parsedProp.EventName, Message, Url, Properties
                 | order by TimeGenerated asc";
 
         var query = queryWithParameters
@@ -187,13 +188,13 @@ public class TelemetryTests
         public string Type { get; set; }
             = string.Empty;
 
-        public string Subsystem { get; set; }
-            = string.Empty;
-
         public string Name { get; set; }
             = string.Empty;
 
         public string DependencyType { get; set; }
+            = string.Empty;
+
+        public string Subsystem { get; set; }
             = string.Empty;
 
         public string EventName { get; set; }

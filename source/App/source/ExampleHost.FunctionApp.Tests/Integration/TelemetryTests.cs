@@ -120,38 +120,46 @@ public class TelemetryTests : IAsyncLifetime
     }
 
     /// <summary>
+    /// Verifies:
+    ///  * Logging using ILogger{T} will work, and we have configured the default level
+    ///    for logging to Application Insights as "Information" in the test fixture.
+    ///  * We can see Trace, Request, Dependencies and other entries in Application Insights.
+    ///  * Only logs emitted from the isolated worker (not the host) are enriched with the property "Subsystem".
+    ///
     /// Requirements for this test:
     ///
-    /// 1: Both hosts must call "ConfigureFunctionsWorkerDefaults" with the following:
+    /// 1: Both hosts must call "ConfigureServices" with the following:
     /// <code>
-    ///     builder.UseMiddleware{FunctionTelemetryScopeMiddleware}();
+    ///     services.AddApplicationInsightsForIsolatedWorker(subsystemName: "MySubsystem");
     /// </code>
     ///
-    /// 2: Both hosts must call "ConfigureServices" with the following DataHub developed extension:
+    /// 2: And call "ConfigureLogging" with the following:
     /// <code>
-    ///     services.AddApplicationInsights();
+    ///     logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
     /// </code>
+    ///
+    /// 3: And configure "Logging:ApplicationInsights:LogLevel:Default" to "Information"; otherwise default level is "Warning".
     /// </summary>
     [Theory]
     [MemberData(nameof(TraceParentParameters))]
-    public async Task Middleware_Should_CauseExpectedEventsToBeLogged(TraceParentTestData traceParentTestData)
+    public async Task Configuration_Should_CauseExpectedEventsToBeLogged(TraceParentTestData traceParentTestData)
     {
         var expectedEvents = new List<QueryResult>
         {
             new() { Type = "AppRequests", Name = "TelemetryAsync" },
-            new() { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.TelemetryAsync'" },
-            new() { Type = "AppDependencies", Name = "TelemetryAsync", DependencyType = "Function" },
-            new() { Type = "AppTraces", EventName = "0", Message = "ExampleHost TelemetryAsync: We should be able to find this log message by following the trace of the request." },
-            new() { Type = "AppDependencies", Name = "Message", DependencyType = "Queue Message | Azure Service Bus" },
-            new() { Type = "AppDependencies", Name = "ServiceBusSender.Send", DependencyType = "Azure Service Bus" },
+            new() { Type = "AppTraces", EventName = "FunctionStarted", Subsystem = null!, Message = "Executing 'Functions.TelemetryAsync'" },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.FunctionApp", Name = "Invoke", DependencyType = "InProc" },
+            new() { Type = "AppTraces", EventName = null!, Subsystem = "ExampleHost.FunctionApp", Message = "ExampleHost TelemetryAsync: We should be able to find this log message by following the trace of the request." },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.FunctionApp", Name = "Message", DependencyType = "Queue Message | Azure Service Bus" },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.FunctionApp", Name = "ServiceBusSender.Send", DependencyType = "Azure Service Bus" },
 
             new() { Type = "AppRequests", Name = "ReceiveMessage" },
-            new() { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.TelemetryAsync' (Succeeded" },
-            new() { Type = "AppTraces", EventName = "FunctionStarted", Message = "Executing 'Functions.ReceiveMessage'" },
-            new() { Type = "AppTraces", EventName = null!, Message = "Trigger Details" },
-            new() { Type = "AppDependencies", Name = "ReceiveMessage", DependencyType = "Function" },
-            new() { Type = "AppTraces", EventName = "0", Message = "ExampleHost ReceiveMessage: We should be able to find this log message by following the trace of the request." },
-            new() { Type = "AppTraces", EventName = "FunctionCompleted", Message = "Executed 'Functions.ReceiveMessage' (Succeeded" },
+            new() { Type = "AppTraces", EventName = "FunctionCompleted", Subsystem = null!, Message = "Executed 'Functions.TelemetryAsync' (Succeeded" },
+            new() { Type = "AppTraces", EventName = "FunctionStarted", Subsystem = null!, Message = "Executing 'Functions.ReceiveMessage'" },
+            new() { Type = "AppTraces", EventName = null!, Subsystem = null!, Message = "Trigger Details" },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.FunctionApp", Name = "Invoke", DependencyType = "InProc" },
+            new() { Type = "AppTraces", EventName = null!, Subsystem = "ExampleHost.FunctionApp", Message = "ExampleHost ReceiveMessage: We should be able to find this log message by following the trace of the request." },
+            new() { Type = "AppTraces", EventName = "FunctionCompleted", Subsystem = null!, Message = "Executed 'Functions.ReceiveMessage' (Succeeded" },
         };
 
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/telemetry");
@@ -178,7 +186,7 @@ public class TelemetryTests : IAsyncLifetime
                 OperationIds
                   | join(union AppRequests, AppDependencies, AppTraces) on OperationId
                   | extend parsedProp = parse_json(Properties)
-                  | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Properties
+                  | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, Subsystem=parsedProp.Subsystem, EventName=parsedProp.EventName, Message, Properties
                   | order by TimeGenerated asc";
 
         var query = queryWithParameters
@@ -237,7 +245,8 @@ public class TelemetryTests : IAsyncLifetime
 
                 case "AppDependencies":
                     var appDependenciesExists = actualResults.Any(actual =>
-                        actual.Name == expected.Name
+                        actual.Subsystem == expected.Subsystem
+                        && actual.Name == expected.Name
                         && actual.DependencyType == expected.DependencyType);
 
                     if (!appDependenciesExists)
@@ -251,7 +260,8 @@ public class TelemetryTests : IAsyncLifetime
                 // "AppTraces"
                 default:
                     var appTracesExists = actualResults.Any(actual =>
-                        actual.EventName == expected.EventName
+                        actual.Subsystem == expected.Subsystem
+                        && actual.EventName == expected.EventName
                         && actual.Message.StartsWith(expected.Message));
 
                     if (!appTracesExists)
@@ -339,6 +349,9 @@ public class TelemetryTests : IAsyncLifetime
             = string.Empty;
 
         public string DependencyType { get; set; }
+            = string.Empty;
+
+        public string Subsystem { get; set; }
             = string.Empty;
 
         public string EventName { get; set; }

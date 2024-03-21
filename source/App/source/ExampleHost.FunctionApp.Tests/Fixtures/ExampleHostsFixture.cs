@@ -135,7 +135,10 @@ public class ExampleHostsFixture : IAsyncLifetime
         {
             { "FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated" },
             { "AzureWebJobsStorage", "UseDevelopmentStorage=true" },
+            // Application Insights Telemetry
             { "APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString },
+            // Logging to Application Insights
+            { "Logging__ApplicationInsights__LogLevel__Default", "Information" },
         };
 
         return appHostSettings;

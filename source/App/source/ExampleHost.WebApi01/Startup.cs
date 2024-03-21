@@ -32,8 +32,9 @@ public class Startup
     {
         services.AddControllers();
 
-        // Configuration verified in tests
-        //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to appear in Application Insights (can be configured).
+        // Configuration verified in tests:
+        //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to
+        //    appear in Application Insights (can be configured).
         //    See "How do I customize ILogger logs collection" at https://learn.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core?tabs=netcorenew#how-do-i-customize-ilogger-logs-collection
         //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
         //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
