@@ -27,20 +27,47 @@ namespace Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 /// </summary>
 public static class NodaTimeExtensions
 {
+    public const string DefaultTimeZone = "Europe/Copenhagen";
+
+    /// <summary>
+    /// Register NodaTime services with default option values commonly used by DH3 applications.
+    /// </summary>
+    public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services)
+    {
+        services
+            .AddOptions<NodaTimeOptions>()
+            .Configure(options =>
+            {
+                options.TimeZone = DefaultTimeZone;
+            });
+
+        AddCommonServices(services);
+
+        return services;
+    }
+
     /// <summary>
     /// Register NodaTime services commonly used by DH3 applications.
     /// </summary>
-    public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, string configSectionPath = NodaTimeOptions.SectionName)
     {
-        services.TryAddSingleton<IClock>(_ => SystemClock.Instance);
+        services
+            .AddOptions<NodaTimeOptions>()
+            .BindConfiguration(configSectionPath)
+            .ValidateDataAnnotations();
 
-        services.AddOptions<DateTimeOptions>().Bind(configuration);
-        services.TryAddSingleton<DateTimeZone>(services =>
-        {
-            var options = services.GetRequiredService<IOptions<DateTimeOptions>>().Value;
-            return DateTimeZoneProviders.Tzdb.GetZoneOrNull(options.TIME_ZONE)!;
-        });
+        AddCommonServices(services);
 
         return services;
+    }
+
+    private static void AddCommonServices(IServiceCollection services)
+    {
+        services.TryAddSingleton<IClock>(SystemClock.Instance);
+        services.TryAddSingleton<DateTimeZone>(services =>
+        {
+            var options = services.GetRequiredService<IOptions<NodaTimeOptions>>().Value;
+            return DateTimeZoneProviders.Tzdb.GetZoneOrNull(options.TimeZone)!;
+        });
     }
 }

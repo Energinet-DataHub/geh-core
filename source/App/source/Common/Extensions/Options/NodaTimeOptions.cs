@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Energinet.DataHub.Core.App.Common.Extensions.Options;
 
-public class DateTimeOptions
+public class NodaTimeOptions
 {
-    public string TIME_ZONE { get; set; } = string.Empty;
+    public const string SectionName = "NodaTime";
+
+    [Required]
+    public string TimeZone { get; set; } = string.Empty;
 }
