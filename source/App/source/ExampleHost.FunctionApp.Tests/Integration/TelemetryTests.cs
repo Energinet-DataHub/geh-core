@@ -57,6 +57,10 @@ public class TelemetryTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Used for testing various values set in `traceparent` http header.
+    /// See https://www.w3.org/TR/trace-context/#trace-context-http-headers-format
+    /// </summary>
     public static IEnumerable<object[]> TraceParentParameters()
     {
         yield return new object[]
