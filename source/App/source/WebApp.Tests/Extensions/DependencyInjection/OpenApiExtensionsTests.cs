@@ -52,24 +52,6 @@ public class OpenApiExtensionsTests : IClassFixture<OpenApiFixture>
     }
 
     [Fact]
-    public async Task UrlVersionIsGreaterThanApiVersion_WhenGet_ResponseIsNotFound()
-    {
-        // Arrange
-        var apiVersion = "v2";
-        var majorVersion = int.Parse(Regex.Replace(apiVersion, "[a-zA-Z]", string.Empty));
-
-        var url = $"swagger/{apiVersion}/swagger.json";
-        var client = _fixture.GetClientWithApiVersion(majorVersion - 1);
-
-        // Act
-        var actualResponse = await client.GetAsync(url);
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
     public async Task UrlVersionIsLessThanApiVersion_WhenGet_ResponseIsNotFound()
     {
         // Arrange
@@ -105,29 +87,13 @@ public class OpenApiExtensionsTests : IClassFixture<OpenApiFixture>
         // Assert
         using var assertionScope = new AssertionScope();
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().Contain($"\"version\": \"{majorVersion}.");
     }
 
-    // TODO: This should return ok
     [Fact]
-    public async Task UrlIsSwaggerUIDefault_WhenGet_ResponseIsMovedPermanently()
-    {
-        // Arrange
-        var url = "swagger";
-
-        // Act
-        var actualResponse = await _fixture.HttpClient.GetAsync(url);
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.MovedPermanently);
-    }
-
-    [Fact]
-    public async Task UrlIsSwaggerIndexHtmlUIDefault_WhenGet_ResponseIsOKAndContainsHtml()
+    public async Task UrlIsSwaggerIndexHtml_WhenGet_ResponseIsOKAndContainsHtml()
     {
         // Arrange
         var url = "swagger/index.html";

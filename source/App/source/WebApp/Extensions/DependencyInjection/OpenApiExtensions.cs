@@ -64,7 +64,6 @@ public static class OpenApiExtensions
 
             // Set the comments path for the Swagger JSON and UI.
             // See: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
-            // TODO: ADD the stuff below again, removed because of test
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFilename);
             options.IncludeXmlComments(xmlPath);
 

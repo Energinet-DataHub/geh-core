@@ -16,7 +16,6 @@ using System.Reflection;
 using Asp.Versioning;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 
@@ -59,7 +58,6 @@ public sealed class OpenApiFixture : IDisposable
             .Configure(app =>
             {
                 app
-                    .UseRouting()
                     .UseSwaggerForWebApp();
             });
     }
