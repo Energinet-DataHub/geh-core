@@ -18,7 +18,7 @@
     - `HealthChecksExtensions.AddHealthChecksForWebApp`
     - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
     - `OpenApiBuilderExtensions.UseSwaggerForWebApp`
-- In `FunctionApp` project removed the namespaces and types `FunctionTelemetryScope.*`
+- In `FunctionApp` project removed extension `AddApplicationInsights` and the namespaces and types `FunctionTelemetryScope.*`
 
 ## Version 10.0.0
 
@@ -226,7 +226,7 @@ services.AddHealthChecks().AddRepeatingTriggerHealthCheck<MyRepeatingTrigger>(ti
 ## Version 5.0.0
 
 - **Beaking change:** Renamed class `TraceContext` to `TraceParent`.
-- Implemented Function App extension `AddApplicationInsights` documented [here](..\extensions.md#application-insights).
+- Implemented Function App extension `AddApplicationInsights`.
 - Updated all dependent NuGet packags to latest versions.
 
 ## Version 4.1.1
