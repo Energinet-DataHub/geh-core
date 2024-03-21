@@ -18,7 +18,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
-namespace Energinet.DataHub.Core.App.Common.Tests.Unit.Reflection;
+namespace Energinet.DataHub.Core.App.Common.Tests.Reflection;
 
 public class AssemblyInformationalVersionAttributeExtensionsTests
 {

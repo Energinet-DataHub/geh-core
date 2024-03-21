@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -22,7 +21,7 @@ using WireMock.ResponseBuilders;
 using WireMock.Server;
 using Xunit;
 
-namespace Energinet.DataHub.Core.App.Common.Tests.Unit.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.App.Common.Tests.Diagnostics.HealthChecks;
 
 public class ServiceHealthCheckTests : IAsyncLifetime
 {
