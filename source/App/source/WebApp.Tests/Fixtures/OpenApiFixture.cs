@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
 using Asp.Versioning;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
@@ -52,8 +53,7 @@ public sealed class OpenApiFixture : IDisposable
             .ConfigureServices(services =>
             {
                 services
-                        // "testhost" does not work, nor does "Assembly.GetExecutingAssembly().GetName().Name"
-                    .AddSwaggerForWebApp("testhost")
+                    .AddSwaggerForWebApp(Assembly.GetExecutingAssembly())
                     .AddApiVersioningForWebApp(new ApiVersion(apiVersion, 0));
             })
             .Configure(app =>
