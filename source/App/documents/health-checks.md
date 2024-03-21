@@ -76,10 +76,6 @@ After following the guidelines below, the health checks endpoints will be:
     }
    ```
 
-1) Allow anonymous access to the health checks endpoints.
-
-    > In the `Charges` domain this is handled using the `JwtTokenWrapperMiddleware`.
-
 ### Add health checks for Azure Function App dependencies
 
 See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages. Even though they are implemented for ASP.NET Core, they also work for Azure Functions.
