@@ -54,13 +54,15 @@ public class NodaTimeExtensionsTests
     {
         // Arrange
         var configuredTimeZone = "Europe/London";
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>()
-            {
-                [$"{NodaTimeOptions.SectionName}:{nameof(NodaTimeOptions.TimeZone)}"] = configuredTimeZone,
-            })
-            .Build();
-        Services.AddScoped<IConfiguration>(_ => configuration);
+        Services.AddScoped<IConfiguration>(_ =>
+        {
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>()
+                {
+                    [$"{NodaTimeOptions.SectionName}:{nameof(NodaTimeOptions.TimeZone)}"] = configuredTimeZone,
+                })
+                .Build();
+        });
 
         // Act
         Services.AddNodaTimeForApplication(configSectionPath: NodaTimeOptions.SectionName);
