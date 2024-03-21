@@ -81,7 +81,7 @@ public class TelemetryTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// Verify both host's can run an FunctionApp01 can call FunctionApp02.
+    /// Verify both host's can run and FunctionApp01 can call FunctionApp02.
     /// </summary>
     [Fact]
     public async Task CallingTelemetryAsync_Should_CallReceiveMessage()
