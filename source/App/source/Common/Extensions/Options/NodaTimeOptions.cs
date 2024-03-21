@@ -20,6 +20,8 @@ public class NodaTimeOptions
 {
     public const string SectionName = "NodaTime";
 
+    public const string DefaultTimeZone = "Europe/Copenhagen";
+
     [Required]
-    public string TimeZone { get; set; } = string.Empty;
+    public string TimeZone { get; set; } = DefaultTimeZone;
 }

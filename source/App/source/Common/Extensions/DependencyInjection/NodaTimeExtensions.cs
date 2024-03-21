@@ -27,19 +27,12 @@ namespace Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 /// </summary>
 public static class NodaTimeExtensions
 {
-    public const string DefaultTimeZone = "Europe/Copenhagen";
-
     /// <summary>
     /// Register NodaTime services with default option values commonly used by DH3 applications.
     /// </summary>
     public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services)
     {
-        services
-            .AddOptions<NodaTimeOptions>()
-            .Configure(options =>
-            {
-                options.TimeZone = DefaultTimeZone;
-            });
+        services.AddOptions<NodaTimeOptions>();
 
         AddCommonServices(services);
 
@@ -49,8 +42,10 @@ public static class NodaTimeExtensions
     /// <summary>
     /// Register NodaTime services commonly used by DH3 applications.
     /// </summary>
-    public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, string configSectionPath = NodaTimeOptions.SectionName)
+    public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, string configSectionPath)
     {
+        ArgumentNullException.ThrowIfNull(configSectionPath);
+
         services
             .AddOptions<NodaTimeOptions>()
             .BindConfiguration(configSectionPath)

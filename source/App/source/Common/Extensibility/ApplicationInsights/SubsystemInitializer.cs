@@ -23,8 +23,7 @@ public class SubsystemInitializer : ITelemetryInitializer
 
     public SubsystemInitializer(string subsystemName)
     {
-        if (string.IsNullOrWhiteSpace(subsystemName))
-            throw new ArgumentException("Cannot be null or whitespace.", nameof(subsystemName));
+        ArgumentNullException.ThrowIfNull(subsystemName);
 
         _subsystemName = subsystemName;
     }
