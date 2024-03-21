@@ -25,6 +25,9 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Extensions.DependencyInjection
 
 public class NodaTimeExtensionsTests
 {
+    private const string DateTimeZoneLondon = "Europe/London";
+    private const string DateTimeZoneHonolulu = "Pacific/Honolulu";
+
     public NodaTimeExtensionsTests()
     {
         Services = new ServiceCollection();
@@ -53,15 +56,9 @@ public class NodaTimeExtensionsTests
     public void AddNodaTimeForApplicationWithSectionName_WhenCalled_RegistrationsArePerformedWithConfiguredTimeZone()
     {
         // Arrange
-        var configuredTimeZone = "Europe/London";
-        Services.AddScoped<IConfiguration>(_ =>
+        AddInMemoryConfigurations(new Dictionary<string, string?>()
         {
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>()
-                {
-                    [$"{NodaTimeOptions.SectionName}:{nameof(NodaTimeOptions.TimeZone)}"] = configuredTimeZone,
-                })
-                .Build();
+            [$"{NodaTimeOptions.SectionName}:{nameof(NodaTimeOptions.TimeZone)}"] = DateTimeZoneLondon,
         });
 
         // Act
@@ -72,6 +69,38 @@ public class NodaTimeExtensionsTests
         var serviceProvider = Services.BuildServiceProvider();
 
         var actualDateTimeZone = serviceProvider.GetRequiredService<DateTimeZone>();
-        actualDateTimeZone.Id.Should().Be(configuredTimeZone);
+        actualDateTimeZone.Id.Should().Be(DateTimeZoneLondon);
+    }
+
+    [Fact]
+    public void AddNodaTimeForApplicationWithSectionName_WhenCalledMultipleTimes_RegistrationsArePerformedWithLastConfiguredTimeZone()
+    {
+        // Arrange
+        AddInMemoryConfigurations(new Dictionary<string, string?>()
+        {
+            [$"A:{nameof(NodaTimeOptions.TimeZone)}"] = DateTimeZoneHonolulu,
+            [$"B:{nameof(NodaTimeOptions.TimeZone)}"] = DateTimeZoneLondon,
+        });
+
+        // Act
+        Services.AddNodaTimeForApplication(configSectionPath: "B");
+        Services.AddNodaTimeForApplication(configSectionPath: "A");
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var actualDateTimeZone = serviceProvider.GetRequiredService<DateTimeZone>();
+        actualDateTimeZone.Id.Should().Be(DateTimeZoneHonolulu);
+    }
+
+    private void AddInMemoryConfigurations(Dictionary<string, string?> configurations)
+    {
+        Services.AddScoped<IConfiguration>(_ =>
+        {
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(configurations)
+                .Build();
+        });
     }
 }
