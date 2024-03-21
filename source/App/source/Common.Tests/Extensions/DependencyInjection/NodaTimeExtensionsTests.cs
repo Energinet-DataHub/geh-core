@@ -68,30 +68,37 @@ public class NodaTimeExtensionsTests
         using var assertionScope = new AssertionScope();
         var serviceProvider = Services.BuildServiceProvider();
 
+        var actualClockService = serviceProvider.GetRequiredService<IClock>();
+        actualClockService.Should().Be(SystemClock.Instance);
+
         var actualDateTimeZone = serviceProvider.GetRequiredService<DateTimeZone>();
         actualDateTimeZone.Id.Should().Be(DateTimeZoneLondon);
     }
 
     [Fact]
-    public void AddNodaTimeForApplicationWithSectionName_WhenCalledMultipleTimes_RegistrationsArePerformedWithLastConfiguredTimeZone()
+    public void AddNodaTimeForApplicationOverloads_WhenCalledMultipleTimes_RegistrationsArePerformedOnlyOnce()
     {
         // Arrange
         AddInMemoryConfigurations(new Dictionary<string, string?>()
         {
-            [$"A:{nameof(NodaTimeOptions.TimeZone)}"] = DateTimeZoneHonolulu,
-            [$"B:{nameof(NodaTimeOptions.TimeZone)}"] = DateTimeZoneLondon,
+            [$"A:{nameof(NodaTimeOptions.TimeZone)}"] = DateTimeZoneLondon,
+            [$"B:{nameof(NodaTimeOptions.TimeZone)}"] = DateTimeZoneHonolulu,
         });
 
         // Act
-        Services.AddNodaTimeForApplication(configSectionPath: "B");
+        Services.AddNodaTimeForApplication();
         Services.AddNodaTimeForApplication(configSectionPath: "A");
+        Services.AddNodaTimeForApplication(configSectionPath: "B");
 
         // Assert
         using var assertionScope = new AssertionScope();
         var serviceProvider = Services.BuildServiceProvider();
 
-        var actualDateTimeZone = serviceProvider.GetRequiredService<DateTimeZone>();
-        actualDateTimeZone.Id.Should().Be(DateTimeZoneHonolulu);
+        var actualClockService = serviceProvider.GetServices<IClock>();
+        actualClockService.Count().Should().Be(1);
+
+        var actualDateTimeZone = serviceProvider.GetServices<DateTimeZone>();
+        actualDateTimeZone.Single().Id.Should().Be(NodaTimeOptions.DefaultTimeZone);
     }
 
     private void AddInMemoryConfigurations(Dictionary<string, string?> configurations)

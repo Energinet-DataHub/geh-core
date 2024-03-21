@@ -28,32 +28,47 @@ namespace Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 public static class NodaTimeExtensions
 {
     /// <summary>
+    /// This operation is idempotent.
+    ///
     /// Register NodaTime services with default option values commonly used by DH3 applications.
     /// </summary>
     public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services)
     {
-        services.AddOptions<NodaTimeOptions>();
+        if (!IsNodaTimeAdded(services))
+        {
+            services.AddOptions<NodaTimeOptions>();
 
-        AddCommonServices(services);
+            AddCommonServices(services);
+        }
 
         return services;
     }
 
     /// <summary>
+    /// This operation is idempotent.
+    ///
     /// Register NodaTime services commonly used by DH3 applications.
     /// </summary>
     public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, string configSectionPath)
     {
         ArgumentNullException.ThrowIfNull(configSectionPath);
 
-        services
-            .AddOptions<NodaTimeOptions>()
-            .BindConfiguration(configSectionPath)
-            .ValidateDataAnnotations();
+        if (!IsNodaTimeAdded(services))
+        {
+            services
+                .AddOptions<NodaTimeOptions>()
+                .BindConfiguration(configSectionPath)
+                .ValidateDataAnnotations();
 
-        AddCommonServices(services);
+            AddCommonServices(services);
+        }
 
         return services;
+    }
+
+    private static bool IsNodaTimeAdded(IServiceCollection services)
+    {
+        return services.Any((service) => service.ServiceType == typeof(IClock));
     }
 
     private static void AddCommonServices(IServiceCollection services)
