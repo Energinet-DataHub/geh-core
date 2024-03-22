@@ -13,7 +13,7 @@ We have implemented dependency injection extensions, extensibility types etc. to
 - Detailed walkthrough per subject
     - [Health Checks](./registrations/health-checks.md)
     - [JWT Security](./registrations/authorization.md)
-    - [Swagger and Api versioning](./registrations/swaggerApiVersion.md)
+    - [Swagger and Api versioning](./registrations/swagger-api-version.md)
     - [Telemetry and logging to Application Insights](./registrations/telemetry.md)
 
 ## Quick start for application startup
