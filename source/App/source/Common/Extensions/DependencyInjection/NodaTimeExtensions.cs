@@ -50,7 +50,7 @@ public static class NodaTimeExtensions
     /// </summary>
     public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, string configSectionPath)
     {
-        ArgumentNullException.ThrowIfNull(configSectionPath);
+        ArgumentException.ThrowIfNullOrWhiteSpace(configSectionPath);
 
         if (!IsNodaTimeAdded(services))
         {
