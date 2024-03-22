@@ -23,7 +23,7 @@ public class SubsystemInitializer : ITelemetryInitializer
 
     public SubsystemInitializer(string subsystemName)
     {
-        ArgumentNullException.ThrowIfNull(subsystemName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(subsystemName);
 
         _subsystemName = subsystemName;
     }

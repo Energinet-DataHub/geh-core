@@ -39,6 +39,8 @@ public static class ApplicationInsightsExtensions
     /// </summary>
     public static IServiceCollection AddApplicationInsightsForWebApp(this IServiceCollection services, string subsystemName)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(subsystemName);
+
         services.TryAddSingleton<ITelemetryInitializer>(new SubsystemInitializer(subsystemName));
 
         // See https://learn.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core?tabs=netcorenew%2Cnetcore6#enable-application-insights-server-side-telemetry-no-visual-studio
