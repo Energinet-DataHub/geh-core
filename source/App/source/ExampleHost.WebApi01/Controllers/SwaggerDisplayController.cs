@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExampleHost.WebApi01.Controllers;
 
 // The "Deprecated = true" has no effect for the swagger UI, since the "TelemetryController" is not marked as deprecated.
+// By adding "?api-version=x" to the URL, you hit the method with the corresponding ApiVersion(x.0) tag
+// if "?api-version=x" if left out, it will default to the latest version.
 [ApiVersion(2.0, Deprecated = true)]
 [ApiController]
 [Route("webapi01/[controller]")]
@@ -33,9 +35,17 @@ public class SwaggerDisplayController : ControllerBase
     /// </Target>
     /// in the csproj file.
     /// </summary>
+    [ApiVersion(2.0)]
     [HttpGet]
-    public IActionResult Get()
+    public IActionResult GetVersions2()
     {
-        return Ok("Hello from swagger controller in WebApi01");
+        return Ok("Hello from swagger controller version 2 in WebApi01");
+    }
+
+    [ApiVersion(1.0, Deprecated = true)]
+    [HttpGet]
+    public IActionResult GetVersions1()
+    {
+        return Ok("Hello from swagger controller version 1 in WebApi01");
     }
 }

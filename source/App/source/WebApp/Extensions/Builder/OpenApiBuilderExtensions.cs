@@ -41,7 +41,7 @@ public static class OpenApiBuilderExtensions
                 // GroupName is the version (e.g. 'v1') as configured using the AddApiExplorer and the 'GroupNameFormat' property.
                 options.SwaggerEndpoint(
                     url: $"/swagger/{description.GroupName}/swagger.json",
-                    name: description.GroupName.ToUpperInvariant());
+                    name: description.GroupName.ToUpperInvariant() + (description.IsDeprecated ? " (deprecated)" : string.Empty));
             }
         });
 

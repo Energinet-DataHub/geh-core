@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 
-public class SwaggerUiTitleDto
+public class SwaggerUiTitleOptions
 {
-    public SwaggerUiTitleDto(string title)
-    {
-        Title = title;
-    }
-
-    public static string Title { get; set; } = string.Empty;
+    [Required]
+    public string Title { get; set; } = string.Empty;
 }

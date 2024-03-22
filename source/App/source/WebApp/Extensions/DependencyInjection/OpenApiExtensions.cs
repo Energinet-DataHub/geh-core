@@ -62,12 +62,14 @@ public static class OpenApiExtensions
     public static IServiceCollection AddSwaggerForWebApp(
         this IServiceCollection services,
         string xmlCommentsFilename,
-        string swaggerUiTitle = "")
+        string swaggerUiTitle)
     {
         ArgumentNullException.ThrowIfNull(xmlCommentsFilename);
+        ArgumentException.ThrowIfNullOrWhiteSpace(swaggerUiTitle);
 
+        services.AddOptions<SwaggerUiTitleOptions>()
+            .Configure(options => options.Title = swaggerUiTitle);
         services.ConfigureOptions<ConfigureSwaggerOptions>();
-        services.TryAddSingleton<SwaggerUiTitleDto>(new SwaggerUiTitleDto(title: swaggerUiTitle));
 
         services.AddSwaggerGen(options =>
         {
