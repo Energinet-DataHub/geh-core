@@ -288,7 +288,7 @@ services.AddHealthChecks().AddRepeatingTriggerHealthCheck<MyRepeatingTrigger>(ti
 
 ## Version 2.1.0
 
-- Implemented Health Check support for Azure Function App's and ASP.NET Core Web API's. See [Health Checks](../health-checks.md).
+- Implemented Health Check support for Azure Function App's and ASP.NET Core Web API's. See [Health Checks](../registrations/health-checks.md).
 
 ## Version 2.0.2
 
