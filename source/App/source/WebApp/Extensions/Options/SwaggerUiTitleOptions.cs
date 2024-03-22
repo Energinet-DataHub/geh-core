@@ -16,7 +16,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 
-public class SwaggerUiTitleOptions
+public class SwaggerUITitleOptions
 {
     [Required]
     public string Title { get; set; } = string.Empty;

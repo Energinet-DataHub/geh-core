@@ -24,7 +24,7 @@ After following the guidelines below, one should have a functional web api proje
 
     ```cs
     builder.Services
-           .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUiTitle: $"{Title to dislay in swagger ui}")
+           .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: $"{Title to dislay in swagger ui}")
            .AddApiVersioningForWebApp(new ApiVersion(1, 0));
     ```
 

@@ -68,7 +68,7 @@ public static class OpenApiExtensions
         ArgumentException.ThrowIfNullOrWhiteSpace(xmlCommentsFilename);
         ArgumentException.ThrowIfNullOrWhiteSpace(swaggerUITitle);
 
-        services.AddOptions<SwaggerUiTitleOptions>()
+        services.AddOptions<SwaggerUITitleOptions>()
             .Configure(options => options.Title = swaggerUITitle);
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 

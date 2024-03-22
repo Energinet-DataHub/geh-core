@@ -27,14 +27,14 @@ public class ConfigureSwaggerOptions
     : IConfigureNamedOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _provider;
-    private readonly SwaggerUiTitleOptions _swaggerUiTitleOptions;
+    private readonly SwaggerUITitleOptions _swaggerUITitleOptions;
 
     public ConfigureSwaggerOptions(
         IApiVersionDescriptionProvider provider,
-        IOptions<SwaggerUiTitleOptions> swaggerUiTitleOptions)
+        IOptions<SwaggerUITitleOptions> swaggerUITitleOptions)
     {
         _provider = provider;
-        _swaggerUiTitleOptions = swaggerUiTitleOptions.Value;
+        _swaggerUITitleOptions = swaggerUITitleOptions.Value;
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class ConfigureSwaggerOptions
     {
         var info = new OpenApiInfo()
         {
-            Title = _swaggerUiTitleOptions.Title,
+            Title = _swaggerUITitleOptions.Title,
             Version = description.ApiVersion.ToString(),
         };
 
