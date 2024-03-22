@@ -13,6 +13,7 @@ We have implemented dependency injection extensions, extensibility types etc. to
 - Detailed walkthrough per subject
     - [Health Checks](./registrations/health-checks.md)
     - [JWT Security](./registrations/authorization.md)
+    - [Noda Time](./registrations/noda-time.md)
     - [Swagger and Api versioning](./registrations/swagger-api-version.md)
     - [Telemetry and logging to Application Insights](./registrations/telemetry.md)
 
@@ -27,6 +28,10 @@ For detailed documentation per registration, see the walkthroughs listed in the 
 Example showing the Azure Function kind of the _minimal hosting model_.
 
 > For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestration/Program.cs) for Wholesale Orchestration application.
+
+1. Install this NuGet package: `Energinet.DataHub.Core.App.FunctionApp`
+
+1. Add `Program.cs` with the following content
 
 ```cs
 var host = new HostBuilder()
@@ -55,6 +60,10 @@ host.Run();
 Example showing a _controller based API_ using the _minimal hosting model_.
 
 > For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
+
+1. Install this NuGet package: `Energinet.DataHub.Core.App.WebApp`
+
+1. Add `Program.cs` with the following content
 
 ```cs
 var builder = WebApplication.CreateBuilder(args);

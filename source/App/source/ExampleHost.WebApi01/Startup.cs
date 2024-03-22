@@ -58,7 +58,7 @@ public class Startup
 
         // Swagger and api versioning (verified in tests)
         services
-            .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUiTitle: "ExampleHost.WebApp")
+            .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "ExampleHost.WebApp")
 
             // Setting default version to 2.0, this will be overwritten if the method has it's own version
             .AddApiVersioningForWebApp(new ApiVersion(2, 0));

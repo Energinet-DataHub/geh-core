@@ -52,7 +52,7 @@ public sealed class OpenApiFixture : IDisposable
             .ConfigureServices(services =>
             {
                 services
-                    .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUiTitle: title)
+                    .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: title)
                     .AddApiVersioningForWebApp(new ApiVersion(apiVersion, 0));
             })
             .Configure(app =>
