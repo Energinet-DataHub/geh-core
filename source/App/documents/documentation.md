@@ -19,97 +19,97 @@ We have implemented dependency injection extensions, extensibility types etc. to
 
 ## Quick start for application startup
 
-In the following we show a simple example per application type, of using all the registrations at once during startup.
+In the following we show a simple example per application type, of how to use all the typical registrations during startup.
 
-For detailed documentation per registration, see the walkthroughs listed in the [Overview](#overview).
+For a detailed documentation per registration type, see the walkthroughs listed in the [Overview](#overview).
 
 ### Azure Functions App
 
-Example showing the Azure Function kind of the _minimal hosting model_.
+For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestration/Program.cs) for Wholesale Orchestration application.
 
-> For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestration/Program.cs) for Wholesale Orchestration application.
+Example is showing the Azure Function equivalent to the _minimal hosting model_.
 
 1. Install this NuGet package: `Energinet.DataHub.Core.App.FunctionApp`
 
 1. Add `Program.cs` with the following content
 
-```cs
-var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices((context, services) =>
-    {
-        // Common
-        services.AddApplicationInsightsForIsolatedWorker("MySubsystem");
-        services.AddHealthChecksForIsolatedWorker();
+   ```cs
+   var host = new HostBuilder()
+       .ConfigureFunctionsWorkerDefaults()
+       .ConfigureServices((context, services) =>
+       {
+           // Common
+           services.AddApplicationInsightsForIsolatedWorker("MySubsystem");
+           services.AddHealthChecksForIsolatedWorker();
 
-        // Shared by functional modules
-        services.AddNodaTimeForApplication();
-    })
-    .ConfigureLogging((hostingContext, logging) =>
-    {
-        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
-    })
-    .Build();
+           // Would typically be registered within functional module registration methods instead of here.
+           services.AddNodaTimeForApplication();
+       })
+       .ConfigureLogging((hostingContext, logging) =>
+       {
+           logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+       })
+       .Build();
 
-host.Run();
+   host.Run();
 
-```
+   ```
 
 ## ASP.NET Core Web API
 
-Example showing a _controller based API_ using the _minimal hosting model_.
+For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
 
-> For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
+Example is showing a _controller based API_ using the _minimal hosting model_.
 
 1. Install this NuGet package: `Energinet.DataHub.Core.App.WebApp`
 
 1. Add `Program.cs` with the following content
 
-```cs
-var builder = WebApplication.CreateBuilder(args);
+   ```cs
+   var builder = WebApplication.CreateBuilder(args);
 
-/*
-// Add services to the container.
-*/
+   /*
+   // Add services to the container.
+   */
 
-// Common
-builder.Services.AddApplicationInsightsForWebApp("MySubsystem");
-builder.Services.AddHealthChecksForWebApp();
+   // Common
+   builder.Services.AddApplicationInsightsForWebApp("MySubsystem");
+   builder.Services.AddHealthChecksForWebApp();
 
-// Shared by functional modules
-builder.Services.AddNodaTimeForApplication();
+   // Would typically be registered within functional module registration methods instead of here.
+   builder.Services.AddNodaTimeForApplication();
 
-// Http channels
-builder.Services.AddControllers();
+   // Http channels
+   builder.Services.AddControllers();
 
-// => Open API generation
-builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly());
+   // => Open API generation
+   builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly());
 
-// => API versioning
-builder.Services.AddApiVersioningForWebApp(new ApiVersion(1, 0));
+   // => API versioning
+   builder.Services.AddApiVersioningForWebApp(new ApiVersion(1, 0));
 
-// => Authentication/authorization
-// TODO: Add "simple" example registration
+   // => Authentication/authorization
+   // TODO: Add "simple" example registration
 
-var app = builder.Build();
+   var app = builder.Build();
 
-/*
-// Configure the HTTP request pipeline.
-*/
+   /*
+   // Configure the HTTP request pipeline.
+   */
 
-app.UseRouting();
-app.UseSwaggerForWebApp();
-app.UseHttpsRedirection();
+   app.UseRouting();
+   app.UseSwaggerForWebApp();
+   app.UseHttpsRedirection();
 
-// Authentication/authorization
-// TODO: Add "simple" example registration
+   // Authentication/authorization
+   // TODO: Add "simple" example registration
 
-// Health check
-app.MapLiveHealthChecks();
-app.MapReadyHealthChecks();
+   // Health check
+   app.MapLiveHealthChecks();
+   app.MapReadyHealthChecks();
 
-app.Run();
+   app.Run();
 
-// Enable testing
-public partial class Program { }
-```
+   // Enable testing
+   public partial class Program { }
+   ```

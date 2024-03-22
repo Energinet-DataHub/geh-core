@@ -20,6 +20,12 @@ In DataHub, applications typically use the following from Noda Time:
 
 To know more about Noda Time, see [NodaTime Overview](https://nodatime.org/3.1.x/userguide/index).
 
+### Idempotent registrations
+
+The dependency injection extensions we have implemented for Noda Time are _idempotent_ so multiple invocations will not cause additional registrations.
+
+This is to allow each _functional module_ to performs its own registration of Noda Time and thereby explicit show its dependency to Noda Time.
+
 ## Azure Functions App
 
 After following the guidelines below, the default usage of Noda Time in DataHub is configured.
