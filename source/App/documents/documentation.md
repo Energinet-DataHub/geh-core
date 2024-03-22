@@ -39,7 +39,7 @@ Example is showing the Azure Function equivalent to the _minimal hosting model_.
        .ConfigureServices((context, services) =>
        {
            // Common
-           services.AddApplicationInsightsForIsolatedWorker("MySubsystem");
+           services.AddApplicationInsightsForIsolatedWorker(subsystemName: "MySubsystem");
            services.AddHealthChecksForIsolatedWorker();
 
            // Would typically be registered within functional module registration methods instead of here.
@@ -73,7 +73,7 @@ Example is showing a _controller based API_ using the _minimal hosting model_.
    */
 
    // Common
-   builder.Services.AddApplicationInsightsForWebApp("MySubsystem");
+   builder.Services.AddApplicationInsightsForWebApp(subsystemName: "MySubsystem");
    builder.Services.AddHealthChecksForWebApp();
 
    // Would typically be registered within functional module registration methods instead of here.
@@ -83,7 +83,7 @@ Example is showing a _controller based API_ using the _minimal hosting model_.
    builder.Services.AddControllers();
 
    // => Open API generation
-   builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), "My Web API");
+   builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), , swaggerUITitle: "My Web API");
 
    // => API versioning
    builder.Services.AddApiVersioningForWebApp(new ApiVersion(1, 0));
