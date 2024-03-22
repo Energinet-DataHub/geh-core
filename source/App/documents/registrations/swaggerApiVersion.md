@@ -1,26 +1,23 @@
 ﻿# Swagger and Api versioning
 
-## Overview
-
-- [Introduction](#introduction)
-- Implementation
-  - [ASP.NET Core Web API](#aspnet-core-web-api) 
-
-
-## Introduction
-
 ApiVersion is a library that allows for easy versioning of the API.
 And together with Swagger we can visualize this in a easy way.
 The swagger UI will show the different versions of the APIs and allow for easy testing of the different versions.
 Currently we only have swagger implemented for ASP.NET Core Web API.
+
+## Overview
+
+- Implementation
+  - [ASP.NET Core Web API](#aspnet-core-web-api)
 
 ## ASP.NET Core Web API
 
 After following the guidelines below, one should have a functional web api project with a simple swagger UI with default version for all endpoints.
 
 ### Preparing a Web App project
-1) Install this NuGet package:
-      `Energinet.DataHub.Core.App.WebApp`
+
+1) Install this NuGet package: `Energinet.DataHub.Core.App.WebApp`
+
 2) Make sure that you have `<GenerateDocumentationFile>true</GenerateDocumentationFile>` enabled in building props.
 
 3) Add the following to Program.cs (minimal hosting model):
@@ -36,8 +33,8 @@ After following the guidelines below, one should have a functional web api proje
     ```cs
     app.UseSwaggerForWebApp();
     ```
-    to the web application.
 
+    to the web application.
     This will setup a default swagger UI for the web app with the specified title and every method will default to version 1.0.
     The version is required but may be ignored, since it does not change anything for the general implementation and urls.
 
@@ -45,7 +42,7 @@ After following the guidelines below, one should have a functional web api proje
 
 #### Overwriting the version of a method/class
 
-It is possible to overwrite the api version of a method/class, which is by default the version set in 
+It is possible to overwrite the api version of a method/class, which is by default the version set in
 
 ```csharp
 builder.Services.AddApiVersioningForWebApp(new ApiVersion(1, 0));
@@ -77,11 +74,11 @@ and `https://...?api-version=1` will hit `GetVersion1`.
 
 #### Deprecating a version
 
-If every `[ApiVersion(1.0)]` tag is marked as deprecated: `[ApiVersion(1.0, Deprecated = true)]` then the swagger UI will 
+If every `[ApiVersion(1.0)]` tag is marked as deprecated: `[ApiVersion(1.0, Deprecated = true)]` then the swagger UI will
 show an short description underneath the title and mark "V1" as deprecated in the dropdown menu in the top right.
 
 Furthermore, methods marked with `[Obsolete]` will have a strikethrough and be grayed out, in the swagger UI.
-They will still be interactable. 
+They will still be interactable.
 
 #### Decoration the swagger UI with the method documentation
 
