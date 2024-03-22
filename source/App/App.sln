@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 		documents\documentation.md = documents\documentation.md
 		documents\health-checks.md = documents\health-checks.md
 		documents\telemetry.md = documents\telemetry.md
+		swaggerApiVersion.md = swaggerApiVersion.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{8936A83F-251F-43B8-9D3A-0C92EB16211E}"

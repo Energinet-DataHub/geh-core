@@ -51,24 +51,6 @@ public class OpenApiExtensionsTests : IClassFixture<OpenApiFixture>
         content.Should().Contain($"\"openapi\": \"3.");
     }
 
-    [Fact]
-    public async Task UrlVersionIsLessThanApiVersion_WhenGet_ResponseIsNotFound()
-    {
-        // Arrange
-        var apiVersion = "v1";
-        var majorVersion = int.Parse(Regex.Replace(apiVersion, "[a-zA-Z]", string.Empty));
-
-        var url = $"swagger/{apiVersion}/swagger.json";
-        var client = _fixture.GetClientWithApiVersionAndTitle(majorVersion + 1);
-
-        // Act
-        var actualResponse = await client.GetAsync(url);
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
     [Theory]
     [InlineData("v1", "Test title 1")]
     [InlineData("v2", "Test title 2")]

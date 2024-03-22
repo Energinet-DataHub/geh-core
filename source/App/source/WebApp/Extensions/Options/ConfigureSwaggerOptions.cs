@@ -27,11 +27,14 @@ public class ConfigureSwaggerOptions
     : IConfigureNamedOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _provider;
+    private readonly SwaggerUiTitleOptions _swaggerUiTitleOptions;
 
     public ConfigureSwaggerOptions(
-        IApiVersionDescriptionProvider provider)
+        IApiVersionDescriptionProvider provider,
+        IOptions<SwaggerUiTitleOptions> swaggerUiTitleOptions)
     {
         _provider = provider;
+        _swaggerUiTitleOptions = swaggerUiTitleOptions.Value;
     }
 
     /// <summary>
@@ -69,15 +72,8 @@ public class ConfigureSwaggerOptions
     {
         var info = new OpenApiInfo()
         {
-            Title = SwaggerUiTitleDto.Title,
+            Title = _swaggerUiTitleOptions.Title,
             Version = description.ApiVersion.ToString(),
-
-            // TODO: Is this something we want to force upon all subsystems?
-            Contact = new OpenApiContact
-            {
-                Name = "Energinet DataHub A/S",
-                Email = "Energinet@datahub.dk",
-            },
         };
 
         if (description.IsDeprecated)
