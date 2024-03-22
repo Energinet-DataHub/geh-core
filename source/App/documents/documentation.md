@@ -83,7 +83,7 @@ Example is showing a _controller based API_ using the _minimal hosting model_.
    builder.Services.AddControllers();
 
    // => Open API generation
-   builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly());
+   builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), "My Web API");
 
    // => API versioning
    builder.Services.AddApiVersioningForWebApp(new ApiVersion(1, 0));
