@@ -18,11 +18,13 @@ We have implemented dependency injection extensions, extensibility types etc. to
 
 ## Quick start for application startup
 
-In the following we show a simple example per application type, of using all the registrations at once during startup. The examples shows applications using the minimal hosting model.
+In the following we show a simple example per application type, of using all the registrations at once during startup.
 
 For detailed documentation per registration, see the walkthroughs listed in the [Overview](#overview).
 
 ### Azure Functions App
+
+Example showing the Azure Function kind of the _minimal hosting model_.
 
 > For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestration/Program.cs) for Wholesale Orchestration application.
 
@@ -49,6 +51,8 @@ host.Run();
 ```
 
 ## ASP.NET Core Web API
+
+Example showing a _controller based API_ using the _minimal hosting model_.
 
 > For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
 
