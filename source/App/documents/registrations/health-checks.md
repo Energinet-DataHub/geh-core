@@ -1,4 +1,4 @@
-# Health Checks Documentation
+# Health Checks
 
 Guidelines on implementing health checks for Azure Function App's and ASP.NET Core Web API's.
 
