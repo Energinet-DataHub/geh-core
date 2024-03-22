@@ -68,7 +68,7 @@
 
 ## Version 7.6.0
 
-- Changed Health Check response format for Azure Function App's and ASP.NET Core Web API's to support the use of Health Checks UI. See [Health Checks](../health-checks.md).
+- Changed Health Check response format for Azure Function App's and ASP.NET Core Web API's to support the use of Health Checks UI. See [Health Checks](../registrations/health-checks.md).
 
 ## Version 7.5.3
 
