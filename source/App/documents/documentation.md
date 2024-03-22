@@ -14,6 +14,8 @@ For a cheat sheet for application startup, see the [Quick guide for application 
     - [JWT Security](./registrations/authorization.md)
 - Telemetry
     - [Telemetry](./registrations/telemetry.md)
+- Swagger and Api versioning
+    - [Swagger and Api versioning](./registrations/swaggerApiVersion.md)
 
 ## Quick guide for application startup
 
