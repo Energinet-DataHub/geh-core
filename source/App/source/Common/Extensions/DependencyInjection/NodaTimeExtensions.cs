@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
