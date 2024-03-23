@@ -35,7 +35,7 @@ Features of the example:
 
 - Demonstrates the configuration of an Azure Function using the equivalent to the _minimal hosting model_.
 - Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information".
-- Registers health checks "live" and "readiness" endpoints.
+- Registers health checks "live" and "readiness" endpoints. Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 
 Preparing an Azure Function App project:
