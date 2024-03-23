@@ -1,12 +1,12 @@
 {
   "profiles": {
-    "ExampleHost.WebApi03": {
+    "ExampleHost.WebApi04": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:58646;http://localhost:58647"
+      "applicationUrl": "https://localhost:58644;http://localhost:58645"
     }
   }
 }

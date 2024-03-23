@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
+
 namespace ExampleHost.WebApi02;
 
 public class Startup
@@ -27,8 +29,8 @@ public class Startup
     {
         services.AddControllers();
 
-        // Configuration verified in tests
-        services.AddApplicationInsightsTelemetry();
+        // Configuration verified in tests. See comments in WebApi01.Startup.
+        services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApp");
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)

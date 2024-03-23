@@ -31,7 +31,6 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        services.AddApplicationInsightsTelemetry();
 
         // Configuration supporting tested scenarios
         // The authorization tests need to generate tokens with different claims.

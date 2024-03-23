@@ -1,5 +1,25 @@
 # App Release notes
 
+## Version 11.0.0
+
+- Upgraded to .NET 8
+- Add `Common` extensibility types:
+    - `ApplicationInsights.SubsystemInitializer`
+- Add `Common` reusable dependency injection extensions:
+    - `HealthChecksExtensions.TryAddHealthChecks`
+    - `NodaTimeExtensions.AddNodaTimeForApplication` with `DateTimeOptions`
+- Add `FunctionApp` reusable dependency injection extensions:
+    - `ApplicationInsightsExtensions.AddApplicationInsightsForIsolatedWorker`
+    - `HealthChecksExtensions.AddHealthChecksForIsolatedWorker`
+    - `LoggingBuilderExtensions.AddLoggingConfigurationForIsolatedWorker`
+- Add `WebApp` reusable dependency injection extensions:
+    - `ApiVersioningExtensions.AddApiVersioningForWebApp`
+    - `ApplicationInsightsExtensions.AddApplicationInsightsForWebApp`
+    - `HealthChecksExtensions.AddHealthChecksForWebApp`
+    - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
+    - `OpenApiBuilderExtensions.UseSwaggerForWebApp`
+- In `FunctionApp` project removed extension `AddApplicationInsights` and the namespaces and types `FunctionTelemetryScope.*`
+
 ## Version 10.0.0
 
 - Upgraded to .NET 7
@@ -48,7 +68,7 @@
 
 ## Version 7.6.0
 
-- Changed Health Check response format for Azure Function App's and ASP.NET Core Web API's to support the use of Health Checks UI. See [Health Checks](../health-checks.md).
+- Changed Health Check response format for Azure Function App's and ASP.NET Core Web API's to support the use of Health Checks UI. See [Health Checks](../registrations/health-checks.md).
 
 ## Version 7.5.3
 
@@ -206,7 +226,7 @@ services.AddHealthChecks().AddRepeatingTriggerHealthCheck<MyRepeatingTrigger>(ti
 ## Version 5.0.0
 
 - **Beaking change:** Renamed class `TraceContext` to `TraceParent`.
-- Implemented Function App extension `AddApplicationInsights` documented [here](..\extensions.md#application-insights).
+- Implemented Function App extension `AddApplicationInsights`.
 - Updated all dependent NuGet packags to latest versions.
 
 ## Version 4.1.1
@@ -268,7 +288,7 @@ services.AddHealthChecks().AddRepeatingTriggerHealthCheck<MyRepeatingTrigger>(ti
 
 ## Version 2.1.0
 
-- Implemented Health Check support for Azure Function App's and ASP.NET Core Web API's. See [Health Checks](../health-checks.md).
+- Implemented Health Check support for Azure Function App's and ASP.NET Core Web API's. See [Health Checks](../registrations/health-checks.md).
 
 ## Version 2.0.2
 

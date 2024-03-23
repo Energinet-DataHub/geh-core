@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Xunit;
@@ -25,10 +24,6 @@ public sealed class AuthorizationHostFixture : IAsyncLifetime
     {
         var web03BaseUrl = "http://localhost:5002";
 
-        IntegrationTestConfiguration = new IntegrationTestConfiguration();
-        Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
-
-        // We cannot use TestServer as this would not work with Application Insights.
         Web03Host = WebHost.CreateDefaultBuilder()
             .UseStartup<WebApi03.Startup>()
             .UseUrls(web03BaseUrl)
@@ -43,8 +38,6 @@ public sealed class AuthorizationHostFixture : IAsyncLifetime
     public HttpClient Web03HttpClient { get; }
 
     private IWebHost Web03Host { get; }
-
-    private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
     public async Task InitializeAsync()
     {

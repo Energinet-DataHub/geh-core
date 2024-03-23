@@ -24,18 +24,16 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WebApp\WebApp.csproj" />
   </ItemGroup>
+
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+      <DocFile Include="bin\*\*\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)"
+          DestinationFolder="$(PublishDir)"
+          SkipUnchangedFiles="false" />
+  </Target>
 
 </Project>

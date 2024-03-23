@@ -4,6 +4,11 @@
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning"
+    },
+    "ApplicationInsights": {
+      "LogLevel": {
+        "Default": "Information"
+      }
     }
   },
   "AllowedHosts": "*",

@@ -6,8 +6,4 @@
     }
   },
   "AllowedHosts": "*",
-  "ApplicationInsights": {
-    "EnableAdaptiveSampling": false,
-    "ConnectionString": "<Application Insights Connection String>"
-  }
 }

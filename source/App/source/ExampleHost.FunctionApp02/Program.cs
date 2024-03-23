@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults(builder =>
-    {
-        builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
-    })
+    .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        services.AddApplicationInsights();
+        // Configuration verified in tests. See comments in FunctionApp01.Program.
+        services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
+    })
+    .ConfigureLogging((hostingContext, logging) =>
+    {
+        // Configuration verified in tests. See comments in FunctionApp01.Program.
+        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
     })
     .Build();
 

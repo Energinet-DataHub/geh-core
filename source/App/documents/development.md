@@ -9,7 +9,7 @@ The bundle contains the following packages:
 * `Energinet.DataHub.Core.App.FunctionApp`
 * `Energinet.DataHub.Core.App.WebApp`
 
-The packages contain types commonly used by domain teams when implementing Azure Function App's and Web App's.
+The packages contain types commonly used by subsystem teams when implementing Azure Function App's and Web App's.
 
 > Also read the general [development.md](../../../docs/development.md) as is contains information that is relevant for all NuGet package bundles.
 
@@ -47,9 +47,9 @@ Secondly, we must ensure we obey the following [prerequisites](../../TestCommon/
 
 ### Dependencies to live Azure resources
 
-The `ExampleHost.FunctionApp.Tests` depends on live Azure resources like Service Bus end Application Insights. We cannot mock, or install these locally, so we have to use actual instances.
+The `ExampleHost.FunctionApp.Tests` and `ExampleHost.WebApp.Tests` depends on live Azure resources like Application Insights and Service Bus. We cannot mock, or install these locally, so we have to use actual instances.
 
-To be able to use the Azure resources prepared in the Integration Test environment, developers must do the following:
+To be able to use the Azure resources prepared in the Integration Test environment, developers must do the following per test project:
 
 * Copy of the `integrationtest.local.settings.sample.json` file into `integrationtest.local.settings.json`
 * Update `integrationtest.local.settings.json` with information matching the Integration Test environment.
