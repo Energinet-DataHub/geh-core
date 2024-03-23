@@ -47,7 +47,7 @@ After following the guidelines below, the health checks endpoints will be:
 1) Add the following to a _ConfigureServices()_ method in Program.cs:
 
    ```cs
-    // Health check
+    // Health Checks
     serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
     serviceCollection.AddHealthChecks()
         .AddLiveCheck();
@@ -110,7 +110,7 @@ After following the guidelines below, the health checks endpoints will be:
 1) Add the following to a _ConfigureServices()_ method in Program.cs:
 
    ```cs
-    // Health check
+    // Health Checks
     services.AddHealthChecks()
         .AddLiveCheck();
    ```
@@ -122,7 +122,7 @@ After following the guidelines below, the health checks endpoints will be:
     {
         ...
 
-        // Health check
+        // Health Checks
         endpoints.MapLiveHealthChecks();
         endpoints.MapReadyHealthChecks();
     });

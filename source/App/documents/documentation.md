@@ -142,7 +142,7 @@ Preparing a Web App project:
    // Authentication/authorization
    // TODO: Add "simple" example registration
 
-   // Health check
+   // Health Checks
    app.MapLiveHealthChecks();
    app.MapReadyHealthChecks();
 
