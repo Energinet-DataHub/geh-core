@@ -1,10 +1,12 @@
-# Azure App Common Documentation
+# Documentation
 
-A library containing common functionality for Azure Functions and ASP.Net Core Web API's.
+Documentation of the NuGet package bundle `App`.
+
+The `App` package bundle contains common functionality for Azure Functions and ASP.Net Core Web API's implemented as dependency injection extensions, extensibility types etc.
+
+Using the package bundle enables an easy opt-in/opt-out pattern of services during startup, for a typical DataHub application.
 
 ## Overview
-
-We have implemented dependency injection extensions, extensibility types etc. to enable an easy opt-in/opt-out pattern during startup, for a typical DataHub application.
 
 - [Quick start for application startup](#quick-start-for-application-startup)
     - [Azure Functions App](#azure-functions-app)
@@ -17,6 +19,8 @@ We have implemented dependency injection extensions, extensibility types etc. to
     - [Swagger and Api versioning](./registrations/swagger-api-version.md)
     - [Telemetry and logging to Application Insights](./registrations/telemetry.md)
 
+- [Development notes for App](development.md)
+
 ## Quick start for application startup
 
 In the following we show a simple example per application type, of how to use all the typical registrations during startup.
@@ -27,7 +31,14 @@ For a detailed documentation per registration type, see the walkthroughs listed 
 
 For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestration/Program.cs) for Wholesale Orchestration application.
 
-Example is showing the Azure Function equivalent to the _minimal hosting model_.
+Features of the example:
+
+- Demonstrates the configuration of an Azure Function using the equivalent to the _minimal hosting model_.
+- Registers the default log level for Application Insights to "Information".
+- Registers health checks "live" and "readiness" endpoints.
+- Registers Noda Time to its default time zone "Europe/Copenhagen".
+
+Walkthrough:
 
 1. Install this NuGet package: `Energinet.DataHub.Core.App.FunctionApp`
 
@@ -59,7 +70,15 @@ Example is showing the Azure Function equivalent to the _minimal hosting model_.
 
 For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
 
-Example is showing a _controller based API_ using the _minimal hosting model_.
+Features of the example:
+
+- Demonstrates the configuration of a _controller based API_ using the _minimal hosting model_.
+- Registers the default log level for Application Insights to "Information".
+- Registers health checks "live" and "readiness" endpoints.
+- Registers Noda Time to its default time zone "Europe/Copenhagen".
+- Registers API Versioning and Swagger UI to the default API version `v1`.
+
+Walkthrough:
 
 1. Install this NuGet package: `Energinet.DataHub.Core.App.WebApp`
 
