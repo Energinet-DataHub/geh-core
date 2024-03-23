@@ -62,7 +62,7 @@ After following the guidelines below, the default and categories log level of cu
      "Values": {
        // Connection string
        "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
-       // Default log level
+       // Default log level for Application Insights
        "Logging__ApplicationInsights__LogLevel__Default": "Information",
        // Log level for category (code in Energinet.Datahub.Core)
        "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core": "Information",
@@ -99,7 +99,7 @@ After following the guidelines below, the default and categories log level of cu
          // Log level for category (code in Microsoft.AspNetCore)
          "Microsoft.AspNetCore": "Warning"
        },
-       // Default log level
+       // Default log level for Application Insights
        "ApplicationInsights": {
          "LogLevel": {
            "Default": "Information"

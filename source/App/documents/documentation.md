@@ -34,15 +34,15 @@ For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub
 Features of the example:
 
 - Demonstrates the configuration of an Azure Function using the equivalent to the _minimal hosting model_.
-- Registers the default log level for Application Insights to "Information".
+- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information".
 - Registers health checks "live" and "readiness" endpoints.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 
-Walkthrough:
+Preparing an Azure Function App project:
 
-1. Install this NuGet package: `Energinet.DataHub.Core.App.FunctionApp`
+1) Install this NuGet package: `Energinet.DataHub.Core.App.FunctionApp`
 
-1. Add `Program.cs` with the following content
+1) Add `Program.cs` with the following content
 
    ```cs
    var host = new HostBuilder()
@@ -66,6 +66,25 @@ Walkthrough:
 
    ```
 
+1) Perform configuration in application settings
+
+   ```json
+   {
+     "IsEncrypted": false,
+     "Values": {
+       // Azure Function
+       "AzureWebJobsStorage": "<connection string>",
+       "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+       // Application Insights
+       "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
+       // Logging
+       // => Default log level for Application Insights
+       "Logging__ApplicationInsights__LogLevel__Default": "Information",
+     }
+   }
+
+   ```
+
 ## ASP.NET Core Web API
 
 For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
@@ -73,16 +92,16 @@ For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub
 Features of the example:
 
 - Demonstrates the configuration of a _controller based API_ using the _minimal hosting model_.
-- Registers the default log level for Application Insights to "Information".
+- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information".
 - Registers health checks "live" and "readiness" endpoints.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
 
-Walkthrough:
+Preparing a Web App project:
 
-1. Install this NuGet package: `Energinet.DataHub.Core.App.WebApp`
+1) Install this NuGet package: `Energinet.DataHub.Core.App.WebApp`
 
-1. Add `Program.cs` with the following content
+1) Add `Program.cs` with the following content
 
    ```cs
    var builder = WebApplication.CreateBuilder(args);
@@ -131,4 +150,26 @@ Walkthrough:
 
    // Enable testing
    public partial class Program { }
+   ```
+
+1) Perform configuration in application settings
+
+   ```json
+   {
+     // Logging
+     "Logging": {
+       "LogLevel": {
+         "Default": "Information",
+         "Microsoft.AspNetCore": "Warning"
+       },
+       // => Default log level for Application Insights
+       "ApplicationInsights": {
+         "LogLevel": {
+           "Default": "Information"
+         }
+       }
+     },
+     // Application Insights
+     "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
+   }
    ```
