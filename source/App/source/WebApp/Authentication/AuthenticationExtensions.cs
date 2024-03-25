@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -86,7 +87,7 @@ public static class AuthenticationExtensions
                             throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
                         }
 
-                        ValidateInnerJwt((JwtSecurityToken)token, tokenValidationParameters);
+                        ValidateInnerJwt((JsonWebToken)token, tokenValidationParameters);
                         return issuer;
                     };
                 }
@@ -118,7 +119,7 @@ public static class AuthenticationExtensions
         };
     }
 
-    private static void ValidateInnerJwt(JwtSecurityToken outerToken, TokenValidationParameters tokenValidationParameters)
+    private static void ValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
     {
         var innerTokenClaim = outerToken.Claims.Single(claim =>
             string.Equals(claim.Type, InnerTokenClaimType, StringComparison.OrdinalIgnoreCase));
