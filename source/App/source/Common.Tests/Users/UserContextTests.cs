@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Users;
 using Xunit;
 
-namespace Energinet.DataHub.Core.App.Common.Tests;
+namespace Energinet.DataHub.Core.App.Common.Tests.Users;
 
 public sealed class UserContextTests
 {
