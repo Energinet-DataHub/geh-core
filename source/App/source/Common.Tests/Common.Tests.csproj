@@ -54,9 +54,4 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Fixtures\" />
-    <Folder Include="Integration\" />
-  </ItemGroup>
-
 </Project>

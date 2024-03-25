@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 11.0.0
+
+- Upgraded to .NET 8
+
 ## Version 10.0.0
 
 - Upgraded to .NET 7

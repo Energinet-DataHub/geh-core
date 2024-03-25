@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Users;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +45,9 @@ public static class AuthenticationExtensions
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
     {
+        // UserMiddleware depends on IHttpContextAccessor.
+        services.AddHttpContextAccessor();
+
         services.AddScoped<UserContext<TUser>>();
         services.AddScoped<IUserContext<TUser>>(s => s.GetRequiredService<UserContext<TUser>>());
         services.AddScoped<IUserProvider<TUser>, TUserProvider>();
