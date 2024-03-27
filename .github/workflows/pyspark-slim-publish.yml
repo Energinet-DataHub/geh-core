@@ -36,7 +36,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      
     name: Build and publish pyspark-slim image
     steps:
       - name: Set up Docker Buildx
