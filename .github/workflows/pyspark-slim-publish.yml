@@ -33,6 +33,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pyspark-slim
+  IS_PULL_REQUEST_TRIGGERED: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build_and_publish_image:
@@ -55,13 +56,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set image tag environmental variable
+        id: set_image_tag
+        run: |
+          if [[ ${{ env.IS_PULL_REQUEST_TRIGGERED }} == true ]]; then
+            echo "image_tag=pre-release-pr${{ github.event.pull_request.number }}" >>$GITHUB_ENV
+          else
+            echo "image_tag=latest" >>$GITHUB_ENV
+          fi
+
       - name: Read versions from yaml
         uses: pietrobolcato/action-read-yaml@1.0.0
         id: build_config
         with:
           config: source/Images/pyspark-slim/build-config.yml
       - name: Debug
-        run: echo "${{ steps.build_config.outputs.pyspark_slim_image_version }}"
+        run: echo "$image_tag"
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -69,6 +79,6 @@ jobs:
             spark_download_url=${{ steps.build_config.outputs.spark_download_url }}
             spark_version=${{ steps.build_config.outputs.spark_version }}
           context: source/Images/pyspark-slim
-          push: true
+          push: false
           tags: |
-            ghcr.io/energinet-datahub/pyspark-slim:${{ steps.build_config.outputs.pyspark_slim_image_version }}
+            ghcr.io/energinet-datahub/pyspark-slim:$image_tag
