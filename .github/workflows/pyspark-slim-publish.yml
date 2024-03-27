@@ -48,7 +48,7 @@ jobs:
         uses: pietrobolcato/action-read-yaml@1.0.0
         id: versions
         with:
-          config: source/Images/pyspark-slim/versions.yml
+          config: source/Images/pyspark-slim/Versions.yml
 
       - name: Debug
         run: echo "${{ steps.versions.outputs.pyspark_slim_image_version }}"
