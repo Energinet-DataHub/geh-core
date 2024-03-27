@@ -34,7 +34,6 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pyspark-slim
   IS_PULL_REQUEST_TRIGGERED: ${{ github.event_name == 'pull_request' }}
-  IMAGE_TAG: ''
 
 jobs:
   build_and_publish_image:
@@ -61,9 +60,9 @@ jobs:
         id: set_image_tag
         run: |
           if [[ ${{ env.IS_PULL_REQUEST_TRIGGERED }} == true ]]; then
-            echo "image_tag=pre-release-pr${{ github.event.pull_request.number }}" >>$GITHUB_ENV
+            echo "image_tag=pre-release-pr${{ github.event.pull_request.number }}" >>$GITHUB_OUTPUT
           else
-            echo "image_tag=latest" >>$GITHUB_ENV
+            echo "image_tag=latest" >>$GITHUB_OUTPUT
           fi
 
       - name: Read versions from yaml
@@ -72,7 +71,7 @@ jobs:
         with:
           config: source/Images/pyspark-slim/build-config.yml
       - name: Debug
-        run: echo ${{ env.IMAGE_TAG }}
+        run: echo ${{ steps.set_image_tag.outputs.image_tag }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -82,4 +81,4 @@ jobs:
           context: source/Images/pyspark-slim
           push: false
           tags: |
-            ghcr.io/energinet-datahub/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ghcr.io/energinet-datahub/${{ env.IMAGE_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}
