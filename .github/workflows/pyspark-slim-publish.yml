@@ -34,6 +34,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pyspark-slim
   IS_PULL_REQUEST_TRIGGERED: ${{ github.event_name == 'pull_request' }}
+  IMAGE_TAG: ''
 
 jobs:
   build_and_publish_image:
@@ -71,7 +72,7 @@ jobs:
         with:
           config: source/Images/pyspark-slim/build-config.yml
       - name: Debug
-        run: echo "$image_tag"
+        run: echo ${{ env.IMAGE_TAG }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -81,4 +82,4 @@ jobs:
           context: source/Images/pyspark-slim
           push: false
           tags: |
-            ghcr.io/energinet-datahub/pyspark-slim:$image_tag
+            ghcr.io/energinet-datahub/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
