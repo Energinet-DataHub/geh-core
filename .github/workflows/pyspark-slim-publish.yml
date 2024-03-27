@@ -71,4 +71,4 @@ jobs:
           context: source/Images/pyspark-slim
           push: true
           tags: |
-            energinet-datahub/pyspark-slim:${{ steps.build_config.outputs.pyspark_slim_image_version }}
+            ghcr.io/energinet-datahub/pyspark-slim:${{ steps.build_config.outputs.pyspark_slim_image_version }}
