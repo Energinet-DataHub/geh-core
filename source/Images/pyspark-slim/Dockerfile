@@ -41,8 +41,6 @@ ENV SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M 
 
 COPY setup_spark.py /opt/setup-scripts/setup_spark.py
 
-RUN sed -i '1s/^/#!/usr/bin/env python3\n/' /opt/setup-scripts/setup_spark.py
-
 # Setup Spark
 RUN /opt/setup-scripts/setup_spark.py \
     --spark-version="${spark_version}" \
