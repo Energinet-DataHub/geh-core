@@ -31,6 +31,9 @@
     "limitations under the License.",
     "-->"
   ],
+  "**/setup_spark.py": [
+    "#!/usr/bin/env python3"
+  ],
   "**/*.py": [
     "# Copyright 2020 Energinet DataHub A/S",
     "#",
