@@ -75,6 +75,12 @@ jobs:
     uses: ./.github/workflows/databricks-bundle-publish.yml
     secrets: inherit
 
+  pyspark_slim:
+    needs: changes
+    if: ${{ needs.changes.outputs.pyspark_slim == 'true' }}
+    uses: ./.github/workflows/pyspark-slim-publish.yml
+    secrets: inherit
+
   #
   # Branch policy status check
   #
@@ -91,6 +97,7 @@ jobs:
         messaging,
         testcommon,
         databricks,
+        pyspark_slim,
       ]
     if: |
       always()

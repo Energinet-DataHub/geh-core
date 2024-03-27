@@ -1,0 +1,51 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Publish pyspark-slim image to ghcr.io
+
+on:
+  # Build, test, pack and publish release packages
+  # Only executed if (*.)Commonm, (*.)FunctionApp or (*.)WebApp packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  push:
+    branches:
+      - main
+    paths:
+      - source/Images/pyspark-slim/**
+      - .github/workflows/pyspark-slim-publish.yml
+  # Build, test, pack
+  # Executed if App folder or build scripts has changed; including if documentation or tests has changed
+  workflow_call: {}
+  # Build, test, pack and publish prerelease packages
+  # Executed if manually triggered
+  workflow_dispatch: {}
+
+jobs:
+  build_and_publish_image:
+    runs-on: ubuntu-latest
+    name: Build and publish pyspark-slim image
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read versions from yaml
+        uses: pietrobolcato/action-read-yaml@1.0.0
+        id: versions
+        with:
+          config: source/Images/pyspark-slim/versions.yml
+
+      - name: Debug
+        run: echo "${{ steps.versions.outputs.pyspark_slim_image_version }}"
