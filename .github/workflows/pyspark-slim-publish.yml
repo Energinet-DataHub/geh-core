@@ -79,6 +79,6 @@ jobs:
             spark_download_url=${{ steps.build_config.outputs.spark_download_url }}
             spark_version=${{ steps.build_config.outputs.spark_version }}
           context: source/Images/pyspark-slim
-          push: false
+          push: true
           tags: |
             ghcr.io/energinet-datahub/${{ env.IMAGE_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}
