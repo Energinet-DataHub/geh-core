@@ -70,4 +70,6 @@ jobs:
             spark_version=${{ steps.build_config.outputs.spark_version }}
           context: source/Images/pyspark-slim
           push: true
-          tags: pyspark/slim:latest,pyspark/slim:${{ steps.build_config.outputs.pyspark_slim_image_version }}
+          tags: |
+            ghcr.io/geh-core/pyspark/slim:latest
+            ghcr.io/geh-core/pyspark/slim:${{ steps.build_config.outputs.pyspark_slim_image_version }}
