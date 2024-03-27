@@ -30,6 +30,10 @@ on:
   # Executed if manually triggered
   workflow_dispatch: {}
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: pyspark-slim
+
 jobs:
   build_and_publish_image:
     runs-on: ubuntu-latest
@@ -41,14 +45,29 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Read versions from yaml
         uses: pietrobolcato/action-read-yaml@1.0.0
-        id: versions
+        id: build_config
         with:
-          config: source/Images/pyspark-slim/Versions.yml
-
+          config: source/Images/pyspark-slim/build-config.yml
       - name: Debug
-        run: echo "${{ steps.versions.outputs.pyspark_slim_image_version }}"
+        run: echo "${{ steps.build_config.outputs.pyspark_slim_image_version }}"
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          build-args: |
+            spark_download_url=${{ steps.build_config.outputs.spark_download_url }}
+            spark_version=${{ steps.build_config.outputs.spark_version }}
+          context: source/Images/pyspark-slim
+          push: true
+          tags: pyspark/slim:latest,pyspark/slim:${{ steps.build_config.outputs.pyspark_slim_image_version }}
