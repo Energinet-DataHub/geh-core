@@ -33,6 +33,10 @@ on:
 jobs:
   build_and_publish_image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      
     name: Build and publish pyspark-slim image
     steps:
       - name: Set up Docker Buildx
