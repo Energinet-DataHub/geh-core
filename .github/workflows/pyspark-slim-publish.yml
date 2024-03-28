@@ -68,7 +68,7 @@ jobs:
       - name: Add shebang to build script
         shell: bash
         run: |
-          sed -i '1s/^/#!/usr/bin/env python3\n/' source/Images/pyspark-slim/setup_spark.py
+          sed -i "1s/^/\#\!\/usr\/bin\/env python\n/" source/Images/pyspark-slim/setup_spark.py
           head -n 3 source/Images/pyspark-slim/setup_spark.py
 
       - name: Read versions from yaml
