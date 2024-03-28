@@ -69,7 +69,6 @@ jobs:
         shell: bash
         run: |
           sed -i "1s/^/\#\!\/usr\/bin\/env python\n/" source/Images/pyspark-slim/setup_spark.py
-          head -n 3 source/Images/pyspark-slim/setup_spark.py
 
       - name: Read versions from yaml
         uses: pietrobolcato/action-read-yaml@1.0.0
