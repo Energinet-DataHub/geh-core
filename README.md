@@ -25,6 +25,8 @@ Artifacts should be organized in the following folder structure:
 │
 ├───source/
 │   ├── <NuGet package bundle>
+│   ├── Images
+    │   └── <docker-image>
 │   ├── Directory.Build.props
 │   └── stylecop.json
 │
@@ -62,6 +64,8 @@ Contains notes and documentation stored in `*.md` files.
 Each [NuGet package bundles](./docs/development.md#nuget-package-bundle) should have one root folder within the `source` folder. For organization within each package bundle, see [Organization of packages](./docs/development.md).
 
 Any configuration files (e.g. `stylecop.json`) shared by _all_ VS projects must be located in the `source` folder.
+
+With the `Images` folder all docker images are defined.
 
 #### File: source/Directory.Build.props
 

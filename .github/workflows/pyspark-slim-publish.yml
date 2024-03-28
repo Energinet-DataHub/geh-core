@@ -1,0 +1,88 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Publish pyspark-slim image to ghcr.io
+
+on:
+  # Build, test, pack and publish release packages
+  # Only executed if (*.)Commonm, (*.)FunctionApp or (*.)WebApp packages content or build scripts has changed; not if solution file, documentation or tests has changed
+  push:
+    branches:
+      - main
+    paths:
+      - source/Images/pyspark-slim/**
+      - .github/workflows/pyspark-slim-publish.yml
+  # Build, test, pack
+  # Executed if App folder or build scripts has changed; including if documentation or tests has changed
+  workflow_call: {}
+  # Build, test, pack and publish prerelease packages
+  # Executed if manually triggered
+  workflow_dispatch: {}
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: pyspark-slim
+  IS_PULL_REQUEST_TRIGGERED: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build_and_publish_image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    name: Build and publish pyspark-slim image
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set image tag environmental variable
+        id: set_image_tag
+        run: |
+          if [[ ${{ env.IS_PULL_REQUEST_TRIGGERED }} == true ]]; then
+            echo "image_tag=pre-release-pr${{ github.event.pull_request.number }}" >>$GITHUB_OUTPUT
+          else
+            echo "image_tag=latest" >>$GITHUB_OUTPUT
+          fi
+
+      - name: Add shebang to build script
+        shell: bash
+        run: |
+          sed -i "1s/^/\#\!\/usr\/bin\/env python\n/" source/Images/pyspark-slim/setup_spark.py
+
+      - name: Read versions from yaml
+        uses: pietrobolcato/action-read-yaml@1.0.0
+        id: build_config
+        with:
+          config: source/Images/pyspark-slim/build-config.yml
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          build-args: |
+            spark_download_url=${{ steps.build_config.outputs.spark_download_url }}
+            spark_version=${{ steps.build_config.outputs.spark_version }}
+          context: source/Images/pyspark-slim
+          push: true
+          tags: |
+            ghcr.io/energinet-datahub/${{ env.IMAGE_NAME }}:${{ steps.set_image_tag.outputs.image_tag }}
