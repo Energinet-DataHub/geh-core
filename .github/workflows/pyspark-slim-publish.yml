@@ -75,8 +75,7 @@ jobs:
         id: build_config
         with:
           config: source/Images/pyspark-slim/build-config.yml
-      - name: Debug
-        run: echo ${{ steps.set_image_tag.outputs.image_tag }}
+          
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
