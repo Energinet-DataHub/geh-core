@@ -75,7 +75,7 @@ jobs:
         id: build_config
         with:
           config: source/Images/pyspark-slim/build-config.yml
-          
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
