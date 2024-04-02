@@ -25,6 +25,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 public static class HealthChecksExtensions
 {
     /// <summary>
+    /// This operation is idempotent.
+    ///
     /// Register services necessary for using Health Checks in a Function App.
     /// </summary>
     public static IServiceCollection AddHealthChecksForIsolatedWorker(this IServiceCollection services)
