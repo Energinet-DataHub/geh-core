@@ -44,13 +44,13 @@ After following the guidelines below, the health checks endpoints will be:
 1) Install this NuGet package:
    `Energinet.DataHub.Core.App.FunctionApp`
 
-1) Add the following to a _ConfigureServices()_ method in Program.cs:
+1) Register Health Checks handling in the _ConfigureServices()_ method in Program.cs:
 
    ```cs
-    // Health Checks
-    serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
-    serviceCollection.AddHealthChecks()
-        .AddLiveCheck();
+    .ConfigureServices(services =>
+    {
+        services.AddHealthChecksForIsolatedWorker();
+    })
    ```
 
 1) Create a new class file as `Monitor\HealthCheckEndpoint.cs` with the following content:
@@ -82,17 +82,16 @@ See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.
 
 We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services.
 
-1) Add additional health checks after the call to `AddLiveCheck()`. See an example below.
+1) Add additional health checks using `AddHealthChecks()`. See an example below.
 
    ```cs
-    services.AddHealthChecks()
-        .AddLiveCheck()
-        // Example where our application has a dependency to a SQL Server database
-        .AddSqlServer(
-            name: "ChargeDb",
-            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString))
-        // Example where our application has a dependency to another service
-        .AddServiceHealthCheck("service-name", <url-to-ping>);
+   services.AddHealthChecks()
+       // Example where our application has a dependency to a SQL Server database
+       .AddSqlServer(
+           name: "MyDb",
+           connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString))
+       // Example where our application has a dependency to another service
+       .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
 
 ## ASP.NET Core Web API
@@ -107,25 +106,17 @@ After following the guidelines below, the health checks endpoints will be:
 1) Install this NuGet package:
    `Energinet.DataHub.Core.App.WebApp`
 
-1) Add the following to a _ConfigureServices()_ method in Program.cs:
+1) Add the following to the _services registration_ section of Program.cs (minimal hosting model):
 
    ```cs
-    // Health Checks
-    services.AddHealthChecks()
-        .AddLiveCheck();
+   builder.Services.AddHealthChecksForWebApp();
    ```
 
-1) Add the following to a _Configure()_ method in Program.cs:
+1) Add the following to _configuration_ section of Program.cs (minimal hosting model):
 
    ```cs
-    app.UseEndpoints(endpoints =>
-    {
-        ...
-
-        // Health Checks
-        endpoints.MapLiveHealthChecks();
-        endpoints.MapReadyHealthChecks();
-    });
+   app.MapLiveHealthChecks();
+   app.MapReadyHealthChecks();
    ```
 
 ### Add health checks for Web App dependencies
@@ -134,15 +125,14 @@ See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.
 
 We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services.
 
-1) Add additional health checks after the call to `AddLiveCheck()`. See an example below.
+1) Add additional health checks using `AddHealthChecks()`. See an example below.
 
    ```cs
-    services.AddHealthChecks()
-        .AddLiveCheck()
-        // Example where our application has a dependency to a SQL Server database
-        .AddSqlServer(
-            name: "ChargeDb",
-            connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.ChargeDbConnectionString))
-        // Example where our application has a dependency to another service
-        .AddServiceHealthCheck("service-name", <url-to-ping>);
+   services.AddHealthChecks()
+       // Example where our application has a dependency to a SQL Server database
+       .AddSqlServer(
+           name: "MyDb",
+           connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString))
+       // Example where our application has a dependency to another service
+       .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
