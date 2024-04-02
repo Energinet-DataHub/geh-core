@@ -68,7 +68,7 @@ public sealed class NestedAuthenticationTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact(Skip = "JWT validation has changed in .NET 8. Will be handled in separate PR.")]
+    [Fact]
     public async Task CallingApi04Get_AuthWithToken_Allowed()
     {
         // Arrange
@@ -106,7 +106,7 @@ public sealed class NestedAuthenticationTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact(Skip = "JWT validation has changed in .NET 8. Will be handled in separate PR.")]
+    [Fact]
     public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
     {
         // Arrange
