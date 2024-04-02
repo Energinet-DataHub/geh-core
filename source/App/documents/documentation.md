@@ -124,7 +124,7 @@ Preparing a Web App project:
    builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "My Web API");
 
    // => API versioning
-   builder.Services.AddApiVersioningForWebApp(new ApiVersion(1, 0));
+   builder.Services.AddApiVersioningForWebApp(defaultVersion: new ApiVersion(1, 0));
 
    // => Authentication/authorization
    // TODO: Add "simple" example registration
