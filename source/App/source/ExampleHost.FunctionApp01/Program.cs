@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
@@ -46,9 +44,7 @@ var host = new HostBuilder()
         });
 
         // Health Checks (verified in tests)
-        services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
-        services.AddHealthChecks()
-            .AddLiveCheck();
+        services.AddHealthChecksForIsolatedWorker();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

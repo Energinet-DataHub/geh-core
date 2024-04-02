@@ -14,7 +14,6 @@
 
 using System.Reflection;
 using Asp.Versioning;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
@@ -52,9 +51,7 @@ public class Startup
         });
 
         // Health Checks (verified in tests)
-        services
-            .AddHealthChecks()
-            .AddLiveCheck();
+        services.AddHealthChecksForWebApp();
 
         // Swagger and api versioning (verified in tests)
         services
