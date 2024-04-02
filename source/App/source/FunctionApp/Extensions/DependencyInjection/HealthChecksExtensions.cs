@@ -43,6 +43,6 @@ public static class HealthChecksExtensions
 
     private static bool IsHealthChecksAdded(IServiceCollection services)
     {
-        return services.Any((service) => service.ServiceType == typeof(HealthCheckEndpointHandler));
+        return services.Any((service) => service.ServiceType == typeof(IHealthCheckEndpointHandler));
     }
 }
