@@ -89,7 +89,7 @@ We have implemented `AddServiceHealthCheck()` to support calling liveness health
        // Example where our application has a dependency to a SQL Server database
        .AddSqlServer(
            name: "MyDb",
-           connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString))
+           connectionString: Configuration.GetConnectionString("MyDbConnectionString"))
        // Example where our application has a dependency to another service
        .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
@@ -132,7 +132,7 @@ We have implemented `AddServiceHealthCheck()` to support calling liveness health
        // Example where our application has a dependency to a SQL Server database
        .AddSqlServer(
            name: "MyDb",
-           connectionString: Configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString))
+           connectionString: Configuration.GetConnectionString("MyDbConnectionString"))
        // Example where our application has a dependency to another service
        .AddServiceHealthCheck("service-name", <url-to-ping>);
    ```
