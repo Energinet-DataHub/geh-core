@@ -128,7 +128,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         var buildConfiguration = GetBuildConfiguration();
 
         var appHostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-        appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net7.0";
+        appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net8.0";
         appHostSettings.Port = ++port;
 
         appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");

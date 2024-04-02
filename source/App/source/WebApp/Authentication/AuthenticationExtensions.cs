@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Users;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -47,6 +46,9 @@ public static class AuthenticationExtensions
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
     {
+        // UserMiddleware depends on IHttpContextAccessor.
+        services.AddHttpContextAccessor();
+
         services.AddScoped<UserContext<TUser>>();
         services.AddScoped<IUserContext<TUser>>(s => s.GetRequiredService<UserContext<TUser>>());
         services.AddScoped<IUserProvider<TUser>, TUserProvider>();
@@ -85,7 +87,7 @@ public static class AuthenticationExtensions
                             throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
                         }
 
-                        ValidateInnerJwt((JwtSecurityToken)token, tokenValidationParameters);
+                        ValidateInnerJwt((JsonWebToken)token, tokenValidationParameters);
                         return issuer;
                     };
                 }
@@ -117,7 +119,7 @@ public static class AuthenticationExtensions
         };
     }
 
-    private static void ValidateInnerJwt(JwtSecurityToken outerToken, TokenValidationParameters tokenValidationParameters)
+    private static void ValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
     {
         var innerTokenClaim = outerToken.Claims.Single(claim =>
             string.Equals(claim.Type, InnerTokenClaimType, StringComparison.OrdinalIgnoreCase));
