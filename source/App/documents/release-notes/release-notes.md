@@ -1,8 +1,7 @@
 # App Release notes
 
-## Version 11.0.0
+## Version 12.0.0
 
-- Upgraded to .NET 8
 - Add `Common` extensibility types:
     - `ApplicationInsights.SubsystemInitializer`
 - Add `Common` reusable dependency injection extensions:
@@ -19,6 +18,11 @@
     - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
     - `OpenApiBuilderExtensions.UseSwaggerForWebApp`
 - In `FunctionApp` project removed extension `AddApplicationInsights` and the namespaces and types `FunctionTelemetryScope.*`
+
+## Version 11.0.0
+
+- Upgraded project to .NET 8
+- Upgraded dependencies to latest .NET 8
 
 ## Version 10.0.0
 

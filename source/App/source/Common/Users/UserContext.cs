@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
-namespace Energinet.DataHub.Core.App.Common;
+namespace Energinet.DataHub.Core.App.Common.Users;
 
 public sealed class UserContext<TUser> : IUserContext<TUser>
     where TUser : class
@@ -28,9 +28,7 @@ public sealed class UserContext<TUser> : IUserContext<TUser>
         ArgumentNullException.ThrowIfNull(user);
 
         if (_currentUser != null)
-        {
             throw new InvalidOperationException("User has already been set, cannot set it again!");
-        }
 
         _currentUser = user;
     }
