@@ -5,7 +5,6 @@ ARG OWNER=jupyter
 ARG BASE_CONTAINER=$REGISTRY/$OWNER/base-notebook
 FROM $BASE_CONTAINER
 
-LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
 
 # Fix: https://github.com/hadolint/hadolint/wiki/DL4006
 # Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
