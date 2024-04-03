@@ -8,7 +8,6 @@ Guidelines on implementing health checks for Azure Function App's and ASP.NET Co
 
 - [Introduction](#introduction)
 - Implementation
-    - [Calling liveness of other service](#calling-liveness-of-other-service)
     - [Azure Functions App](#azure-functions-app)
     - [ASP.NET Core Web API](#aspnet-core-web-api)
 
@@ -25,7 +24,11 @@ Each application should expose two health checks endpoints:
 
 The **readiness** check should validate that the application can reach critical dependencies, e.g. a SQL Server database or a Service Bus queue.
 
-The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readiness_ check as this could cause an endless loop. See also [Calling liveness of other service](#calling-liveness-of-other-service).
+The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readiness_ check as this could cause an endless loop.
+
+### Calling liveness of other service
+
+We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services. See examples under implementation for usage.
 
 ### Health Checks UI compatible response
 
@@ -34,10 +37,6 @@ The health checks returns a response that is compatible with the use of the [Hea
 ### Application version information
 
 The _liveness_ endpoint also returns the source version information in the `description` field of the JSON, for any DH3 application that was build using the standard DH3 CI workflows. This version information is extracted from the executing applications `AssemblyInformationalVersion` property.
-
-## Calling liveness of other service
-
-We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services. For usage see examples below under each application type.
 
 ## Azure Functions App
 
