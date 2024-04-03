@@ -34,7 +34,8 @@ For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub
 Features of the example:
 
 - Demonstrates the configuration of an Azure Function using the equivalent to the _minimal hosting model_.
-- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information".
+- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information":
+    - Logs emitted from the worker has `ApplicationVersion` property set to value in `AssemblyInformationalVersion`, and custom property `Subsystem` set to configured value.
 - Registers health checks "live" and "readiness" endpoints. Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 
@@ -92,7 +93,8 @@ For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub
 Features of the example:
 
 - Demonstrates the configuration of a _controller based API_ using the _minimal hosting model_.
-- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information".
+- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information":
+    - Logs emitted from the application has `ApplicationVersion` property set to value in `AssemblyInformationalVersion`, and custom property `Subsystem` set to configured value.
 - Registers health checks "live" and "readiness" endpoints.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
