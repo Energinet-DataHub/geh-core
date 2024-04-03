@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Extensions.DependencyInjection;
@@ -29,9 +32,34 @@ public class HealthChecksExtensionsTests
     private ServiceCollection Services { get; }
 
     [Fact]
+    public async Task TryAddHealthChecks_WhenCalled_RegistrationsArePerformed()
+    {
+        var healthCheckKey = "MyHealthCheck";
+
+        // Logging is required by HealthCheckService
+        Services.AddLogging();
+
+        // Act
+        Services.TryAddHealthChecks(
+            registrationKey: healthCheckKey,
+            (key, builder) =>
+            {
+                // Any registrations can be performed here
+                builder.AddCheck<SimpleHealthCheck>(name: key);
+            });
+
+        // Assert
+        var serviceProvider = Services.BuildServiceProvider();
+        var healthCheckService = serviceProvider.GetRequiredService<HealthCheckService>();
+
+        var actualStatus = await healthCheckService.CheckHealthAsync();
+        actualStatus.Entries.Should().ContainSingle(entry => entry.Key == healthCheckKey);
+    }
+
+    [Fact]
     public void TryAddHealthChecks_WhenCalledWithRegistrationKey_RegistrationsArePerformedWithRegistrationKey()
     {
-        var registrationKey = "MyKey";
+        var registrationKey = "MyHealthCheck";
         var actualKey = string.Empty;
 
         // Act
@@ -39,7 +67,6 @@ public class HealthChecksExtensionsTests
             registrationKey,
             (key, builder) =>
             {
-                // Any registrations can be performed here
                 actualKey = key;
             });
 
@@ -50,7 +77,7 @@ public class HealthChecksExtensionsTests
     [Fact]
     public void TryAddHealthChecks_WhenCalledMultipleTimesWithSameRegistrationKey_BuilderDelegateIsCalledOnlyOnce()
     {
-        var registrationKey = "MyKey";
+        var registrationKey = "MyHealthCheck";
         var count = 0;
 
         Services.TryAddHealthChecks(
@@ -70,5 +97,13 @@ public class HealthChecksExtensionsTests
 
         // Assert
         count.Should().Be(1);
+    }
+
+    private class SimpleHealthCheck : IHealthCheck
+    {
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(HealthCheckResult.Healthy("A healthy result."));
+        }
     }
 }
