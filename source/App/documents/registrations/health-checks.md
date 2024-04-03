@@ -8,6 +8,7 @@ Guidelines on implementing health checks for Azure Function App's and ASP.NET Co
 
 - [Introduction](#introduction)
 - Implementation
+    - [Idempotent registrations of health checks](#idempotent-registrations-of-health-checks)
     - [Calling liveness of other service](#calling-liveness-of-other-service)
     - [Azure Functions App](#azure-functions-app)
     - [ASP.NET Core Web API](#aspnet-core-web-api)
@@ -34,6 +35,27 @@ The health checks returns a response that is compatible with the use of the [Hea
 ### Application version information
 
 The _liveness_ endpoint also returns the source version information in the `description` field of the JSON, for any DH3 application that was build using the standard DH3 CI workflows. This version information is extracted from the executing applications `AssemblyInformationalVersion` property.
+
+## Idempotent registrations of health checks
+
+For application architecures like Modular Monolith, where we like to keep our registrations grouped on a module basis, it's imperative to be able to easily ensure we only perform a given health checks registration once, even though it's actually a dependency of several modules.
+
+Say we have Module-A and Module-B. Both has a dependency to a SQL database and both want to have their full set af dependency injection registrations in one place so it's easy to see and maintain dependencies. Both of these would like to register a health check for the database, but as it's the same database we only want to actually register the health check once.
+
+To overcome this we have implemented the extension `TryAddHealthChecks()` which is idempotent per the given `registrationKey` parameter. It means we can call the same registration multiple times but be sure it is only performed once.
+
+See example below or investigate tests and code level comments.
+
+```cs
+// Example of database health check
+services.TryAddHealthChecks(
+    registrationKey: "MyDatabase",
+    (key, builder) =>
+    {
+        // Using the health check extension that support a EF Core database context
+        builder.AddDbContextCheck<DatabaseContext>(name: key);
+    });
+```
 
 ## Calling liveness of other service
 
