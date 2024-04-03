@@ -34,8 +34,9 @@ For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub
 Features of the example:
 
 - Demonstrates the configuration of an Azure Function using the equivalent to the _minimal hosting model_.
-- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information":
-    - Logs emitted from the worker has `ApplicationVersion` property set to value in `AssemblyInformationalVersion`, and custom property `Subsystem` set to configured value.
+- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information" Telemetry emitted from the worker has:
+    - `ApplicationVersion` property set to the value in `AssemblyInformationalVersion` of the worker assembly.
+    - Custom property `Subsystem` set to a configured value
 - Registers health checks "live" and "readiness" endpoints:
     - Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
@@ -95,8 +96,9 @@ For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub
 Features of the example:
 
 - Demonstrates the configuration of a _controller based API_ using the _minimal hosting model_.
-- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information":
-    - Logs emitted from the application has `ApplicationVersion` property set to value in `AssemblyInformationalVersion`, and custom property `Subsystem` set to configured value.
+- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information". Telemetry emitted from the application has:
+    - `ApplicationVersion` property set to the value in `AssemblyInformationalVersion` of the executing assembly.
+    - Custom property `Subsystem` set to a configured value.
 - Registers health checks "live" and "readiness" endpoints:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".

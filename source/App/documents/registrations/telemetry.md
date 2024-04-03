@@ -20,7 +20,8 @@ In DataHub, any application implemented as an Azure Function App or an ASP.NET C
 - Telemetry types to monitor the execution of the application are automatically collected (data model types: request, exception, dependency).
 - Custom telemetry can be emitted using the standard .NET Core types `ILogger` and `ILogger<T>` (data model type: trace).
 - The default and categories log level of custom telemetry can be configured in application settings.
-- Telemetry are enriched with custom properties, like the "Subsystem" property.
+- Telemetry has `ApplicationVersion` property set to the value in `AssemblyInformationalVersion` of the executing assembly.
+- Telemetry are enriched with custom properties, like the `Subsystem` property.
 
 See also [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete).
 
