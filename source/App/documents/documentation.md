@@ -34,7 +34,7 @@ For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub
 Features of the example:
 
 - Demonstrates the configuration of an Azure Function using the equivalent to the _minimal hosting model_.
-- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information" Telemetry emitted from the worker has:
+- Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information". Telemetry emitted from the worker has:
     - `ApplicationVersion` property set to the value in `AssemblyInformationalVersion` of the worker assembly.
     - Custom property `Subsystem` set to a configured value
 - Registers health checks "live" and "readiness" endpoints:
