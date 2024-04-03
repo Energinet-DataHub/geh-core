@@ -26,11 +26,17 @@ The **readiness** check should validate that the application can reach critical 
 
 The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readiness_ check as this could cause an endless loop.
 
+### Calling liveness of other service
+
+We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services. See examples under implementation for usage.
+
 ### Health Checks UI compatible response
 
 The health checks returns a response that is compatible with the use of the [Health Checks UI](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#HealthCheckUI). This is a JSON format that allows callers to drill down into each specific health check and determine its status.
 
-The _liveness_ endpoint also returns the source version information in the `description` field of the JSON, for any DH3 application that was build using the standard DH3 CI workflows.
+### Application version information
+
+The _liveness_ endpoint also returns the source version information in the `description` field of the JSON, for any DH3 application that was build using the standard DH3 CI workflows. This version information is extracted from the executing applications `AssemblyInformationalVersion` property.
 
 ## Azure Functions App
 
@@ -80,8 +86,6 @@ After following the guidelines below, the health checks endpoints will be:
 
 See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages. Even though they are implemented for ASP.NET Core, they also work for Azure Functions.
 
-We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services.
-
 1) Add additional health checks using `AddHealthChecks()`. See an example below.
 
    ```cs
@@ -122,8 +126,6 @@ After following the guidelines below, the health checks endpoints will be:
 ### Add health checks for Web App dependencies
 
 See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages.
-
-We have implemented `AddServiceHealthCheck()` to support calling liveness health check of other services.
 
 1) Add additional health checks using `AddHealthChecks()`. See an example below.
 
