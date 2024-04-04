@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using System.Reflection;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.Common.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.App.Common.Extensions.Builder;
 
 /// <summary>
 /// Provides extension methods for registering DataHub relevant health checks with the <see cref="IHealthChecksBuilder"/>.

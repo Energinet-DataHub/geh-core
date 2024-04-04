@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.App.WebApp.Tests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 
-namespace Energinet.DataHub.Core.App.WebApp.Tests.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.App.WebApp.Tests.Extensions.Builder;
 
 public class HealthCheckEndpointRouteBuilderExtensionsTests
     : IClassFixture<HealthChecksFixture>
