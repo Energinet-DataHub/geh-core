@@ -76,7 +76,6 @@ public class Startup
             endpoints.MapReadyHealthChecks();
         });
 
-        // Swagger (verified in tests)
         app.UseSwaggerForWebApp();
     }
 }

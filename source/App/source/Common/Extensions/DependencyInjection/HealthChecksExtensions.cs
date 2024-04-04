@@ -36,7 +36,7 @@ public static class HealthChecksExtensions
         string registrationKey,
         Action<string, IHealthChecksBuilder> builderDelegate)
     {
-        ArgumentNullException.ThrowIfNull(registrationKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(registrationKey);
         ArgumentNullException.ThrowIfNull(builderDelegate);
 
         if (!IsHealthCheckAdded(services, registrationKey))
@@ -53,6 +53,8 @@ public static class HealthChecksExtensions
     /// </summary>
     private static bool IsHealthCheckAdded(IServiceCollection services, string registrationKey)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(registrationKey);
+
         return services.Any(
             service =>
                 service.ServiceType == typeof(HealthCheckRegistrationGuard)

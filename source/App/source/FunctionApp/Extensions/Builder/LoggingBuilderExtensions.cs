@@ -29,6 +29,8 @@ public static class LoggingBuilderExtensions
     /// </summary>
     public static ILoggingBuilder AddLoggingConfigurationForIsolatedWorker(this ILoggingBuilder logging, HostBuilderContext hostingContext)
     {
+        ArgumentNullException.ThrowIfNull(hostingContext);
+
         logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
 
         return logging;

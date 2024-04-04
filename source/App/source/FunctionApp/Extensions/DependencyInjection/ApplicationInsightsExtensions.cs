@@ -40,6 +40,8 @@ public static class ApplicationInsightsExtensions
     /// </summary>
     public static IServiceCollection AddApplicationInsightsForIsolatedWorker(this IServiceCollection services, string subsystemName)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(subsystemName);
+
         // Telemetry initializers only adds information to logs emitted by the isolated worker; not logs emitted by the function host.
         services.TryAddSingleton<ITelemetryInitializer>(new SubsystemInitializer(subsystemName));
 
