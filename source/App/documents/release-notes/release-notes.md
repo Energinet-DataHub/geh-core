@@ -17,7 +17,9 @@
     - `HealthChecksExtensions.AddHealthChecksForWebApp`
     - `OpenApiExtensions.AddSwaggerForWebApp` with `ConfigureSwaggerOptions`
     - `OpenApiBuilderExtensions.UseSwaggerForWebApp`
+- In `Common` project moved builder extensions `HealthChecksBuilderExtensions` to namespace `Energinet.DataHub.Core.App.Common.Extensions.Builder`.
 - In `FunctionApp` project removed extension `AddApplicationInsights` and the namespaces and types `FunctionTelemetryScope.*`
+- In `WebApp` project moved builder extensions `HealthCheckEndpointRouteBuilderExtensions` to namespace `Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks`.
 
 ## Version 11.0.0
 
