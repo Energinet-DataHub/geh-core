@@ -24,9 +24,6 @@ namespace ExampleHost.WebApi.Tests.Fixtures;
 public class AuthenticationHostFixture : IAsyncLifetime
 {
     public AuthenticationHostFixture()
-        : this("http://localhost:5003", false) { }
-
-    protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
     {
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
@@ -34,22 +31,19 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
         Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
+        var web04BaseUrl = "http://localhost:5003";
+        var mitIdInnerMetadataArg = $"--mitIdInnerMetadata={Metadata}";
         var innerMetadataArg = $"--innerMetadata={Metadata}";
-        var outerMetadataArg = $"--outerMetadata=";
+        var outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
         var audienceArg = $"--audience={Audience}";
 
-        if (supportNestedTokens)
-        {
-            outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
-        }
-
         // We cannot use TestServer as this would not work with Application Insights.
-        Web04Host = WebHost.CreateDefaultBuilder(new[]
-            {
+        Web04Host = WebHost.CreateDefaultBuilder([
+                mitIdInnerMetadataArg,
                 innerMetadataArg,
                 outerMetadataArg,
                 audienceArg,
-            })
+            ])
             .UseStartup<WebApi04.Startup>()
             .UseUrls(web04BaseUrl)
             .Build();
@@ -60,11 +54,11 @@ public class AuthenticationHostFixture : IAsyncLifetime
         };
     }
 
-    public string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
-
-    public string Audience => BffAppId;
-
     public HttpClient Web04HttpClient { get; }
+
+    private string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
+
+    private string Audience => BffAppId;
 
     /// <summary>
     /// This is not the actual BFF but a test app registration that allows

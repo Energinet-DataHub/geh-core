@@ -59,42 +59,48 @@ public static class AuthenticationExtensions
     /// Adds JWT Bearer authentication to the Web API.
     /// </summary>
     /// <param name="services">A collection of service descriptors.</param>
+    /// <param name="mitIdExternalMetadataAddress">The address of MitID configuration endpoint for the external token.</param>
     /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
     /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
     /// <param name="backendAppId"></param>
     public static void AddJwtBearerAuthentication(
         this IServiceCollection services,
+        string mitIdExternalMetadataAddress,
         string externalMetadataAddress,
         string internalMetadataAddress,
         string backendAppId)
     {
-        ArgumentNullException.ThrowIfNull(externalMetadataAddress);
-        ArgumentNullException.ThrowIfNull(backendAppId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(mitIdExternalMetadataAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(externalMetadataAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(internalMetadataAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(backendAppId);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                var tokenValidationParameters = CreateValidationParameters(backendAppId, externalMetadataAddress);
+                IEnumerable<TokenValidationParameters> tokenValidationParameters =
+                [
+                    CreateValidationParameters(backendAppId, mitIdExternalMetadataAddress),
+                    CreateValidationParameters(backendAppId, externalMetadataAddress),
+                ];
 
-                if (!string.IsNullOrEmpty(internalMetadataAddress))
+                options.TokenValidationParameters = CreateValidationParameters(backendAppId, internalMetadataAddress);
+                options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                 {
-                    options.TokenValidationParameters = CreateValidationParameters(backendAppId, internalMetadataAddress);
-                    options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
+                    if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
                     {
-                        if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
-                        {
-                            throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
-                        }
+                        throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
+                    }
 
-                        ValidateInnerJwt((JsonWebToken)token, tokenValidationParameters);
-                        return issuer;
-                    };
-                }
-                else
-                {
-                    options.TokenValidationParameters = tokenValidationParameters;
-                }
+                    foreach (var param in tokenValidationParameters)
+                    {
+                        if (TryValidateInnerJwt((JsonWebToken)token, param))
+                            return issuer;
+                    }
+
+                    throw new SecurityTokenException("Unauthorized");
+                };
             });
     }
 
@@ -119,12 +125,20 @@ public static class AuthenticationExtensions
         };
     }
 
-    private static void ValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
+    private static bool TryValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
     {
-        var innerTokenClaim = outerToken.Claims.Single(claim =>
-            string.Equals(claim.Type, InnerTokenClaimType, StringComparison.OrdinalIgnoreCase));
+        try
+        {
+            var innerTokenClaim = outerToken.Claims.Single(claim =>
+                string.Equals(claim.Type, InnerTokenClaimType, StringComparison.OrdinalIgnoreCase));
 
-        var handler = new JwtSecurityTokenHandler();
-        handler.ValidateToken(innerTokenClaim.Value, tokenValidationParameters, out _);
+            var handler = new JwtSecurityTokenHandler();
+            handler.ValidateToken(innerTokenClaim.Value, tokenValidationParameters, out _);
+            return true;
+        }
+        catch (SecurityTokenException)
+        {
+            return false;
+        }
     }
 }
