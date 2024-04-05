@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 11.1.0
+
+- Prepared auth for MitID
+
 ## Version 11.0.0
 
 - Upgraded project to .NET 8
