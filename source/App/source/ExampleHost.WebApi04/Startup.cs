@@ -32,14 +32,14 @@ public class Startup
         services.AddApplicationInsightsTelemetry();
 
         // Configuration supporting tested scenarios
-        var mitIdinnerMetadata = _configuration["mitIdInnerMetadata"]!;
+        var mitIdInnerMetadata = _configuration["mitIdInnerMetadata"]!;
         var innerMetadata = _configuration["innerMetadata"]!;
         var outerMetadata = _configuration["outerMetadata"]!;
         var audience = _configuration["audience"]!;
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        services.AddJwtBearerAuthentication(mitIdinnerMetadata, innerMetadata, outerMetadata, audience);
+        services.AddJwtBearerAuthentication(mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
         services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
     }
 

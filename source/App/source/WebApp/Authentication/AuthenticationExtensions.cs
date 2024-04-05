@@ -99,7 +99,7 @@ public static class AuthenticationExtensions
                             return issuer;
                     }
 
-                    throw new SecurityTokenException("Unauthorized");
+                    throw new UnauthorizedAccessException("Internal token could not be validated");
                 };
             });
     }
