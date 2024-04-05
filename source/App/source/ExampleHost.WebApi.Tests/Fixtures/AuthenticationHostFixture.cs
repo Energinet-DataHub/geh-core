@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using ExampleHost.WebApi04;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Identity.Client;
@@ -24,6 +25,9 @@ namespace ExampleHost.WebApi.Tests.Fixtures;
 public class AuthenticationHostFixture : IAsyncLifetime
 {
     public AuthenticationHostFixture()
+        : this("http://localhost:5003", false) { }
+
+    protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
     {
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
@@ -31,11 +35,15 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
         Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
-        var web04BaseUrl = "http://localhost:5003";
         var mitIdInnerMetadataArg = $"--mitIdInnerMetadata={Metadata}";
         var innerMetadataArg = $"--innerMetadata={Metadata}";
-        var outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
+        var outerMetadataArg = "--outerMetadata=";
         var audienceArg = $"--audience={Audience}";
+
+        if (supportNestedTokens)
+        {
+            outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
+        }
 
         // We cannot use TestServer as this would not work with Application Insights.
         Web04Host = WebHost.CreateDefaultBuilder([
@@ -44,7 +52,7 @@ public class AuthenticationHostFixture : IAsyncLifetime
                 outerMetadataArg,
                 audienceArg,
             ])
-            .UseStartup<WebApi04.Startup>()
+            .UseStartup(supportNestedTokens ? typeof(NestedAuthenticationStartup) : typeof(Startup))
             .UseUrls(web04BaseUrl)
             .Build();
 

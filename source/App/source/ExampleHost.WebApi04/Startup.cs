@@ -39,7 +39,7 @@ public class Startup
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        services.AddJwtBearerAuthentication(mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
+        AddJwtAuthentication(services, mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
         services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
     }
 
@@ -57,5 +57,10 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+    }
+
+    protected virtual void AddJwtAuthentication(IServiceCollection services, string mitIdInnerMetadata, string innerMetadata, string outerMetadata, string audience)
+    {
+        services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
     }
 }
