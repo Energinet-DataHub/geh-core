@@ -44,7 +44,7 @@ public class Startup
                 ValidateLifetime = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key")),
             });
-        services.AddPermissionAuthorization();
+        services.AddPermissionAuthorizationForWebApp();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)

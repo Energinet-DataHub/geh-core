@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.WebApp.Middleware;
+using Microsoft.AspNetCore.Builder;
 
-namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 
 /// <summary>
-/// Extension methods for <see cref="IServiceCollection"/>
-/// that allow adding authorization services to an ASP.NET Core app.
+/// Extension methods for <see cref="IApplicationBuilder"/>
+/// that allow adding authentication related middleware to an ASP.NET Core app.
 /// </summary>
-public static class AuthorizationExtensions
+public static class AuthenticationBuilderExtensions
 {
     // TODO: Add description
-    public static IServiceCollection AddPermissionAuthorizationForWebApp(this IServiceCollection services)
+    public static IApplicationBuilder UseUserMiddlewareForWebApp<TUser>(this IApplicationBuilder app)
+        where TUser : class
     {
-        services.AddAuthorization();
+        app.UseMiddleware<UserMiddleware<TUser>>();
 
-        return services;
+        return app;
     }
 }

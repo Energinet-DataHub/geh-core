@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi04.Security;
 
@@ -39,7 +40,7 @@ public class Startup
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
         AddJwtAuthentication(services, mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
-        services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
+        services.AddUserAuthenticationForWebApp<ExampleDomainUser, ExampleDomainUserProvider>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -50,7 +51,7 @@ public class Startup
         // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseUserMiddleware<ExampleDomainUser>();
+        app.UseUserMiddlewareForWebApp<ExampleDomainUser>();
 
         app.UseEndpoints(endpoints =>
         {
@@ -60,6 +61,6 @@ public class Startup
 
     protected virtual void AddJwtAuthentication(IServiceCollection services, string mitIdInnerMetadata, string innerMetadata, string outerMetadata, string audience)
     {
-        services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
+        services.AddJwtBearerAuthenticationForWebApp(innerMetadata, outerMetadata, audience);
     }
 }

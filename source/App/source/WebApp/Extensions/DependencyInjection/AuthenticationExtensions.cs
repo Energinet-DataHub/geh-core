@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Users;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols;
@@ -26,23 +25,22 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for <see cref="IServiceCollection"/>
+/// that allow adding authentication services to an ASP.NET Core app.
+/// </summary>
 public static class AuthenticationExtensions
 {
     private const string InnerTokenClaimType = "token";
 
     /// <summary>
     /// Disables HTTPS requirement for OpenId configuration endpoints.
-    /// This property is intended for testing purposes only.
+    /// This property is intended for testing purposes only and we use InternalsVisibleTo in the project file to control who can access it.
     /// </summary>
-    public static bool DisableHttpsConfiguration { get; set; }
+    internal static bool DisableHttpsConfiguration { get; set; }
 
-    public static void UseUserMiddleware<TUser>(this IApplicationBuilder builder)
-        where TUser : class
-    {
-        builder.UseMiddleware<UserMiddleware<TUser>>();
-    }
-
-    public static void AddUserAuthentication<TUser, TUserProvider>(this IServiceCollection services)
+    // TODO: Add description
+    public static IServiceCollection AddUserAuthenticationForWebApp<TUser, TUserProvider>(this IServiceCollection services)
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
     {
@@ -53,6 +51,8 @@ public static class AuthenticationExtensions
         services.AddScoped<IUserContext<TUser>>(s => s.GetRequiredService<UserContext<TUser>>());
         services.AddScoped<IUserProvider<TUser>, TUserProvider>();
         services.AddScoped<UserMiddleware<TUser>>();
+
+        return services;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public static class AuthenticationExtensions
     /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
     /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
     /// <param name="backendAppId"></param>
-    public static void AddJwtBearerAuthentication(
+    public static IServiceCollection AddJwtBearerAuthenticationForWebApp(
         this IServiceCollection services,
         string externalMetadataAddress,
         string internalMetadataAddress,
@@ -94,6 +94,8 @@ public static class AuthenticationExtensions
                     options.TokenValidationParameters = tokenValidationParameters;
                 }
             });
+
+        return services;
     }
 
     /// <summary>
@@ -104,7 +106,7 @@ public static class AuthenticationExtensions
     /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
     /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
     /// <param name="backendAppId"></param>
-    public static void AddJwtBearerAuthentication(
+    public static IServiceCollection AddJwtBearerAuthenticationForWebApp(
         this IServiceCollection services,
         string mitIdExternalMetadataAddress,
         string externalMetadataAddress,
@@ -141,6 +143,8 @@ public static class AuthenticationExtensions
                     throw new UnauthorizedAccessException("Internal token could not be validated");
                 };
             });
+
+        return services;
     }
 
     private static TokenValidationParameters CreateValidationParameters(

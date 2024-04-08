@@ -25,6 +25,6 @@ public class NestedAuthenticationStartup : Startup
 
     protected override void AddJwtAuthentication(IServiceCollection services, string mitIdInnerMetadata, string innerMetadata, string outerMetadata, string audience)
     {
-        services.AddJwtBearerAuthentication(mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
+        services.AddJwtBearerAuthenticationForWebApp(mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
     }
 }

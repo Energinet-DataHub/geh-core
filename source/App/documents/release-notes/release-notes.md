@@ -23,8 +23,8 @@
     - Removed extension `AddApplicationInsights` and the namespaces and types `FunctionTelemetryScope.*`
 - In `WebApp` project:
     - Moved builder extensions `HealthCheckEndpointRouteBuilderExtensions` to namespace `Energinet.DataHub.Core.App.WebApp.Extensions.Builder`
-    - Moved extensions `AuthenticationExtensions` to namespace `Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection`
-    - Moved extensions `AuthorizationExtensions` to namespace `Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection`
+    - Moved extensions `AuthenticationExtensions` to namespace `Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection` and refactored to follow new guidelines.
+    - Moved extensions `AuthorizationExtensions` to namespace `Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection` and refactored to follow new guidelines.
 
 ## Version 11.1.0
 
