@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using ExampleHost.WebApi04;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Identity.Client;
@@ -34,8 +35,9 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
         Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
+        var mitIdInnerMetadataArg = $"--mitIdInnerMetadata={Metadata}";
         var innerMetadataArg = $"--innerMetadata={Metadata}";
-        var outerMetadataArg = $"--outerMetadata=";
+        var outerMetadataArg = "--outerMetadata=";
         var audienceArg = $"--audience={Audience}";
 
         if (supportNestedTokens)
@@ -44,13 +46,13 @@ public class AuthenticationHostFixture : IAsyncLifetime
         }
 
         // We cannot use TestServer as this would not work with Application Insights.
-        Web04Host = WebHost.CreateDefaultBuilder(new[]
-            {
+        Web04Host = WebHost.CreateDefaultBuilder([
+                mitIdInnerMetadataArg,
                 innerMetadataArg,
                 outerMetadataArg,
                 audienceArg,
-            })
-            .UseStartup<WebApi04.Startup>()
+            ])
+            .UseStartup(supportNestedTokens ? typeof(NestedAuthenticationStartup) : typeof(Startup))
             .UseUrls(web04BaseUrl)
             .Build();
 
@@ -60,11 +62,11 @@ public class AuthenticationHostFixture : IAsyncLifetime
         };
     }
 
-    public string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
-
-    public string Audience => BffAppId;
-
     public HttpClient Web04HttpClient { get; }
+
+    private string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
+
+    private string Audience => BffAppId;
 
     /// <summary>
     /// This is not the actual BFF but a test app registration that allows

@@ -32,13 +32,14 @@ public class Startup
         services.AddApplicationInsightsTelemetry();
 
         // Configuration supporting tested scenarios
+        var mitIdInnerMetadata = _configuration["mitIdInnerMetadata"]!;
         var innerMetadata = _configuration["innerMetadata"]!;
         var outerMetadata = _configuration["outerMetadata"]!;
         var audience = _configuration["audience"]!;
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
+        AddJwtAuthentication(services, mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
         services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
     }
 
@@ -56,5 +57,10 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+    }
+
+    protected virtual void AddJwtAuthentication(IServiceCollection services, string mitIdInnerMetadata, string innerMetadata, string outerMetadata, string audience)
+    {
+        services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
     }
 }

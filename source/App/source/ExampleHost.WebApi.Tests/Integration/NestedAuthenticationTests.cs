@@ -15,7 +15,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.Identity.Client;
@@ -52,6 +51,19 @@ public sealed class NestedAuthenticationTests
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().Be(requestIdentification);
+    }
+
+    [Fact]
+    public async Task CallingApi04Get_NoEndpoint_Returns404()
+    {
+        // Arrange
+        using var request = new HttpRequestMessage(HttpMethod.Get, "webapi04/authentication/does_not_exist");
+
+        // Act
+        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -114,7 +126,7 @@ public sealed class NestedAuthenticationTests
         var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/user");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "webapi04/authentication/user");
         request.Headers.Add("Authorization", authenticationHeader);
         using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
 
@@ -131,11 +143,11 @@ public sealed class NestedAuthenticationTests
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key"));
+        var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var subClaim = new Claim("sub", Guid.NewGuid().ToString());
 
-        var securityToken = new JwtSecurityToken(claims: new[] { subClaim }, signingCredentials: credentials);
+        var securityToken = new JwtSecurityToken(claims: [subClaim], signingCredentials: credentials);
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.WriteToken(securityToken);
 
