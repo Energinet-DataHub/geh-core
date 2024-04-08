@@ -21,6 +21,10 @@
 - In `FunctionApp` project removed extension `AddApplicationInsights` and the namespaces and types `FunctionTelemetryScope.*`
 - In `WebApp` project moved builder extensions `HealthCheckEndpointRouteBuilderExtensions` to namespace `Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks`.
 
+## Version 11.1.0
+
+- Prepared auth for MitID
+
 ## Version 11.0.0
 
 - Upgraded project to .NET 8
