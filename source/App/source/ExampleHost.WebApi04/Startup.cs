@@ -68,9 +68,11 @@ public class Startup
         if (authenticationOptions == null)
             throw new InvalidConfigurationException("Missing authentication configuration.");
 
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddJwtBearerAuthenticationForWebApp(
             authenticationOptions.ExternalMetadataAddress,
             authenticationOptions.InternalMetadataAddress,
             authenticationOptions.BackendBffAppId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }
