@@ -20,22 +20,22 @@ namespace ExampleHost.WebApi04;
 
 public class Startup
 {
-    private readonly IConfiguration _configuration;
-
     public Startup(IConfiguration configuration)
     {
-        _configuration = configuration;
+        Configuration = configuration;
     }
+
+    protected IConfiguration Configuration { get; }
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
 
         // Configuration supporting tested scenarios
-        var mitIdExternalMetadataAddress = _configuration["mitIdExternalMetadataAddress"]!;
-        var externalMetadataAddress = _configuration["externalMetadataAddress"]!;
-        var internalMetadataAddress = _configuration["internalMetadataAddress"]!;
-        var audience = _configuration["audience"]!;
+        var mitIdExternalMetadataAddress = Configuration["mitIdExternalMetadataAddress"]!;
+        var externalMetadataAddress = Configuration["externalMetadataAddress"]!;
+        var internalMetadataAddress = Configuration["internalMetadataAddress"]!;
+        var audience = Configuration["audience"]!;
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
