@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 
-namespace Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 
 /// <summary>
 /// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to add DataHub relevant health checks endpoints.

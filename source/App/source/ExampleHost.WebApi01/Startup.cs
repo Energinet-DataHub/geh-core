@@ -14,7 +14,6 @@
 
 using System.Reflection;
 using Asp.Versioning;
-using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
