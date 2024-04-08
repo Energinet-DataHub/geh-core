@@ -32,14 +32,14 @@ public class Startup
         services.AddControllers();
 
         // Configuration supporting tested scenarios
-        var mitIdInnerMetadata = _configuration["mitIdInnerMetadata"]!;
-        var innerMetadata = _configuration["innerMetadata"]!;
-        var outerMetadata = _configuration["outerMetadata"]!;
+        var mitIdExternalMetadataAddress = _configuration["mitIdExternalMetadataAddress"]!;
+        var externalMetadataAddress = _configuration["externalMetadataAddress"]!;
+        var innerMetadataAddress = _configuration["innerMetadataAddress"]!;
         var audience = _configuration["audience"]!;
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        AddJwtAuthentication(services, mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
+        AddJwtAuthentication(services, mitIdExternalMetadataAddress, externalMetadataAddress, innerMetadataAddress, audience);
         services.AddUserAuthenticationForWebApp<ExampleDomainUser, ExampleDomainUserProvider>();
     }
 
@@ -59,8 +59,16 @@ public class Startup
         });
     }
 
-    protected virtual void AddJwtAuthentication(IServiceCollection services, string mitIdInnerMetadata, string innerMetadata, string outerMetadata, string audience)
+    protected virtual void AddJwtAuthentication(
+        IServiceCollection services,
+        string mitIdExternalMetadataAddress,
+        string externalMetadataAddress,
+        string internalMetadataAddress,
+        string audience)
     {
-        services.AddJwtBearerAuthenticationForWebApp(innerMetadata, outerMetadata, audience);
+        services.AddJwtBearerAuthenticationForWebApp(
+            externalMetadataAddress,
+            internalMetadataAddress,
+            audience);
     }
 }

@@ -33,20 +33,17 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
         BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
 
-        var mitIdInnerMetadataArg = $"--mitIdInnerMetadata={Metadata}";
-        var innerMetadataArg = $"--innerMetadata={Metadata}";
-        var outerMetadataArg = "--outerMetadata=";
+        var mitIdExternalMetadataAddressArg = $"--mitIdExternalMetadataAddress={ExternalMetadataAddress}";
+        var externalMetadataAddressArg = $"--externalMetadataAddress={ExternalMetadataAddress}";
+        var innerMetadataAddressArg = supportNestedTokens
+            ? $"--innerMetadataAddress={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration"
+            : "--innerMetadataAddress=";
         var audienceArg = $"--audience={Audience}";
 
-        if (supportNestedTokens)
-        {
-            outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
-        }
-
         Web04Host = WebHost.CreateDefaultBuilder([
-                mitIdInnerMetadataArg,
-                innerMetadataArg,
-                outerMetadataArg,
+                mitIdExternalMetadataAddressArg,
+                externalMetadataAddressArg,
+                innerMetadataAddressArg,
                 audienceArg,
             ])
             .UseStartup(supportNestedTokens ? typeof(NestedAuthenticationStartup) : typeof(Startup))
@@ -61,7 +58,7 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
     public HttpClient Web04HttpClient { get; }
 
-    private string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
+    private string ExternalMetadataAddress => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
 
     private string Audience => BffAppId;
 
