@@ -21,16 +21,16 @@ public class AuthenticationOptions
     public const string SectionName = "Authentication";
 
     /// <summary>
-    /// The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.
-    /// </summary>
-    [Required]
-    public string ExternalOpenIdUrl { get; set; } = string.Empty;
-
-    /// <summary>
     /// The address of MitID configuration endpoint for the external token.
     /// </summary>
     [Required]
-    public string MitIdExternalOpenIdUrl { get; set; } = string.Empty;
+    public string MitIdExternalMetadataAddress { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.
+    /// </summary>
+    [Required]
+    public string ExternalMetadataAddress { get; set; } = string.Empty;
 
     [Required]
     public string BackendBffAppId { get; set; } = string.Empty;
@@ -39,5 +39,5 @@ public class AuthenticationOptions
     /// The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.
     /// </summary>
     [Required]
-    public string InternalOpenIdUrl { get; set; } = string.Empty;
+    public string InternalMetadataAddress { get; set; } = string.Empty;
 }
