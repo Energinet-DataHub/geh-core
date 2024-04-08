@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Text;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 

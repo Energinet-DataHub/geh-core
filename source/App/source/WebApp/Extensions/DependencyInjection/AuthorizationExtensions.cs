@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Core.App.WebApp.Authorization;
+namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 
 public static class AuthorizationExtensions
 {

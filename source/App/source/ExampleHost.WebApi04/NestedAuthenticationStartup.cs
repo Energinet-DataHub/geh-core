@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 
 namespace ExampleHost.WebApi04;
 
