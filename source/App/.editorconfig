@@ -121,7 +121,7 @@ dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 dotnet_style_prefer_compound_assignment = true:suggestion
 
 # Null-checking preferences
-dotnet_style_coalesce_expression = true:error
+dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:error
 
 ###############################
@@ -163,6 +163,9 @@ dotnet_naming_style.instance_field_style.required_prefix = _
 ##############################################################
 # C# Conventions                                             #
 ##############################################################
+
+# IDE0270: Use coalesce expression
+dotnet_diagnostic.IDE0270.severity = suggestion
 
 [*.cs]
 
