@@ -37,7 +37,7 @@ public class Startup
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
         AddJwtAuthentication(services);
-        services.AddUserAuthenticationForWebApp<ExampleDomainUser, ExampleDomainUserProvider>();
+        services.AddUserAuthenticationForWebApp<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -48,7 +48,7 @@ public class Startup
         // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseUserMiddlewareForWebApp<ExampleDomainUser>();
+        app.UseUserMiddlewareForWebApp<ExampleSubsystemUser>();
 
         app.UseEndpoints(endpoints =>
         {

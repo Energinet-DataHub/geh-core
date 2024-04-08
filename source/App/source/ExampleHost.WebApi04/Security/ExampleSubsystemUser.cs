@@ -14,9 +14,9 @@
 
 namespace ExampleHost.WebApi04.Security;
 
-public sealed class ExampleDomainUser
+public sealed class ExampleSubsystemUser
 {
-    public ExampleDomainUser(Guid userId, Guid externalActorId)
+    public ExampleSubsystemUser(Guid userId, Guid externalActorId)
     {
         UserId = userId;
         ExternalActorId = externalActorId;

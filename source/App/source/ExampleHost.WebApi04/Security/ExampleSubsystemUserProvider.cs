@@ -17,23 +17,23 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
 namespace ExampleHost.WebApi04.Security;
 
-public sealed class ExampleDomainUserProvider : IUserProvider<ExampleDomainUser>
+public sealed class ExampleSubsystemUserProvider : IUserProvider<ExampleSubsystemUser>
 {
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public ExampleDomainUserProvider(IHttpContextAccessor contextAccessor)
+    public ExampleSubsystemUserProvider(IHttpContextAccessor contextAccessor)
     {
         _contextAccessor = contextAccessor;
     }
 
-    public Task<ExampleDomainUser?> ProvideUserAsync(
+    public Task<ExampleSubsystemUser?> ProvideUserAsync(
         Guid userId,
         Guid actorId,
         bool multiTenancy,
         IEnumerable<Claim> claims)
     {
         return _contextAccessor!.HttpContext!.Request.Headers.ContainsKey("DenyUser")
-            ? Task.FromResult<ExampleDomainUser?>(null)
-            : Task.FromResult<ExampleDomainUser?>(new ExampleDomainUser(userId, actorId));
+            ? Task.FromResult<ExampleSubsystemUser?>(null)
+            : Task.FromResult<ExampleSubsystemUser?>(new ExampleSubsystemUser(userId, actorId));
     }
 }
