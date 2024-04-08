@@ -103,6 +103,7 @@ Features of the example:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
+- Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
 
 Preparing a Web App project:
 
@@ -134,7 +135,10 @@ Preparing a Web App project:
    builder.Services.AddApiVersioningForWebApp(defaultVersion: new ApiVersion(1, 0));
 
    // => Authentication/authorization
-   // TODO: Add "simple" example registration
+   builder.Services
+       .AddJwtBearerAuthenticationForWebApp(builder.Configuration)
+       .AddUserAuthenticationForWebApp<DomainUser, DomainUserProvider>()
+       .AddPermissionAuthorizationForWebApp();
 
    var app = builder.Build();
 
@@ -147,7 +151,9 @@ Preparing a Web App project:
    app.UseHttpsRedirection();
 
    // Authentication/authorization
-   // TODO: Add "simple" example registration
+   app.UseAuthentication();
+   app.UseAuthorization();
+   app.UseUserMiddlewareForWebApp<DomainUser>();
 
    // Health Checks
    app.MapLiveHealthChecks();
@@ -178,5 +184,12 @@ Preparing a Web App project:
      },
      // Application Insights
      "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
+     // Authentication
+     "Authentication": {
+       "MitIdExternalMetadataAddress": "<metadata address>",
+       "ExternalMetadataAddress": "<metadata address>",
+       "InternalMetadataAddress": "<metadata address>",
+       "BackendBffAppId": "<app id>"
+     }
    }
    ```
