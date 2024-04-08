@@ -1,6 +1,6 @@
 # JWT Security
 
-> Each domain must implement its own domain-specific actor authorization! The middleware ensures only that the token is valid. Failure to do so may lead to escalation of privileges.
+> Each subsystem must implement its own subsystem-specific actor authorization! The middleware ensures only that the token is valid. Failure to do so may lead to escalation of privileges.
 
 - DO validate the signature, lifetime, audience and issuer of the token.
 - STRONGLY RECOMMENDED to validate the external token from 'token'-claim. Middleware will do this for you.
@@ -8,7 +8,7 @@
 - DO return `null` from `IUserProvider.ProvideUserAsync` as much as possible, e.g. if the actor id is unknown or irrelevant.
 - DO trust the actor id only from `IUserContext`.
 - DO treat actors with same security considerations as if they were separate tenants.
-- DO create a `TUser` implementation that is convenient for your domain.
+- DO create a `TUser` implementation that is convenient for your subsystem.
 
 ## Authorization in Web Apps
 
@@ -47,16 +47,16 @@ Configuring middleware for obtaining the current user with the current actor.
 
 ### Example Configuration
 
-`DomainUser` is a domain-specific implementation of a user. `DomainUserProvider` is a domain-specific implementation of `IUserProvider<TUser>`.
+`SubsystemUser` is a subsystem-specific implementation of a user. `SubsystemUserProvider` is a subsystem-specific implementation of `IUserProvider<TUser>`.
 
 ```C#
     app.UseAuthentication();
     app.UseAuthorization();
-    app.UseUserMiddlewareForWebApp<DomainUser>();
+    app.UseUserMiddlewareForWebApp<SubsystemUser>();
 
     // Settings are loaded into AuthenticationOptions from configuration
     services.AddJwtBearerAuthenticationForWebApp(configuration);
-    services.AddUserAuthenticationForWebApp<DomainUser, DomainUserProvider>();
+    services.AddUserAuthenticationForWebApp<SubsystemUser, SubsystemUserProvider>();
     services.AddPermissionAuthorizationForWebApp();
 ```
 

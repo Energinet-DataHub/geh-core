@@ -17,19 +17,19 @@ using System.Security.Claims;
 namespace Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
 /// <summary>
-/// Creates a domain-specific representation of the user through the UserMiddleware.
+/// Creates a subsystem-specific representation of the user through the UserMiddleware.
 /// </summary>
 public interface IUserProvider<TUser>
     where TUser : class
 {
     /// <summary>
-    /// Creates a domain-specific representation of the user.
+    /// Creates a subsystem-specific representation of the user.
     /// </summary>
     /// <param name="userId">The id of the user.</param>
     /// <param name="actorId">The id of the actor.</param>
     /// <param name="multiTenancy">Specifies whether the user has a claim that allows accessing data across market participants.</param>
     /// <param name="claims">The claims present in the token.</param>
-    /// <returns>A domain-specific representation of the user; or null.</returns>
+    /// <returns>A subsystem-specific representation of the user; or null.</returns>
     public Task<TUser?> ProvideUserAsync(
         Guid userId,
         Guid actorId,

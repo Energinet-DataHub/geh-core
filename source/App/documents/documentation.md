@@ -137,7 +137,7 @@ Preparing a Web App project:
    // => Authentication/authorization
    builder.Services
        .AddJwtBearerAuthenticationForWebApp(builder.Configuration)
-       .AddUserAuthenticationForWebApp<DomainUser, DomainUserProvider>()
+       .AddUserAuthenticationForWebApp<SubsystemUser, SubsystemUserProvider>()
        .AddPermissionAuthorizationForWebApp();
 
    var app = builder.Build();
@@ -153,7 +153,7 @@ Preparing a Web App project:
    // Authentication/authorization
    app.UseAuthentication();
    app.UseAuthorization();
-   app.UseUserMiddlewareForWebApp<DomainUser>();
+   app.UseUserMiddlewareForWebApp<SubsystemUser>();
 
    // Health Checks
    app.MapLiveHealthChecks();
