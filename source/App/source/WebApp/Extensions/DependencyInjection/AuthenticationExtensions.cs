@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.App.Common.Users;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
@@ -100,23 +105,19 @@ public static class AuthenticationExtensions
 
     /// <summary>
     /// Adds JWT Bearer authentication to the Web API.
+    ///
+    /// Expects <see cref="AuthenticationOptions"/> has been configured in <see cref="AuthenticationOptions.SectionName"/>.
     /// </summary>
-    /// <param name="services">A collection of service descriptors.</param>
-    /// <param name="mitIdExternalMetadataAddress">The address of MitID configuration endpoint for the external token.</param>
-    /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
-    /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
-    /// <param name="backendAppId"></param>
-    public static IServiceCollection AddJwtBearerAuthenticationForWebApp(
-        this IServiceCollection services,
-        string mitIdExternalMetadataAddress,
-        string externalMetadataAddress,
-        string internalMetadataAddress,
-        string backendAppId)
+    public static IServiceCollection AddJwtBearerAuthenticationForWebApp(this IServiceCollection services, IConfiguration configuration)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(mitIdExternalMetadataAddress);
-        ArgumentException.ThrowIfNullOrWhiteSpace(externalMetadataAddress);
-        ArgumentException.ThrowIfNullOrWhiteSpace(internalMetadataAddress);
-        ArgumentException.ThrowIfNullOrWhiteSpace(backendAppId);
+        var authenticationOptions = configuration
+            .GetRequiredSection(AuthenticationOptions.SectionName)
+            .Get<AuthenticationOptions>();
+
+        if (authenticationOptions == null)
+            throw new InvalidConfigurationException("Missing authentication configuration.");
+
+        GuardAuthenticationOptions(authenticationOptions);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -124,11 +125,11 @@ public static class AuthenticationExtensions
             {
                 IEnumerable<TokenValidationParameters> tokenValidationParameters =
                 [
-                    CreateValidationParameters(backendAppId, mitIdExternalMetadataAddress),
-                    CreateValidationParameters(backendAppId, externalMetadataAddress),
+                    CreateValidationParameters(authenticationOptions.BackendBffAppId, authenticationOptions.MitIdExternalMetadataAddress),
+                    CreateValidationParameters(authenticationOptions.BackendBffAppId, authenticationOptions.ExternalMetadataAddress),
                 ];
 
-                options.TokenValidationParameters = CreateValidationParameters(backendAppId, internalMetadataAddress);
+                options.TokenValidationParameters = CreateValidationParameters(authenticationOptions.BackendBffAppId, authenticationOptions.InternalMetadataAddress);
                 options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                 {
                     if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
@@ -145,6 +146,18 @@ public static class AuthenticationExtensions
             });
 
         return services;
+    }
+
+    private static void GuardAuthenticationOptions(AuthenticationOptions authenticationOptions)
+    {
+        if (string.IsNullOrWhiteSpace(authenticationOptions.MitIdExternalMetadataAddress))
+            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.MitIdExternalMetadataAddress)}'.");
+        if (string.IsNullOrWhiteSpace(authenticationOptions.ExternalMetadataAddress))
+            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.ExternalMetadataAddress)}'.");
+        if (string.IsNullOrWhiteSpace(authenticationOptions.BackendBffAppId))
+            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.BackendBffAppId)}'.");
+        if (string.IsNullOrWhiteSpace(authenticationOptions.InternalMetadataAddress))
+            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.InternalMetadataAddress)}'.");
     }
 
     private static TokenValidationParameters CreateValidationParameters(

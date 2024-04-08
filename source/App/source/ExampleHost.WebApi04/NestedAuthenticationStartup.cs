@@ -23,17 +23,12 @@ public class NestedAuthenticationStartup : Startup
     {
     }
 
-    protected override void AddJwtAuthentication(
-        IServiceCollection services,
-        string mitIdExternalMetadataAddress,
-        string externalMetadataAddress,
-        string internalMetadataAddress,
-        string audience)
+    /// <summary>
+    /// Here we use the new extension for authentication.
+    /// It will read the required settings from Configuration and requires all settings is set.
+    /// </summary>
+    protected override void AddJwtAuthentication(IServiceCollection services)
     {
-        services.AddJwtBearerAuthenticationForWebApp(
-            mitIdExternalMetadataAddress,
-            externalMetadataAddress,
-            internalMetadataAddress,
-            audience);
+        services.AddJwtBearerAuthenticationForWebApp(Configuration);
     }
 }

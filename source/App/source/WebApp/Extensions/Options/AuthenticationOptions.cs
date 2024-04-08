@@ -23,21 +23,17 @@ public class AuthenticationOptions
     /// <summary>
     /// The address of MitID configuration endpoint for the external token.
     /// </summary>
-    [Required]
     public string MitIdExternalMetadataAddress { get; set; } = string.Empty;
 
     /// <summary>
     /// The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.
     /// </summary>
-    [Required]
     public string ExternalMetadataAddress { get; set; } = string.Empty;
 
-    [Required]
     public string BackendBffAppId { get; set; } = string.Empty;
 
     /// <summary>
     /// The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.
     /// </summary>
-    [Required]
     public string InternalMetadataAddress { get; set; } = string.Empty;
 }

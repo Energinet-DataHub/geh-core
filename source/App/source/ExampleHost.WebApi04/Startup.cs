@@ -14,7 +14,9 @@
 
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using ExampleHost.WebApi04.Security;
+using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace ExampleHost.WebApi04;
 
@@ -31,15 +33,10 @@ public class Startup
     {
         services.AddControllers();
 
-        // Configuration supporting tested scenarios
-        var mitIdExternalMetadataAddress = Configuration["mitIdExternalMetadataAddress"]!;
-        var externalMetadataAddress = Configuration["externalMetadataAddress"]!;
-        var internalMetadataAddress = Configuration["internalMetadataAddress"]!;
-        var audience = Configuration["audience"]!;
-
+        // Configure for testing
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        AddJwtAuthentication(services, mitIdExternalMetadataAddress, externalMetadataAddress, internalMetadataAddress, audience);
+        AddJwtAuthentication(services);
         services.AddUserAuthenticationForWebApp<ExampleDomainUser, ExampleDomainUserProvider>();
     }
 
@@ -59,16 +56,21 @@ public class Startup
         });
     }
 
-    protected virtual void AddJwtAuthentication(
-        IServiceCollection services,
-        string mitIdExternalMetadataAddress,
-        string externalMetadataAddress,
-        string internalMetadataAddress,
-        string audience)
+    /// <summary>
+    /// Here we configure the application using the "old" (obsolete) extension, for testing scenarious where we don't have nested tokens.
+    /// </summary>
+    protected virtual void AddJwtAuthentication(IServiceCollection services)
     {
+        var authenticationOptions = Configuration
+            .GetRequiredSection(AuthenticationOptions.SectionName)
+            .Get<AuthenticationOptions>();
+
+        if (authenticationOptions == null)
+            throw new InvalidConfigurationException("Missing authentication configuration.");
+
         services.AddJwtBearerAuthenticationForWebApp(
-            externalMetadataAddress,
-            internalMetadataAddress,
-            audience);
+            authenticationOptions.ExternalMetadataAddress,
+            authenticationOptions.InternalMetadataAddress,
+            authenticationOptions.BackendBffAppId);
     }
 }
