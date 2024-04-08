@@ -34,12 +34,12 @@ public class Startup
         // Configuration supporting tested scenarios
         var mitIdExternalMetadataAddress = _configuration["mitIdExternalMetadataAddress"]!;
         var externalMetadataAddress = _configuration["externalMetadataAddress"]!;
-        var innerMetadataAddress = _configuration["innerMetadataAddress"]!;
+        var internalMetadataAddress = _configuration["internalMetadataAddress"]!;
         var audience = _configuration["audience"]!;
 
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        AddJwtAuthentication(services, mitIdExternalMetadataAddress, externalMetadataAddress, innerMetadataAddress, audience);
+        AddJwtAuthentication(services, mitIdExternalMetadataAddress, externalMetadataAddress, internalMetadataAddress, audience);
         services.AddUserAuthenticationForWebApp<ExampleDomainUser, ExampleDomainUserProvider>();
     }
 

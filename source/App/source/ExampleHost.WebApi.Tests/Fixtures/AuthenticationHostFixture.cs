@@ -35,15 +35,15 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
         var mitIdExternalMetadataAddressArg = $"--mitIdExternalMetadataAddress={ExternalMetadataAddress}";
         var externalMetadataAddressArg = $"--externalMetadataAddress={ExternalMetadataAddress}";
-        var innerMetadataAddressArg = supportNestedTokens
-            ? $"--innerMetadataAddress={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration"
-            : "--innerMetadataAddress=";
+        var internalMetadataAddressArg = supportNestedTokens
+            ? $"--internalMetadataAddress={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration"
+            : "--internalMetadataAddress=";
         var audienceArg = $"--audience={Audience}";
 
         Web04Host = WebHost.CreateDefaultBuilder([
                 mitIdExternalMetadataAddressArg,
                 externalMetadataAddressArg,
-                innerMetadataAddressArg,
+                internalMetadataAddressArg,
                 audienceArg,
             ])
             .UseStartup(supportNestedTokens
