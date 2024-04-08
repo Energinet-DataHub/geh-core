@@ -14,6 +14,7 @@
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 
+// TODO: Are we sure about this name? Microsoft has a class with the same name, but they also have a JwtBearerAuthenticationOptions class.
 public class AuthenticationOptions
 {
     public const string SectionName = "Authentication";
