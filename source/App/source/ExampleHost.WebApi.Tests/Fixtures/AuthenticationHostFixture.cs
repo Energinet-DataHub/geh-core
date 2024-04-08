@@ -46,7 +46,9 @@ public class AuthenticationHostFixture : IAsyncLifetime
                 innerMetadataAddressArg,
                 audienceArg,
             ])
-            .UseStartup(supportNestedTokens ? typeof(NestedAuthenticationStartup) : typeof(Startup))
+            .UseStartup(supportNestedTokens
+                ? typeof(NestedAuthenticationStartup)
+                : typeof(Startup))
             .UseUrls(web04BaseUrl)
             .Build();
 
