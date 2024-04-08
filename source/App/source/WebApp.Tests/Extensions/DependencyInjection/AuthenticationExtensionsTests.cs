@@ -31,7 +31,7 @@ public class AuthenticationExtensionsTests
     private ServiceCollection Services { get; }
 
     [Fact]
-    public void AddJwtBearerAuthenticationForWebAppWithConfiguredSection_WhenCalled_RegistrationsArePerformed()
+    public void AddJwtBearerAuthenticationForWebApp_WhenCalledWithConfiguredSection_RegistrationsArePerformed()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
