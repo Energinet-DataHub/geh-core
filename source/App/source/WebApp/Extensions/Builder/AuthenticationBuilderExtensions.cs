@@ -23,7 +23,10 @@ namespace Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 /// </summary>
 public static class AuthenticationBuilderExtensions
 {
-    // TODO: Add description
+    /// <summary>
+    /// Register services necessary for enabling an ASP.NET Core app
+    /// user authentication.
+    /// </summary>
     public static IApplicationBuilder UseUserMiddlewareForWebApp<TUser>(this IApplicationBuilder app)
         where TUser : class
     {
