@@ -23,7 +23,7 @@ Before enabling authorization, the authentication must be configured first. This
 - Add `UseAuthentication()` to `IApplicationBuilder`.
     - This will register the built-in authentication middleware.
     - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
-- Add `AddJwtBearerAuthentication()` to `IServiceProvider`.
+- Add `AddJwtBearerAuthenticationForWebApp()` to `IServiceProvider`.
     - This will enable verification of and authentication by JWT, configuring the `ClaimsPrincipal`.
 
 ### Configuration of Authorization
@@ -32,7 +32,7 @@ Configuring authorization is very similar.
 
 - Add `UseAuthorization()` after `UseAuthentication()` to `IApplicationBuilder`.
     - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
-- Add `AddPermissionAuthorization()` to `IServiceProvider`.
+- Add `AddPermissionAuthorizationForWebApp()` to `IServiceProvider`.
     - This will register the permissions with the framework.
 
 ### Configuration of IUserProvider
@@ -40,9 +40,9 @@ Configuring authorization is very similar.
 Configuring middleware for obtaining the current user with the current actor.
 
 - Implement `TUserProvider` and `TUser`.
-- Add `UseUserMiddleware<TUser>()` after `UseAuthorization()` to `IApplicationBuilder`.
+- Add `UseUserMiddlewareForWebApp<TUser>()` after `UseAuthorization()` to `IApplicationBuilder`.
     - This enables `UserMiddleware`.
-- Add `AddUserAuthentication<TUser, TUserProvider>()` to `IServiceProvider()`.
+- Add `AddUserAuthenticationForWebApp<TUser, TUserProvider>()` to `IServiceProvider()`.
     - This registers `UserMiddleware`, `IUserProvider` and `IUserContext`.
 
 ### Example Configuration
@@ -52,14 +52,12 @@ Configuring middleware for obtaining the current user with the current actor.
 ```C#
     app.UseAuthentication();
     app.UseAuthorization();
-    app.UseUserMiddleware<DomainUser>();
+    app.UseUserMiddlewareForWebApp<DomainUser>();
 
-    var externalOpenIdUrl = ...;
-    var internalOpenIdUrl = ...;
-    var backendAppId = ...;
-    services.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
-    services.AddUserAuthentication<DomainUser, DomainUserProvider>();
-    services.AddPermissionAuthorization();
+    // Settings are loaded into AuthenticationOptions from configuration
+    services.AddJwtBearerAuthenticationForWebApp(configuration);
+    services.AddUserAuthenticationForWebApp<DomainUser, DomainUserProvider>();
+    services.AddPermissionAuthorizationForWebApp();
 ```
 
 ### Usage

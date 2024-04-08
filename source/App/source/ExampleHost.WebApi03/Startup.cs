@@ -34,7 +34,7 @@ public class Startup
 
         // Configuration supporting tested scenarios
         // The authorization tests need to generate tokens with different claims.
-        // The validation of these tokens is suspended in tests. Use AddJwtBearerAuthentication().
+        // The validation of these tokens is suspended in tests.
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
