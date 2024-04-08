@@ -70,7 +70,6 @@ jobs:
         with:
           use_azure_functions_tools: "true"
           azure_functions_core_tools_version: 4.0.5455
-          dotnet_version: 8.0.200
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
