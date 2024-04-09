@@ -22,7 +22,6 @@ namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 /// </summary>
 public static class AuthorizationExtensions
 {
-    // TODO: Add description
     public static IServiceCollection AddPermissionAuthorizationForWebApp(this IServiceCollection services)
     {
         services.AddAuthorization();

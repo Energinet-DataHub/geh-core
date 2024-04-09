@@ -42,7 +42,6 @@ public static class AuthenticationExtensions
     /// </summary>
     internal static bool DisableHttpsConfiguration { get; set; }
 
-    // TODO: Add description
     public static IServiceCollection AddUserAuthenticationForWebApp<TUser, TUserProvider>(this IServiceCollection services)
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
@@ -65,7 +64,7 @@ public static class AuthenticationExtensions
     /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
     /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
     /// <param name="backendAppId"></param>
-    [Obsolete("Should only be used for testing.")]
+    [Obsolete("Should only be used for testing. Use 'AddJwtBearerAuthenticationForWebApp' for production.")]
     public static IServiceCollection AddJwtBearerAuthenticationForWebApp(
         this IServiceCollection services,
         string externalMetadataAddress,
