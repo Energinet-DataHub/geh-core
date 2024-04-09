@@ -46,10 +46,10 @@ public class AuthenticationHostFixture : IAsyncLifetime
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     // Authentication
-                    [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.MitIdExternalMetadataAddress)}"] = externalMetadataAddress,
-                    [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.ExternalMetadataAddress)}"] = externalMetadataAddress,
-                    [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.BackendBffAppId)}"] = BffAppId,
-                    [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.InternalMetadataAddress)}"] = internalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}"] = externalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = externalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = BffAppId,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = internalMetadataAddress,
                 });
             })
             .UseStartup(supportNestedTokens

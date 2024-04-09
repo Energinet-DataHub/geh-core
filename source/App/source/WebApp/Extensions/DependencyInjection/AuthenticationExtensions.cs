@@ -104,15 +104,15 @@ public static class AuthenticationExtensions
     /// <summary>
     /// Adds JWT Bearer authentication to the Web API.
     ///
-    /// Expects <see cref="AuthenticationOptions"/> has been configured in <see cref="AuthenticationOptions.SectionName"/>.
+    /// Expects <see cref="UserAuthenticationOptions"/> has been configured in <see cref="UserAuthenticationOptions.SectionName"/>.
     /// </summary>
     public static IServiceCollection AddJwtBearerAuthenticationForWebApp(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         var authenticationOptions = configuration
-            .GetRequiredSection(AuthenticationOptions.SectionName)
-            .Get<AuthenticationOptions>();
+            .GetRequiredSection(UserAuthenticationOptions.SectionName)
+            .Get<UserAuthenticationOptions>();
 
         if (authenticationOptions == null)
             throw new InvalidConfigurationException("Missing authentication configuration.");
@@ -148,16 +148,16 @@ public static class AuthenticationExtensions
         return services;
     }
 
-    private static void GuardAuthenticationOptions(AuthenticationOptions authenticationOptions)
+    private static void GuardAuthenticationOptions(UserAuthenticationOptions authenticationOptions)
     {
         if (string.IsNullOrWhiteSpace(authenticationOptions.MitIdExternalMetadataAddress))
-            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.MitIdExternalMetadataAddress)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}'.");
         if (string.IsNullOrWhiteSpace(authenticationOptions.ExternalMetadataAddress))
-            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.ExternalMetadataAddress)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}'.");
         if (string.IsNullOrWhiteSpace(authenticationOptions.BackendBffAppId))
-            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.BackendBffAppId)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.BackendBffAppId)}'.");
         if (string.IsNullOrWhiteSpace(authenticationOptions.InternalMetadataAddress))
-            throw new InvalidConfigurationException($"Missing '{nameof(AuthenticationOptions.InternalMetadataAddress)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.InternalMetadataAddress)}'.");
     }
 
     private static TokenValidationParameters CreateValidationParameters(

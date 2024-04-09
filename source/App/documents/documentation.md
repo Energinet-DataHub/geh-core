@@ -185,7 +185,7 @@ Preparing a Web App project:
      // Application Insights
      "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
      // Authentication
-     "Authentication": {
+     "UserAuthentication": {
        "MitIdExternalMetadataAddress": "<metadata address>",
        "ExternalMetadataAddress": "<metadata address>",
        "InternalMetadataAddress": "<metadata address>",

@@ -36,10 +36,10 @@ public class AuthenticationExtensionsTests
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
         {
-            [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.MitIdExternalMetadataAddress)}"] = "notEmpty",
-            [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.ExternalMetadataAddress)}"] = "notEmpty",
-            [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.BackendBffAppId)}"] = "notEmpty",
-            [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.InternalMetadataAddress)}"] = "notEmpty",
+            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}"] = "notEmpty",
+            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = "notEmpty",
+            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = "notEmpty",
+            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = "notEmpty",
         });
 
         // Act
@@ -58,7 +58,7 @@ public class AuthenticationExtensionsTests
         // Assert
         act.Should()
             .Throw<InvalidOperationException>()
-            .WithMessage("Section 'Authentication' not found in configuration*");
+            .WithMessage("Section 'UserAuthentication' not found in configuration*");
     }
 
     [Fact]
@@ -67,9 +67,9 @@ public class AuthenticationExtensionsTests
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
         {
-            [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.ExternalMetadataAddress)}"] = "notEmpty",
-            [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.BackendBffAppId)}"] = "notEmpty",
-            [$"{AuthenticationOptions.SectionName}:{nameof(AuthenticationOptions.InternalMetadataAddress)}"] = "notEmpty",
+            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = "notEmpty",
+            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = "notEmpty",
+            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = "notEmpty",
         });
 
         // Act

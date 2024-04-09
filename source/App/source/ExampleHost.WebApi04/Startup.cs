@@ -62,8 +62,8 @@ public class Startup
     protected virtual void AddJwtAuthentication(IServiceCollection services)
     {
         var authenticationOptions = Configuration
-            .GetRequiredSection(AuthenticationOptions.SectionName)
-            .Get<AuthenticationOptions>();
+            .GetRequiredSection(UserAuthenticationOptions.SectionName)
+            .Get<UserAuthenticationOptions>();
 
         if (authenticationOptions == null)
             throw new InvalidConfigurationException("Missing authentication configuration.");

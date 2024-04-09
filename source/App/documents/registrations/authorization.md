@@ -54,7 +54,7 @@ Configuring middleware for obtaining the current user with the current actor.
     app.UseAuthorization();
     app.UseUserMiddlewareForWebApp<SubsystemUser>();
 
-    // Settings are loaded into AuthenticationOptions from configuration
+    // Settings are loaded into 'UserAuthenticationOptions' from configuration
     services.AddJwtBearerAuthenticationForWebApp(configuration);
     services.AddUserAuthenticationForWebApp<SubsystemUser, SubsystemUserProvider>();
     services.AddPermissionAuthorizationForWebApp();
