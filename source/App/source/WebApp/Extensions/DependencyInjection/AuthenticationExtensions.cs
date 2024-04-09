@@ -109,6 +109,8 @@ public static class AuthenticationExtensions
     /// </summary>
     public static IServiceCollection AddJwtBearerAuthenticationForWebApp(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         var authenticationOptions = configuration
             .GetRequiredSection(AuthenticationOptions.SectionName)
             .Get<AuthenticationOptions>();
