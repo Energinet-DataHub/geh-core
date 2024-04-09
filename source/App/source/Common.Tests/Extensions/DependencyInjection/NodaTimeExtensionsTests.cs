@@ -53,7 +53,7 @@ public class NodaTimeExtensionsTests
     }
 
     [Fact]
-    public void AddNodaTimeForApplicationWithSectionName_WhenCalled_RegistrationsArePerformedWithConfiguredTimeZone()
+    public void AddNodaTimeForApplication_WhenCalledWithSectionName_RegistrationsArePerformedWithConfiguredTimeZone()
     {
         // Arrange
         AddInMemoryConfigurations(new Dictionary<string, string?>()
@@ -76,7 +76,7 @@ public class NodaTimeExtensionsTests
     }
 
     [Fact]
-    public void AddNodaTimeForApplicationOverloads_WhenCalledMultipleTimes_RegistrationsArePerformedOnlyOnce()
+    public void AddNodaTimeForApplication_WhenUsingOverloadsAndCalledMultipleTimes_RegistrationsArePerformedOnlyOnce()
     {
         // Arrange
         AddInMemoryConfigurations(new Dictionary<string, string?>()
