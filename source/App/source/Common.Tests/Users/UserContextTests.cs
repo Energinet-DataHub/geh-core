@@ -33,24 +33,24 @@ public sealed class UserContextTests
     public void CurrentUser_HasUser_ReturnsUser()
     {
         // Arrange
-        var domainUser = new object();
+        var subsystemUser = new object();
         var userContext = new UserContext<object>();
-        userContext.SetCurrentUser(domainUser);
+        userContext.SetCurrentUser(subsystemUser);
 
         // Act
         var currentUser = userContext.CurrentUser;
 
         // Assert
-        Assert.Equal(domainUser, currentUser);
+        Assert.Equal(subsystemUser, currentUser);
     }
 
     [Fact]
     public void SetCurrentUser_HasUser_ThrowsException()
     {
         // Arrange
-        var domainUser = new object();
+        var subsystemUser = new object();
         var userContext = new UserContext<object>();
-        userContext.SetCurrentUser(domainUser);
+        userContext.SetCurrentUser(subsystemUser);
 
         // Act + Assert
         Assert.Throws<InvalidOperationException>(() => userContext.SetCurrentUser(new object()));

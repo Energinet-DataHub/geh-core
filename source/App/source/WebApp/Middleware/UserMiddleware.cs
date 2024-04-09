@@ -67,7 +67,7 @@ public sealed class UserMiddleware<TUser> : IMiddleware
             .ProvideUserAsync(userId, actorId, multiTenancy, claimsPrincipal.Claims)
             .ConfigureAwait(false);
 
-        // Domain did not accept the user; returns 401.
+        // Subsystem did not accept the user; returns 401.
         if (user == null)
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;

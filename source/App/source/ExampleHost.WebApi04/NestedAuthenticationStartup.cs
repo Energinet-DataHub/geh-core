@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 
 namespace ExampleHost.WebApi04;
 
@@ -23,8 +23,12 @@ public class NestedAuthenticationStartup : Startup
     {
     }
 
-    protected override void AddJwtAuthentication(IServiceCollection services, string mitIdInnerMetadata, string innerMetadata, string outerMetadata, string audience)
+    /// <summary>
+    /// Here we use the new extension for authentication.
+    /// It will read the required settings from Configuration and requires all settings is set.
+    /// </summary>
+    protected override void AddJwtAuthentication(IServiceCollection services)
     {
-        services.AddJwtBearerAuthentication(mitIdInnerMetadata, innerMetadata, outerMetadata, audience);
+        services.AddJwtBearerAuthenticationForWebApp(Configuration);
     }
 }

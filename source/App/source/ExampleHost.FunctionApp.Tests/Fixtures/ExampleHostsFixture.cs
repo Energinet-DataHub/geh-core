@@ -131,9 +131,15 @@ public class ExampleHostsFixture : IAsyncLifetime
         appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net8.0";
         appHostSettings.Port = ++port;
 
-        appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
-        appHostSettings.ProcessEnvironmentVariables.Add("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
-        appHostSettings.ProcessEnvironmentVariables.Add("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated");
+        appHostSettings.ProcessEnvironmentVariables = new Dictionary<string, string>()
+        {
+            { "FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated" },
+            { "AzureWebJobsStorage", "UseDevelopmentStorage=true" },
+            // Application Insights Telemetry
+            { "APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString },
+            // Logging to Application Insights
+            { "Logging__ApplicationInsights__LogLevel__Default", "Information" },
+        };
 
         return appHostSettings;
     }

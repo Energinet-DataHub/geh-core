@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Text;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,11 +31,10 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        services.AddApplicationInsightsTelemetry();
 
         // Configuration supporting tested scenarios
         // The authorization tests need to generate tokens with different claims.
-        // The validation of these tokens is suspended in tests. Use AddJwtBearerAuthentication().
+        // The validation of these tokens is suspended in tests.
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
@@ -45,7 +44,7 @@ public class Startup
                 ValidateLifetime = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key")),
             });
-        services.AddPermissionAuthorization();
+        services.AddPermissionAuthorizationForWebApp();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)

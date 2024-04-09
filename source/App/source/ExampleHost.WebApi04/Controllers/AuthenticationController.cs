@@ -23,9 +23,9 @@ namespace ExampleHost.WebApi04.Controllers;
 [Route("webapi04/[controller]")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly IUserContext<ExampleDomainUser> _currentUser;
+    private readonly IUserContext<ExampleSubsystemUser> _currentUser;
 
-    public AuthenticationController(IUserContext<ExampleDomainUser> currentUser)
+    public AuthenticationController(IUserContext<ExampleSubsystemUser> currentUser)
     {
         _currentUser = currentUser;
     }

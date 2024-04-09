@@ -31,17 +31,17 @@ public class RestApiExampleFunction
         _serviceBusSender = serviceBusSender ?? throw new ArgumentNullException(nameof(serviceBusSender));
     }
 
-    [Function(nameof(CreatePetAsync))]
-    public async Task<HttpResponseData> CreatePetAsync(
+    [Function(nameof(TelemetryAsync))]
+    public async Task<HttpResponseData> TelemetryAsync(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "post",
-            Route = "v1/pet")]
+            Route = "v1/telemetry")]
         HttpRequestData httpRequest)
     {
-        _logger.LogInformation($"ExampleHost {nameof(CreatePetAsync)}: We should be able to find this log message by following the trace of the request.");
+        _logger.LogInformation($"ExampleHost {nameof(TelemetryAsync)}: We should be able to find this log message by following the trace of the request.");
 
-        await SendServiceBusMessageAsync(nameof(CreatePetAsync)).ConfigureAwait(false);
+        await SendServiceBusMessageAsync(nameof(TelemetryAsync)).ConfigureAwait(false);
 
         return CreateResponse(httpRequest);
     }
