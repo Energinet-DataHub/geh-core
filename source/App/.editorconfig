@@ -164,9 +164,6 @@ dotnet_naming_style.instance_field_style.required_prefix = _
 # C# Conventions                                             #
 ##############################################################
 
-# IDE0270: Use coalesce expression
-dotnet_diagnostic.IDE0270.severity = suggestion
-
 [*.cs]
 
 ###############################
@@ -523,6 +520,12 @@ dotnet_diagnostic.SA1651.severity = error
 dotnet_diagnostic.SA1652.severity = none
 dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
+
+# .NET 8 or earlier must set severity using IDE severity for it to work on command-line builds.
+# See: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/language-rules#option-format
+
+# IDE0270: Use coalesce expression
+dotnet_diagnostic.IDE0270.severity = suggestion
 
 ##############################################################
 # C# Test Conventions (overrides default configuration)       #
