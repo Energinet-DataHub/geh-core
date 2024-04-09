@@ -521,7 +521,11 @@ dotnet_diagnostic.SA1652.severity = none
 dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 
-# .NET 8 or earlier must set severity using IDE severity for it to work on command-line builds.
+###############################
+# IDEXXXX severity            #
+###############################
+
+# .NET 8 or earlier must set severity using IDEXXXX severity for it to work on command-line builds.
 # See: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/language-rules#option-format
 
 # IDE0270: Use coalesce expression
