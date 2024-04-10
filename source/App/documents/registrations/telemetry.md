@@ -56,7 +56,7 @@ After following the guidelines below, the default and categories log level of cu
 
    Example `local.settings.json` with focus on settings for Application Insights.
 
-   It is possible to add additional log level configuration per logging category following the example for `Energinet.Datahub.Core`.
+   It is possible to add additional log level configuration per logging category following the example for `Energinet.DataHub.Core`.
 
    ```json
    {
@@ -65,8 +65,8 @@ After following the guidelines below, the default and categories log level of cu
        "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
        // Default log level for Application Insights
        "Logging__ApplicationInsights__LogLevel__Default": "Information",
-       // Log level for category (code in Energinet.Datahub.Core)
-       "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core": "Information",
+       // Log level for category (code in Energinet.DataHub.Core)
+       "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core": "Information",
      }
    }
    ```
