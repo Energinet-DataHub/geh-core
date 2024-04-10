@@ -65,7 +65,8 @@ After following the guidelines below, the default and categories log level of cu
        "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
        // Default log level for Application Insights
        "Logging__ApplicationInsights__LogLevel__Default": "Information",
-       // Log level for category (code in Energinet.DataHub.Core)
+       // Log level for category (code in Energinet.DataHub.Core). 
+       // NOTICE category filters are case-insensitive, so the given namespace-filter doesn't have to match the actual casing of the namespace.
        "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core": "Information",
      }
    }
