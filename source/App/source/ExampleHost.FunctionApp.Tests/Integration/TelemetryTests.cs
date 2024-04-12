@@ -16,7 +16,6 @@ using System.Net;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
-using ExampleHost.FunctionApp.Tests.Extensions;
 using ExampleHost.FunctionApp.Tests.Fixtures;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp02.Functions;
@@ -283,18 +282,6 @@ public class TelemetryTests : IAsyncLifetime
         return actualResults.Any(actual =>
             actual.OperationId == traceParentTestData.TraceId
             && actual.ParentId == traceParentTestData.ParentId);
-    }
-
-    private static async Task AssertFunctionExecuted(FunctionAppHostManager hostManager, string functionName)
-    {
-        var waitTimespan = TimeSpan.FromSeconds(30);
-
-        var functionExecuted = await Awaiter
-            .TryWaitUntilConditionAsync(
-                () => hostManager.CheckIfFunctionWasExecuted(
-                    $"Functions.{functionName}"),
-                waitTimespan);
-        functionExecuted.Should().BeTrue($"{functionName} was expected to run.");
     }
 
     private static string GetFunctionsInvocationId(FunctionAppHostManager hostManager, string functionName)
