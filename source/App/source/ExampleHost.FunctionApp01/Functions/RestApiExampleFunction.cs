@@ -14,6 +14,7 @@
 
 using System.Net;
 using Azure.Messaging.ServiceBus;
+using Microsoft.ApplicationInsights.WindowsServer;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;

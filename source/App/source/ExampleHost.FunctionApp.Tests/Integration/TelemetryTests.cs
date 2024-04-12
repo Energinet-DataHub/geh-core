@@ -20,6 +20,7 @@ using ExampleHost.FunctionApp.Tests.Fixtures;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp02.Functions;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -93,7 +94,9 @@ public class TelemetryTests : IAsyncLifetime
         await Fixture.App01HostManager.AssertFunctionWasExecutedAsync("TelemetryAsync");
         await Fixture.App02HostManager.AssertFunctionWasExecutedAsync("ReceiveMessage");
 
-        AssertNoExceptionsThrown();
+        using var assertionScope = new AssertionScope();
+        Fixture.App01HostManager.CheckIfFunctionThrewException().Should().BeFalse();
+        Fixture.App02HostManager.CheckIfFunctionThrewException().Should().BeFalse();
     }
 
     /// <summary>
@@ -290,11 +293,6 @@ public class TelemetryTests : IAsyncLifetime
             .First(log => log.Contains($"Executed 'Functions.{functionName}'", StringComparison.OrdinalIgnoreCase));
 
         return executedStatement.Substring(executedStatement.IndexOf('=') + 1, 36);
-    }
-
-    private void AssertNoExceptionsThrown()
-    {
-        Fixture.App01HostManager.CheckIfFunctionThrewException().Should().BeFalse();
     }
 
     public record TraceParentTestData
