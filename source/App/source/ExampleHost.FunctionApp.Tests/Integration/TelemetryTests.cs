@@ -90,8 +90,8 @@ public class TelemetryTests : IAsyncLifetime
 
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-        await AssertFunctionExecuted(Fixture.App01HostManager, "TelemetryAsync");
-        await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
+        await Fixture.App01HostManager.AssertFunctionWasExecutedAsync("TelemetryAsync");
+        await Fixture.App02HostManager.AssertFunctionWasExecutedAsync("ReceiveMessage");
 
         AssertNoExceptionsThrown();
     }
@@ -109,8 +109,8 @@ public class TelemetryTests : IAsyncLifetime
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/telemetry");
         await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
-        await AssertFunctionExecuted(Fixture.App01HostManager, "TelemetryAsync");
-        await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
+        await Fixture.App01HostManager.AssertFunctionWasExecutedAsync("TelemetryAsync");
+        await Fixture.App02HostManager.AssertFunctionWasExecutedAsync("ReceiveMessage");
 
         Fixture.App01HostManager.GetHostLogSnapshot()
             .First(log => log.Contains(ExpectedLogMessage, StringComparison.OrdinalIgnoreCase));
@@ -170,8 +170,8 @@ public class TelemetryTests : IAsyncLifetime
 
         await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
-        await AssertFunctionExecuted(Fixture.App01HostManager, "TelemetryAsync");
-        await AssertFunctionExecuted(Fixture.App02HostManager, "ReceiveMessage");
+        await Fixture.App01HostManager.AssertFunctionWasExecutedAsync("TelemetryAsync");
+        await Fixture.App02HostManager.AssertFunctionWasExecutedAsync("ReceiveMessage");
 
         var telemetryInvocationId = GetFunctionsInvocationId(Fixture.App01HostManager, "TelemetryAsync");
         var receiveMessageInvocationId = GetFunctionsInvocationId(Fixture.App02HostManager, "ReceiveMessage");
