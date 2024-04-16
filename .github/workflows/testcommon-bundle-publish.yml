@@ -61,7 +61,7 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@dstenroejl/az-cli-bug # TODO: Revert to v13
         with:
           use_azure_functions_tools: "true"
 
