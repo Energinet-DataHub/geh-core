@@ -61,12 +61,12 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@dstenroejl/az-cli-bug # TODO: Revert to v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
         with:
           use_azure_functions_tools: "true"
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@dstenroejl/az-cli-bug # TODO: Revert to v13
         with:
           solution_file_path: ./source/TestCommon/TestCommon.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
