@@ -48,7 +48,7 @@ jobs:
 
     environment: AzureAuth
 
-    # We need to have permissions here to be able to support manually triggering this workflow for releasing a pre-release
+    # We need to have permissions here to be able to support manually triggering this workflow for releasing a pre-release.
     permissions:
       id-token: write # Needed by 'dotnet-solution-build-and-test' to login to Azure
       contents: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
@@ -66,7 +66,7 @@ jobs:
           use_azure_functions_tools: "true"
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@dstenroejl/az-cli-issue # TODO: Revert to v13 when ready
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
         with:
           solution_file_path: ./source/TestCommon/TestCommon.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
