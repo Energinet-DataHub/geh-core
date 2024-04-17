@@ -33,9 +33,8 @@ public class EventHubResourceProviderFixture : IAsyncLifetime
     {
         TestLogger = new TestDiagnosticsLogger();
 
-        var integrationTestConfiguration = new IntegrationTestConfiguration();
-        ConnectionString = integrationTestConfiguration.EventHubConnectionString;
-        ResourceManagementSettings = integrationTestConfiguration.ResourceManagementSettings;
+        ConnectionString = SingletonIntegrationTestConfiguration.Instance.EventHubConnectionString;
+        ResourceManagementSettings = SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
