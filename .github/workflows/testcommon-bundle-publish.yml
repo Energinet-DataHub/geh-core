@@ -48,7 +48,7 @@ jobs:
 
     environment: AzureAuth
 
-    # We need to have permissions here to be able to support manually triggering this workflow for releasing a pre-release.
+    # We need to have permissions here to be able to support manually triggering this workflow for releasing a pre-release
     permissions:
       id-token: write # Needed by 'dotnet-solution-build-and-test' to login to Azure
       contents: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
