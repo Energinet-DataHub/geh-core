@@ -30,10 +30,7 @@ public sealed class AzuriteManagerFixture : IDisposable
 
     public void Dispose()
     {
-        if (AzuriteManager != null)
-        {
-            AzuriteManager.Dispose();
-        }
+        AzuriteManager?.Dispose();
     }
 
     /// <summary>
