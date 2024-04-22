@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 5.1.1
+
+- Updated Azurite test certificate.
+
 ## Version 5.1.0
 
 - Added extensions to class `FunctionAppHostManagerExtensions`:
