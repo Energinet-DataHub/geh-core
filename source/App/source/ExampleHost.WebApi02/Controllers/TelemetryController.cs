@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi02.Controllers;
@@ -30,10 +31,22 @@ public class TelemetryController : ControllerBase
     [HttpGet("{identification}")]
     public string Get(string identification)
     {
-        var traceparent = HttpContext.Request.Headers["traceparent"].ToString();
-        _logger.LogInformation("ExampleHost WebApi02 {identification} Information: We should be able to find this log message by following the trace of the request '{traceparent}'.", identification, traceparent);
-        _logger.LogWarning("ExampleHost WebApi02 {identification} Warning: We should be able to find this log message by following the trace of the request '{traceparent}'.", identification, traceparent);
+        var traceparent = SanitizeString(HttpContext.Request.Headers["traceparent"].ToString());
+        var userIdentification = SanitizeString(identification);
+        _logger.LogInformation("ExampleHost WebApi02 {identification} Information: We should be able to find this log message by following the trace of the request '{traceparent}'.", userIdentification, traceparent);
+        _logger.LogWarning("ExampleHost WebApi02 {identification} Warning: We should be able to find this log message by following the trace of the request '{traceparent}'.", userIdentification, traceparent);
 
         return identification;
+    }
+
+    private static string SanitizeString(string input)
+    {
+        var builder = new StringBuilder(input.Length);
+        foreach (var t in input.Where(t => t != '\n' && t != '\r'))
+        {
+            builder.Append(t);
+        }
+
+        return builder.ToString();
     }
 }
