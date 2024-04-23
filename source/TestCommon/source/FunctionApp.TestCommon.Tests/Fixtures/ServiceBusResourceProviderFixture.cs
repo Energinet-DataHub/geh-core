@@ -29,8 +29,7 @@ public class ServiceBusResourceProviderFixture
     {
         TestLogger = new TestDiagnosticsLogger();
 
-        var integrationTestConfiguration = new IntegrationTestConfiguration();
-        ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
+        ConnectionString = SingletonIntegrationTestConfiguration.Instance.ServiceBusConnectionString;
 
         AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
     }

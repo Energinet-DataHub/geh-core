@@ -12,34 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using ExampleHost.WebApi04.Security;
+using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace ExampleHost.WebApi04;
 
 public class Startup
 {
-    private readonly IConfiguration _configuration;
-
     public Startup(IConfiguration configuration)
     {
-        _configuration = configuration;
+        Configuration = configuration;
     }
+
+    protected IConfiguration Configuration { get; }
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        services.AddApplicationInsightsTelemetry();
 
-        // Configuration supporting tested scenarios
-        var innerMetadata = _configuration["innerMetadata"]!;
-        var outerMetadata = _configuration["outerMetadata"]!;
-        var audience = _configuration["audience"]!;
-
+        // Configure for testing
         AuthenticationExtensions.DisableHttpsConfiguration = true;
 
-        services.AddJwtBearerAuthentication(innerMetadata, outerMetadata, audience);
-        services.AddUserAuthentication<ExampleDomainUser, ExampleDomainUserProvider>();
+        AddJwtAuthentication(services);
+        services.AddUserAuthenticationForWebApp<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -50,11 +48,31 @@ public class Startup
         // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseUserMiddleware<ExampleDomainUser>();
+        app.UseUserMiddlewareForWebApp<ExampleSubsystemUser>();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
         });
+    }
+
+    /// <summary>
+    /// Here we configure the application using the "old" (obsolete) extension, for testing scenarious where we don't have nested tokens.
+    /// </summary>
+    protected virtual void AddJwtAuthentication(IServiceCollection services)
+    {
+        var authenticationOptions = Configuration
+            .GetRequiredSection(UserAuthenticationOptions.SectionName)
+            .Get<UserAuthenticationOptions>();
+
+        if (authenticationOptions == null)
+            throw new InvalidConfigurationException("Missing authentication configuration.");
+
+#pragma warning disable CS0618 // Type or member is obsolete
+        services.AddJwtBearerAuthenticationForWebApp(
+            authenticationOptions.ExternalMetadataAddress,
+            authenticationOptions.InternalMetadataAddress,
+            authenticationOptions.BackendBffAppId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

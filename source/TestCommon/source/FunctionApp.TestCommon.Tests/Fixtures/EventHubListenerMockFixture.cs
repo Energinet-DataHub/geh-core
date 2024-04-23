@@ -34,9 +34,8 @@ public class EventHubListenerMockFixture : IAsyncLifetime
         AzuriteManager = new AzuriteManager();
         StorageConnectionString = "UseDevelopmentStorage=true";
 
-        var integrationTestConfiguration = new IntegrationTestConfiguration();
-        EventHubConnectionString = integrationTestConfiguration.EventHubConnectionString;
-        ResourceManagementSettings = integrationTestConfiguration.ResourceManagementSettings;
+        EventHubConnectionString = SingletonIntegrationTestConfiguration.Instance.EventHubConnectionString;
+        ResourceManagementSettings = SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }

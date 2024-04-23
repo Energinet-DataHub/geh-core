@@ -38,9 +38,6 @@ public class TestDiagnosticsLogger : ITestDiagnosticsLogger
         // Test runners usually show the xUnit test output with the test result.
         // Running the command 'dotnet test --logger "console;verbosity=detailed"' will show the
         // test output in the console.
-        if (TestOutputHelper != null)
-        {
-            TestOutputHelper.WriteLine(message);
-        }
+        TestOutputHelper?.WriteLine(message);
     }
 }

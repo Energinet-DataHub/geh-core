@@ -32,8 +32,7 @@ public class ServiceBusListenerMockFixture
     {
         TestLogger = new TestDiagnosticsLogger();
 
-        var integrationTestConfiguration = new IntegrationTestConfiguration();
-        ConnectionString = integrationTestConfiguration.ServiceBusConnectionString;
+        ConnectionString = SingletonIntegrationTestConfiguration.Instance.ServiceBusConnectionString;
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }

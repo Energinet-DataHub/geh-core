@@ -121,7 +121,7 @@ dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 dotnet_style_prefer_compound_assignment = true:suggestion
 
 # Null-checking preferences
-dotnet_style_coalesce_expression = true:error
+dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:error
 
 ###############################
@@ -520,6 +520,16 @@ dotnet_diagnostic.SA1651.severity = error
 dotnet_diagnostic.SA1652.severity = none
 dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
+
+###############################
+# IDEXXXX severity            #
+###############################
+
+# .NET 8 or earlier must set severity using IDEXXXX severity for it to work on command-line builds.
+# See: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/language-rules#option-format
+
+# IDE0270: Use coalesce expression
+dotnet_diagnostic.IDE0270.severity = suggestion
 
 ##############################################################
 # C# Test Conventions (overrides default configuration)       #

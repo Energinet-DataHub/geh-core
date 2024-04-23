@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using ExampleHost.WebApi04;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using Xunit;
 
@@ -32,25 +35,26 @@ public class AuthenticationHostFixture : IAsyncLifetime
 
         BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
 
-        Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
-
-        var innerMetadataArg = $"--innerMetadata={Metadata}";
-        var outerMetadataArg = $"--outerMetadata=";
-        var audienceArg = $"--audience={Audience}";
-
-        if (supportNestedTokens)
-        {
-            outerMetadataArg = $"--outerMetadata={web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
-        }
-
-        // We cannot use TestServer as this would not work with Application Insights.
-        Web04Host = WebHost.CreateDefaultBuilder(new[]
+        Web04Host = WebHost.CreateDefaultBuilder()
+            .ConfigureAppConfiguration((context, config) =>
             {
-                innerMetadataArg,
-                outerMetadataArg,
-                audienceArg,
+                var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
+                var internalMetadataAddress = supportNestedTokens
+                    ? $"{web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration"
+                    : string.Empty;
+
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    // Authentication
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}"] = externalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = externalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = BffAppId,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = internalMetadataAddress,
+                });
             })
-            .UseStartup<WebApi04.Startup>()
+            .UseStartup(supportNestedTokens
+                ? typeof(NestedAuthenticationStartup)
+                : typeof(Startup))
             .UseUrls(web04BaseUrl)
             .Build();
 
@@ -59,10 +63,6 @@ public class AuthenticationHostFixture : IAsyncLifetime
             BaseAddress = new Uri(web04BaseUrl),
         };
     }
-
-    public string Metadata => $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
-
-    public string Audience => BffAppId;
 
     public HttpClient Web04HttpClient { get; }
 

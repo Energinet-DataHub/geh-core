@@ -13,34 +13,24 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using ExampleHost.FunctionApp01.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults(builder =>
-    {
-        builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
-    })
+    .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        // CONCLUSION:
-        //  * We can see Trace and Request entries in App Insights out-of-box.
-        //  * Dependency tracing is not support (out-of-box) in isolated-process [https://docs.microsoft.com/en-us/azure/azure-functions/functions-monitoring#dependencies]
+        // Configuration verified in tests:
+        //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to
+        //    appear in Application Insights (can be configured).
+        //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
+        //  * Telemetry events are enriched with property "Subsystem" and configured value
+        services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
 
-        // UNDONE: Investigate if any of this is relevant for us:
-        //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/760
-        //  - https://github.com/Azure/azure-functions-dotnet-worker/issues/822#issuecomment-1088012705
-
-        // CONCLUSION: We can use ILogger<> without calling the following:
-        ////services.AddLogging();
-
-        services.AddApplicationInsights();
-
+        // Configure ServiceBusSender for calling FunctionApp02
         services.AddSingleton(_ =>
         {
             var connectionString = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionString);
@@ -53,10 +43,14 @@ var host = new HostBuilder()
             return serviceBusClient.CreateSender(topicName);
         });
 
-        // Health check
-        services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
-        services.AddHealthChecks()
-            .AddLiveCheck();
+        // Health Checks (verified in tests)
+        services.AddHealthChecksForIsolatedWorker();
+    })
+    .ConfigureLogging((hostingContext, logging) =>
+    {
+        // Configuration verified in tests:
+        //  * Ensure Application Insights logging configuration is picked up.
+        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
     })
     .Build();
 

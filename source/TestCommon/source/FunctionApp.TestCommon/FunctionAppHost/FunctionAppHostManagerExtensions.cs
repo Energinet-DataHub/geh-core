@@ -13,25 +13,66 @@
 // limitations under the License.
 
 using System.Text;
+using Energinet.DataHub.Core.TestCommon;
+using FluentAssertions;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 
 public static class FunctionAppHostManagerExtensions
 {
     /// <summary>
+    /// Determine if any exception was logged.
+    /// </summary>
+    /// <param name="hostManager"></param>
+    /// <returns>True if the log contains any exceptions; otherwise false.</returns>
+    public static bool CheckIfFunctionThrewException(this FunctionAppHostManager hostManager)
+    {
+        ArgumentNullException.ThrowIfNull(hostManager);
+
+        return hostManager
+            .GetHostLogSnapshot()
+            .Any(log => log.Contains("Exception", StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// Assert that the <paramref name="functionName"/> was executed by searching the log.
+    /// </summary>
+    /// <param name="hostManager"></param>
+    /// <param name="functionName">For some azure function tool versions, this name must contain 'Functions.' as a prefix for the actual function name.</param>
+    /// <param name="waitTimeSpan">Time to wait for function to be exectued. If not specified then default is set to 30 seconds.</param>
+    public static async Task AssertFunctionWasExecutedAsync(this FunctionAppHostManager hostManager, string functionName, TimeSpan waitTimeSpan = default)
+    {
+        ArgumentNullException.ThrowIfNull(hostManager);
+        ArgumentException.ThrowIfNullOrWhiteSpace(functionName);
+
+        if (waitTimeSpan == default)
+        {
+            waitTimeSpan = TimeSpan.FromSeconds(30);
+        }
+
+        var functionExecuted = await Awaiter
+            .TryWaitUntilConditionAsync(
+                () => hostManager.CheckIfFunctionWasExecuted(
+                    $"Functions.{functionName}"),
+                waitTimeSpan)
+            .ConfigureAwait(false);
+
+        functionExecuted.Should().BeTrue($"'{functionName}' was expected to run.");
+    }
+
+    /// <summary>
     /// Determine if the <paramref name="functionName"/> was executed by searching the log.
     /// </summary>
     /// <param name="hostManager"></param>
     /// <param name="functionName">For some azure function tool versions, this name must contain 'Functions.' as a prefix for the actual function name.</param>
-    /// <returns>True if the log contains any enry indicating the function was executed; otherwise false.</returns>
+    /// <returns>True if the log contains any entry indicating the function was executed; otherwise false.</returns>
     public static bool CheckIfFunctionWasExecuted(this FunctionAppHostManager hostManager, string functionName)
     {
-        if (hostManager is null)
-        {
-            throw new ArgumentNullException(nameof(hostManager));
-        }
+        ArgumentNullException.ThrowIfNull(hostManager);
+        ArgumentException.ThrowIfNullOrWhiteSpace(functionName);
 
-        return hostManager.GetHostLogSnapshot()
+        return hostManager
+            .GetHostLogSnapshot()
             .Any(log => log.Contains($"Executed '{functionName}'", StringComparison.OrdinalIgnoreCase));
     }
 
@@ -43,10 +84,8 @@ public static class FunctionAppHostManagerExtensions
     /// <returns>The task object representing the asynchronous operation.</returns>
     public static Task<HttpResponseMessage> TriggerFunctionAsync(this FunctionAppHostManager hostManager, string functionName)
     {
-        if (hostManager is null)
-        {
-            throw new ArgumentNullException(nameof(hostManager));
-        }
+        ArgumentNullException.ThrowIfNull(hostManager);
+        ArgumentException.ThrowIfNullOrWhiteSpace(functionName);
 
         return hostManager.HttpClient.PostAsync(
             new Uri($"/admin/functions/{functionName}", UriKind.Relative),
