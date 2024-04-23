@@ -48,6 +48,10 @@ public class TelemetryController : ControllerBase
         return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Common Weakness Enumeration: CWE-117: Improper Output Neutralization for Logs
+    /// </summary>
+    /// <param name="input">string to sanitize</param>
     private static string SanitizeString(string input)
     {
         var builder = new StringBuilder(input.Length);
