@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 5.0.1
+
+- No functional change
+
 ## Version 5.0.0
 
 - Removed types `PublisherTrigger` and `PublisherWorkerOptions`

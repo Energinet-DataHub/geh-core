@@ -1,5 +1,9 @@
 # JsonSerialization Release Notes
 
+## Version 2.2.11
+
+- No functional change.
+
 ## Version 2.2.10
 
 - No functional change.

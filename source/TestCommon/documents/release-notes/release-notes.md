@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 5.1.2
+
+- No functional change
+
 ## Version 5.1.1
 
 - Updated Azurite test certificate.

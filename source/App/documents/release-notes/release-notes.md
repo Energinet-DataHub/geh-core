@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 12.0.1
+
+- No functional change
+
 ## Version 12.0.0
 
 - Add `Common` extensibility types:
