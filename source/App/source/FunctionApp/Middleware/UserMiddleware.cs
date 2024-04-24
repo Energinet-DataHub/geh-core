@@ -40,14 +40,12 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         var httpContext = await context.GetHttpRequestDataAsync().ConfigureAwait(false)
                           ?? throw new InvalidOperationException("UserMiddleware running without HttpContext.");
 
+        var identities = httpContext.Identities.ToList();
+        var userId = GetUserId(identities);
+        var actorId = GetActorId(identities);
+        var multiTenancy = GetMultiTenancy(identities);
 
-        //var hej = httpContext.
-        var newClaimsPrincipal = httpContext.Identities;
-        var claimsPrincipal = httpContext.User;
-        var userId = GetUserId(claimsPrincipal.Claims);
-        var actorId = GetActorId(claimsPrincipal.Claims);
-        var multiTenancy = GetMultiTenancy(claimsPrincipal.Claims);
-
+        // What's next? Maybe a selectMany?
         var user = await _userProvider
             .ProvideUserAsync(userId, actorId, multiTenancy, claimsPrincipal.Claims)
             .ConfigureAwait(false);
@@ -63,20 +61,36 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         await next(context).ConfigureAwait(false);
     }
 
-    private static Guid GetUserId(IEnumerable<Claim> claims)
+    private Guid GetUserId(IEnumerable<ClaimsIdentity> identities)
     {
-        var userId = claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+        var claimMatch = new Func<Claim, bool>((claim) => claim.Type == ClaimTypes.NameIdentifier);
+        var identity = identities
+            .First(identity =>
+                identity.FindFirst(c => claimMatch(c)) != null);
+
+        var userId = identity.FindFirst(c => claimMatch(c))?.Value
+                     ?? throw new InvalidOperationException("User has no ID");
+
         return Guid.Parse(userId);
     }
 
-    private static Guid GetActorId(IEnumerable<Claim> claims)
+    private Guid GetActorId(IEnumerable<ClaimsIdentity> identities)
     {
-        var actorId = claims.Single(claim => claim.Type == JwtRegisteredClaimNames.Azp).Value;
+        var claimMatch = new Func<Claim, bool>((claim) => claim.Type == JwtRegisteredClaimNames.Azp);
+        var identity = identities
+            .First(identity =>
+                identity.FindFirst(c => claimMatch(c)) != null);
+
+        var actorId = identity.FindFirst(c => claimMatch(c))?.Value
+                     ?? throw new InvalidOperationException("User has no actor ID");
+
         return Guid.Parse(actorId);
     }
 
-    private static bool GetMultiTenancy(IEnumerable<Claim> claims)
+    private bool GetMultiTenancy(List<ClaimsIdentity> identities)
     {
-        return claims.Any(claim => claim is { Type: MultiTenancyClaim, Value: "true" });
+        var claimMatch = new Func<Claim, bool>((claim) => claim is { Type: MultiTenancyClaim, Value: "true" });
+        return identities.Any(identity =>
+            identity.FindAll(c => claimMatch(c)).Any());
     }
 }
