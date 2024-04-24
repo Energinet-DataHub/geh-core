@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 3.1.5
+
+- Bump System.IdentityModel.Tokens.Jwt from 6.15.0 to 6.34.0 because of CVE-2024-21319
+
 ## Version 3.1.4
 
 - No functional change.
