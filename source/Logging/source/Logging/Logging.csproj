@@ -57,7 +57,7 @@ limitations under the License.
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Core" Version="1.4.0" />
     <PackageReference Include="NodaTime" Version="3.0.9" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
   </ItemGroup>
 
 
