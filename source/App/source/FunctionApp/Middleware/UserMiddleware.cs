@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Users;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
@@ -26,34 +27,40 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 {
     private const string MultiTenancyClaim = "multitenancy";
 
-
     private readonly IUserProvider<TUser> _userProvider;
+    private readonly UserContext<TUser> _userContext;
 
-    public UserMiddleware(IUserProvider<TUser> userProvider)
+    public UserMiddleware(
+        IUserProvider<TUser> userProvider,
+        UserContext<TUser> userContext)
     {
         _userProvider = userProvider;
+        _userContext = userContext;
     }
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        //throw new NotImplementedException();
         var httpContext = await context.GetHttpRequestDataAsync().ConfigureAwait(false)
                           ?? throw new InvalidOperationException("UserMiddleware running without HttpContext.");
 
-        var identities = httpContext.Identities.ToList();
-        var userId = GetUserId(identities);
-        var actorId = GetActorId(identities);
-        var multiTenancy = GetMultiTenancy(identities);
+        var claimsPrincipal = httpContext.Headers;
+        // var identities = httpContext.Identities.ToList();
+        // var userId = GetUserId(identities);
+        // var actorId = GetActorId(identities);
+        // var multiTenancy = GetMultiTenancy(identities);
 
-        // What's next? Maybe a selectMany?
+        // // What's next? Maybe a selectMany?
+        // var user = await _userProvider
+        //     .ProvideUserAsync(userId, actorId, multiTenancy, claimsPrincipal.Claims)
+        //     .ConfigureAwait(false);
         var user = await _userProvider
-            .ProvideUserAsync(userId, actorId, multiTenancy, claimsPrincipal.Claims)
+            .ProvideUserAsync(Guid.NewGuid(), Guid.NewGuid(), false, new List<Claim> { })
             .ConfigureAwait(false);
 
-        // Subsystem did not accept the user; returns 401.
+        // // Subsystem did not accept the user; returns 401.
         if (user == null)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            //context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return;
         }
 
@@ -61,36 +68,36 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         await next(context).ConfigureAwait(false);
     }
 
-    private Guid GetUserId(IEnumerable<ClaimsIdentity> identities)
-    {
-        var claimMatch = new Func<Claim, bool>((claim) => claim.Type == ClaimTypes.NameIdentifier);
-        var identity = identities
-            .First(identity =>
-                identity.FindFirst(c => claimMatch(c)) != null);
-
-        var userId = identity.FindFirst(c => claimMatch(c))?.Value
-                     ?? throw new InvalidOperationException("User has no ID");
-
-        return Guid.Parse(userId);
-    }
-
-    private Guid GetActorId(IEnumerable<ClaimsIdentity> identities)
-    {
-        var claimMatch = new Func<Claim, bool>((claim) => claim.Type == JwtRegisteredClaimNames.Azp);
-        var identity = identities
-            .First(identity =>
-                identity.FindFirst(c => claimMatch(c)) != null);
-
-        var actorId = identity.FindFirst(c => claimMatch(c))?.Value
-                     ?? throw new InvalidOperationException("User has no actor ID");
-
-        return Guid.Parse(actorId);
-    }
-
-    private bool GetMultiTenancy(List<ClaimsIdentity> identities)
-    {
-        var claimMatch = new Func<Claim, bool>((claim) => claim is { Type: MultiTenancyClaim, Value: "true" });
-        return identities.Any(identity =>
-            identity.FindAll(c => claimMatch(c)).Any());
-    }
+    // private Guid GetUserId(IEnumerable<ClaimsIdentity> identities)
+    // {
+    //     var claimMatch = new Func<Claim, bool>((claim) => claim.Type == ClaimTypes.NameIdentifier);
+    //     var identity = identities
+    //         .First(identity =>
+    //             identity.FindFirst(c => claimMatch(c)) != null);
+    //
+    //     var userId = identity.FindFirst(c => claimMatch(c))?.Value
+    //                  ?? throw new InvalidOperationException("User has no ID");
+    //
+    //     return Guid.Parse(userId);
+    // }
+    //
+    // private Guid GetActorId(IEnumerable<ClaimsIdentity> identities)
+    // {
+    //     var claimMatch = new Func<Claim, bool>((claim) => claim.Type == JwtRegisteredClaimNames.Azp);
+    //     var identity = identities
+    //         .First(identity =>
+    //             identity.FindFirst(c => claimMatch(c)) != null);
+    //
+    //     var actorId = identity.FindFirst(c => claimMatch(c))?.Value
+    //                  ?? throw new InvalidOperationException("User has no actor ID");
+    //
+    //     return Guid.Parse(actorId);
+    // }
+    //
+    // private bool GetMultiTenancy(List<ClaimsIdentity> identities)
+    // {
+    //     var claimMatch = new Func<Claim, bool>((claim) => claim is { Type: MultiTenancyClaim, Value: "true" });
+    //     return identities.Any(identity =>
+    //         identity.FindAll(c => claimMatch(c)).Any());
+    // }
 }

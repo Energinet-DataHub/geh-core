@@ -13,14 +13,21 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Users;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.FunctionApp.MIddleware;
 using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureFunctionsWorkerDefaults(worker =>
+    {
+        worker.UseMiddleware<UserMiddleware<ExampleSubsystemUser>>();
+    })
     .ConfigureServices(services =>
     {
         // Configuration verified in tests:
@@ -45,6 +52,9 @@ var host = new HostBuilder()
 
         // Health Checks (verified in tests)
         services.AddHealthChecksForIsolatedWorker();
+
+        // Authentication
+        services.AddUserAuthenticationForIsolatedFunction<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {
