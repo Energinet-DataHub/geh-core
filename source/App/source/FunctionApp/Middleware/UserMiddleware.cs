@@ -17,6 +17,7 @@ using System.Net;
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Users;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
@@ -40,6 +41,12 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
+        if (EndpointIsOmittedFromAuth(context))
+        {
+            await next(context).ConfigureAwait(false);
+            return;
+        }
+
         var httpContext = await context.GetHttpRequestDataAsync().ConfigureAwait(false)
                           ?? throw new InvalidOperationException("UserMiddleware running without HttpContext.");
 
@@ -65,7 +72,21 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         }
 
         _userContext.SetCurrentUser(user);
+
         await next(context).ConfigureAwait(false);
+    }
+
+    private bool EndpointIsOmittedFromAuth(FunctionContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var isHealthCheckRequest = context.FunctionDefinition.Name == "HealthCheck";
+        var isNotHttpTrigger = !context.Is(TriggerType.HttpTrigger);
+
+        var isExcluded = context.FunctionDefinition.Name == "GetToken";
+
+        var endpointIsOmittedFromAuth = isHealthCheckRequest || isNotHttpTrigger || isExcluded;
+        return endpointIsOmittedFromAuth;
     }
 
     // private Guid GetUserId(IEnumerable<ClaimsIdentity> identities)

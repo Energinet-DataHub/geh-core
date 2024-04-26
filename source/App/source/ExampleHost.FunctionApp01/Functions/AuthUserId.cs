@@ -21,15 +21,15 @@ namespace ExampleHost.FunctionApp01.Functions;
 
 public class AuthUserId
 {
-     public AuthUserId(IUserContext<ExampleSubsystemUser> currentUser)
+    private readonly IUserContext<ExampleSubsystemUser> _currentUser;
+
+    public AuthUserId(UserContext<ExampleSubsystemUser> currentUser)
      {
          _currentUser = currentUser;
      }
 
-     private readonly IUserContext<ExampleSubsystemUser> _currentUser;
-
-     [Function(nameof(Auth))]
-     public string Auth(
+    [Function(nameof(Auth))]
+    public string Auth(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",

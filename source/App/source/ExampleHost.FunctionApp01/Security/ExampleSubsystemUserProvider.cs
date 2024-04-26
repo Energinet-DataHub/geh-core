@@ -25,6 +25,6 @@ public sealed class ExampleSubsystemUserProvider : IUserProvider<ExampleSubsyste
         bool multiTenancy,
         IEnumerable<Claim> claims)
     {
-        return Task.FromResult<ExampleSubsystemUser?>(new ExampleSubsystemUser(Guid.Empty, Guid.NewGuid()));
+        return Task.FromResult<ExampleSubsystemUser?>(new ExampleSubsystemUser(userId, actorId));
     }
 }
