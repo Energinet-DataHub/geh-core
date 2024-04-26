@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Users;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions;
@@ -61,7 +58,7 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         //     .ProvideUserAsync(userId, actorId, multiTenancy, claimsPrincipal.Claims)
         //     .ConfigureAwait(false);
         var user = await _userProvider
-            .ProvideUserAsync(Guid.NewGuid(), Guid.NewGuid(), false, new List<Claim> { })
+            .ProvideUserAsync(Guid.NewGuid(), Guid.NewGuid(), false, [])
             .ConfigureAwait(false);
 
         // // Subsystem did not accept the user; returns 401.
