@@ -23,6 +23,10 @@ namespace ExampleHost.WebApi04.Controllers;
 
 /// <summary>
 /// A mocked token controller used to test authentication middleware.
+///
+/// This controller is called when we from tests:
+///  * Retrieve an "internal token".
+///  * Validates the "internal token".
 /// </summary>
 [ApiController]
 [Route("webapi04")]
@@ -75,8 +79,8 @@ public class MockedTokenController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetTokenAsync()
     {
-        using var body = new StreamReader(Request.Body);
-        var rawExternalToken = await body.ReadToEndAsync().ConfigureAwait(false);
+        using var externalTokenReader = new StreamReader(Request.Body);
+        var rawExternalToken = await externalTokenReader.ReadToEndAsync().ConfigureAwait(false);
 
         var externalToken = new JwtSecurityToken(rawExternalToken);
         var tokenClaim = new Claim(TokenClaim, rawExternalToken);
@@ -84,7 +88,7 @@ public class MockedTokenController : ControllerBase
         var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
 
-        var token = new JwtSecurityToken(
+        var internalToken = new JwtSecurityToken(
             Issuer,
             externalToken.Audiences.Single(),
             new[] { tokenClaim, userClaim, actorClaim },
@@ -93,7 +97,7 @@ public class MockedTokenController : ControllerBase
             new SigningCredentials(_testKey, SecurityAlgorithms.RsaSha256));
 
         var handler = new JwtSecurityTokenHandler();
-        var writtenToken = handler.WriteToken(token);
+        var writtenToken = handler.WriteToken(internalToken);
 
         return Ok(writtenToken);
     }
