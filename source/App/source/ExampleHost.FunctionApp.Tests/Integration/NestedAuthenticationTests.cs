@@ -63,7 +63,7 @@ public class NestedAuthenticationTests : IAsyncLifetime
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await actualResponse.Content.ReadAsStringAsync();
-        Assert.True(Guid.TryParse(content, out _));
+        Guid.Parse(content).Should().NotBeEmpty();
     }
 
     /// <summary>

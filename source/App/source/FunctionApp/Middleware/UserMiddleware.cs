@@ -12,108 +12,102 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using Energinet.DataHub.Core.App.Common.Users;
-using Energinet.DataHub.Core.App.FunctionApp.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
 
+/// <summary>
+/// If possible, retrieved JWT from header and creates a user, which is then
+/// added to the function context and thereby made available in the executing function.
+/// </summary>
 public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
     where TUser : class
 {
     private const string MultiTenancyClaim = "multitenancy";
 
+    private readonly ILogger<UserMiddleware<TUser>> _logger;
     private readonly IUserProvider<TUser> _userProvider;
-    private readonly UserContext<TUser> _userContext;
 
-    public UserMiddleware(
-        IUserProvider<TUser> userProvider,
-        UserContext<TUser> userContext)
+    public UserMiddleware(ILogger<UserMiddleware<TUser>> logger, IUserProvider<TUser> userProvider)
     {
+        _logger = logger;
         _userProvider = userProvider;
-        _userContext = userContext;
     }
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        if (EndpointIsOmittedFromAuth(context))
+        try
         {
-            await next(context).ConfigureAwait(false);
-            return;
+            var token = await TryGetTokenFromHeaderAsync(context).ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                if (tokenHandler.CanReadToken(token))
+                {
+                    var securityToken = tokenHandler.ReadJwtToken(token);
+
+                    var userId = GetUserId(securityToken.Claims);
+                    var actorId = GetActorId(securityToken.Claims);
+                    var multiTenancy = GetMultiTenancy(securityToken.Claims);
+
+                    var user = await _userProvider
+                        .ProvideUserAsync(userId, actorId, multiTenancy, securityToken.Claims)
+                        .ConfigureAwait(false);
+
+                    if (user != null)
+                    {
+                        // This is added pre-function execution, function will have access to this information
+                        // in the context.Items dictionary
+                        context.Items.Add("User", user);
+                    }
+                }
+            }
         }
-
-        var httpContext = await context.GetHttpRequestDataAsync().ConfigureAwait(false)
-                          ?? throw new InvalidOperationException("UserMiddleware running without HttpContext.");
-
-        var claimsPrincipal = httpContext.Headers;
-        // var identities = httpContext.Identities.ToList();
-        // var userId = GetUserId(identities);
-        // var actorId = GetActorId(identities);
-        // var multiTenancy = GetMultiTenancy(identities);
-
-        // // What's next? Maybe a selectMany?
-        // var user = await _userProvider
-        //     .ProvideUserAsync(userId, actorId, multiTenancy, claimsPrincipal.Claims)
-        //     .ConfigureAwait(false);
-        var user = await _userProvider
-            .ProvideUserAsync(Guid.NewGuid(), Guid.NewGuid(), false, [])
-            .ConfigureAwait(false);
-
-        // // Subsystem did not accept the user; returns 401.
-        if (user == null)
-            //context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            return;
-
-        _userContext.SetCurrentUser(user);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error parsing user object from token.");
+        }
 
         await next(context).ConfigureAwait(false);
     }
 
-    private bool EndpointIsOmittedFromAuth(FunctionContext context)
+    private static async Task<string> TryGetTokenFromHeaderAsync(FunctionContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        var token = string.Empty;
 
-        var isHealthCheckRequest = context.FunctionDefinition.Name == "HealthCheck";
-        var isNotHttpTrigger = !context.Is(TriggerType.HttpTrigger);
+        var requestData = await context.GetHttpRequestDataAsync().ConfigureAwait(false);
+        if (requestData!.Headers.TryGetValues("authorization", out var authorizationHeaders))
+        {
+            var authorizationHeader = authorizationHeaders.First();
+            if (authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                token = authorizationHeader["Bearer ".Length..].Trim();
+            }
+        }
 
-        var isExcluded = context.FunctionDefinition.Name == "GetToken";
-
-        var endpointIsOmittedFromAuth = isHealthCheckRequest || isNotHttpTrigger || isExcluded;
-        return endpointIsOmittedFromAuth;
+        return token;
     }
 
-    // private Guid GetUserId(IEnumerable<ClaimsIdentity> identities)
-    // {
-    //     var claimMatch = new Func<Claim, bool>((claim) => claim.Type == ClaimTypes.NameIdentifier);
-    //     var identity = identities
-    //         .First(identity =>
-    //             identity.FindFirst(c => claimMatch(c)) != null);
-    //
-    //     var userId = identity.FindFirst(c => claimMatch(c))?.Value
-    //                  ?? throw new InvalidOperationException("User has no ID");
-    //
-    //     return Guid.Parse(userId);
-    // }
-    //
-    // private Guid GetActorId(IEnumerable<ClaimsIdentity> identities)
-    // {
-    //     var claimMatch = new Func<Claim, bool>((claim) => claim.Type == JwtRegisteredClaimNames.Azp);
-    //     var identity = identities
-    //         .First(identity =>
-    //             identity.FindFirst(c => claimMatch(c)) != null);
-    //
-    //     var actorId = identity.FindFirst(c => claimMatch(c))?.Value
-    //                  ?? throw new InvalidOperationException("User has no actor ID");
-    //
-    //     return Guid.Parse(actorId);
-    // }
-    //
-    // private bool GetMultiTenancy(List<ClaimsIdentity> identities)
-    // {
-    //     var claimMatch = new Func<Claim, bool>((claim) => claim is { Type: MultiTenancyClaim, Value: "true" });
-    //     return identities.Any(identity =>
-    //         identity.FindAll(c => claimMatch(c)).Any());
-    // }
+    private static Guid GetUserId(IEnumerable<Claim> claims)
+    {
+        // TODO: In Web App the "Sub" claim is shown as "ClaimTypes.NameIdentifier" - not sure why
+        var userId = claims.Single(claim => claim.Type == JwtRegisteredClaimNames.Sub).Value;
+        return Guid.Parse(userId);
+    }
+
+    private static Guid GetActorId(IEnumerable<Claim> claims)
+    {
+        var actorId = claims.Single(claim => claim.Type == JwtRegisteredClaimNames.Azp).Value;
+        return Guid.Parse(actorId);
+    }
+
+    private static bool GetMultiTenancy(IEnumerable<Claim> claims)
+    {
+        return claims.Any(claim => claim is { Type: MultiTenancyClaim, Value: "true" });
+    }
 }

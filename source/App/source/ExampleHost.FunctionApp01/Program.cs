@@ -15,16 +15,42 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    ////.ConfigureFunctionsWorkerDefaults(worker =>
-    ////{
-    ////    worker.UseMiddleware<UserMiddleware<ExampleSubsystemUser>>();
-    ////})
-    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureFunctionsWorkerDefaults(worker =>
+    {
+        // TODO: Add a registration of then middleware which includes the use of 'UseWhen' with the default production configuration.
+        // Implement the registration in way that allows user to add an additional predicate, which we can then use for this test.
+        //
+        // When registering the middleware we should exclude triggers and endpoints that we don't want
+        // to configure the middleware for. This is more flexible than doing it within the middleware.
+        worker.UseWhen<UserMiddleware<ExampleSubsystemUser>>((context) =>
+        {
+            // Only relevant for http triggers
+            var isHttpTrigger = context.FunctionDefinition.InputBindings.Values
+                .First(metadata => metadata.Type.EndsWith("Trigger"))
+                .Type == "httpTrigger";
+
+            // Not relevant for health check endpoint (they allow anonymous access)
+            var isHealthCheckEndpoint = context.FunctionDefinition.Name == "HealthCheck";
+
+            // This is how we should configure user authentication in most production applications
+            if (!isHttpTrigger || isHealthCheckEndpoint)
+            {
+                return false;
+            }
+
+            // But for our tests we need to configure it with the additional check, to ensure
+            // we only use the middleware for authentication scenario tests.
+            var isAuthenticationEndpoint = context.FunctionDefinition.Name == "GetUserWithPermission";
+            return isAuthenticationEndpoint;
+        });
+    })
     .ConfigureServices(services =>
     {
         // Configuration verified in tests:
@@ -50,8 +76,8 @@ var host = new HostBuilder()
         // Health Checks (verified in tests)
         services.AddHealthChecksForIsolatedWorker();
 
-        ////// Authentication
-        ////services.AddUserAuthenticationForIsolatedFunction<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+        // Authentication
+        services.AddUserAuthenticationForIsolatedFunction<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

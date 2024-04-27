@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
@@ -19,14 +20,11 @@ namespace ExampleHost.FunctionApp01.Functions;
 
 public class AuthenticationFunction
 {
-    public AuthenticationFunction()
-    {
-    }
-
     /// <summary>
     /// This method should be called with a 'Bearer' token in the 'Authorization' header.
     /// The token must be a nested token (containing both external and internal token).
     /// From this token the method must retrieve the UserId and return it, for tests to verify.
+    /// If the user is not available an Empty guid is returned.
     /// </summary>
     [Function(nameof(GetUserWithPermission))]
     public string GetUserWithPermission(
@@ -34,9 +32,13 @@ public class AuthenticationFunction
             AuthorizationLevel.Anonymous,
             "get",
             Route = "authentication/user")]
-        HttpRequestData httpRequest)
+        HttpRequestData httpRequest,
+        FunctionContext context)
     {
-        // TODO: Retrieve UserId from token
-        return Guid.NewGuid().ToString();
+        // TODO: Add an extension for 'FunctionContext' to easily get user
+        return context.Items.TryGetValue("User", out var value)
+            && value is ExampleSubsystemUser subsystemUser
+            ? subsystemUser.UserId.ToString()
+            : Guid.Empty.ToString();
     }
 }
