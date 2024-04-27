@@ -14,6 +14,7 @@
 
 using System.Net;
 using ExampleHost.FunctionApp.Tests.Fixtures;
+using ExampleHost.FunctionApp01.Functions;
 using FluentAssertions;
 using Microsoft.Identity.Client;
 using Xunit;
@@ -22,9 +23,9 @@ using Xunit.Abstractions;
 namespace ExampleHost.FunctionApp.Tests.Integration;
 
 [Collection(nameof(ExampleHostsCollectionFixture))]
-public class AuthenticationTests : IAsyncLifetime
+public class NestedAuthenticationTests : IAsyncLifetime
 {
-    public AuthenticationTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+    public NestedAuthenticationTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
@@ -47,11 +48,11 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthGet_UserWithToken_ReturnsUserId()
+    public async Task CallingApi01AuthenticationGet_UserWithToken_ReturnsUserId()
     {
         // Arrange
         var authenticationResult = await Fixture.GetTokenAsync();
-        var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
+        var authenticationHeader = await CreateAuthenticationHeaderWithNestedTokenAsync(authenticationResult);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, "api/authentication/user");
@@ -65,13 +66,18 @@ public class AuthenticationTests : IAsyncLifetime
         Assert.True(Guid.TryParse(content, out _));
     }
 
-    private async Task<string> CreateNestedTokenAsync(AuthenticationResult authenticationResult)
+    /// <summary>
+    /// Calls the <see cref="MockedTokenFunction"/> to create an "internal token"
+    /// and returns a 'Bearer' authentication header.
+    /// </summary>
+    private async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(AuthenticationResult externalAuthenticationResult)
     {
         using var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "api/token");
-        tokenRequest.Content = new StringContent(authenticationResult.AccessToken);
+        tokenRequest.Content = new StringContent(externalAuthenticationResult.AccessToken);
         using var tokenResponse = await Fixture.App01HostManager.HttpClient.SendAsync(tokenRequest);
 
-        var authenticationHeader = $"Bearer {await tokenResponse.Content.ReadAsStringAsync()}";
+        var nestedToken = await tokenResponse.Content.ReadAsStringAsync();
+        var authenticationHeader = $"Bearer {nestedToken}";
         return authenticationHeader;
     }
 }

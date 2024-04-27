@@ -24,10 +24,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults(worker =>
-    {
-        worker.UseMiddleware<UserMiddleware<ExampleSubsystemUser>>();
-    })
+    ////.ConfigureFunctionsWorkerDefaults(worker =>
+    ////{
+    ////    worker.UseMiddleware<UserMiddleware<ExampleSubsystemUser>>();
+    ////})
+    .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
         // Configuration verified in tests:
@@ -53,8 +54,8 @@ var host = new HostBuilder()
         // Health Checks (verified in tests)
         services.AddHealthChecksForIsolatedWorker();
 
-        // Authentication
-        services.AddUserAuthenticationForIsolatedFunction<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+        ////// Authentication
+        ////services.AddUserAuthenticationForIsolatedFunction<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

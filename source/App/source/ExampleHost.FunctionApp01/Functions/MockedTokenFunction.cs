@@ -21,11 +21,17 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
+/// <summary>
+/// A mocked token function used to test authentication middleware.
+///
+/// This function is called when we from tests:
+///  * Retrieve an "internal token".
+/// </summary>
 public class MockedTokenFunction
 {
     private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
-    private const string TokenClaim = "token";
     private const string Issuer = "https://test.datahub.dk";
+    private const string TokenClaim = "token";
 
     private static readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
@@ -37,8 +43,8 @@ public class MockedTokenFunction
             Route = "token")]
         HttpRequestData httpRequest)
     {
-        using var body = new StreamReader(httpRequest.Body);
-        var rawExternalToken = await body.ReadToEndAsync().ConfigureAwait(false);
+        using var externalTokenReader = new StreamReader(httpRequest.Body);
+        var rawExternalToken = await externalTokenReader.ReadToEndAsync().ConfigureAwait(false);
 
         var externalToken = new JwtSecurityToken(rawExternalToken);
         var tokenClaim = new Claim(TokenClaim, rawExternalToken);
@@ -46,7 +52,7 @@ public class MockedTokenFunction
         var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
 
-        var token = new JwtSecurityToken(
+        var internalToken = new JwtSecurityToken(
             Issuer,
             externalToken.Audiences.Single(),
             new[] { tokenClaim, userClaim, actorClaim },
@@ -55,7 +61,7 @@ public class MockedTokenFunction
             new SigningCredentials(_testKey, SecurityAlgorithms.RsaSha256));
 
         var handler = new JwtSecurityTokenHandler();
-        var writtenToken = handler.WriteToken(token);
+        var writtenToken = handler.WriteToken(internalToken);
 
         return writtenToken;
     }

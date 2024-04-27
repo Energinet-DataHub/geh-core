@@ -12,31 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using Energinet.DataHub.Core.App.Common.Users;
-using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
-public class AuthUserId
+public class AuthenticationFunction
 {
-    private readonly IUserContext<ExampleSubsystemUser> _currentUser;
+    public AuthenticationFunction()
+    {
+    }
 
-    public AuthUserId(UserContext<ExampleSubsystemUser> currentUser)
-     {
-         _currentUser = currentUser;
-     }
-
-    [Function(nameof(Auth))]
-    public string Auth(
+    /// <summary>
+    /// This method should be called with a 'Bearer' token in the 'Authorization' header.
+    /// The token must be a nested token (containing both external and internal token).
+    /// From this token the method must retrieve the UserId and return it, for tests to verify.
+    /// </summary>
+    [Function(nameof(GetUserWithPermission))]
+    public string GetUserWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
             Route = "authentication/user")]
         HttpRequestData httpRequest)
     {
-        return _currentUser.CurrentUser.UserId.ToString();
+        // TODO: Retrieve UserId from token
+        return Guid.NewGuid().ToString();
     }
 }
