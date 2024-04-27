@@ -18,7 +18,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 
-namespace Energinet.DataHub.Core.App.FunctionApp.MIddleware;
+namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
 
 public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
     where TUser : class
@@ -63,10 +63,8 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 
         // // Subsystem did not accept the user; returns 401.
         if (user == null)
-        {
             //context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return;
-        }
 
         _userContext.SetCurrentUser(user);
 

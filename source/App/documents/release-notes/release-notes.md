@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 12.1.0
+
+- Add 'Energinet.DataHub.Core.App.FunctionApp.Middleware.UserMiddleware'.
+
 ## Version 12.0.1
 
 - No functional change
