@@ -27,7 +27,8 @@ public static class FunctionContextExtensions
     /// </summary>
     public static bool Is(this FunctionContext context, TriggerType triggerType)
     {
-        return context.FunctionDefinition.InputBindings.Any(input => string.Compare(input.Value.Type, triggerType.ToString(), ignoreCase: true) == 0);
+        return context.FunctionDefinition.InputBindings.Any(input =>
+            string.Compare(input.Value.Type, triggerType.ToString(), ignoreCase: true) == 0);
     }
 
     internal static HttpRequestData? GetHttpRequestData(this FunctionContext functionContext)
@@ -37,7 +38,11 @@ public static class FunctionContextExtensions
 
         var functionBindingsFeature = functionContext.GetIFunctionBindingsFeature();
         var type = functionBindingsFeature.GetType();
-        var inputData = type.GetProperties().Single(p => p.Name == "InputData").GetValue(functionBindingsFeature) as IReadOnlyDictionary<string, object>;
+        var inputData = type
+            .GetProperties()
+            .Single(p => p.Name == "InputData")
+            .GetValue(functionBindingsFeature) as IReadOnlyDictionary<string, object>;
+
         return inputData?.Values.SingleOrDefault(o => o is HttpRequestData) as HttpRequestData;
     }
 
@@ -50,7 +55,10 @@ public static class FunctionContextExtensions
     {
         var functionBindingsFeature = functionContext.GetIFunctionBindingsFeature();
         var type = functionBindingsFeature.GetType();
-        var propertyInfo = type?.GetProperties().Single(p => p.Name is "InvocationResult");
+        var propertyInfo = type?
+            .GetProperties()
+            .Single(p => p.Name is "InvocationResult");
+
         propertyInfo?.SetValue(functionBindingsFeature, response);
     }
 
