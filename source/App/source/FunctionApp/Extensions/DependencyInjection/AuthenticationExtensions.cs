@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
@@ -23,6 +24,8 @@ public static class AuthenticationExtensions
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
     {
+        services.AddScoped<UserContext<TUser>>();
+        services.AddScoped<IUserContext<TUser>>(s => s.GetRequiredService<UserContext<TUser>>());
         services.AddScoped<IUserProvider<TUser>, TUserProvider>();
 
         return services;

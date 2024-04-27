@@ -15,8 +15,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Users;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
@@ -33,7 +35,9 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
     private readonly ILogger<UserMiddleware<TUser>> _logger;
     private readonly IUserProvider<TUser> _userProvider;
 
-    public UserMiddleware(ILogger<UserMiddleware<TUser>> logger, IUserProvider<TUser> userProvider)
+    public UserMiddleware(
+        ILogger<UserMiddleware<TUser>> logger,
+        IUserProvider<TUser> userProvider)
     {
         _logger = logger;
         _userProvider = userProvider;
@@ -59,11 +63,11 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
                         .ProvideUserAsync(userId, actorId, multiTenancy, securityToken.Claims)
                         .ConfigureAwait(false);
 
+                    // TODO: Should we at any point set the status code to Unauthorized (401), and skip calling any further middleware?
                     if (user != null)
                     {
-                        // This is added pre-function execution, function will have access to this information
-                        // in the context.Items dictionary
-                        context.Items.Add("User", user);
+                        var userContext = context.InstanceServices.GetRequiredService<UserContext<TUser>>();
+                        userContext.SetCurrentUser(user);
                     }
                 }
             }

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
@@ -35,10 +37,15 @@ public class AuthenticationFunction
         HttpRequestData httpRequest,
         FunctionContext context)
     {
-        // TODO: Add an extension for 'FunctionContext' to easily get user
-        return context.Items.TryGetValue("User", out var value)
-            && value is ExampleSubsystemUser subsystemUser
-            ? subsystemUser.UserId.ToString()
-            : Guid.Empty.ToString();
+        try
+        {
+            // TODO: Add 'FunctionContext' extension to allow easy access to "CurrentUser"
+            var userContext = context.InstanceServices.GetRequiredService<IUserContext<ExampleSubsystemUser>>();
+            return userContext.CurrentUser.UserId.ToString();
+        }
+        catch
+        {
+            return Guid.Empty.ToString();
+        }
     }
 }
