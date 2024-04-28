@@ -22,6 +22,13 @@ using Xunit.Abstractions;
 
 namespace ExampleHost.FunctionApp.Tests.Integration;
 
+/// <summary>
+/// Authentication tests using a nested token (a token which contains both an
+/// external and an internal token).
+///
+/// Similar tests exists for Web App in the 'NestedAuthenticationTests' class
+/// located in the 'ExampleHost.WebApi.Tests' project.
+/// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
 public class NestedAuthenticationTests : IAsyncLifetime
 {

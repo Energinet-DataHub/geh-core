@@ -26,6 +26,9 @@ namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
 /// Authentication tests ensuring that the configured token is validated correctly.
+///
+/// Similar tests exists for Function App in the 'NestedAuthenticationTests' class
+/// located in the 'ExampleHost.FunctionApp.Tests' project.
 /// </summary>
 [Collection(nameof(NestedAuthenticationHostCollectionFixture))]
 public sealed class NestedAuthenticationTests
