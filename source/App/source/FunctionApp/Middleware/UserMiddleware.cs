@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Users;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -41,14 +43,31 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        // Retrieve any dependent services first, to fail fast is we have registration issues
+        var httpRequestData = await context.GetHttpRequestDataAsync().ConfigureAwait(false);
+        if (httpRequestData != null)
+        {
+            var isUserSet = await CanSetUserAsync(context, httpRequestData).ConfigureAwait(false);
+            if (isUserSet)
+            {
+                // Next middleware
+                await next(context).ConfigureAwait(false);
+            }
+            else
+            {
+                await CreateUnauthorizedResponseAsync(context, httpRequestData).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private static async Task<bool> CanSetUserAsync(FunctionContext context, HttpRequestData httpRequestData)
+    {
         var logger = context.GetLogger<UserMiddleware<TUser>>();
         var userProvider = context.InstanceServices.GetRequiredService<IUserProvider<TUser>>();
         var userContext = context.InstanceServices.GetRequiredService<UserContext<TUser>>();
 
         try
         {
-            var token = await TryGetTokenFromHeaderAsync(context).ConfigureAwait(false);
+            var token = TryGetTokenFromHeader(httpRequestData);
             if (!string.IsNullOrWhiteSpace(token))
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -64,10 +83,10 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
                         .ProvideUserAsync(userId, actorId, multiTenancy, securityToken.Claims)
                         .ConfigureAwait(false);
 
-                    // TODO: Should we at any point set the status code to Unauthorized (401), and skip calling any further middleware?
                     if (user != null)
                     {
                         userContext.SetCurrentUser(user);
+                        return true;
                     }
                 }
             }
@@ -77,15 +96,14 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
             logger.LogError(ex, "Error parsing user object from token.");
         }
 
-        await next(context).ConfigureAwait(false);
+        return false;
     }
 
-    private static async Task<string> TryGetTokenFromHeaderAsync(FunctionContext context)
+    private static string TryGetTokenFromHeader(HttpRequestData requestData)
     {
         var token = string.Empty;
 
-        var requestData = await context.GetHttpRequestDataAsync().ConfigureAwait(false);
-        if (requestData!.Headers.TryGetValues("authorization", out var authorizationHeaders))
+        if (requestData.Headers.TryGetValues("authorization", out var authorizationHeaders))
         {
             var authorizationHeader = authorizationHeaders.First();
             if (authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
@@ -113,5 +131,38 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
     private static bool GetMultiTenancy(IEnumerable<Claim> claims)
     {
         return claims.Any(claim => claim is { Type: MultiTenancyClaim, Value: "true" });
+    }
+
+    // Inspired by: https://github.com/Azure/azure-functions-dotnet-worker/blob/main/samples/CustomMiddleware/ExceptionHandlingMiddleware.cs
+    private static async Task CreateUnauthorizedResponseAsync(FunctionContext context, HttpRequestData httpRequestData)
+    {
+        var newHttpResponse = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
+        // You need to explicitly pass the status code in WriteAsJsonAsync method.
+        // https://github.com/Azure/azure-functions-dotnet-worker/issues/776
+        await newHttpResponse
+            .WriteAsJsonAsync(string.Empty, newHttpResponse.StatusCode)
+            .ConfigureAwait(false);
+
+        var invocationResult = context.GetInvocationResult();
+
+        var httpOutputBindingFromMultipleOutputBindings = GetHttpOutputBindingFromMultipleOutputBinding(context);
+        if (httpOutputBindingFromMultipleOutputBindings is not null)
+        {
+            httpOutputBindingFromMultipleOutputBindings.Value = newHttpResponse;
+        }
+        else
+        {
+            invocationResult.Value = newHttpResponse;
+        }
+    }
+
+    // Inspired by: https://github.com/Azure/azure-functions-dotnet-worker/blob/main/samples/CustomMiddleware/ExceptionHandlingMiddleware.cs
+    private static OutputBindingData<HttpResponseData>? GetHttpOutputBindingFromMultipleOutputBinding(FunctionContext context)
+    {
+        // The output binding entry name will be "$return" only when the function return type is HttpResponseData
+        var httpOutputBinding = context.GetOutputBindings<HttpResponseData>()
+            .FirstOrDefault(b => b.BindingType == "http" && b.Name != "$return");
+
+        return httpOutputBinding;
     }
 }

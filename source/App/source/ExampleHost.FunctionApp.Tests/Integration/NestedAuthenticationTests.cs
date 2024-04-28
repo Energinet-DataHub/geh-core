@@ -55,6 +55,19 @@ public class NestedAuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CallingApi01AuthenticationGet_UserWithNoToken_Unauthorized()
+    {
+        // Arrange
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authentication/user");
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task CallingApi01AuthenticationGet_UserWithToken_ReturnsUserId()
     {
         // Arrange
