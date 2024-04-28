@@ -16,17 +16,27 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
 public class AuthenticationFunction
 {
+    private readonly IUserContext<ExampleSubsystemUser> _userContext;
+
+    public AuthenticationFunction(IUserContext<ExampleSubsystemUser> userContext)
+    {
+        _userContext = userContext;
+    }
+
     /// <summary>
-    /// This method should be called with a 'Bearer' token in the 'Authorization' header.
-    /// The token must be a nested token (containing both external and internal token).
-    /// From this token the method must retrieve the UserId and return it, for tests to verify.
-    /// If the user is not available an Empty guid is returned.
+    /// 1: This method should be called with a 'Bearer' token in the 'Authorization' header.
+    ///   The token must be a nested token (containing both external and internal token).
+    /// 2: The "UserMiddleware" should retrieve the user information from this token, and
+    ///   assign it to the "UserContext" (a scoped service).
+    /// 3: The "IUserContext" (a scoped service) can then be injected to the function class
+    ///   and give access to the stored user information.
+    /// 4: If successfull the UserId is retrieved and returned, for tests to verify.
+    ///   If the user is not available an Empty guid is returned.
     /// </summary>
     [Function(nameof(GetUserWithPermission))]
     public string GetUserWithPermission(
@@ -39,9 +49,7 @@ public class AuthenticationFunction
     {
         try
         {
-            // TODO: Add 'FunctionContext' extension to allow easy access to "CurrentUser"
-            var userContext = context.InstanceServices.GetRequiredService<IUserContext<ExampleSubsystemUser>>();
-            return userContext.CurrentUser.UserId.ToString();
+            return _userContext.CurrentUser.UserId.ToString();
         }
         catch
         {
