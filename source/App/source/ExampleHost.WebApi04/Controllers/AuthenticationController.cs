@@ -23,11 +23,11 @@ namespace ExampleHost.WebApi04.Controllers;
 [Route("webapi04/[controller]")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly IUserContext<ExampleSubsystemUser> _currentUser;
+    private readonly IUserContext<ExampleSubsystemUser> _userContext;
 
-    public AuthenticationController(IUserContext<ExampleSubsystemUser> currentUser)
+    public AuthenticationController(IUserContext<ExampleSubsystemUser> userContext)
     {
-        _currentUser = currentUser;
+        _userContext = userContext;
     }
 
     [HttpGet("anon/{identification}")]
@@ -48,6 +48,6 @@ public class AuthenticationController : ControllerBase
     [Authorize]
     public string GetUserWithPermission()
     {
-        return _currentUser.CurrentUser.UserId.ToString();
+        return _userContext.CurrentUser.UserId.ToString();
     }
 }

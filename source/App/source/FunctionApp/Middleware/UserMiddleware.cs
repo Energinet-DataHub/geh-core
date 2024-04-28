@@ -32,19 +32,20 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 {
     private const string MultiTenancyClaim = "multitenancy";
 
-    private readonly ILogger<UserMiddleware<TUser>> _logger;
-    private readonly IUserProvider<TUser> _userProvider;
-
-    public UserMiddleware(
-        ILogger<UserMiddleware<TUser>> logger,
-        IUserProvider<TUser> userProvider)
+    // DO NOT inject scoped services in the middleware constructor.
+    // DO use scoped services in middleware by retrieving them from 'FunctionContext.InstanceServices'
+    // DO NOT store scoped services in fields or properties of the middleware object. See https://github.com/Azure/azure-functions-dotnet-worker/issues/1327#issuecomment-1434408603
+    public UserMiddleware()
     {
-        _logger = logger;
-        _userProvider = userProvider;
     }
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
+        // Retrieve any dependent services first, to fail fast is we have registration issues
+        var logger = context.GetLogger<UserMiddleware<TUser>>();
+        var userProvider = context.InstanceServices.GetRequiredService<IUserProvider<TUser>>();
+        var userContext = context.InstanceServices.GetRequiredService<UserContext<TUser>>();
+
         try
         {
             var token = await TryGetTokenFromHeaderAsync(context).ConfigureAwait(false);
@@ -59,14 +60,13 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
                     var actorId = GetActorId(securityToken.Claims);
                     var multiTenancy = GetMultiTenancy(securityToken.Claims);
 
-                    var user = await _userProvider
+                    var user = await userProvider
                         .ProvideUserAsync(userId, actorId, multiTenancy, securityToken.Claims)
                         .ConfigureAwait(false);
 
                     // TODO: Should we at any point set the status code to Unauthorized (401), and skip calling any further middleware?
                     if (user != null)
                     {
-                        var userContext = context.InstanceServices.GetRequiredService<UserContext<TUser>>();
                         userContext.SetCurrentUser(user);
                     }
                 }
@@ -74,7 +74,7 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error parsing user object from token.");
+            logger.LogError(ex, "Error parsing user object from token.");
         }
 
         await next(context).ConfigureAwait(false);
