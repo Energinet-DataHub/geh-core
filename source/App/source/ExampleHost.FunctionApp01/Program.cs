@@ -57,8 +57,8 @@ var host = new HostBuilder()
         // Health Checks (verified in tests)
         services.AddHealthChecksForIsolatedWorker();
 
-        // Authentication
-        services.AddUserAuthenticationForIsolatedFunction<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+        // Http => Authentication
+        services.AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

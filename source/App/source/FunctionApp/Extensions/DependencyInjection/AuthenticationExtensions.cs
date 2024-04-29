@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 
 public static class AuthenticationExtensions
 {
-    public static IServiceCollection AddUserAuthenticationForIsolatedFunction<TUser, TUserProvider>(this IServiceCollection services)
+    public static IServiceCollection AddUserAuthenticationForIsolatedWorker<TUser, TUserProvider>(this IServiceCollection services)
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
     {
