@@ -3,7 +3,7 @@
 ## Version 12.1.0
 
 - In `FunctionApp` project:
-    - Add 'Middleware.UserMiddleware'
+    - Add `Middleware.UserMiddleware`
     - Add reusable dependency injection extensions:
         - Add `AuthenticationBuilderExtensions.UseUserMiddlewareForIsolatedWorker<TUser>`
         - Add `AuthenticationExtensions.AddUserAuthenticationForIsolatedWorker<TUser, TUserProvider>`
