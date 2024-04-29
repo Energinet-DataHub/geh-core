@@ -117,7 +117,6 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 
     private static Guid GetUserId(IEnumerable<Claim> claims)
     {
-        // TODO: In Web App the "Sub" claim is shown as "ClaimTypes.NameIdentifier" - not sure why
         var userId = claims.Single(claim => claim.Type == JwtRegisteredClaimNames.Sub).Value;
         return Guid.Parse(userId);
     }
