@@ -27,7 +27,8 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
 
 /// <summary>
 /// If possible, retrieved JWT from header and creates a user, which is then
-/// added to the function context and thereby made available in the executing function.
+/// set to the <see cref="UserContext{TUser}"/> and thereby made available
+/// for dependency injection in the executing function and other services.
 /// </summary>
 public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
     where TUser : class
@@ -93,7 +94,7 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error parsing user object from token.");
+            logger.LogError(ex, "Error creating user context from token.");
         }
 
         return false;
