@@ -26,7 +26,7 @@ public static class AuthenticationBuilderExtensions
 {
     /// <summary>
     /// Register middleware necessary for enabling user authentication in a http triggered function.
-    /// Ignore health check endpoints.
+    /// Ignores health check endpoints.
     /// Exclude anonymous endpoints by adding their names to the <paramref name="excludedFunctionNames"/>.
     /// </summary>
     public static IFunctionsWorkerApplicationBuilder UseUserMiddlewareForIsolatedWorker<TUser>(
