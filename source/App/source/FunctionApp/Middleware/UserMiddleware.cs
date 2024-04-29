@@ -44,19 +44,18 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        var httpRequestData = await context.GetHttpRequestDataAsync().ConfigureAwait(false);
-        if (httpRequestData != null)
+        var httpRequestData = await context.GetHttpRequestDataAsync().ConfigureAwait(false)
+            ?? throw new InvalidOperationException("UserMiddleware running without HttpRequestData.");
+
+        var isUserSet = await CanSetUserAsync(context, httpRequestData).ConfigureAwait(false);
+        if (isUserSet)
         {
-            var isUserSet = await CanSetUserAsync(context, httpRequestData).ConfigureAwait(false);
-            if (isUserSet)
-            {
-                // Next middleware
-                await next(context).ConfigureAwait(false);
-            }
-            else
-            {
-                await CreateUnauthorizedResponseAsync(context, httpRequestData).ConfigureAwait(false);
-            }
+            // Next middleware
+            await next(context).ConfigureAwait(false);
+        }
+        else
+        {
+            await CreateUnauthorizedResponseAsync(context, httpRequestData).ConfigureAwait(false);
         }
     }
 

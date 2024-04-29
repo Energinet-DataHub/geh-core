@@ -2,7 +2,11 @@
 
 ## Version 12.1.0
 
-- Add 'Energinet.DataHub.Core.App.FunctionApp.Middleware.UserMiddleware'.
+- In `FunctionApp` project:
+    - Add 'Middleware.UserMiddleware'
+    - Add reusable dependency injection extensions:
+        - Add `AuthenticationBuilderExtensions.UseUserMiddlewareForIsolatedWorker<TUser>`
+        - Add `AuthenticationExtensions.AddUserAuthenticationForIsolatedWorker<TUser, TUserProvider>`
 
 ## Version 12.0.1
 
