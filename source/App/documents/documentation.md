@@ -75,8 +75,9 @@ Preparing an Azure Function App project:
        .Build();
 
    host.Run();
-
    ```
+
+1) Implement `SubsystemUser` and `SubsystemUserProvider` accordingly.
 
 1) Perform configuration in application settings
 
@@ -172,6 +173,8 @@ Preparing a Web App project:
    // Enable testing
    public partial class Program { }
    ```
+
+1) Implement `SubsystemUser` and `SubsystemUserProvider` accordingly.
 
 1) Perform configuration in application settings
 
