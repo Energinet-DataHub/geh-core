@@ -54,7 +54,7 @@ Preparing an Azure Function App project:
        .ConfigureFunctionsWorkerDefaults(worker =>
        {
            // Http => Authentication
-           worker.UseUserMiddlewareForIsolatedWorker<TUser>();
+           worker.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
        })
        .ConfigureServices((context, services) =>
        {
