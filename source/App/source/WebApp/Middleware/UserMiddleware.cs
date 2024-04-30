@@ -43,7 +43,8 @@ public sealed class UserMiddleware<TUser> : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var httpContext = _httpContextAccessor.HttpContext ?? throw new InvalidOperationException("UserMiddleware running without HttpContext.");
+        var httpContext = _httpContextAccessor.HttpContext
+            ?? throw new InvalidOperationException("UserMiddleware running without HttpContext.");
 
         var endpoint = context.GetEndpoint();
         if (endpoint == null)
@@ -80,6 +81,7 @@ public sealed class UserMiddleware<TUser> : IMiddleware
 
     private static Guid GetUserId(IEnumerable<Claim> claims)
     {
+        // The use of 'ClaimTypes.NameIdentifier' is explained here: https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/415
         var userId = claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
         return Guid.Parse(userId);
     }

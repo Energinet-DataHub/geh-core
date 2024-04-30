@@ -16,6 +16,9 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
 namespace Energinet.DataHub.Core.App.Common.Users;
 
+/// <summary>
+/// Should be used from middleware to 'set' the current user.
+/// </summary>
 public sealed class UserContext<TUser> : IUserContext<TUser>
     where TUser : class
 {

@@ -16,11 +16,22 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.Functions;
+using ExampleHost.FunctionApp01.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureFunctionsWorkerDefaults(worker =>
+    {
+        // Configuration verified in tests:
+        //  * Endpoints for which UserMiddleware is enabled must call the endpoint with a token
+        //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
+        worker.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
+            excludedFunctionNames:
+                [$"{nameof(MockedTokenFunction.GetToken)}",
+                $"{nameof(RestApiExampleFunction.TelemetryAsync)}"]);
+    })
     .ConfigureServices(services =>
     {
         // Configuration verified in tests:
@@ -45,6 +56,9 @@ var host = new HostBuilder()
 
         // Health Checks (verified in tests)
         services.AddHealthChecksForIsolatedWorker();
+
+        // Http => Authentication (verified in tests)
+        services.AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

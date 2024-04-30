@@ -16,11 +16,13 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
 using Azure.Monitor.Query;
+using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Microsoft.Identity.Client;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,7 +43,15 @@ public class ExampleHostsFixture : IAsyncLifetime
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+
+        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
     }
+
+    /// <summary>
+    /// This is not the actual BFF but a test app registration that allows
+    /// us to verify some of the JWT code.
+    /// </summary>
+    public string BffAppId { get; set; }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
@@ -121,6 +131,22 @@ public class ExampleHostsFixture : IAsyncLifetime
     public void SetTestOutputHelper(ITestOutputHelper testOutputHelper)
     {
         TestLogger.TestOutputHelper = testOutputHelper;
+    }
+
+    /// <summary>
+    /// Get an access token that allows the "client app" to call the "backend app".
+    /// </summary>
+    public Task<AuthenticationResult> GetTokenAsync()
+    {
+        var confidentialClientApp = ConfidentialClientApplicationBuilder
+            .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
+            .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
+            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
+            .Build();
+
+        return confidentialClientApp
+            .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
+            .ExecuteAsync();
     }
 
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)

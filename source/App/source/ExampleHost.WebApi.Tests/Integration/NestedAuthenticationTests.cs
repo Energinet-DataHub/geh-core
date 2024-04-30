@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using ExampleHost.WebApi.Tests.Fixtures;
+using ExampleHost.WebApi04.Controllers;
 using FluentAssertions;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
@@ -25,6 +26,9 @@ namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
 /// Authentication tests ensuring that the configured token is validated correctly.
+///
+/// Similar tests exists for Function App in the 'NestedAuthenticationTests' class
+/// located in the 'ExampleHost.FunctionApp.Tests' project.
 /// </summary>
 [Collection(nameof(NestedAuthenticationHostCollectionFixture))]
 public sealed class NestedAuthenticationTests
@@ -86,7 +90,7 @@ public sealed class NestedAuthenticationTests
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
         var authenticationResult = await Fixture.GetTokenAsync();
-        var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
+        var authenticationHeader = await CreateAuthenticationHeaderWithNestedTokenAsync(authenticationResult);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
@@ -106,7 +110,7 @@ public sealed class NestedAuthenticationTests
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
         var authenticationResult = await Fixture.GetTokenAsync();
-        var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
+        var authenticationHeader = await CreateAuthenticationHeaderWithNestedTokenAsync(authenticationResult);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
@@ -123,7 +127,7 @@ public sealed class NestedAuthenticationTests
     {
         // Arrange
         var authenticationResult = await Fixture.GetTokenAsync();
-        var authenticationHeader = await CreateNestedTokenAsync(authenticationResult);
+        var authenticationHeader = await CreateAuthenticationHeaderWithNestedTokenAsync(authenticationResult);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, "webapi04/authentication/user");
@@ -160,13 +164,18 @@ public sealed class NestedAuthenticationTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    private async Task<string> CreateNestedTokenAsync(AuthenticationResult authenticationResult)
+    /// <summary>
+    /// Calls the <see cref="MockedTokenController"/> to create an "internal token"
+    /// and returns a 'Bearer' authentication header.
+    /// </summary>
+    private async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(AuthenticationResult externalAuthenticationResult)
     {
         using var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "webapi04/token");
-        tokenRequest.Content = new StringContent(authenticationResult.AccessToken);
+        tokenRequest.Content = new StringContent(externalAuthenticationResult.AccessToken);
         using var tokenResponse = await Fixture.Web04HttpClient.SendAsync(tokenRequest);
 
-        var authenticationHeader = $"Bearer {await tokenResponse.Content.ReadAsStringAsync()}";
+        var nestedToken = await tokenResponse.Content.ReadAsStringAsync();
+        var authenticationHeader = $"Bearer {nestedToken}";
         return authenticationHeader;
     }
 }

@@ -10,7 +10,25 @@
 - DO treat actors with same security considerations as if they were separate tenants.
 - DO create a `TUser` implementation that is convenient for your subsystem.
 
-## Authorization in Web Apps
+## Overview
+
+- Implementation
+    - [Azure Functions App](#azure-functions-app)
+    - [ASP.NET Core Web API](#aspnet-core-web-api)
+
+## Azure Functions App
+
+### Configuration of IUserProvider
+
+Configuring middleware for obtaining the current user with the current actor.
+
+- Implement `TUserProvider` and `TUser`.
+- Add `UseUserMiddlewareForIsolatedWorker<TUser>()` to `IFunctionsWorkerApplicationBuilder`.
+    - This registers and enables `UserMiddleware`.
+- Add `AddUserAuthenticationForIsolatedWorker<TUser, TUserProvider>()` to `IServiceProvider()`.
+    - This registers `IUserProvider` and `IUserContext`.
+
+## ASP.NET Core Web API
 
 Endpoint authorization in web apps is enforced by role-based authorization (see <https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles>).
 Every supported permission is configured as a role claim, using the built-in framework to ensure that the user is both authenticated and has this claim.

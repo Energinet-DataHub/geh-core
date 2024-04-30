@@ -15,22 +15,19 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ExampleHost.WebApi04.Controllers;
+namespace ExampleHost.FunctionApp01.Functions;
 
 /// <summary>
-/// A mocked token controller used to test authentication middleware.
+/// A mocked token function used to test authentication middleware.
 ///
-/// This controller is called when we from tests:
+/// This function is called when we from tests:
 ///  * Retrieve an "internal token".
-///  * Validates the "internal token".
 /// </summary>
-[ApiController]
-[Route("webapi04")]
-public class MockedTokenController : ControllerBase
+public class MockedTokenFunction
 {
     private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
     private const string Issuer = "https://test.datahub.dk";
@@ -38,48 +35,15 @@ public class MockedTokenController : ControllerBase
 
     private static readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
-    [HttpGet("v2.0/.well-known/openid-configuration")]
-    [AllowAnonymous]
-    public IActionResult GetConfiguration()
+    [Function(nameof(GetToken))]
+    public async Task<string> GetToken(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "post",
+            Route = "token")]
+        HttpRequestData httpRequest)
     {
-        var configuration = new
-        {
-            issuer = Issuer,
-            jwks_uri = $"http://{Request.Host}/webapi04/discovery/v2.0/keys",
-        };
-
-        return Ok(configuration);
-    }
-
-    [HttpGet("discovery/v2.0/keys")]
-    [AllowAnonymous]
-    public IActionResult GetPublicKeys()
-    {
-        var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(_testKey);
-
-        var keys = new
-        {
-            keys = new[]
-            {
-                new
-                {
-                    kid = jwk.Kid,
-                    kty = jwk.Kty,
-                    n = jwk.N,
-                    e = jwk.E,
-                },
-            },
-        };
-
-        return Ok(keys);
-    }
-
-    [HttpPost]
-    [Route("token")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetTokenAsync()
-    {
-        using var externalTokenReader = new StreamReader(Request.Body);
+        using var externalTokenReader = new StreamReader(httpRequest.Body);
         var rawExternalToken = await externalTokenReader.ReadToEndAsync().ConfigureAwait(false);
 
         var externalToken = new JwtSecurityToken(rawExternalToken);
@@ -99,6 +63,6 @@ public class MockedTokenController : ControllerBase
         var handler = new JwtSecurityTokenHandler();
         var writtenToken = handler.WriteToken(internalToken);
 
-        return Ok(writtenToken);
+        return writtenToken;
     }
 }

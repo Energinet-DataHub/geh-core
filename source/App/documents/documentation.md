@@ -41,6 +41,7 @@ Features of the example:
     - Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
+- Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
 
 Preparing an Azure Function App project:
 
@@ -50,12 +51,19 @@ Preparing an Azure Function App project:
 
    ```cs
    var host = new HostBuilder()
-       .ConfigureFunctionsWorkerDefaults()
+       .ConfigureFunctionsWorkerDefaults(worker =>
+       {
+           // Http => Authentication
+           worker.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
+       })
        .ConfigureServices((context, services) =>
        {
            // Common
            services.AddApplicationInsightsForIsolatedWorker(subsystemName: "MySubsystem");
            services.AddHealthChecksForIsolatedWorker();
+
+           // Http => Authentication
+           services.AddUserAuthenticationForIsolatedWorker<SubsystemUser, SubsystemUserProvider>();
 
            // Would typically be registered within functional module registration methods instead of here.
            services.AddNodaTimeForApplication();
@@ -67,8 +75,9 @@ Preparing an Azure Function App project:
        .Build();
 
    host.Run();
-
    ```
+
+1) Implement `SubsystemUser` and `SubsystemUserProvider` accordingly.
 
 1) Perform configuration in application settings
 
@@ -164,6 +173,8 @@ Preparing a Web App project:
    // Enable testing
    public partial class Program { }
    ```
+
+1) Implement `SubsystemUser` and `SubsystemUserProvider` accordingly.
 
 1) Perform configuration in application settings
 
