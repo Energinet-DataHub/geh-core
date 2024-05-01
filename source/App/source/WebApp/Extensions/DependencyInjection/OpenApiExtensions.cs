@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
@@ -75,6 +74,7 @@ public static class OpenApiExtensions
         services.AddSwaggerGen(options =>
         {
             options.SupportNonNullableReferenceTypes();
+            options.UseAllOfToExtendReferenceSchemas();
 
             // Set the comments path for the Swagger JSON and UI.
             // See: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
