@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
@@ -22,6 +21,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
 
@@ -70,10 +70,10 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
             var token = TryGetTokenFromHeader(httpRequestData);
             if (!string.IsNullOrWhiteSpace(token))
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenHandler = new JsonWebTokenHandler();
                 if (tokenHandler.CanReadToken(token))
                 {
-                    var securityToken = tokenHandler.ReadJwtToken(token);
+                    var securityToken = (JsonWebToken)tokenHandler.ReadToken(token);
 
                     var userId = GetUserId(securityToken.Claims);
                     var actorId = GetActorId(securityToken.Claims);
