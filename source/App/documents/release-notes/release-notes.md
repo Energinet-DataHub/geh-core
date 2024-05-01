@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 12.2.0
+
+- For `WebApp` dependency injection, added call to `SwaggerGenOptions.UseAllOfToExtendReferenceSchemas` in `OpenApiExtensions.AddSwaggerForWebApp`.
+
 ## Version 12.1.0
 
 - In `FunctionApp` project:
