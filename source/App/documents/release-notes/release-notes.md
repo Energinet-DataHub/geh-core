@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 12.2.1
+
+- In `FunctionApp` project:
+    - Replaced dependency `System.IdentityModel.Tokens.Jwt` with `Microsoft.IdentityModel.JsonWebTokens`
+
 ## Version 12.2.0
 
 - For `WebApp` dependency injection, added call to `SwaggerGenOptions.UseAllOfToExtendReferenceSchemas` in `OpenApiExtensions.AddSwaggerForWebApp`.

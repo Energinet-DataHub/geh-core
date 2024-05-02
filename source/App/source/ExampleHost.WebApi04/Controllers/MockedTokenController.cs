@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ExampleHost.WebApi04.Controllers;
@@ -82,22 +81,27 @@ public class MockedTokenController : ControllerBase
         using var externalTokenReader = new StreamReader(Request.Body);
         var rawExternalToken = await externalTokenReader.ReadToEndAsync().ConfigureAwait(false);
 
-        var externalToken = new JwtSecurityToken(rawExternalToken);
-        var tokenClaim = new Claim(TokenClaim, rawExternalToken);
+        var tokenHandler = new JsonWebTokenHandler();
+        var externalToken = (JsonWebToken)tokenHandler.ReadToken(rawExternalToken);
 
-        var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
-        var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
+        var claims = new Dictionary<string, object>
+        {
+            [TokenClaim] = rawExternalToken,
+            [JwtRegisteredClaimNames.Sub] = "A1AAB954-136A-444A-94BD-E4B615CA4A78",
+            [JwtRegisteredClaimNames.Azp] = "A1DEA55A-3507-4777-8CF3-F425A6EC2094",
+        };
 
-        var internalToken = new JwtSecurityToken(
-            Issuer,
-            externalToken.Audiences.Single(),
-            new[] { tokenClaim, userClaim, actorClaim },
-            externalToken.ValidFrom,
-            externalToken.ValidTo,
-            new SigningCredentials(_testKey, SecurityAlgorithms.RsaSha256));
+        var internalToken = new SecurityTokenDescriptor()
+        {
+            Issuer = Issuer,
+            Audience = externalToken.Audiences.Single(),
+            Claims = claims,
+            NotBefore = externalToken.ValidFrom,
+            Expires = externalToken.ValidTo,
+            SigningCredentials = new SigningCredentials(_testKey, SecurityAlgorithms.RsaSha256),
+        };
 
-        var handler = new JwtSecurityTokenHandler();
-        var writtenToken = handler.WriteToken(internalToken);
+        var writtenToken = tokenHandler.CreateToken(internalToken);
 
         return Ok(writtenToken);
     }
