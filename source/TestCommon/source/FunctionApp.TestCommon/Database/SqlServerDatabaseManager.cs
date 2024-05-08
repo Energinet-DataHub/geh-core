@@ -29,27 +29,40 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 public abstract class SqlServerDatabaseManager<TContextImplementation>
     where TContextImplementation : DbContext
 {
+    /// <summary>
+    /// Use this collation when creating a default database for traditional application usage.
+    /// </summary>
     public const string DefaultCollationName = "SQL_Latin1_General_CP1_CI_AS";
+
+    /// <summary>
+    /// Use this collation when creating a database for use with the Durable Task SQL Provider.
+    /// See https://microsoft.github.io/durabletask-mssql/#/quickstart?id=database-setup
+    /// </summary>
+    public const string DurableTaskCollationName = "Latin1_General_100_BIN2_UTF8";
+
     private readonly SqlServerConnectionStringProvider _sqlServerConnectionStringProvider;
 
-    protected SqlServerDatabaseManager(string prefixForDatabaseName)
-    : this(prefixForDatabaseName, new SqlServerConnectionStringProvider(RuntimeEnvironment.Default))
+    protected SqlServerDatabaseManager(string prefixForDatabaseName, string collationName = DefaultCollationName)
+    : this(prefixForDatabaseName, new SqlServerConnectionStringProvider(RuntimeEnvironment.Default), collationName)
     { }
 
     protected SqlServerDatabaseManager(
         string prefixForDatabaseName,
-        SqlServerConnectionStringProvider sqlServerConnectionStringProvider)
+        SqlServerConnectionStringProvider sqlServerConnectionStringProvider,
+        string collationName = DefaultCollationName)
     {
-        if (string.IsNullOrWhiteSpace(prefixForDatabaseName))
-        {
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(prefixForDatabaseName));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(prefixForDatabaseName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(collationName);
 
         _sqlServerConnectionStringProvider = sqlServerConnectionStringProvider;
         ConnectionString = sqlServerConnectionStringProvider.BuildConnectionStringForDatabaseWithPrefix(prefixForDatabaseName);
+
+        CollationName = collationName;
     }
 
     public string ConnectionString { get; }
+
+    public string CollationName { get; }
 
     /// <summary>
     /// IMPORTANT: Dispose the DbContext after use to return the underlying connection to the pool.
@@ -195,12 +208,12 @@ public abstract class SqlServerDatabaseManager<TContextImplementation>
     }
 
     /// <summary>
-    /// Create a clean database using SQL, similar to the PowerShell script described in the Development.md file.
+    /// Create a clean database using SQL.
     /// </summary>
-    private static string BuildCreateDatabaseCommandText(string databaseName)
+    private string BuildCreateDatabaseCommandText(string databaseName)
     {
         return
-            $"CREATE DATABASE [{databaseName}] COLLATE {DefaultCollationName};" +
+            $"CREATE DATABASE [{databaseName}] COLLATE {CollationName};" +
             $"ALTER DATABASE [{databaseName}] SET READ_COMMITTED_SNAPSHOT ON;";
     }
 }
