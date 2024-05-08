@@ -25,11 +25,12 @@ public class SqlServerDatabaseManagerTests
     [Collection(nameof(SqlServerDatabaseCollectionFixture))]
     public class CreateDatabase
     {
-        [Fact]
-        public async Task When_DbContextIsConfigured_Then_DatabaseCanBeCreatedAsync()
+        [Theory]
+        [MemberData(nameof(GetCollationName), MemberType = typeof(SqlServerDatabaseManagerTests))]
+        public async Task When_DbContextIsConfigured_Then_DatabaseCanBeCreatedAsync(string collationName)
         {
             // Arrange
-            var sut = new SqlServerDatabaseManagerSut();
+            var sut = new SqlServerDatabaseManagerSut(collationName);
 
             // Act
             var databaseCreated = await sut.CreateDatabaseAsync();
@@ -58,11 +59,12 @@ public class SqlServerDatabaseManagerTests
             await context.Database.EnsureDeletedAsync();
         }
 
-        [Fact]
-        public void When_DbContextIsConfigured_Then_DatabaseCanBeCreated()
+        [Theory]
+        [MemberData(nameof(GetCollationName), MemberType = typeof(SqlServerDatabaseManagerTests))]
+        public void When_DbContextIsConfigured_Then_DatabaseCanBeCreated(string collationName)
         {
             // Arrange
-            var sut = new SqlServerDatabaseManagerSut();
+            var sut = new SqlServerDatabaseManagerSut(collationName);
 
             // Act
             var databaseCreated = sut.CreateDatabase();
@@ -182,11 +184,22 @@ public class SqlServerDatabaseManagerTests
         {
         }
 
+        public SqlServerDatabaseManagerSut(string collationName)
+            : base(nameof(SqlServerDatabaseManagerSut), collationName)
+        {
+        }
+
         public override ExampleDbContext CreateDbContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<ExampleDbContext>();
             optionsBuilder.UseSqlServer(ConnectionString);
             return new ExampleDbContext(optionsBuilder.Options);
         }
+    }
+
+    public static IEnumerable<object[]> GetCollationName()
+    {
+        yield return new object[] { SqlServerDatabaseManager<ExampleDbContext>.DefaultCollationName };
+        yield return new object[] { SqlServerDatabaseManager<ExampleDbContext>.DurableTaskCollationName };
     }
 }
