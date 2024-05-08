@@ -31,7 +31,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.FunctionApp.TestCommon</PackageId>
-    <PackageVersion>5.1.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>5.2.0$(VersionSuffix)</PackageVersion>
     <Title>FunctionApp TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
