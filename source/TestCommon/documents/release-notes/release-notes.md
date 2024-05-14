@@ -1,5 +1,11 @@
 # TestCommon Release notes
 
+## Version 5.2.0
+
+- Changes to `SqlServerDatabaseManager`:
+    - Extended constructor of `SqlServerDatabaseManager` with parameter `collationName` to support the creation of databases with other collation names than the `DefaultCollationName`.
+    - Added const `DurableTaskCollationName` to allow easy access to the collation name necessary for the Durable Task SQL Provider.
+
 ## Version 5.1.2
 
 - No functional change
