@@ -28,14 +28,15 @@ public static class ConfigurationBuilderExtensions
     /// </summary>
     /// <param name="builder">The configuration builder.</param>
     /// <param name="keyVaultUrl">KeyVault URL eg. https://myexamplekeyvault.vault.azure.net/</param>
-    public static IConfigurationBuilder AddAuthenticatedAzureKeyVault(this IConfigurationBuilder builder, string keyVaultUrl)
+    /// <param name="defaultAzureCredential"><see cref="DefaultAzureCredential"/> used for key vault authentication, if not supplied, a new <see cref="DefaultAzureCredential"/> will be created and used</param>
+    public static IConfigurationBuilder AddAuthenticatedAzureKeyVault(this IConfigurationBuilder builder, string keyVaultUrl, DefaultAzureCredential? defaultAzureCredential = null)
     {
         if (string.IsNullOrEmpty(keyVaultUrl))
         {
             throw new ArgumentException("Value cannot be null or empty.", nameof(keyVaultUrl));
         }
 
-        var credential = new DefaultAzureCredential();
+        var credential = defaultAzureCredential ?? new DefaultAzureCredential();
         builder.AddAzureKeyVault(new Uri(keyVaultUrl), credential);
 
         return builder;

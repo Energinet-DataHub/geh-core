@@ -19,14 +19,9 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Configuration;
 
-public class IntegrationTestConfigurationTests : IClassFixture<IntegrationTestConfiguration>
+public class IntegrationTestConfigurationTests
 {
-    public IntegrationTestConfigurationTests(IntegrationTestConfiguration sut)
-    {
-        Sut = sut;
-    }
-
-    public IntegrationTestConfiguration Sut { get; }
+    private IntegrationTestConfiguration Sut { get; } = new();
 
     [Fact]
     public void Given_IdentityHasAccess_When_DatabricksSettings_Then_EachPropertyHasValue()

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -27,9 +28,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 /// </summary>
 public class IntegrationTestConfiguration
 {
-    public IntegrationTestConfiguration()
+    public IntegrationTestConfiguration(DefaultAzureCredential? defaultAzureCredential = null)
     {
-        Configuration = BuildKeyVaultConfigurationRoot();
+        Configuration = BuildKeyVaultConfigurationRoot(defaultAzureCredential);
 
 #pragma warning disable CS0618 // Type or member is obsolete
         ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
@@ -90,7 +91,7 @@ public class IntegrationTestConfiguration
     /// </summary>
     public DatabricksSettings DatabricksSettings { get; }
 
-    private static IConfigurationRoot BuildKeyVaultConfigurationRoot()
+    private static IConfigurationRoot BuildKeyVaultConfigurationRoot(DefaultAzureCredential? defaultAzureCredential)
     {
         var integrationtestConfiguration = new ConfigurationBuilder()
             .AddJsonFile("integrationtest.local.settings.json", optional: true)
@@ -101,7 +102,7 @@ public class IntegrationTestConfiguration
         GuardKeyVaultUrl(keyVaultUrl);
 
         return new ConfigurationBuilder()
-            .AddAuthenticatedAzureKeyVault(keyVaultUrl)
+            .AddAuthenticatedAzureKeyVault(keyVaultUrl, defaultAzureCredential)
             .Build();
     }
 
