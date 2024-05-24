@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 5.2.1
+
+- Extended `IntegrationTestConfiguration` with the option to pass in `DefaultAzureCredential` from the outside.
+
 ## Version 5.2.0
 
 - Changes to `SqlServerDatabaseManager`:
