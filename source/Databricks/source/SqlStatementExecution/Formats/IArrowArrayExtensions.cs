@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Dynamic;
 using Apache.Arrow;
+using Apache.Arrow.Types;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
@@ -38,6 +40,7 @@ internal static class IArrowArrayExtensions
             Decimal128Array decimal128Array => decimal128Array.GetValue(i),
             StringArray stringArray => stringArray.GetString(i),
             ListArray listArray => ReadArray(listArray, i),
+            StructArray structArray => ReadStruct(structArray, i),
             _ => throw new NotSupportedException($"Unsupported data type {arrowArray}"),
         };
 
@@ -48,6 +51,28 @@ internal static class IArrowArrayExtensions
         for (var j = 0; j < array.Length; j++)
         {
             objectArray[j] = array.Values.GetValue(j + offset);
+        }
+
+        return objectArray;
+    }
+
+    private static object? ReadStruct(StructArray array, int i)
+    {
+        if (array.Data.DataType is not StructType structType)
+            return null;
+
+        var objectArray = new object?[array.Length];
+        for (var j = 0; j < array.Length; j++)
+        {
+            var structObject = new ExpandoObject();
+            for (var k = 0; k < structType.Fields.Count; k++)
+            {
+                var field = structType.Fields[k];
+                var value = array.Fields[k].GetValue(j);
+                ((IDictionary<string, object?>)structObject).Add(field.Name, value);
+            }
+
+            objectArray[j] = structObject;
         }
 
         return objectArray;
