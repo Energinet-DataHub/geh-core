@@ -40,7 +40,7 @@ internal static class IArrowArrayExtensions
             Decimal128Array decimal128Array => decimal128Array.GetValue(i),
             StringArray stringArray => stringArray.GetString(i),
             ListArray listArray => ReadArray(listArray, i),
-            StructArray structArray => ReadStruct(structArray),
+            StructArray structArray => ReadStructArray(structArray, i),
             _ => throw new NotSupportedException($"Unsupported data type {arrowArray}"),
         };
 
@@ -56,7 +56,7 @@ internal static class IArrowArrayExtensions
         return objectArray;
     }
 
-    private static object? ReadStruct(StructArray array)
+    private static object? ReadStructArray(StructArray array, int i)
     {
         if (array.Data.DataType is not StructType structType)
             return null;
