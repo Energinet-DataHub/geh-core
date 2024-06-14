@@ -61,20 +61,14 @@ internal static class IArrowArrayExtensions
         if (array.Data.DataType is not StructType structType)
             return null;
 
-        var objectArray = new object?[array.Length];
-        for (var j = 0; j < array.Length; j++)
+        var structObject = new ExpandoObject();
+        for (var k = 0; k < structType.Fields.Count; k++)
         {
-            var structObject = new ExpandoObject();
-            for (var k = 0; k < structType.Fields.Count; k++)
-            {
-                var field = structType.Fields[k];
-                var value = array.Fields[k].GetValue(j);
-                ((IDictionary<string, object?>)structObject).Add(field.Name, value);
-            }
-
-            objectArray[j] = structObject;
+            var field = structType.Fields[k];
+            var value = array.Fields[k].GetValue(i);
+            ((IDictionary<string, object?>)structObject).Add(field.Name, value);
         }
 
-        return objectArray;
+        return structObject;
     }
 }
