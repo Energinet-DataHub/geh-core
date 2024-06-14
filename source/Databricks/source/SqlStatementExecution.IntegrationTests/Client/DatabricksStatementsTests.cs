@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Dynamic;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
@@ -24,10 +25,30 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTes
 public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFixture>
 {
     private readonly DatabricksSqlWarehouseFixture _sqlWarehouseFixture;
+    private readonly dynamic[] _expectedStructArrayResponse =
+    [
+        new { name = "Centrum", ts = new[] { new { col1 = 5, col2 = "d" }, new { col1 = 7, col2 = "z" } } },
+        new { name = "Zen", ts = new[] { new { col1 = 1, col2 = "a" }, new { col1 = 2, col2 = "b" } } },
+    ];
 
     public DatabricksStatementsTests(DatabricksSqlWarehouseFixture sqlWarehouseFixture)
     {
         _sqlWarehouseFixture = sqlWarehouseFixture;
+    }
+
+    [Fact]
+    public async Task CanHandleStructArray()
+    {
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var stmt = DatabricksStatement.FromRawSql(@"
+SELECT * FROM VALUES
+('Centrum', array(struct(5, 'd'), struct(7, 'z'))),
+('Zen', array(struct(1, 'a'), struct(2, 'b'))) as data(name, ts)").Build();
+
+        var result = client.ExecuteStatementAsync(stmt, Format.ApacheArrow);
+        var rows = await result.ToArrayAsync();
+
+        CompareStructArrayResponse(rows, _expectedStructArrayResponse).Should().BeTrue();
     }
 
     [Fact]
@@ -234,5 +255,26 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         }
 
         Assert.Fail("No cancelled query found in history for statementId: " + statementId);
+    }
+
+    private static bool CompareStructArrayResponse(dynamic[] rows, dynamic[] expected)
+    {
+        if (rows.Length != expected.Length) return false;
+        if (CompareRow(rows[0], expected[0]) == false) return false;
+        return CompareRow(rows[1], expected[1]) != false;
+
+        static bool CompareRow(dynamic row, dynamic expectedRow)
+        {
+            if (string.Equals(row.name, expectedRow.name, StringComparison.Ordinal) == false) return false;
+            if (row.ts.Length != expectedRow.ts.Length) return false;
+
+            for (var i = 0; i < row.ts.Length; i++)
+            {
+                if (row.ts[i].col1 != expectedRow.ts[i].col1) return false;
+                if (string.Equals(row.ts[i].col2, expectedRow.ts[i].col2, StringComparison.Ordinal) == false) return false;
+            }
+
+            return true;
+        }
     }
 }

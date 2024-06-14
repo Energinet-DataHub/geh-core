@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 10.1.0
+
+- Add support for `DatabricksSqlStatementClient` to execute SQL statements that returns StructArray in Apache Arrow format.
+
 ## Version 10.0.2
 
 - No functional change
