@@ -45,18 +45,17 @@ public class IArrowArrayExtensionsTests
             .Arrays.First();
 
         // Act
-        var result = recordBatch.GetValue(0);
+        var result = recordBatch.GetValue(1);
 
         // Assert
         using var assertionScope = new AssertionScope();
         result.Should().NotBeNull();
-        foreach (dynamic element in (IEnumerable<dynamic>)result!)
-        {
-            var id = (int)element.id;
-            var timestamp = (DateTimeOffset)element.timestamp;
+        var element = (dynamic)result!;
 
-            id.Should().BeOneOf([1, 2]);
-            timestamp.Should().BeOneOf(dateTimeOffsets);
-        }
+        var id = (int)element.id;
+        var timestamp = (DateTimeOffset)element.timestamp;
+
+        id.Should().Be(2);
+        timestamp.Should().Be(dateTimeOffsets.Last());
     }
 }
