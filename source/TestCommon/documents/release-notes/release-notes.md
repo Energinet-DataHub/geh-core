@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 5.3.0
+
+- Added extensions to class `DatabricksSchemaManager`:
+    - Method `InsertFromCsvFileAsync`
+
 ## Version 5.2.1
 
 - Extended `IntegrationTestConfiguration` with the option to pass in `DefaultAzureCredential` from the outside.
