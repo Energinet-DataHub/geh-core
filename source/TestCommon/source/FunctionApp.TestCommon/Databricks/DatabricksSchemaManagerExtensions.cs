@@ -23,7 +23,7 @@ public static class DatabricksSchemaManagerExtensions
 
     /// <summary>
     /// Expects a CSV file which was exported from Databricks.
-    /// It means the header must contain the column names and each row must contain the delta table values per column.
+    /// The header must contain the column names and each row must contain the delta table values per column.
     /// Delta table arrays must be parsed differently, but otherwise all values can be parsed from the CSV into strings.
     /// All parsed rows are then inserted into a delta table.
     /// </summary>
