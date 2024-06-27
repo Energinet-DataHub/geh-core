@@ -33,7 +33,7 @@ public static class DatabricksSchemaManagerExtensions
         Dictionary<string, (string DataType, bool IsNullable)> columnDefinitions,
         string csvFilePath)
     {
-        using (var streamReader = new StreamReader(testFilePath))
+        using (var streamReader = new StreamReader(csvFilePath))
         using (var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture))
         {
             await csvReader.ReadAsync().ConfigureAwait(false);
@@ -48,7 +48,7 @@ public static class DatabricksSchemaManagerExtensions
                 var row = new string[csvReader.HeaderRecord.Length];
                 for (var columnIndex = 0; columnIndex < csvReader.ColumnCount; columnIndex++)
                 {
-                    row[columnIndex] = ParseColumnValue(columnDefinition, csvReader, columnIndex);
+                    row[columnIndex] = ParseColumnValue(columnDefinitions, csvReader, columnIndex);
                 }
 
                 rows.Add(row);
@@ -70,12 +70,12 @@ public static class DatabricksSchemaManagerExtensions
         var columnName = csvReader.HeaderRecord![columnIndex];
         var columnValue = csvReader.GetField(columnIndex);
 
-        if (columnDefinition[columnName].IsNullable && columnValue == string.Empty)
+        if (columnDefinitions[columnName].IsNullable && columnValue == string.Empty)
         {
             return "NULL";
         }
 
-        if (columnDefinition[columnName].DataType == DeltaTableArrayOfStrings)
+        if (columnDefinitions[columnName].DataType == DeltaTableArrayOfStrings)
         {
             var arrayContent = columnValue!
                 .Replace('[', '(')
