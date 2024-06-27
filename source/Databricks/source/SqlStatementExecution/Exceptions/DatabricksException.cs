@@ -16,6 +16,9 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 
+/// <summary>
+/// Represents an exception that occurred during the execution of a Databricks statement.
+/// </summary>
 public sealed class DatabricksException : Exception
 {
     internal DatabricksStatementRequest DatabricksStatementRequest { get; }
