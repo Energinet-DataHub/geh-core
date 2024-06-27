@@ -30,7 +30,7 @@ public static class DatabricksSchemaManagerExtensions
     public static async Task InsertFromCsvFileAsync(
         this DatabricksSchemaManager schemaManager,
         string tableName,
-        Dictionary<string, (string DataType, bool IsNullable)> columnDefinition,
+        Dictionary<string, (string DataType, bool IsNullable)> columnDefinitions,
         string testFilePath)
     {
         using (var streamReader = new StreamReader(testFilePath))
