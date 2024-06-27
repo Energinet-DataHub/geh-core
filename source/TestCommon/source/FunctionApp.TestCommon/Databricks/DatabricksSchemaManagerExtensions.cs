@@ -63,7 +63,7 @@ public static class DatabricksSchemaManagerExtensions
     /// Only arrays require special handling; all other values can be inserted as "strings".
     /// </summary>
     private static string ParseColumnValue(
-        Dictionary<string, (string DataType, bool IsNullable)> columnDefinition,
+        Dictionary<string, (string DataType, bool IsNullable)> columnDefinitions,
         CsvReader csvReader,
         int columnIndex)
     {
