@@ -68,11 +68,13 @@ internal class DatabricksStatementRequest
             try
             {
                 response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken).ConfigureAwait(false);
-                if (response.IsSucceeded) return response;
+                if (response.IsSucceeded)
+                    return response;
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    if (string.IsNullOrEmpty(response.statement_id)) throw new InvalidOperationException("The statement_id is missing from databricks response");
+                    if (string.IsNullOrEmpty(response.statement_id))
+                        throw new InvalidOperationException("The statement_id is missing from databricks response");
 
                     // Cancel the statement without cancellation token since it is already cancelled
                     await CancelStatementAsync(client, endpoint, response.statement_id).ConfigureAwait(false);
@@ -81,13 +83,14 @@ internal class DatabricksStatementRequest
             }
             catch (TaskCanceledException tce)
             {
-                if (!string.IsNullOrEmpty(response?.statement_id)) await CancelStatementAsync(client, endpoint, response.statement_id).ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(response?.statement_id))
+                    await CancelStatementAsync(client, endpoint, response.statement_id).ConfigureAwait(false);
                 throw new OperationCanceledException("The operation was cancelled", tce, cancellationToken);
             }
         }
         while (response.IsPending || response.IsRunning);
 
-        throw new DatabricksException("Unable to fetch result from Databricks", this, response);
+        throw new DatabricksException(this, response);
     }
 
     private async Task<DatabricksStatementResponse> GetResponseFromDataWarehouseAsync(
@@ -114,7 +117,7 @@ internal class DatabricksStatementRequest
 
         if (response == null)
         {
-            throw new DatabricksException("Unable to fetch result from Databricks", this);
+            throw new DatabricksException(this);
         }
 
         return response;

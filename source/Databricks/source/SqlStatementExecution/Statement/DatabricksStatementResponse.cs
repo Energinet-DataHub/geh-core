@@ -48,6 +48,15 @@ internal class DatabricksStatementResponse
 internal class Status
 {
     public string state { get; set; }
+
+    public StatusError? error { get; set; }
+}
+
+internal class StatusError
+{
+    public string? error_code { get; set; }
+
+    public string? message { get; set; }
 }
 
 internal class Manifest
