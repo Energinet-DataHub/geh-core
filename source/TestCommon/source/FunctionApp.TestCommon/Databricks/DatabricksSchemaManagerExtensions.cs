@@ -31,7 +31,7 @@ public static class DatabricksSchemaManagerExtensions
         this DatabricksSchemaManager schemaManager,
         string tableName,
         Dictionary<string, (string DataType, bool IsNullable)> columnDefinitions,
-        string testFilePath)
+        string csvFilePath)
     {
         using (var streamReader = new StreamReader(testFilePath))
         using (var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture))
