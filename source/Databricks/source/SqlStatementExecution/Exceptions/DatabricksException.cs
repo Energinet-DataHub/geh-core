@@ -16,13 +16,13 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 
-internal class DatabricksException : Exception
+public sealed class DatabricksException : Exception
 {
-    public DatabricksStatementRequest DatabricksStatementRequest { get; }
+    internal DatabricksStatementRequest DatabricksStatementRequest { get; }
 
-    public DatabricksStatementResponse? Response { get; }
+    internal DatabricksStatementResponse? Response { get; }
 
-    public DatabricksException(
+    internal DatabricksException(
         string errorMessage,
         DatabricksStatementRequest databricksStatementRequest,
         DatabricksStatementResponse? response = null)

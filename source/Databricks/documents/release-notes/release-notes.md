@@ -1,5 +1,11 @@
 # Databricks Release Notes
 
+## Version 11.0.0
+
+- Add support for above 2 GB results.
+- Unused `DatabricksSqlException` removed.
+- `DatabricksException` made public so that it can be caught by clients.
+
 ## Version 10.1.0
 
 - Add support for `DatabricksSqlStatementClient` to execute SQL statements that returns StructArray in Apache Arrow format.
