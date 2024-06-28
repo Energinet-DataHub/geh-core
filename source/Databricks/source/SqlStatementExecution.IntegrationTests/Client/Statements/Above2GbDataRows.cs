@@ -12,24 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
-using Xunit.Categories;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Client.Statements;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Exceptions;
-
-[UnitTest]
-public class DatabricksSqlExceptionTests
+/// <summary>
+/// Produces 3 GB of data.
+/// </summary>
+public class Above2GbDataRows : DatabricksStatement
 {
-    [Fact]
-    public void Constructor_WhenCalled_SetsMessage()
+    protected internal override string GetSqlStatement()
     {
-        // Arrange
-        const string message = "foo";
-
-        // Act
-        var actual = new DatabricksSqlException(message);
-
-        // Assert
-        actual.Message.Should().Be(message);
+        return "SELECT concat_ws('-', M.id, N.id, LPAD(random(), 3000, 'X')) as ID FROM range(1000) AS M, range(1000) AS N";
     }
 }

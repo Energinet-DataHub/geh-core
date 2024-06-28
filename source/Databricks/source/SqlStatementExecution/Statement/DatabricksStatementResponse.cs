@@ -48,6 +48,15 @@ internal class DatabricksStatementResponse
 internal class Status
 {
     public string state { get; set; }
+
+    public StatusError? error { get; set; }
+}
+
+internal class StatusError
+{
+    public string? error_code { get; set; }
+
+    public string? message { get; set; }
 }
 
 internal class Manifest
@@ -56,13 +65,13 @@ internal class Manifest
 
     public Schema schema { get; set; }
 
-    public int total_chunk_count { get; set; }
+    public long total_chunk_count { get; set; }
 
     public Chunks[] chunks { get; set; }
 
-    public int total_row_count { get; set; }
+    public long total_row_count { get; set; }
 
-    public int total_byte_count { get; set; }
+    public long total_byte_count { get; set; }
 
     public bool truncated { get; set; }
 }
@@ -91,13 +100,13 @@ internal class Columns
 
 internal class Chunks
 {
-    public int chunk_index { get; set; }
+    public long chunk_index { get; set; }
 
-    public int row_offset { get; set; }
+    public long row_offset { get; set; }
 
-    public int row_count { get; set; }
+    public long row_count { get; set; }
 
-    public int byte_count { get; set; }
+    public long byte_count { get; set; }
 }
 
 internal class Result
@@ -107,13 +116,13 @@ internal class Result
 
 internal class External_links
 {
-    public int chunk_index { get; set; }
+    public long chunk_index { get; set; }
 
-    public int row_offset { get; set; }
+    public long row_offset { get; set; }
 
-    public int row_count { get; set; }
+    public long row_count { get; set; }
 
-    public int byte_count { get; set; }
+    public long byte_count { get; set; }
 
     public string external_link { get; set; }
 

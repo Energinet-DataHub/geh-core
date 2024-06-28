@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Dynamic;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
@@ -166,6 +165,22 @@ SELECT * FROM VALUES
         rowCount.Should().Be(1000000);
     }
 
+    [Theory]
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new Above2GbDataRows();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, format);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(1000000);
+    }
+
     /// <summary>
     /// Given a query that takes more than 10 seconds
     /// And the initial timeout is set to 1 second
@@ -249,9 +264,11 @@ SELECT * FROM VALUES
             var history = await response.Content.ReadFromJsonAsync<QueryHistory>();
 
             var query = history?.Queries.FirstOrDefault(q => q.QueryText.EndsWith(statementId, StringComparison.InvariantCultureIgnoreCase));
-            if (query == null) continue;
+            if (query == null)
+                continue;
 
-            if (query.Status.Equals("Canceled", StringComparison.OrdinalIgnoreCase)) return;
+            if (query.Status.Equals("Canceled", StringComparison.OrdinalIgnoreCase))
+                return;
         }
 
         Assert.Fail("No cancelled query found in history for statementId: " + statementId);
@@ -259,19 +276,25 @@ SELECT * FROM VALUES
 
     private static bool CompareStructArrayResponse(dynamic[] rows, dynamic[] expected)
     {
-        if (rows.Length != expected.Length) return false;
-        if (CompareRow(rows[0], expected[0]) == false) return false;
+        if (rows.Length != expected.Length)
+            return false;
+        if (CompareRow(rows[0], expected[0]) == false)
+            return false;
         return CompareRow(rows[1], expected[1]) != false;
 
         static bool CompareRow(dynamic row, dynamic expectedRow)
         {
-            if (string.Equals(row.name, expectedRow.name, StringComparison.Ordinal) == false) return false;
-            if (row.ts.Length != expectedRow.ts.Length) return false;
+            if (string.Equals(row.name, expectedRow.name, StringComparison.Ordinal) == false)
+                return false;
+            if (row.ts.Length != expectedRow.ts.Length)
+                return false;
 
             for (var i = 0; i < row.ts.Length; i++)
             {
-                if (row.ts[i].col1 != expectedRow.ts[i].col1) return false;
-                if (string.Equals(row.ts[i].col2, expectedRow.ts[i].col2, StringComparison.Ordinal) == false) return false;
+                if (row.ts[i].col1 != expectedRow.ts[i].col1)
+                    return false;
+                if (string.Equals(row.ts[i].col2, expectedRow.ts[i].col2, StringComparison.Ordinal) == false)
+                    return false;
             }
 
             return true;
