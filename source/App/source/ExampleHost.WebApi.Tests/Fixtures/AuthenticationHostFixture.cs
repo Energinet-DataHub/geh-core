@@ -33,7 +33,7 @@ public class AuthenticationHostFixture : IAsyncLifetime
     {
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
-        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("X-AZURE-B2C-BFF-APP-ID");
+        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
 
         Web04Host = WebHost.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>

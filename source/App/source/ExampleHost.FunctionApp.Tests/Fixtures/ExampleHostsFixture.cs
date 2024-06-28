@@ -44,7 +44,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
-        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("X-AZURE-B2C-BFF-APP-ID");
+        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-BFF-APP-ID");
     }
 
     /// <summary>
