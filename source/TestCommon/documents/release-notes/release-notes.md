@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 5.3.1
+
+- No functional change
+
 ## Version 5.3.0
 
 - Added extensions to class `DatabricksSchemaManager`:
