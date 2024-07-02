@@ -133,9 +133,9 @@ public class IntegrationTestConfiguration
             Tenant = configuration.GetValue("AZURE-B2C-TENANT"),
             ServicePrincipalId = configuration.GetValue("AZURE-B2C-SPN-ID"),
             ServicePrincipalSecret = configuration.GetValue("AZURE-B2C-SPN-SECRET"),
-            BackendAppId = configuration.GetValue("AZURE-B2C-BACKEND-APP-ID"),
-            BackendServicePrincipalObjectId = configuration.GetValue("AZURE-B2C-BACKEND-SPN-OBJECTID"),
-            BackendAppObjectId = configuration.GetValue("AZURE-B2C-BACKEND-APP-OBJECTID"),
+            BackendAppId = configuration.GetValue("AZURE-B2C-TESTBACKEND-APP-ID"),
+            BackendServicePrincipalObjectId = configuration.GetValue("AZURE-B2C-TESTBACKEND-SPN-OBJECTID"),
+            BackendAppObjectId = configuration.GetValue("AZURE-B2C-TESTBACKEND-APP-OBJECTID"),
         };
     }
 
