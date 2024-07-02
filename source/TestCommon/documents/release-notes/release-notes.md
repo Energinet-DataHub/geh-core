@@ -1,8 +1,10 @@
 # TestCommon Release notes
 
-## Version 5.3.1
+## Version 6.0.0
 
-- No functional change
+- Breaking changes
+    - TestCommon <= 5.3.0 uses appregistrations which has been renamed in 6.0.0, see [dh3-infrastructure PR-1613](https://github.com/Energinet-DataHub/dh3-infrastructure/pull/1613/files) for details. Legacy app registrations referenced in versions <= 5.3.1 should be considered deprecated and product teams should upgrade to TestCommon 6.0.0 now.
+    - Once legacy app registrations has been removed from B2C instance, test runs using TestCommon versions <= 5.3.1 will cause authenticationtests to fail.
 
 ## Version 5.3.0
 
