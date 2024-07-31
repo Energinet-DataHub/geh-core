@@ -31,6 +31,7 @@ namespace ExampleHost.FunctionApp01.Functions;
 /// Similar functionality exists for Web App in the 'MockedTokenController' class
 /// located in the 'ExampleHost.WebApi04' project.
 /// </summary>
+[AllowAnonymous]
 public class MockedTokenFunction
 {
     private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
@@ -40,7 +41,6 @@ public class MockedTokenFunction
     private static readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
     [Function(nameof(GetConfiguration))]
-    [AllowAnonymous]
     public IActionResult GetConfiguration(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
@@ -58,7 +58,6 @@ public class MockedTokenFunction
     }
 
     [Function(nameof(GetPublicKeys))]
-    [AllowAnonymous]
     public IActionResult GetPublicKeys(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
@@ -86,7 +85,6 @@ public class MockedTokenFunction
     }
 
     [Function(nameof(GetToken))]
-    [AllowAnonymous]
     public async Task<IActionResult> GetToken(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
