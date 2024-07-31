@@ -25,6 +25,9 @@ namespace ExampleHost.FunctionApp01.Functions;
 ///
 /// This function is called when we from tests:
 ///  * Retrieve an "internal token".
+///
+/// Similar functionality exists for Web App in the 'MockedTokenController' class
+/// located in the 'ExampleHost.WebApi04' project.
 /// </summary>
 public class MockedTokenFunction
 {

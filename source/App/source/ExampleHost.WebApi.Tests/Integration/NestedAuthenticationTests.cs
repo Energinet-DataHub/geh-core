@@ -41,6 +41,19 @@ public sealed class NestedAuthenticationTests
     private AuthenticationHostFixture Fixture { get; }
 
     [Fact]
+    public async Task CallingApi04Get_NoEndpoint_Returns404()
+    {
+        // Arrange
+        using var request = new HttpRequestMessage(HttpMethod.Get, "webapi04/authentication/does_not_exist");
+
+        // Act
+        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task CallingApi04Get_Anonymous_Succeeds()
     {
         // Arrange
@@ -58,19 +71,6 @@ public sealed class NestedAuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04Get_NoEndpoint_Returns404()
-    {
-        // Arrange
-        using var request = new HttpRequestMessage(HttpMethod.Get, "webapi04/authentication/does_not_exist");
-
-        // Act
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
     public async Task CallingApi04Get_AuthRequiredButNoToken_Unauthorized()
     {
         // Arrange
@@ -78,6 +78,22 @@ public sealed class NestedAuthenticationTests
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
+        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task CallingApi04Get_AuthWithFakeToken_Unauthorized()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = CreateAuthenticationHeaderWithFakeToken();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
         using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
 
         // Assert
@@ -141,12 +157,8 @@ public sealed class NestedAuthenticationTests
         Assert.True(Guid.TryParse(content, out _));
     }
 
-    [Fact]
-    public async Task CallingApi04Get_AuthWithFakeToken_Unauthorized()
+    private static string CreateAuthenticationHeaderWithFakeToken()
     {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
         var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var subClaim = new Claim("sub", Guid.NewGuid().ToString());
@@ -155,13 +167,8 @@ public sealed class NestedAuthenticationTests
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.WriteToken(securityToken);
 
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", $"Bearer {token}");
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        var authenticationHeader = $"Bearer {token}";
+        return authenticationHeader;
     }
 
     /// <summary>

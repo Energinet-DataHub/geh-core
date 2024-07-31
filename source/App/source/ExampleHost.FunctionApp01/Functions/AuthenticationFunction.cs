@@ -19,6 +19,10 @@ using Microsoft.Azure.Functions.Worker.Http;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
+/// <summary>
+/// Similar functionality exists for Web App in the 'AuthenticationController' class
+/// located in the 'ExampleHost.WebApi04' project.
+/// </summary>
 public class AuthenticationFunction
 {
     private readonly IUserContext<ExampleSubsystemUser> _userContext;
@@ -26,6 +30,32 @@ public class AuthenticationFunction
     public AuthenticationFunction(IUserContext<ExampleSubsystemUser> userContext)
     {
         _userContext = userContext;
+    }
+
+    // TODO: Add attribute "AllowAnonymous"
+    [Function(nameof(GetAnonymous))]
+    public Guid GetAnonymous(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "authentication/anon/{identification:guid}")]
+        HttpRequestData httpRequest,
+        Guid identification)
+    {
+        return identification;
+    }
+
+    // TODO: Add attribute "Authorize"
+    [Function(nameof(GetWithPermission))]
+    public Guid GetWithPermission(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "authentication/auth/{identification:guid}")]
+        HttpRequestData httpRequest,
+        Guid identification)
+    {
+        return identification;
     }
 
     /// <summary>
