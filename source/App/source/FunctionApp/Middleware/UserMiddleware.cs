@@ -17,6 +17,7 @@ using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Users;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,6 +50,13 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         var httpContext = context.GetHttpContext()
             ?? throw new InvalidOperationException("UserMiddleware running without HttpContext. ASP.NET Core integration for HTTP is required.");
 
+        if (IfAllowAnonymous(httpContext))
+        {
+            // Next middleware
+            await next(context).ConfigureAwait(false);
+            return;
+        }
+
         var isUserSet = await CanSetUserAsync(context, httpContext.Request).ConfigureAwait(false);
         if (isUserSet)
         {
@@ -57,8 +65,24 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         }
         else
         {
+            // Subsystem did not accept the user or we could not create the user.
             httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
         }
+    }
+
+    /// <summary>
+    /// Must configure DarkLoop Authorization extension and ensure its middleware has run for this to work.
+    ///
+    /// If "claims principal" is null then either DarkLoop Authorization extension could not authenticate and will set the response accordingly
+    /// or it is not required because it is configured with AllowAnonymous.
+    ///
+    /// In any case we skip processing within this middleware.
+    /// </summary>
+    private static bool IfAllowAnonymous(HttpContext httpContext)
+    {
+        var claimsPrincipal = httpContext.Features.Get<IHttpAuthenticationFeature>()?.User;
+
+        return claimsPrincipal == null;
     }
 
     private static async Task<bool> CanSetUserAsync(FunctionContext context, HttpRequest httpRequest)

@@ -70,7 +70,6 @@ public class NestedAuthenticationTests : IAsyncLifetime
         actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    // TODO: Should return "OK" because of AllowAnonymous attribute. Currently this is returning "Unauthorized" because the UserMiddleware currently always expects a token.
     [Fact]
     public async Task CallingApi01AuthenticationGetAnonymous_WithNoToken_Succeeds()
     {
@@ -88,7 +87,6 @@ public class NestedAuthenticationTests : IAsyncLifetime
         content.Should().Be(requestIdentification);
     }
 
-    // TODO: Should return "Unauthorized" because of Authorize attribute. Currently this is returning "Unauthorized" because the UserMiddleware currently always expects a token.
     [Fact]
     public async Task CallingApi01AuthenticationGetWithPermission_WithNoToken_Unauthorized()
     {
@@ -103,7 +101,6 @@ public class NestedAuthenticationTests : IAsyncLifetime
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    // TODO: Should return "Unauthorized" because of Authorize attribute. Currently this is returning "OK" because the UserMiddleware currently expects a token with certain claims but doesn't otherwise validate the token.
     [Fact]
     public async Task CallingApi01AuthenticationGetWithPermission_WithFakeToken_Unauthorized()
     {
@@ -120,7 +117,6 @@ public class NestedAuthenticationTests : IAsyncLifetime
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    // TODO: Should return "OK" because of Authorize attribute. Currently this is returning "OK" because the UserMiddleware currently expects a token with certain claims but doesn't otherwise validate the token.
     [Fact]
     public async Task CallingApi01AuthenticationGetWithPermission_WithToken_Succeeds()
     {

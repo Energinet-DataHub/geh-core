@@ -35,11 +35,6 @@ var host = new HostBuilder()
         //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
         builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
             excludedFunctionNames: [
-                // TODO: Refactor UserMiddleware so it respects 'AllowAnonymous' attribute, then we can avoid the following:
-                $"{nameof(AuthenticationFunction.GetAnonymous)}",
-                $"{nameof(MockedTokenFunction.GetConfiguration)}",
-                $"{nameof(MockedTokenFunction.GetPublicKeys)}",
-                $"{nameof(MockedTokenFunction.GetToken)}",
                 $"{nameof(RestApiExampleFunction.TelemetryAsync)}"]);
     })
     .ConfigureServices((context, services) =>
