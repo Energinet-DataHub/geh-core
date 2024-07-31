@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
 using Azure.Monitor.Query;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.Options;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -85,6 +86,20 @@ public class ExampleHostsFixture : IAsyncLifetime
         var port = 8000;
         var app01HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp01", ref port);
         var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
+
+        // => App01 settings for authentication
+        var app01BaseUrl = "http://localhost:8001";
+        var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
+        var internalMetadataAddress = $"{app01BaseUrl}/api/v2.0/.well-known/openid-configuration";
+
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", externalMetadataAddress);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", externalMetadataAddress);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", BffAppId);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", internalMetadataAddress);
 
         // => Integration events
         app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);

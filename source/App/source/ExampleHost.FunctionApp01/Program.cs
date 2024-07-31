@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using DarkLoop.Azure.Functions.Authorization;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
@@ -22,7 +21,6 @@ using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication(builder =>
@@ -36,11 +34,15 @@ var host = new HostBuilder()
         //  * Endpoints for which UserMiddleware is enabled must call the endpoint with a token
         //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
         builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
-            excludedFunctionNames:
-                [$"{nameof(MockedTokenFunction.GetToken)}",
+            excludedFunctionNames: [
+                // TODO: Refactor UserMiddleware so it respects 'AllowAnonymous' attribute, then we can avoid the following:
+                $"{nameof(AuthenticationFunction.GetAnonymous)}",
+                $"{nameof(MockedTokenFunction.GetConfiguration)}",
+                $"{nameof(MockedTokenFunction.GetPublicKeys)}",
+                $"{nameof(MockedTokenFunction.GetToken)}",
                 $"{nameof(RestApiExampleFunction.TelemetryAsync)}"]);
     })
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
         // Configuration verified in tests:
         //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to
@@ -66,31 +68,11 @@ var host = new HostBuilder()
         services.AddHealthChecksForIsolatedWorker();
 
         // Http => Authentication (verified in tests)
-        services.AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
-
-        // Http => DarkLoop Authentication extension (verified in tests)
+        // Configure for testing
+        AuthenticationExtensions.DisableHttpsConfiguration = true;
         services
-            .AddFunctionsAuthentication(JwtFunctionsBearerDefaults.AuthenticationScheme)
-            .AddJwtFunctionsBearer(options =>
-            {
-                options.Authority = "https://login.microsoftonline.com/<your-tenant>";
-                options.Audience = "<your-audience>";
-
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                };
-            });
-
-        // Http => DarkLoop Authorization extension (verified in tests)
-        services
-            .AddFunctionsAuthorization(options =>
-            {
-                // Add your policies here
-            });
+            .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
+            .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

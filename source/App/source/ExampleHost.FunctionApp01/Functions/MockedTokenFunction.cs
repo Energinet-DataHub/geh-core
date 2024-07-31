@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Security.Cryptography;
+using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -38,7 +40,54 @@ public class MockedTokenFunction
 
     private static readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
+    [Function(nameof(GetConfiguration))]
+    [AllowAnonymous]
+    public IActionResult GetConfiguration(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "v2.0/.well-known/openid-configuration")]
+        HttpRequest httpRequest)
+    {
+        var configuration = new
+        {
+            issuer = Issuer,
+            jwks_uri = $"http://{httpRequest.Host}/api/discovery/v2.0/keys",
+        };
+
+        return new OkObjectResult(configuration);
+    }
+
+    [Function(nameof(GetPublicKeys))]
+    [AllowAnonymous]
+    public IActionResult GetPublicKeys(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "discovery/v2.0/keys")]
+        HttpRequest httpRequest)
+    {
+        var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(_testKey);
+
+        var keys = new
+        {
+            keys = new[]
+            {
+                new
+                {
+                    kid = jwk.Kid,
+                    kty = jwk.Kty,
+                    n = jwk.N,
+                    e = jwk.E,
+                },
+            },
+        };
+
+        return new OkObjectResult(keys);
+    }
+
     [Function(nameof(GetToken))]
+    [AllowAnonymous]
     public async Task<IActionResult> GetToken(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,

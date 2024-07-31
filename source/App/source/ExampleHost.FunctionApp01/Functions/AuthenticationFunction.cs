@@ -71,6 +71,7 @@ public class AuthenticationFunction
     ///   If the user is not available an Empty guid is returned.
     /// </summary>
     [Function(nameof(GetUserWithPermission))]
+    [Authorize]
     public IActionResult GetUserWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
