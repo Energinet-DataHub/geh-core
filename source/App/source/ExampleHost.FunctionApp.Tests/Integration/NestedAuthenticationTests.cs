@@ -70,6 +70,7 @@ public class NestedAuthenticationTests : IAsyncLifetime
         actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    // TODO: Should return "OK" because of AllowAnonymous attribute. Currently this is returning "Unauthorized" because the UserMiddleware currently always expects a token.
     [Fact]
     public async Task CallingApi01AuthenticationGetAnonymous_WithNoToken_Succeeds()
     {
