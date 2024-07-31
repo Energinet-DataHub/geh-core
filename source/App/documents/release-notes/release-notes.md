@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 12.3.0
+
+- In `FunctionApp` project:
+    - Add functionality to configure authentication and authorization for HttpTrigger's
+
 ## Version 12.2.1
 
 - In `FunctionApp` project:
