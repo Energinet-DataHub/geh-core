@@ -26,6 +26,8 @@ using Microsoft.IdentityModel.JsonWebTokens;
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
 
 /// <summary>
+/// This middleware is only supported for HttpTrigger functions that uses ASP.NET Core integration for HTTP.
+///
 /// If possible, retrieved JWT from header and creates a user, which is then
 /// set to the <see cref="UserContext{TUser}"/> and thereby made available
 /// for dependency injection in the executing function and other services.
