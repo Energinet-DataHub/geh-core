@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -38,12 +39,12 @@ public class MockedTokenFunction
     private static readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
     [Function(nameof(GetToken))]
-    public async Task<string> GetToken(
+    public async Task<ActionResult<string>> GetToken(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "post",
             Route = "token")]
-        HttpRequestData httpRequest)
+        HttpRequest httpRequest)
     {
         using var externalTokenReader = new StreamReader(httpRequest.Body);
         var rawExternalToken = await externalTokenReader.ReadToEndAsync().ConfigureAwait(false);
@@ -70,6 +71,6 @@ public class MockedTokenFunction
 
         var writtenToken = tokenHandler.CreateToken(internalToken);
 
-        return writtenToken;
+        return new OkObjectResult(writtenToken);
     }
 }

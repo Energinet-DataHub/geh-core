@@ -14,8 +14,9 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using ExampleHost.FunctionApp01.Security;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
@@ -34,28 +35,28 @@ public class AuthenticationFunction
 
     // TODO: Add attribute "AllowAnonymous"
     [Function(nameof(GetAnonymous))]
-    public Guid GetAnonymous(
+    public ActionResult<Guid> GetAnonymous(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
             Route = "authentication/anon/{identification:guid}")]
-        HttpRequestData httpRequest,
+        HttpRequest httpRequest,
         Guid identification)
     {
-        return identification;
+        return new OkObjectResult(identification);
     }
 
     // TODO: Add attribute "Authorize"
     [Function(nameof(GetWithPermission))]
-    public Guid GetWithPermission(
+    public ActionResult<Guid> GetWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
             Route = "authentication/auth/{identification:guid}")]
-        HttpRequestData httpRequest,
+        HttpRequest httpRequest,
         Guid identification)
     {
-        return identification;
+        return new OkObjectResult(identification);
     }
 
     /// <summary>
@@ -69,21 +70,21 @@ public class AuthenticationFunction
     ///   If the user is not available an Empty guid is returned.
     /// </summary>
     [Function(nameof(GetUserWithPermission))]
-    public string GetUserWithPermission(
+    public ActionResult<Guid> GetUserWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
             Route = "authentication/user")]
-        HttpRequestData httpRequest,
+        HttpRequest httpRequest,
         FunctionContext context)
     {
         try
         {
-            return _userContext.CurrentUser.UserId.ToString();
+            return new OkObjectResult(_userContext.CurrentUser.UserId.ToString());
         }
         catch
         {
-            return Guid.Empty.ToString();
+            return new OkObjectResult(Guid.Empty.ToString());
         }
     }
 }

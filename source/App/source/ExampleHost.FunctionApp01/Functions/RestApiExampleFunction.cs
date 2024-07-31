@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
 using Azure.Messaging.ServiceBus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace ExampleHost.FunctionApp01.Functions;
@@ -32,18 +32,18 @@ public class RestApiExampleFunction
     }
 
     [Function(nameof(TelemetryAsync))]
-    public async Task<HttpResponseData> TelemetryAsync(
+    public async Task<IActionResult> TelemetryAsync(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "post",
             Route = "v1/telemetry")]
-        HttpRequestData httpRequest)
+        HttpRequest httpRequest)
     {
         _logger.LogInformation($"ExampleHost {nameof(TelemetryAsync)}: We should be able to find this log message by following the trace of the request.");
 
         await SendServiceBusMessageAsync(nameof(TelemetryAsync)).ConfigureAwait(false);
 
-        return CreateResponse(httpRequest);
+        return new AcceptedResult();
     }
 
     /// <summary>
@@ -55,10 +55,5 @@ public class RestApiExampleFunction
     private Task SendServiceBusMessageAsync(string messageContent)
     {
         return _serviceBusSender.SendMessageAsync(new ServiceBusMessage(messageContent));
-    }
-
-    private static HttpResponseData CreateResponse(HttpRequestData httpRequest)
-    {
-        return httpRequest.CreateResponse(HttpStatusCode.Accepted);
     }
 }

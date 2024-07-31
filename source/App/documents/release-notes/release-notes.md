@@ -1,9 +1,10 @@
 # App Release notes
 
-## Version 12.3.0
+## Version 13.0.0
 
 - In `FunctionApp` project:
-    - Add functionality to configure authentication and authorization for HttpTrigger's
+    - Refactored implementation to only work with [ASP.NET Core integration for HTTP](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration).
+    - Added functionality to configure authentication and authorization for HttpTrigger's
 
 ## Version 12.2.1
 
