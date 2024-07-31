@@ -13,21 +13,29 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using DarkLoop.Azure.Functions.Authorization;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp01.Security;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication(worker =>
+    .ConfigureFunctionsWebApplication(builder =>
     {
+        // DarkLoop Authorization extension (verified in tests):
+        //  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
+        //    place the middleware in the pipeline where required request information is available.
+        builder.UseFunctionsAuthorization();
+
         // Configuration verified in tests:
         //  * Endpoints for which UserMiddleware is enabled must call the endpoint with a token
         //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
-        worker.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
+        builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
             excludedFunctionNames:
                 [$"{nameof(MockedTokenFunction.GetToken)}",
                 $"{nameof(RestApiExampleFunction.TelemetryAsync)}"]);
@@ -59,6 +67,30 @@ var host = new HostBuilder()
 
         // Http => Authentication (verified in tests)
         services.AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+
+        // Http => DarkLoop Authentication extension (verified in tests)
+        services
+            .AddFunctionsAuthentication(JwtFunctionsBearerDefaults.AuthenticationScheme)
+            .AddJwtFunctionsBearer(options =>
+            {
+                options.Authority = "https://login.microsoftonline.com/<your-tenant>";
+                options.Audience = "<your-audience>";
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                };
+            });
+
+        // Http => DarkLoop Authorization extension (verified in tests)
+        services
+            .AddFunctionsAuthorization(options =>
+            {
+                // Add your policies here
+            });
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

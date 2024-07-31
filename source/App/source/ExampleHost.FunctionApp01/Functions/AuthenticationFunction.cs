@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using ExampleHost.FunctionApp01.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -33,8 +34,8 @@ public class AuthenticationFunction
         _userContext = userContext;
     }
 
-    // TODO: Add attribute "AllowAnonymous"
     [Function(nameof(GetAnonymous))]
+    [AllowAnonymous]
     public IActionResult GetAnonymous(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
@@ -46,8 +47,8 @@ public class AuthenticationFunction
         return new OkObjectResult(identification.ToString());
     }
 
-    // TODO: Add attribute "Authorize"
     [Function(nameof(GetWithPermission))]
+    [Authorize]
     public IActionResult GetWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
