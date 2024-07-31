@@ -55,6 +55,19 @@ public class NestedAuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CallingApi01InvalidEndpoint_UserWithNoToken_NotFound()
+    {
+        // Arrange
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authentication/does_not_exists");
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task CallingApi01AuthenticationGet_UserWithNoToken_Unauthorized()
     {
         // Arrange
