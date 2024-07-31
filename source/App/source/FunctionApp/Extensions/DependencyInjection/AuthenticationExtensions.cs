@@ -53,7 +53,7 @@ public static class AuthenticationExtensions
 
     /// <summary>
     /// Register services necessary for enabling an Azure Function App (isolated worker model)
-    /// to use JWT Bearer authentication for HttpTrigger's.
+    /// to use JWT Bearer authentication for HttpTrigger's. This is using DarkLoop Authorization extension.
     ///
     /// Expects <see cref="UserAuthenticationOptions"/> has been configured in <see cref="UserAuthenticationOptions.SectionName"/>.
     /// </summary>

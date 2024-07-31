@@ -67,7 +67,7 @@ var host = new HostBuilder()
         // Health Checks (verified in tests)
         services.AddHealthChecksForIsolatedWorker();
 
-        // Http => Authentication (verified in tests)
+        // Http => Authentication using DarkLoop Authorization extension (verified in tests)
         // Configure for testing
         AuthenticationExtensions.DisableHttpsConfiguration = true;
         services
