@@ -18,6 +18,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for <see cref="IServiceCollection"/>
+/// that allow adding authentication services to a Function App.
+/// </summary>
 public static class AuthenticationExtensions
 {
     public static IServiceCollection AddUserAuthenticationForIsolatedWorker<TUser, TUserProvider>(this IServiceCollection services)
