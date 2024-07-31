@@ -161,9 +161,10 @@ public sealed class NestedAuthenticationTests
     {
         var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var subClaim = new Claim("sub", Guid.NewGuid().ToString());
+        var userIdAsSubClaim = new Claim("sub", Guid.NewGuid().ToString());
+        var actorIdAsAzpClaim = new Claim("azp", Guid.NewGuid().ToString());
 
-        var securityToken = new JwtSecurityToken(claims: [subClaim], signingCredentials: credentials);
+        var securityToken = new JwtSecurityToken(claims: [userIdAsSubClaim, actorIdAsAzpClaim], signingCredentials: credentials);
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.WriteToken(securityToken);
 

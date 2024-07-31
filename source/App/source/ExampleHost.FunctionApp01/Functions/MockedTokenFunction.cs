@@ -39,7 +39,7 @@ public class MockedTokenFunction
     private static readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
     [Function(nameof(GetToken))]
-    public async Task<ActionResult<string>> GetToken(
+    public async Task<IActionResult> GetToken(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "post",

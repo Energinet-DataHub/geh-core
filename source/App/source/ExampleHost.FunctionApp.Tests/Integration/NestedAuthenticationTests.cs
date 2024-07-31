@@ -173,9 +173,10 @@ public class NestedAuthenticationTests : IAsyncLifetime
     {
         var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var subClaim = new Claim("sub", Guid.NewGuid().ToString());
+        var userIdAsSubClaim = new Claim("sub", Guid.NewGuid().ToString());
+        var actorIdAsAzpClaim = new Claim("azp", Guid.NewGuid().ToString());
 
-        var securityToken = new JwtSecurityToken(claims: [subClaim], signingCredentials: credentials);
+        var securityToken = new JwtSecurityToken(claims: [userIdAsSubClaim, actorIdAsAzpClaim], signingCredentials: credentials);
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.WriteToken(securityToken);
 
@@ -194,6 +195,9 @@ public class NestedAuthenticationTests : IAsyncLifetime
         using var tokenResponse = await Fixture.App01HostManager.HttpClient.SendAsync(tokenRequest);
 
         var nestedToken = await tokenResponse.Content.ReadAsStringAsync();
+        if (string.IsNullOrWhiteSpace(nestedToken))
+            throw new InvalidOperationException("Nested token was not created.");
+
         var authenticationHeader = $"Bearer {nestedToken}";
         return authenticationHeader;
     }

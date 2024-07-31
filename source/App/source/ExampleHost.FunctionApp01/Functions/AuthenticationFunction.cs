@@ -35,7 +35,7 @@ public class AuthenticationFunction
 
     // TODO: Add attribute "AllowAnonymous"
     [Function(nameof(GetAnonymous))]
-    public ActionResult<Guid> GetAnonymous(
+    public IActionResult GetAnonymous(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
@@ -43,12 +43,12 @@ public class AuthenticationFunction
         HttpRequest httpRequest,
         Guid identification)
     {
-        return new OkObjectResult(identification);
+        return new OkObjectResult(identification.ToString());
     }
 
     // TODO: Add attribute "Authorize"
     [Function(nameof(GetWithPermission))]
-    public ActionResult<Guid> GetWithPermission(
+    public IActionResult GetWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
@@ -56,7 +56,7 @@ public class AuthenticationFunction
         HttpRequest httpRequest,
         Guid identification)
     {
-        return new OkObjectResult(identification);
+        return new OkObjectResult(identification.ToString());
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class AuthenticationFunction
     ///   If the user is not available an Empty guid is returned.
     /// </summary>
     [Function(nameof(GetUserWithPermission))]
-    public ActionResult<Guid> GetUserWithPermission(
+    public IActionResult GetUserWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
