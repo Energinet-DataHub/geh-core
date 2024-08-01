@@ -17,6 +17,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi03.Controllers;
 
+/// <summary>
+/// Similar functionality exists for Function App in the 'AuthorizationFunction' class
+/// located in the 'ExampleHost.FunctionApp01' project.
+/// </summary>
 [ApiController]
 [Route("webapi03/[controller]")]
 public class PermissionController : ControllerBase
