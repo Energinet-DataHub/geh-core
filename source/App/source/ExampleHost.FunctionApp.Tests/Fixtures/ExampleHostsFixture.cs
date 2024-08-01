@@ -171,7 +171,7 @@ public class ExampleHostsFixture : IAsyncLifetime
     /// Calls the <see cref="MockedTokenFunction"/> on "App01" to create an "internal token"
     /// and returns a 'Bearer' authentication header.
     /// </summary>
-    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync()
+    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] permissions)
     {
         var externalAuthenticationResult = await GetTokenAsync();
 
@@ -179,7 +179,7 @@ public class ExampleHostsFixture : IAsyncLifetime
             JsonSerializer.Serialize(new
             {
                 ExternalToken = externalAuthenticationResult.AccessToken,
-                Roles = string.Empty,
+                Roles = string.Join(',', permissions),
             }),
             Encoding.UTF8,
             "application/json");

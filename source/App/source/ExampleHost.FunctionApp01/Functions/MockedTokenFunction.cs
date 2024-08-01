@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Security.Cryptography;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -99,10 +98,10 @@ public class MockedTokenFunction
         var jsonString = await bodyStreamReader.ReadToEndAsync().ConfigureAwait(false);
         // Parsing to JSON DOM because we don't want to share a type between projects
         var bodyAsNode = JsonNode.Parse(jsonString)!;
-        var externalTokenString = bodyAsNode["ExternalToken"]!.ToString();
-        var roles = bodyAsNode["Roles"]!.ToString();
 
+        // Parse external token
         var tokenHandler = new JsonWebTokenHandler();
+        var externalTokenString = bodyAsNode["ExternalToken"]!.ToString();
         var externalToken = (JsonWebToken)tokenHandler.ReadToken(externalTokenString);
 
         var claims = new Dictionary<string, object>
@@ -111,6 +110,16 @@ public class MockedTokenFunction
             [JwtRegisteredClaimNames.Sub] = "A1AAB954-136A-444A-94BD-E4B615CA4A78",
             [JwtRegisteredClaimNames.Azp] = "A1DEA55A-3507-4777-8CF3-F425A6EC2094",
         };
+
+        // Parse roles and add as claims
+        var roles = bodyAsNode["Roles"]!.ToString();
+        if (!string.IsNullOrWhiteSpace(roles))
+        {
+            foreach (var role in roles.Split(','))
+            {
+                claims.Add("roles", role);
+            }
+        }
 
         var internalToken = new SecurityTokenDescriptor()
         {

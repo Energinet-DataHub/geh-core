@@ -56,84 +56,24 @@ public class AuthorizationTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    [Fact]
-    public async Task CallingApi01AuthorizationGetAnonymous_WithNoToken_Succeeds()
+    [Theory]
+    [InlineData(PermissionOrganizationView, HttpStatusCode.OK)]
+    [InlineData("", HttpStatusCode.Forbidden)]
+    [InlineData(PermissionGridAreasManage, HttpStatusCode.Forbidden)]
+    public async Task CallingApi01AuthorizationGetOrganizationReadPermission_WithRole_IsExpectedStatusCode(
+        string role,
+        HttpStatusCode expectedStatusCode)
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(role);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/anon/{requestIdentification}");
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
-    }
-
-    [Fact]
-    public async Task CallingApi01AuthorizationGetWithPermission_WithNoToken_Unauthorized()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/auth/{requestIdentification}");
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task CallingApi01AuthorizationGetWithPermission_WithToken_Succeeds()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/auth/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org/{requestIdentification}");
         request.Headers.Add("Authorization", authenticationHeader);
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
-    }
-
-    [Fact]
-    public async Task CallingApi01AuthorizationGetUserWithPermission_UserWithNoToken_Unauthorized()
-    {
-        // Arrange
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authorization/user");
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task CallingApi01AuthorizationGetUserWithPermission_UserWithToken_ReturnsUserId()
-    {
-        // Arrange
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authorization/user");
-        request.Headers.Add("Authorization", authenticationHeader);
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        Guid.Parse(content).Should().NotBeEmpty();
+        actualResponse.StatusCode.Should().Be(expectedStatusCode);
     }
 }

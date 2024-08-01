@@ -25,19 +25,6 @@ namespace ExampleHost.FunctionApp01.Functions;
 /// </summary>
 public class AuthorizationFunction
 {
-    [Function(nameof(GetAnonymous))]
-    [AllowAnonymous]
-    public IActionResult GetAnonymous(
-        [HttpTrigger(
-            AuthorizationLevel.Anonymous,
-            "get",
-            Route = "authorization/anon/{identification:guid}")]
-        HttpRequest httpRequest,
-        Guid identification)
-    {
-        return new OkObjectResult(identification.ToString());
-    }
-
     [Function(nameof(GetOrganizationReadPermission))]
     [Authorize(Roles = "organizations:view")]
     public IActionResult GetOrganizationReadPermission(
@@ -64,6 +51,9 @@ public class AuthorizationFunction
         return new OkObjectResult(identification.ToString());
     }
 
+    /// <summary>
+    /// Require user to be in one of the roles (Or)
+    /// </summary>
     [Function(nameof(GetOrganizationOrGridAreasPermission))]
     [Authorize(Roles = "organizations:view, grid-areas:manage")]
     public IActionResult GetOrganizationOrGridAreasPermission(
@@ -77,6 +67,9 @@ public class AuthorizationFunction
         return new OkObjectResult(identification.ToString());
     }
 
+    /// <summary>
+    /// Require user to be in both roles (And)
+    /// </summary>
     [Function(nameof(GetOrganizationAndGridAreasPermission))]
     [Authorize(Roles = "organizations:view")]
     [Authorize(Roles = "grid-areas:manage")]
