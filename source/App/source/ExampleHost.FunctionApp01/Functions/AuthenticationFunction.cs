@@ -34,6 +34,10 @@ public class AuthenticationFunction
         _userContext = userContext;
     }
 
+    /// <summary>
+    /// 1: This method should not require any 'Bearer' token in the 'Authorization' header.
+    ///   It should allow anonymous access and always return the given Guid, for tests to verify.
+    /// </summary>
     [Function(nameof(GetAnonymous))]
     [AllowAnonymous]
     public IActionResult GetAnonymous(
@@ -47,6 +51,13 @@ public class AuthenticationFunction
         return new OkObjectResult(identification.ToString());
     }
 
+    /// <summary>
+    /// 1: This method should be called with a 'Bearer' token in the 'Authorization' header.
+    ///   The token must be a nested token (containing both external and internal token).
+    /// 2: The DarkLoop Authorization extension in combination with ASP.NET Core authentication classes
+    ///   should retrieve the token and validate it.
+    /// 3: If successfull the given Guid is returned, for tests to verify.
+    /// </summary>
     [Function(nameof(GetWithPermission))]
     [Authorize]
     public IActionResult GetWithPermission(

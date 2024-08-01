@@ -27,15 +27,16 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 
 /// <summary>
 /// Authentication tests using a nested token (a token which contains both an
-/// external and an internal token).
+/// external and an internal token) to verify that tokens are configured
+/// to be validated as expected.
 ///
 /// Similar tests exists for Web App in the 'NestedAuthenticationTests' class
 /// located in the 'ExampleHost.WebApi.Tests' project.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
-public class NestedAuthenticationTests : IAsyncLifetime
+public class AuthenticationTests : IAsyncLifetime
 {
-    public NestedAuthenticationTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+    public AuthenticationTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);

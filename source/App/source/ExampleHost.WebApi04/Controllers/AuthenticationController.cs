@@ -19,6 +19,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi04.Controllers;
 
+/// <summary>
+/// Similar functionality exists for Function App in the 'AuthenticationFunction' class
+/// located in the 'ExampleHost.FunctionApp01' project.
+/// </summary>
 [ApiController]
 [Route("webapi04/[controller]")]
 public class AuthenticationController : ControllerBase

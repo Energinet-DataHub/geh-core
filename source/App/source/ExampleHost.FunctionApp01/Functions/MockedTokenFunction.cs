@@ -23,10 +23,11 @@ using Microsoft.IdentityModel.Tokens;
 namespace ExampleHost.FunctionApp01.Functions;
 
 /// <summary>
-/// A mocked token function used to test authentication middleware.
+/// A mocked token function used to test authentication and authorization extensions and middleware.
 ///
 /// This function is called when we from tests:
 ///  * Retrieve an "internal token".
+///  * Validates the "internal token".
 ///
 /// Similar functionality exists for Web App in the 'MockedTokenController' class
 /// located in the 'ExampleHost.WebApi04' project.

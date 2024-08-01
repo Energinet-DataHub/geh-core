@@ -26,6 +26,9 @@ namespace ExampleHost.WebApi04.Controllers;
 /// This controller is called when we from tests:
 ///  * Retrieve an "internal token".
 ///  * Validates the "internal token".
+///
+/// Similar functionality exists for Function App in the 'MockedTokenFunction' class
+/// located in the 'ExampleHost.FunctionApp01' project.
 /// </summary>
 [ApiController]
 [Route("webapi04")]

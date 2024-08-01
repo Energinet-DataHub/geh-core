@@ -25,9 +25,11 @@ using Xunit;
 namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
-/// Authentication tests ensuring that the configured token is validated correctly.
+/// Authentication tests using a nested token (a token which contains both an
+/// external and an internal token) to verify that tokens are configured
+/// to be validated as expected.
 ///
-/// Similar tests exists for Function App in the 'NestedAuthenticationTests' class
+/// Similar tests exists for Function App in the 'AuthenticationTests' class
 /// located in the 'ExampleHost.FunctionApp.Tests' project.
 /// </summary>
 [Collection(nameof(NestedAuthenticationHostCollectionFixture))]

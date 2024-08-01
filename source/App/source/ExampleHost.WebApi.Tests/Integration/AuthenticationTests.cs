@@ -24,7 +24,8 @@ using Xunit;
 namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
-/// Authentication tests ensuring that the configured token is validated correctly.
+/// Authentication tests using a standard token (not nested, so this is not like
+/// in production) to verify that tokens are configured to be validated as expected.
 /// </summary>
 [Collection(nameof(AuthenticationHostCollectionFixture))]
 public sealed class AuthenticationTests
