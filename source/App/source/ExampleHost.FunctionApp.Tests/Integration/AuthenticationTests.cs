@@ -14,12 +14,17 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 using ExampleHost.FunctionApp.Tests.Fixtures;
 using ExampleHost.FunctionApp01.Functions;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -191,9 +196,18 @@ public class AuthenticationTests : IAsyncLifetime
     /// </summary>
     private async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(AuthenticationResult externalAuthenticationResult)
     {
-        using var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "api/token");
-        tokenRequest.Content = new StringContent(externalAuthenticationResult.AccessToken);
-        using var tokenResponse = await Fixture.App01HostManager.HttpClient.SendAsync(tokenRequest);
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(new
+            {
+                ExternalToken = externalAuthenticationResult.AccessToken,
+                Roles = string.Empty,
+            }),
+            Encoding.UTF8,
+            "application/json");
+
+        using var tokenResponse = await Fixture.App01HostManager.HttpClient.PostAsync(
+            "api/token",
+            jsonContent);
 
         var nestedToken = await tokenResponse.Content.ReadAsStringAsync();
         if (string.IsNullOrWhiteSpace(nestedToken))

@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Security.Cryptography;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -93,15 +95,18 @@ public class MockedTokenFunction
             Route = "token")]
         HttpRequest httpRequest)
     {
-        using var externalTokenReader = new StreamReader(httpRequest.Body);
-        var rawExternalToken = await externalTokenReader.ReadToEndAsync().ConfigureAwait(false);
+        using var bodyStreamReader = new StreamReader(httpRequest.Body);
+        var jsonString = await bodyStreamReader.ReadToEndAsync().ConfigureAwait(false);
+        var bodyAsNode = JsonNode.Parse(jsonString)!;
+        var externalTokenString = bodyAsNode["ExternalToken"]!.ToString();
+        var roles = bodyAsNode["Roles"]!.ToString();
 
         var tokenHandler = new JsonWebTokenHandler();
-        var externalToken = (JsonWebToken)tokenHandler.ReadToken(rawExternalToken);
+        var externalToken = (JsonWebToken)tokenHandler.ReadToken(externalTokenString);
 
         var claims = new Dictionary<string, object>
         {
-            [TokenClaim] = rawExternalToken,
+            [TokenClaim] = externalTokenString,
             [JwtRegisteredClaimNames.Sub] = "A1AAB954-136A-444A-94BD-E4B615CA4A78",
             [JwtRegisteredClaimNames.Azp] = "A1DEA55A-3507-4777-8CF3-F425A6EC2094",
         };
