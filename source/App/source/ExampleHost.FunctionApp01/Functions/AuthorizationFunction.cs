@@ -38,19 +38,6 @@ public class AuthorizationFunction
         return new OkObjectResult(identification.ToString());
     }
 
-    [Function(nameof(GetGridAreaPermission))]
-    [Authorize(Roles = "grid-areas:manage")]
-    public IActionResult GetGridAreaPermission(
-        [HttpTrigger(
-            AuthorizationLevel.Anonymous,
-            "get",
-            Route = "authorization/grid/{identification:guid}")]
-        HttpRequest httpRequest,
-        Guid identification)
-    {
-        return new OkObjectResult(identification.ToString());
-    }
-
     /// <summary>
     /// Require user to be in one of the roles (Or)
     /// </summary>
