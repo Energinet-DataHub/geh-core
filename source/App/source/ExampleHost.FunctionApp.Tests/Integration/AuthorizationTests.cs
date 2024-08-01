@@ -12,29 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
 using ExampleHost.FunctionApp.Tests.Fixtures;
 using FluentAssertions;
-using Microsoft.IdentityModel.Tokens;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace ExampleHost.FunctionApp.Tests.Integration;
 
 /// <summary>
-/// Authentication tests using a nested token (a token which contains both an
-/// external and an internal token) to verify that tokens are configured
-/// to be validated as expected.
+/// Authorization tests using a nested token (a token which contains both an
+/// external and an internal token). Focus is on verifying the use of the Authorize
+/// attribute with Roles.
 ///
-/// Similar tests exists for Web App in the 'NestedAuthenticationTests' class
+/// Similar tests exists for Web App in the 'AuthorizationTests' class
 /// located in the 'ExampleHost.WebApi.Tests' project.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
-public class AuthenticationTests : IAsyncLifetime
+public class AuthorizationTests : IAsyncLifetime
 {
-    public AuthenticationTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+    private const string PermissionOrganizationView = "organizations:view";
+    private const string PermissionGridAreasManage = "grid-areas:manage";
+
+    public AuthorizationTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
@@ -57,26 +57,13 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01InvalidEndpoint_WithNoToken_NotFound()
-    {
-        // Arrange
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authentication/does_not_exists");
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
-    public async Task CallingApi01AuthenticationGetAnonymous_WithNoToken_Succeeds()
+    public async Task CallingApi01AuthorizationGetAnonymous_WithNoToken_Succeeds()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authentication/anon/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/anon/{requestIdentification}");
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -87,13 +74,13 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetWithPermission_WithNoToken_Unauthorized()
+    public async Task CallingApi01AuthorizationGetWithPermission_WithNoToken_Unauthorized()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authentication/auth/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/auth/{requestIdentification}");
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -101,30 +88,14 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetWithPermission_WithFakeToken_Unauthorized()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = CreateAuthenticationHeaderWithFakeToken();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task CallingApi01AuthenticationGetWithPermission_WithToken_Succeeds()
+    public async Task CallingApi01AuthorizationGetWithPermission_WithToken_Succeeds()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
         var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authentication/auth/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/auth/{requestIdentification}");
         request.Headers.Add("Authorization", authenticationHeader);
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
@@ -136,12 +107,12 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetUserWithPermission_UserWithNoToken_Unauthorized()
+    public async Task CallingApi01AuthorizationGetUserWithPermission_UserWithNoToken_Unauthorized()
     {
         // Arrange
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authentication/user");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authorization/user");
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -149,13 +120,13 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetUserWithPermission_UserWithToken_ReturnsUserId()
+    public async Task CallingApi01AuthorizationGetUserWithPermission_UserWithToken_ReturnsUserId()
     {
         // Arrange
         var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authentication/user");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "api/authorization/user");
         request.Headers.Add("Authorization", authenticationHeader);
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
@@ -164,20 +135,5 @@ public class AuthenticationTests : IAsyncLifetime
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         Guid.Parse(content).Should().NotBeEmpty();
-    }
-
-    private static string CreateAuthenticationHeaderWithFakeToken()
-    {
-        var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var userIdAsSubClaim = new Claim("sub", Guid.NewGuid().ToString());
-        var actorIdAsAzpClaim = new Claim("azp", Guid.NewGuid().ToString());
-
-        var securityToken = new JwtSecurityToken(claims: [userIdAsSubClaim, actorIdAsAzpClaim], signingCredentials: credentials);
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.WriteToken(securityToken);
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
     }
 }

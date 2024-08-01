@@ -14,6 +14,8 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using System.Text.Json;
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Options;
@@ -23,6 +25,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using ExampleHost.FunctionApp01.Functions;
 using Microsoft.Identity.Client;
 using Xunit;
 using Xunit.Abstractions;
@@ -162,6 +165,35 @@ public class ExampleHostsFixture : IAsyncLifetime
         return confidentialClientApp
             .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
             .ExecuteAsync();
+    }
+
+    /// <summary>
+    /// Calls the <see cref="MockedTokenFunction"/> on "App01" to create an "internal token"
+    /// and returns a 'Bearer' authentication header.
+    /// </summary>
+    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync()
+    {
+        var externalAuthenticationResult = await GetTokenAsync();
+
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(new
+            {
+                ExternalToken = externalAuthenticationResult.AccessToken,
+                Roles = string.Empty,
+            }),
+            Encoding.UTF8,
+            "application/json");
+
+        using var tokenResponse = await App01HostManager.HttpClient.PostAsync(
+            "api/token",
+            jsonContent);
+
+        var nestedToken = await tokenResponse.Content.ReadAsStringAsync();
+        if (string.IsNullOrWhiteSpace(nestedToken))
+            throw new InvalidOperationException("Nested token was not created.");
+
+        var authenticationHeader = $"Bearer {nestedToken}";
+        return authenticationHeader;
     }
 
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)
