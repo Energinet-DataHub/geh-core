@@ -97,6 +97,7 @@ public class MockedTokenFunction
     {
         using var bodyStreamReader = new StreamReader(httpRequest.Body);
         var jsonString = await bodyStreamReader.ReadToEndAsync().ConfigureAwait(false);
+        // Parsing to JSON DOM because we don't want to share a type between projects
         var bodyAsNode = JsonNode.Parse(jsonString)!;
         var externalTokenString = bodyAsNode["ExternalToken"]!.ToString();
         var roles = bodyAsNode["Roles"]!.ToString();
