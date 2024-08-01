@@ -76,4 +76,26 @@ public class AuthorizationTests : IAsyncLifetime
         // Assert
         actualResponse.StatusCode.Should().Be(expectedStatusCode);
     }
+
+    [Theory]
+    [InlineData(PermissionOrganizationView, HttpStatusCode.OK)]
+    [InlineData(PermissionGridAreasManage, HttpStatusCode.OK)]
+    [InlineData(PermissionGridAreasManage + "," + PermissionOrganizationView, HttpStatusCode.OK)]
+    [InlineData("", HttpStatusCode.Forbidden)]
+    public async Task CallingApi01AuthorizationGetOrganizationOrGridAreasPermission_WithRole_IsExpectedStatusCode(
+        string role,
+        HttpStatusCode expectedStatusCode)
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(role);
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org_or_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(expectedStatusCode);
+    }
 }

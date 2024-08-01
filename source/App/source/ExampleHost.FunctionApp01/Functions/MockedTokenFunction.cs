@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ExampleHost.FunctionApp01.Functions;
@@ -38,7 +39,9 @@ public class MockedTokenFunction
 {
     private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
     private const string Issuer = "https://test.datahub.dk";
+
     private const string TokenClaim = "token";
+    private const string RoleClaim = "role";
 
     private static readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
@@ -100,15 +103,14 @@ public class MockedTokenFunction
         var bodyAsNode = JsonNode.Parse(jsonString)!;
 
         // Parse external token
-        var tokenHandler = new JsonWebTokenHandler();
         var externalTokenString = bodyAsNode["ExternalToken"]!.ToString();
-        var externalToken = (JsonWebToken)tokenHandler.ReadToken(externalTokenString);
+        var externalJwt = new JwtSecurityToken(externalTokenString);
 
-        var claims = new Dictionary<string, object>
+        var claims = new List<Claim>
         {
-            [TokenClaim] = externalTokenString,
-            [JwtRegisteredClaimNames.Sub] = "A1AAB954-136A-444A-94BD-E4B615CA4A78",
-            [JwtRegisteredClaimNames.Azp] = "A1DEA55A-3507-4777-8CF3-F425A6EC2094",
+            new(TokenClaim, externalTokenString),
+            new(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78"),
+            new(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094"),
         };
 
         // Parse roles and add as claims
@@ -117,21 +119,19 @@ public class MockedTokenFunction
         {
             foreach (var role in roles.Split(','))
             {
-                claims.Add("roles", role);
+                claims.Add(new Claim(RoleClaim, role));
             }
         }
 
-        var internalToken = new SecurityTokenDescriptor()
-        {
-            Issuer = Issuer,
-            Audience = externalToken.Audiences.Single(),
-            Claims = claims,
-            NotBefore = externalToken.ValidFrom,
-            Expires = externalToken.ValidTo,
-            SigningCredentials = new SigningCredentials(_testKey, SecurityAlgorithms.RsaSha256),
-        };
+        var internalToken = new JwtSecurityToken(
+            issuer: Issuer,
+            audience: externalJwt.Audiences.Single(),
+            claims: claims,
+            notBefore: externalJwt.ValidFrom,
+            expires: externalJwt.ValidTo,
+            signingCredentials: new SigningCredentials(_testKey, SecurityAlgorithms.RsaSha256));
 
-        var writtenToken = tokenHandler.CreateToken(internalToken);
+        var writtenToken = new JwtSecurityTokenHandler().WriteToken(internalToken);
 
         return new OkObjectResult(writtenToken);
     }
