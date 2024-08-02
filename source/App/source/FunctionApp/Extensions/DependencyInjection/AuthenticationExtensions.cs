@@ -87,6 +87,8 @@ public static class AuthenticationExtensions
                 //    won't perform at call to get the configurations (Issuer and Keys) and then 'configuration' will be null.
                 options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                 {
+                    if (configuration == null)
+                        throw new InvalidOperationException("The 'Configuration' is null. Either JwtBearer dependencies are missing or we could not retrieve the 'Configuration' from the configured metadata address.");
                     if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
                         throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
 
