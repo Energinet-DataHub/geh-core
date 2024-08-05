@@ -29,7 +29,7 @@ public class UserAuthenticationOptions
     public string ExternalMetadataAddress { get; set; } = string.Empty;
 
     /// <summary>
-    /// The id of the backend-for-frontend app, which the access tokens are issue for. The audience claim in the tokens are expected to have this value.
+    /// The Microsoft Entra id of the backend-for-frontend app, which the access tokens are issue for. The audience claim in the tokens are expected to have this value.
     /// </summary>
     public string BackendBffAppId { get; set; } = string.Empty;
 
