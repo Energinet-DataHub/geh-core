@@ -14,8 +14,6 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using System.Text.Json;
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Options;
@@ -25,7 +23,6 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using ExampleHost.FunctionApp01.Functions;
 using Microsoft.Identity.Client;
 using Xunit;
 using Xunit.Abstractions;
@@ -49,6 +46,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
         BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID");
+        InternalTokenServer = new TokenMockServer();
     }
 
     /// <summary>
@@ -78,6 +76,8 @@ public class ExampleHostsFixture : IAsyncLifetime
 
     private FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
 
+    private TokenMockServer InternalTokenServer { get; }
+
     public async Task InitializeAsync()
     {
         // => Storage emulator
@@ -91,10 +91,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
 
         // => App01 settings for authentication
-        var app01BaseUrl = "http://localhost:8001";
         var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
-        var internalMetadataAddress = $"{app01BaseUrl}/api/v2.0/.well-known/openid-configuration";
-
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", externalMetadataAddress);
         app01HostSettings.ProcessEnvironmentVariables.Add(
@@ -102,7 +99,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", BffAppId);
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", internalMetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", InternalTokenServer.MetadataAddress);
 
         // => Integration events
         app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
@@ -133,6 +130,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         App01HostManager.Dispose();
         App02HostManager.Dispose();
 
+        InternalTokenServer.Dispose();
         AzuriteManager.Dispose();
 
         // => Service Bus
@@ -168,31 +166,18 @@ public class ExampleHostsFixture : IAsyncLifetime
     }
 
     /// <summary>
-    /// Calls the <see cref="MockedTokenFunction"/> on "App01" to create an "internal token"
+    /// Calls the <see cref="InternalTokenServer"/> on to create an "internal token"
     /// and returns a 'Bearer' authentication header.
     /// </summary>
     public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
     {
         var externalAuthenticationResult = await GetTokenAsync();
 
-        using StringContent jsonContent = new(
-            JsonSerializer.Serialize(new
-            {
-                ExternalToken = externalAuthenticationResult.AccessToken,
-                Roles = string.Join(',', roles),
-            }),
-            Encoding.UTF8,
-            "application/json");
-
-        using var tokenResponse = await App01HostManager.HttpClient.PostAsync(
-            "api/token",
-            jsonContent);
-
-        var nestedToken = await tokenResponse.Content.ReadAsStringAsync();
-        if (string.IsNullOrWhiteSpace(nestedToken))
+        var internalToken = InternalTokenServer.GetToken(externalAuthenticationResult.AccessToken, roles);
+        if (string.IsNullOrWhiteSpace(internalToken))
             throw new InvalidOperationException("Nested token was not created.");
 
-        var authenticationHeader = $"Bearer {nestedToken}";
+        var authenticationHeader = $"Bearer {internalToken}";
         return authenticationHeader;
     }
 

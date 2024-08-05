@@ -27,7 +27,7 @@ namespace ExampleHost.WebApi04.Controllers;
 ///  * Retrieve an "internal token".
 ///  * Validates the "internal token".
 ///
-/// Similar functionality exists for Function App in the 'MockedTokenFunction' class
+/// Similar functionality exists for Function App in the 'TokenMockServer' class
 /// located in the 'ExampleHost.FunctionApp01' project.
 /// </summary>
 [ApiController]
