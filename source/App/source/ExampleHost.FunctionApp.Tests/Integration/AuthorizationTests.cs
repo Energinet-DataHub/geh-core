@@ -57,16 +57,16 @@ public class AuthorizationTests : IAsyncLifetime
     }
 
     [Theory]
-    [InlineData(PermissionOrganizationView, HttpStatusCode.OK)]
-    [InlineData("", HttpStatusCode.Forbidden)]
-    [InlineData(PermissionGridAreasManage, HttpStatusCode.Forbidden)]
+    [InlineData(HttpStatusCode.OK, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, "")]
+    [InlineData(HttpStatusCode.Forbidden, PermissionGridAreasManage)]
     public async Task CallingApi01AuthorizationGetOrganizationReadPermission_WithRole_IsExpectedStatusCode(
-        string role,
-        HttpStatusCode expectedStatusCode)
+        HttpStatusCode expectedStatusCode,
+        params string[] roles)
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(role);
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org/{requestIdentification}");
@@ -78,17 +78,17 @@ public class AuthorizationTests : IAsyncLifetime
     }
 
     [Theory]
-    [InlineData(PermissionOrganizationView, HttpStatusCode.OK)]
-    [InlineData(PermissionGridAreasManage, HttpStatusCode.OK)]
-    [InlineData(PermissionGridAreasManage + "," + PermissionOrganizationView, HttpStatusCode.OK)]
-    [InlineData("", HttpStatusCode.Forbidden)]
+    [InlineData(HttpStatusCode.OK, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.OK, PermissionGridAreasManage)]
+    [InlineData(HttpStatusCode.OK, PermissionGridAreasManage, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, "")]
     public async Task CallingApi01AuthorizationGetOrganizationOrGridAreasPermission_WithRole_IsExpectedStatusCode(
-        string role,
-        HttpStatusCode expectedStatusCode)
+        HttpStatusCode expectedStatusCode,
+        params string[] roles)
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(role);
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org_or_grid/{requestIdentification}");
@@ -100,17 +100,17 @@ public class AuthorizationTests : IAsyncLifetime
     }
 
     [Theory]
-    [InlineData(PermissionGridAreasManage + "," + PermissionOrganizationView, HttpStatusCode.OK)]
-    [InlineData("", HttpStatusCode.Forbidden)]
-    [InlineData(PermissionOrganizationView, HttpStatusCode.Forbidden)]
-    [InlineData(PermissionGridAreasManage, HttpStatusCode.Forbidden)]
+    [InlineData(HttpStatusCode.OK, PermissionGridAreasManage, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, "")]
+    [InlineData(HttpStatusCode.Forbidden, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, PermissionGridAreasManage)]
     public async Task CallingApi01AuthorizationGetOrganizationAndGridAreasPermission_WithRole_IsExpectedStatusCode(
-        string role,
-        HttpStatusCode expectedStatusCode)
+        HttpStatusCode expectedStatusCode,
+        params string[] roles)
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(role);
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org_and_grid/{requestIdentification}");
