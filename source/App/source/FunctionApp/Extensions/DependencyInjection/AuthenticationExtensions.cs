@@ -38,7 +38,7 @@ public static class AuthenticationExtensions
     /// Disables HTTPS requirement for OpenId configuration endpoints.
     /// This property is intended for testing purposes only and we use InternalsVisibleTo in the project file to control who can access it.
     /// </summary>
-    public static bool DisableHttpsConfiguration { get; set; } // TODO: Should be internal again, this was just to be able to quickly test in Wholesale
+    internal static bool DisableHttpsConfiguration { get; set; }
 
     public static IServiceCollection AddUserAuthenticationForIsolatedWorker<TUser, TUserProvider>(this IServiceCollection services)
         where TUser : class
