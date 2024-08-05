@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.0.1
+
+Remove `System.Text.Json` package since it is covered by the runtime.
+
 ## Version 11.0.0
 
 - Add support for above 2 GB results.
