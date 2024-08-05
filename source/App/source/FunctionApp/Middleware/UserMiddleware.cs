@@ -69,7 +69,7 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
             return;
         }
 
-        var isUserSet = await CanSetUserAsync(context, httpContext.Request).ConfigureAwait(false);
+        var isUserSet = await TrySetUserAsync(context, httpContext.Request).ConfigureAwait(false);
         if (isUserSet)
         {
             // Next middleware
@@ -81,7 +81,7 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
     }
 
-    private static async Task<bool> CanSetUserAsync(FunctionContext context, HttpRequest httpRequest)
+    private static async Task<bool> TrySetUserAsync(FunctionContext context, HttpRequest httpRequest)
     {
         var logger = context.GetLogger<UserMiddleware<TUser>>();
         var userProvider = context.InstanceServices.GetRequiredService<IUserProvider<TUser>>();
