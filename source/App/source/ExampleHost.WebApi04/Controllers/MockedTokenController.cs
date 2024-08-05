@@ -28,7 +28,7 @@ namespace ExampleHost.WebApi04.Controllers;
 ///  * Validates the "internal token".
 ///
 /// Similar functionality exists for Function App in the 'TokenMockServer' class
-/// located in the 'ExampleHost.FunctionApp01' project.
+/// located in the 'ExampleHost.FunctionApp.Tests' project.
 /// </summary>
 [ApiController]
 [Route("webapi04")]
