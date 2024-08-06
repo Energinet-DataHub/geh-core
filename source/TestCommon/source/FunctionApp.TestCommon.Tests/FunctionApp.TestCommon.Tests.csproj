@@ -52,4 +52,8 @@ limitations under the License.
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Integration\OpenIdJwtServer\" />
+  </ItemGroup>
+
 </Project>

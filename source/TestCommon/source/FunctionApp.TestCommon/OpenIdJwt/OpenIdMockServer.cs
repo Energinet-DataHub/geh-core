@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text.Json;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 using Microsoft.IdentityModel.Tokens;
@@ -25,40 +22,30 @@ using WireMock.ResponseBuilders;
 using WireMock.Server;
 using WireMock.Settings;
 
-namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwtServer;
+namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 
 /// <summary>
-/// A Http server that mocks "JWT token configuration" endpoints as well as
-/// expose an endpoint for creating access token's that can be used for
-/// testing DH3 applications that require Http authentication and authorization.
+/// An OpenId configuration server used for running an OpenId JWT server mock for testing DH3 applications that
+/// require OpenId configuration endpoints. Use in combination with <see cref="JwtProvider"/> to create JWT tokens
+/// that can be validated according to the OpenId configuration provided by this server.
 /// </summary>
-public class OpenIdJwtServerManager : IDisposable
+public sealed class OpenIdMockServer : IDisposable
 {
-    private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
-    private const string Issuer = "https://test.datahub.dk";
-
-    private const string TokenClaim = "token";
-    private const string RoleClaim = "role";
-
     // Path's used to configure endpoints in WireMock.NET
     // They must begin with "/".
     private const string ConfigurationEndpointPath = "/v2.0/.well-known/openid-configuration";
     private const string PublicKeysEndpointPath = "/discovery/v2.0/keys";
 
+    private readonly string _issuer;
+    private readonly RsaSecurityKey _securityKey;
     private readonly int _port;
-    private readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
 
     private WireMockServer? _mockServer;
 
-    /// <summary>
-    /// Create the OpenId token server and preparing it for running with the specified port.
-    /// OpenId configuration endpoints must use HTTPS. For this developers will need a developer certificate
-    /// on their local machine and any build agent will need one locally as well.
-    /// See WireMock.Net documentation for how to create and enable a developer certificate: https://github.com/WireMock-Net/WireMock.Net/wiki/Using-HTTPS-(SSL)
-    /// </summary>
-    /// <param name="port">Uses a default port, but can be specified to use another.</param>
-    public OpenIdJwtServerManager(int port = 1051)
+    internal OpenIdMockServer(string issuer, RsaSecurityKey securityKey, int port)
     {
+        _issuer = issuer;
+        _securityKey = securityKey;
         _port = port;
     }
 
@@ -66,12 +53,23 @@ public class OpenIdJwtServerManager : IDisposable
 
     public string MetadataAddress => $"{Url}{ConfigurationEndpointPath}";
 
-    public void StartServer()
+    public void Dispose()
     {
-        _mockServer = WireMockServer.Start(
-            port: _port,
-            useSSL: true);
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
+    /// <summary>
+    /// Start and the OpenId JWT server using WireMock. The server is running at port specified by the configuration (defaults to port 1051).
+    /// OpenId configuration endpoints must use HTTPS, so a developer certificate is provided and used automatically.
+    /// See WireMock.Net documentation for more information about developer certificates: https://github.com/WireMock-Net/WireMock.Net/wiki/Using-HTTPS-(SSL)
+    ///
+    /// The server will be listening for requests on the following endpoints, which are defined in the OpenId specification:
+    /// - /v2.0/.well-known/openid-configuration
+    /// - /discovery/v2.0/keys
+    /// </summary>
+    internal void StartServer()
+    {
         _mockServer = WireMockServer.Start(new WireMockServerSettings
         {
             Port = _port,
@@ -86,50 +84,13 @@ public class OpenIdJwtServerManager : IDisposable
         MockTokenConfigurationEndpoints();
     }
 
-    /// <summary>
-    /// Creates an internal JWT containing an external JWT in the "token" claim,
-    /// and "role" claims per role specified in <paramref name="roles"/>.
-    /// </summary>
-    /// <param name="externalTokenString">External JWT as string.</param>
-    /// <param name="roles">Commaseparated list of roles. Can be null or empty.</param>
-    /// <returns>An internal JWT.</returns>
-    public string CreateInternalToken(string externalTokenString, params string[] roles)
+    private void Dispose(bool disposing)
     {
-        var claims = new List<Claim>
+        if (disposing)
         {
-            new(TokenClaim, externalTokenString),
-            new(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78"),
-            new(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094"),
-        };
-
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(RoleClaim, role.Trim()));
+            _mockServer?.Dispose();
+            _mockServer = null;
         }
-
-        var externalJwt = new JwtSecurityToken(externalTokenString);
-        var internalJwt = new JwtSecurityToken(
-            issuer: Issuer,
-            audience: externalJwt.Audiences.Single(),
-            claims: claims,
-            notBefore: externalJwt.ValidFrom,
-            expires: externalJwt.ValidTo,
-            signingCredentials: new SigningCredentials(_testKey, SecurityAlgorithms.RsaSha256));
-
-        var internalToken = new JwtSecurityTokenHandler().WriteToken(internalJwt);
-        return internalToken;
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        _mockServer?.Dispose();
-        _mockServer = null;
     }
 
     private void MockTokenConfigurationEndpoints()
@@ -151,8 +112,8 @@ public class OpenIdJwtServerManager : IDisposable
             .WithHeader(HeaderNames.ContentType, "application/json")
             .WithBody(JsonSerializer.Serialize(new
             {
-                issuer = Issuer,
-                jwks_uri = $"{Url}{PublicKeysEndpointPath}",
+                issuer = _issuer,
+                jwks_uri = $"{GetRunningServer().Url}{PublicKeysEndpointPath}",
             }));
 
         GetRunningServer()
@@ -162,7 +123,7 @@ public class OpenIdJwtServerManager : IDisposable
 
     private void MockGetPublicKeys()
     {
-        var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(_testKey);
+        var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(_securityKey);
 
         var request = Request
             .Create()
@@ -194,6 +155,6 @@ public class OpenIdJwtServerManager : IDisposable
 
     private WireMockServer GetRunningServer()
     {
-        return _mockServer ?? throw new InvalidOperationException("Server is not started. Call StartServer() first.");
+        return _mockServer ?? throw new InvalidOperationException($"Server is not started. Call {nameof(StartServer)}() first.");
     }
 }
