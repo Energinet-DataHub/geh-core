@@ -63,8 +63,6 @@ var host = new HostBuilder()
         services.AddHealthChecksForIsolatedWorker();
 
         // Http => Authentication using DarkLoop Authorization extension (verified in tests)
-        // Configure for testing
-        AuthenticationExtensions.DisableHttpsConfiguration = true;
         services
             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();

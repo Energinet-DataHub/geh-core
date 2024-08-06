@@ -46,12 +46,19 @@ public class TokenMockServer : IDisposable
     private readonly RsaSecurityKey _testKey = new(RSA.Create()) { KeyId = Kid };
     private readonly WireMockServer _mockServer;
 
+    /// <summary>
+    /// Create the OpenId token server and preparing it for running with the specified port.
+    /// OpenId configuration endpoints must use HTTPS. For this developers will need a developer certificate
+    /// on their local machine and any build agent will need one locally as well.
+    /// See WireMock.Net documentation for how to create and enable a developer certificate: https://github.com/WireMock-Net/WireMock.Net/wiki/Using-HTTPS-(SSL)
+    /// </summary>
+    /// <param name="port">Uses a default port, but can be specified to use another.</param>
     public TokenMockServer(int port = 1051)
     {
         // UNDONE: Instead of starting the server directly in the constructor, then maybe move to a method that we call to start end configure mock server?
         _mockServer = WireMockServer.Start(
             port: port,
-            useSSL: false); // TODO: We should look into using SSL so we don't need "DisableHttpsConfiguration"
+            useSSL: true);
         MockTokenConfigurationEndpoints();
     }
 

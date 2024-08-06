@@ -63,10 +63,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ExampleHost.FunctionApp01" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="DarkLoop.Azure.Functions.Authorization.Isolated" Version="4.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.0" />
