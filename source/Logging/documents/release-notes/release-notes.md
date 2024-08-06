@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 3.2.0
+
+- Mark Azure Function related dependency injection extensions `AddFunctionLoggingScope` and `UseLoggingScope` as obsolete.
+
 ## Version 3.1.5
 
 - Bump System.IdentityModel.Tokens.Jwt from 6.15.0 to 6.34.0 because of CVE-2024-21319
