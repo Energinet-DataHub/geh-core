@@ -21,12 +21,12 @@ internal static class TestCertificateManager
     /// <summary>
     /// Path to the test certificate file, which is added as content to current NuGet package.
     /// </summary>
-    internal const string FilePath = @".\TestCertificate\azurite-cert.pfx";
+    internal const string FilePath = @".\TestCertificate\test-common-cert.pfx";
 
     /// <summary>
     /// Password to the test certificate file.
     /// </summary>
-    internal const string Password = "azurite";
+    internal const string Password = "test-common";
 
     /// <summary>
     /// Installs test certificate.
