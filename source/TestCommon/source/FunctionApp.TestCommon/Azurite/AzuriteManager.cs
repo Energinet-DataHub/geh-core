@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Management;
 using System.Security.Cryptography.X509Certificates;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 
@@ -50,16 +51,6 @@ public class AzuriteManager : IDisposable
     private const int BlobServicePort = 10000;
     private const int QueueServicePort = 10001;
     private const int TableServicePort = 10002;
-
-    /// <summary>
-    /// Path to the test certificate file, which is added as content to current NuGet package.
-    /// </summary>
-    private const string TestCertificateFilePath = @".\Azurite\TestCertificate\azurite-cert.pfx";
-
-    /// <summary>
-    /// Password to the test certificate file.
-    /// </summary>
-    private const string TestCertificatePassword = "azurite";
 
     /// <summary>
     /// Create manager to startup Azurite.
@@ -285,7 +276,8 @@ public class AzuriteManager : IDisposable
         var azuriteCommandFilePath = GetAzuriteCommandFilePath();
         var azuriteArguments = GetAzuriteArguments(UseOAuth);
 
-        HandleTestCertificateInstallation(UseOAuth);
+        if (UseOAuth)
+            TestCertificateManager.InstallCertificate();
 
         AzuriteProcess = new Process
         {
@@ -338,33 +330,7 @@ public class AzuriteManager : IDisposable
     private static string GetAzuriteArguments(bool useOAuth)
     {
         return useOAuth == true
-            ? $"--oauth basic --cert {TestCertificateFilePath} --pwd {TestCertificatePassword}"
+            ? $"--oauth basic --cert {TestCertificateManager.FilePath} --pwd {TestCertificateManager.Password}"
             : string.Empty;
-    }
-
-    /// <summary>
-    /// If using OAuth then installs test certificate.
-    /// Supports silent installation on a GitHub runner if executed as administrator.
-    /// </summary>
-    private static void HandleTestCertificateInstallation(bool useOAuth)
-    {
-        if (useOAuth)
-        {
-            // If not executed as administrator we can only install to 'CurrentUser' and this will show a dialog to the user.
-            var storeLocation = StoreLocation.CurrentUser;
-
-            // Determine if executed on a GitHub runner.
-            if (Environment.GetEnvironmentVariable("CI") == "true")
-            {
-                // If executed as administrator we can install silently to 'LocalMachine'.
-                storeLocation = StoreLocation.LocalMachine;
-            }
-
-            using var certificateStore = new X509Store(StoreName.Root, storeLocation);
-            certificateStore.Open(OpenFlags.ReadWrite);
-
-            using var testCertificate = new X509Certificate2(TestCertificateFilePath, TestCertificatePassword);
-            certificateStore.Add(testCertificate);
-        }
     }
 }
