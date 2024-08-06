@@ -53,12 +53,6 @@ public sealed class OpenIdMockServer : IDisposable
 
     public string MetadataAddress => $"{Url}{ConfigurationEndpointPath}";
 
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
     /// <summary>
     /// Start and the OpenId JWT server using WireMock. The server is running at port specified by the configuration (defaults to port 1051).
     /// OpenId configuration endpoints must use HTTPS, so a developer certificate is provided and used automatically.
@@ -68,7 +62,7 @@ public sealed class OpenIdMockServer : IDisposable
     /// - /v2.0/.well-known/openid-configuration
     /// - /discovery/v2.0/keys
     /// </summary>
-    internal void StartServer()
+    public void StartServer()
     {
         _mockServer = WireMockServer.Start(new WireMockServerSettings
         {
@@ -82,6 +76,12 @@ public sealed class OpenIdMockServer : IDisposable
         });
 
         MockTokenConfigurationEndpoints();
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     private void Dispose(bool disposing)
