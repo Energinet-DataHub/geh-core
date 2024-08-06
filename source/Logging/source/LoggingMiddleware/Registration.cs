@@ -32,6 +32,7 @@ public static class Registration
         return services;
     }
 
+    [Obsolete("Use 'AddApplicationInsightsForIsolatedWorker' from the 'Energinet.DataHub.Core.App.FunctionApp' NuGet package.")]
     public static IServiceCollection AddFunctionLoggingScope(this IServiceCollection services, string domain)
     {
         RegisterLoggingScope(services, domain);
@@ -45,6 +46,7 @@ public static class Registration
         return app.UseMiddleware<HttpLoggingScopeMiddleware>();
     }
 
+    [Obsolete("Not needed when using 'AddApplicationInsightsForIsolatedWorker' from the 'Energinet.DataHub.Core.App.FunctionApp' NuGet package.")]
     public static IFunctionsWorkerApplicationBuilder UseLoggingScope(this IFunctionsWorkerApplicationBuilder builder)
     {
         return builder.UseMiddleware<FunctionLoggingScopeMiddleware>();
