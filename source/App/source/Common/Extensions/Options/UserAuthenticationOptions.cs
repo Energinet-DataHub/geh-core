@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.Options;
+namespace Energinet.DataHub.Core.App.Common.Extensions.Options;
 
+/// <summary>
+/// Options for the configuration of JWT bearer authentication.
+/// </summary>
 public class UserAuthenticationOptions
 {
     public const string SectionName = "UserAuthentication";
@@ -29,7 +32,7 @@ public class UserAuthenticationOptions
     public string ExternalMetadataAddress { get; set; } = string.Empty;
 
     /// <summary>
-    /// The Microsoft Entra id of the backend-for-frontend app, which the access tokens are issue for. The audience claim in the tokens are expected to have this value.
+    /// The id of the backend-for-frontend app, which the access tokens are issue for. The audience claim in the tokens are expected to have this value.
     /// </summary>
     public string BackendBffAppId { get; set; } = string.Empty;
 

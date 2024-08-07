@@ -15,8 +15,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using DarkLoop.Azure.Functions.Authorization;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.App.Common.Users;
-using Energinet.DataHub.Core.App.FunctionApp.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
