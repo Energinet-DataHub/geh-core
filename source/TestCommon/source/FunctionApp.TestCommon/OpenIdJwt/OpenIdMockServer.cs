@@ -65,8 +65,14 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
     /// </summary>
     public string MetadataAddress => $"{Url}{ConfigurationEndpointPath}";
 
+    /// <summary>
+    /// The issuer which must be used to create JWT tokens that are valid according to this server's OpenId configuration
+    /// </summary>
     internal string Issuer { get; }
 
+    /// <summary>
+    /// The security key which must be used to create JWT tokens that are valid according to this server's OpenId configuration
+    /// </summary>
     internal RsaSecurityKey SecurityKey { get; }
 
     public void StartServer()
