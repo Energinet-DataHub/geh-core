@@ -36,8 +36,8 @@ public class JwtProvider
     /// <summary>
     /// Create a JWT provider
     /// </summary>
-    /// <param name="azureB2CSettings">Azure B2C settings used to get an external token. Can be retrieved from <see cref="IntegrationTestConfiguration"/></param>
-    /// <param name="issuer">The JWT issuer. If using <see cref="OpenIdMockServer"/> then the issuer should be the same.</param>
+    /// <param name="azureB2CSettings">Azure B2C settings used to get an external token from Microsoft Entra. Should be retrieved from <see cref="IntegrationTestConfiguration"/></param>
+    /// <param name="issuer">The JWT issuer used for the JWT. If using <see cref="OpenIdMockServer"/> then the issuer should be the same.</param>
     /// <param name="securityKey">The security key used for signing the JWT. If using <see cref="OpenIdMockServer"/> then the security key should be the same.</param>
     internal JwtProvider(AzureB2CSettings azureB2CSettings, string issuer, RsaSecurityKey securityKey)
     {
@@ -47,16 +47,17 @@ public class JwtProvider
     }
 
     /// <summary>
-    /// Creates an internal token valid for DataHub applications, containing the following claims:
-    /// - "token" claim which is an external token retrieved from Microsoft Entra configured in the given <see cref="AzureB2CSettings"/>
-    /// - "role" claims for each role specified in the <paramref name="roles"/> parameter
-    /// - "sub" claim with the value "A1AAB954-136A-444A-94BD-E4B615CA4A78"
-    /// - "azp" claim with the value "A1DEA55A-3507-4777-8CF3-F425A6EC2094"
+    /// Creates an internal token valid for DataHub3 applications, containing the following claims:
+    /// - "token" claim which is an external token retrieved from Microsoft Entra (configured in the given <see cref="AzureB2CSettings"/>)
+    /// - "sub" claim specified in the <paramref name="userId"/> parameter (default value is "A1AAB954-136A-444A-94BD-E4B615CA4A78")
+    /// - "azp" claim specified in the <paramref name="actorId"/> parameter (default value is "A1DEA55A-3507-4777-8CF3-F425A6EC2094")
+    /// - "role" claims for each role specified in the <paramref name="roles"/> parameter (default value is no roles)
+    /// - Any extra claims specified in the <paramref name="extraClaims"/> parameter (default value is no extra claims)
     /// </summary>
     /// <param name="userId">The user id value written to the 'sub' claim in the internal token.</param>
     /// <param name="actorId">The actor id value written to the 'azp' claim in the internal token.</param>
-    /// <param name="roles">Values of the "role" claims. When running in Azure this could be something like "calculations:manage".</param>
-    /// <param name="extraClaims">Extra claims to add to the internal token.</param>
+    /// <param name="roles">Optional roles to add as "role" claims in the internal token. When running in Azure this could be something like "calculations:manage".</param>
+    /// <param name="extraClaims">Optional extra claims to add to the internal token.</param>
     /// <returns>The internal token which wraps the provided external token.</returns>
     public async Task<string> CreateInternalToken(
         string userId = "A1AAB954-136A-444A-94BD-E4B615CA4A78", // TODO: Is it possible to override these, or are they bound to the external token?
@@ -98,7 +99,7 @@ public class JwtProvider
     }
 
     /// <summary>
-    /// Get an access token that allows the "client app" to call the "backend app".
+    /// Get an external JWT from Microsoft Entra using the given <see cref="AzureB2CSettings"/>
     /// </summary>
     private Task<AuthenticationResult> GetExternalTokenAsync()
     {
