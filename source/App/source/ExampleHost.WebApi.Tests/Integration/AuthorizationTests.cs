@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -24,20 +25,25 @@ using Xunit;
 namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
-/// Authorization tests ensuring that the configured permissions are working.
+/// Authorization tests using a nested token (a token which contains both an
+/// external and an internal token). Focus is on verifying the use of the Authorize
+/// attribute with Roles.
+///
+/// Similar tests exists for Function App in the 'AuthorizationTests' class
+/// located in the 'ExampleHost.FunctionApp.Tests' project.
 /// </summary>
-[Collection(nameof(AuthorizationHostCollectionFixture))]
+[Collection(nameof(WebApi03HostCollectionFixture))]
 public sealed class AuthorizationTests
 {
     private const string PermissionOrganizationView = "organizations:view";
     private const string PermissionGridAreasManage = "grid-areas:manage";
 
-    public AuthorizationTests(AuthorizationHostFixture fixture)
+    public AuthorizationTests(WebApi03HostFixture fixture)
     {
         Fixture = fixture;
     }
 
-    private AuthorizationHostFixture Fixture { get; }
+    private WebApi03HostFixture Fixture { get; }
 
     [Fact]
     public async Task CallingApi03Get_Anonymous_Succeeds()
@@ -46,7 +52,7 @@ public sealed class AuthorizationTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/anon/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/anon/{requestIdentification}");
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
@@ -61,10 +67,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionOrganizationView);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionOrganizationView));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -80,10 +87,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken());
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -96,10 +104,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionGridAreasManage);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -112,10 +121,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionGridAreasManage);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/grid/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -131,10 +141,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionOrganizationView);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionOrganizationView));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_or_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -147,10 +158,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionGridAreasManage);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_or_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -163,10 +175,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionGridAreasManage, PermissionOrganizationView);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage, PermissionOrganizationView));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_or_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -182,10 +195,11 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionGridAreasManage, PermissionOrganizationView);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage, PermissionOrganizationView));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_and_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
@@ -201,28 +215,15 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
+        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionGridAreasManage);
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_and_grid/{requestIdentification}");
+        request.Headers.Add("Authorization", authenticationHeader);
 
         var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
-
-    private static string CreateBearerToken(params string[] permissions)
-    {
-        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key"));
-
-        var claims = permissions.Select(claim => new Claim("roles", claim, "arr"));
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            signingCredentials: new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256));
-
-        var handler = new JwtSecurityTokenHandler();
-        return $"Bearer {handler.WriteToken(token)}";
     }
 }

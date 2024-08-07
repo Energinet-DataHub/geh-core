@@ -150,22 +150,6 @@ public class ExampleHostsFixture : IAsyncLifetime
     }
 
     /// <summary>
-    /// Get an access token that allows the "client app" to call the "backend app".
-    /// </summary>
-    public Task<AuthenticationResult> GetTokenAsync()
-    {
-        var confidentialClientApp = ConfidentialClientApplicationBuilder
-            .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
-            .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
-            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
-            .Build();
-
-        return confidentialClientApp
-            .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
-            .ExecuteAsync();
-    }
-
-    /// <summary>
     /// Calls the <see cref="InternalTokenServer"/> on to create an "internal token"
     /// and returns a 'Bearer' authentication header.
     /// </summary>
@@ -179,6 +163,22 @@ public class ExampleHostsFixture : IAsyncLifetime
 
         var authenticationHeader = $"Bearer {internalToken}";
         return authenticationHeader;
+    }
+
+    /// <summary>
+    /// Get an access token that allows the "client app" to call the "backend app".
+    /// </summary>
+    private Task<AuthenticationResult> GetTokenAsync()
+    {
+        var confidentialClientApp = ConfidentialClientApplicationBuilder
+            .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
+            .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
+            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
+            .Build();
+
+        return confidentialClientApp
+            .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
+            .ExecuteAsync();
     }
 
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)

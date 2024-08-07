@@ -23,7 +23,7 @@ namespace ExampleHost.WebApi03.Controllers;
 /// </summary>
 [ApiController]
 [Route("webapi03/[controller]")]
-public class PermissionController : ControllerBase
+public class AuthorizationController : ControllerBase
 {
     [HttpGet("anon/{identification}")]
     [AllowAnonymous]

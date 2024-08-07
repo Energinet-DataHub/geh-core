@@ -20,7 +20,7 @@ using Microsoft.Azure.Functions.Worker;
 namespace ExampleHost.FunctionApp01.Functions;
 
 /// <summary>
-/// Similar functionality exists for Web App in the 'PermissionController' class
+/// Similar functionality exists for Web App in the 'AuthorizationController' class
 /// located in the 'ExampleHost.WebApi03' project.
 /// </summary>
 public class AuthorizationFunction

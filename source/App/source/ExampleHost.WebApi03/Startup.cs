@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using ExampleHost.WebApi03.Security;
 
 namespace ExampleHost.WebApi03;
 
@@ -32,18 +31,14 @@ public class Startup
     {
         services.AddControllers();
 
-        // Configuration supporting tested scenarios
-        // The authorization tests need to generate tokens with different claims.
-        // The validation of these tokens is suspended in tests.
+        // Http => Authentication (verified in tests)
+        // Configure for testing
+        AuthenticationExtensions.DisableHttpsConfiguration = true;
         services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key")),
-            });
+            .AddJwtBearerAuthenticationForWebApp(_configuration)
+            .AddUserAuthenticationForWebApp<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+
+        // Http => Authorization (verified in tests)
         services.AddPermissionAuthorizationForWebApp();
     }
 
@@ -55,6 +50,7 @@ public class Startup
         // Configuration supporting tested scenarios
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseUserMiddlewareForWebApp<ExampleSubsystemUser>();
 
         app.UseEndpoints(endpoints =>
         {

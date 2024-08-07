@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using ExampleHost.WebApi04;
+using ExampleHost.WebApi03;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,41 +24,39 @@ using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixtures;
 
-public class AuthenticationHostFixture : IAsyncLifetime
+public class WebApi03HostFixture : IAsyncLifetime
 {
-    public AuthenticationHostFixture()
+    public WebApi03HostFixture()
     {
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
-
         BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID");
+        InternalTokenServer = new TokenMockServer();
 
-        var web04BaseUrl = "http://localhost:5003";
-        Web04Host = WebHost.CreateDefaultBuilder()
+        var web03BaseUrl = "http://localhost:5002";
+        Web03Host = WebHost.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>
             {
                 var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
-                var internalMetadataAddress = $"{web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
-
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     // Authentication
                     [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}"] = externalMetadataAddress,
                     [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = externalMetadataAddress,
                     [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = BffAppId,
-                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = internalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = InternalTokenServer.MetadataAddress,
                 });
             })
             .UseStartup<Startup>()
-            .UseUrls(web04BaseUrl)
+            .UseUrls(web03BaseUrl)
             .Build();
 
-        Web04HttpClient = new HttpClient
+        Web03HttpClient = new HttpClient
         {
-            BaseAddress = new Uri(web04BaseUrl),
+            BaseAddress = new Uri(web03BaseUrl),
         };
     }
 
-    public HttpClient Web04HttpClient { get; }
+    public HttpClient Web03HttpClient { get; }
 
     /// <summary>
     /// This is not the actual BFF but a test app registration that allows
@@ -66,14 +64,45 @@ public class AuthenticationHostFixture : IAsyncLifetime
     /// </summary>
     private string BffAppId { get; }
 
-    private IWebHost Web04Host { get; }
+    private IWebHost Web03Host { get; }
 
     private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+
+    private TokenMockServer InternalTokenServer { get; }
+
+    public async Task InitializeAsync()
+    {
+        await Web03Host.StartAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        Web03HttpClient.Dispose();
+        await Web03Host.StopAsync();
+
+        InternalTokenServer.Dispose();
+    }
+
+    /// <summary>
+    /// Calls the <see cref="InternalTokenServer"/> on to create an "internal token"
+    /// and returns a 'Bearer' authentication header.
+    /// </summary>
+    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
+    {
+        var externalAuthenticationResult = await GetTokenAsync();
+
+        var internalToken = InternalTokenServer.GetToken(externalAuthenticationResult.AccessToken, roles);
+        if (string.IsNullOrWhiteSpace(internalToken))
+            throw new InvalidOperationException("Nested token was not created.");
+
+        var authenticationHeader = $"Bearer {internalToken}";
+        return authenticationHeader;
+    }
 
     /// <summary>
     /// Get an access token that allows the "client app" to call the "backend app".
     /// </summary>
-    public Task<AuthenticationResult> GetTokenAsync()
+    private Task<AuthenticationResult> GetTokenAsync()
     {
         var confidentialClientApp = ConfidentialClientApplicationBuilder
             .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
@@ -84,16 +113,5 @@ public class AuthenticationHostFixture : IAsyncLifetime
         return confidentialClientApp
             .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
             .ExecuteAsync();
-    }
-
-    public async Task InitializeAsync()
-    {
-        await Web04Host.StartAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        Web04HttpClient.Dispose();
-        await Web04Host.StopAsync();
     }
 }

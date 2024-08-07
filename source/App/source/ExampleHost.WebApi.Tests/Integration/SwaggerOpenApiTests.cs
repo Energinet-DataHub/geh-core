@@ -52,8 +52,8 @@ public class SwaggerOpenApiTests
     }
 
     [Theory]
-    [InlineData("v1", "ExampleHost.WebApp")]
-    [InlineData("v2", "ExampleHost.WebApp")]
+    [InlineData("v1", "ExampleHost.WebApi")]
+    [InlineData("v2", "ExampleHost.WebApi")]
     public async Task UrlIsApiVersionSwaggerJson_WhenGet_ResponseIsOKAndContainsJsonAndCorrespondingVersion(string apiVersion, string title)
     {
         // Arrange

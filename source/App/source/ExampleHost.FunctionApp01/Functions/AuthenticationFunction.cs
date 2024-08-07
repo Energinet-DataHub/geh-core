@@ -23,7 +23,7 @@ namespace ExampleHost.FunctionApp01.Functions;
 
 /// <summary>
 /// Similar functionality exists for Web App in the 'AuthenticationController' class
-/// located in the 'ExampleHost.WebApi04' project.
+/// located in the 'ExampleHost.WebApi03' project.
 /// </summary>
 public class AuthenticationFunction
 {

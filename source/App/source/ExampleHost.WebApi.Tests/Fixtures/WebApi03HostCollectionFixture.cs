@@ -22,7 +22,7 @@ namespace ExampleHost.WebApi.Tests.Fixtures;
 /// xUnit documentation of collection fixtures:
 ///  * https://xunit.net/docs/shared-context#collection-fixture
 /// </summary>
-[CollectionDefinition(nameof(AuthenticationHostCollectionFixture))]
-public class AuthenticationHostCollectionFixture : ICollectionFixture<AuthenticationHostFixture>
+[CollectionDefinition(nameof(WebApi03HostCollectionFixture))]
+public class WebApi03HostCollectionFixture : ICollectionFixture<WebApi03HostFixture>
 {
 }

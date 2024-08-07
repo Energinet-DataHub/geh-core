@@ -63,7 +63,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ExampleHost.WebApi04" />
+    <InternalsVisibleTo Include="ExampleHost.WebApi03" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,18 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using ExampleHost.WebApi04.Security;
+using ExampleHost.WebApi03.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ExampleHost.WebApi04.Controllers;
+namespace ExampleHost.WebApi03.Controllers;
 
 /// <summary>
 /// Similar functionality exists for Function App in the 'AuthenticationFunction' class
 /// located in the 'ExampleHost.FunctionApp01' project.
 /// </summary>
 [ApiController]
-[Route("webapi04/[controller]")]
+[Route("webapi03/[controller]")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IUserContext<ExampleSubsystemUser> _userContext;
