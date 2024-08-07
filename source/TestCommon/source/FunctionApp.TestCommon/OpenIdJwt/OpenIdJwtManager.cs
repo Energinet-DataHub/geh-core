@@ -31,18 +31,24 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 public class OpenIdJwtManager : IDisposable
 {
     private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
-    private const string Issuer = "https://test.datahub.dk";
 
     private readonly RsaSecurityKey _testSecurityKey = new(RSA.Create()) { KeyId = Kid };
 
     /// <summary>
     /// Create manager to handle OpenId and JWT.
-    /// <param name="openIdServerPort">The port to run the OpenId JWT server on. Defaults to 1051.</param>
     /// </summary>
-    public OpenIdJwtManager(int openIdServerPort = 1051)
+    /// <param name="openIdServerPort">The port to run the OpenId configuration server on. Defaults to 1051.</param>
+    /// <param name="jwtIssuer">The issuer used by the OpenId configuration server and written to the JWT when creating an internal token. Defaults to https://test.datahub.dk</param>
+    /// <param name="jwtSubject">The subject value written to the JWT when creating an internal token. Defaults to A1AAB954-136A-444A-94BD-E4B615CA4A78</param>
+    /// <param name="jwtAzp">The azp value written to the JWT when creating an internal token. Defaults to A1DEA55A-3507-4777-8CF3-F425A6EC2094</param>
+    public OpenIdJwtManager(
+        int openIdServerPort = 1051,
+        string jwtIssuer = "https://test.datahub.dk",
+        string jwtSubject = "A1AAB954-136A-444A-94BD-E4B615CA4A78",
+        string jwtAzp = "A1DEA55A-3507-4777-8CF3-F425A6EC2094")
     {
-        JwtProvider = new JwtProvider(Issuer, _testSecurityKey);
-        OpenIdServer = new OpenIdMockServer(Issuer, _testSecurityKey, openIdServerPort);
+        JwtProvider = new JwtProvider(jwtIssuer, _testSecurityKey, jwtSubject, jwtAzp);
+        OpenIdServer = new OpenIdMockServer(jwtIssuer, _testSecurityKey, openIdServerPort);
     }
 
     /// <summary>
@@ -54,7 +60,7 @@ public class OpenIdJwtManager : IDisposable
 
     /// <summary>
     /// An OpenId configuration server used for running an OpenId JWT server mock for testing DH3 applications that
-    /// require OpenId configuration endpoints. Use in combination with the <see cref="JwtProvider"/> to create JWT tokens
+    /// require OpenId configuration endpoints. Can be used in combination with <see cref="JwtProvider"/> to create JWT tokens
     /// that can be validated according to the OpenId configuration provided by this server.
     /// </summary>
     public OpenIdMockServer OpenIdServer { get; }

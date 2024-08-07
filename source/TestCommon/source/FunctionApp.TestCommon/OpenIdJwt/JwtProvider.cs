@@ -27,21 +27,24 @@ public class JwtProvider
     private const string TokenClaim = "token";
     private const string RoleClaim = "role";
 
-    private const string SubValue = "A1AAB954-136A-444A-94BD-E4B615CA4A78";
-    private const string AzpValue = "A1DEA55A-3507-4777-8CF3-F425A6EC2094";
-
     private readonly string _issuer;
     private readonly RsaSecurityKey _securityKey;
+    private readonly string _subject;
+    private readonly string _azp;
 
     /// <summary>
     /// Create a JWT provider
     /// </summary>
     /// <param name="issuer">The JWT issuer. If using <see cref="OpenIdMockServer"/> then the issuer should be the same.</param>
     /// <param name="securityKey">The security key used for signing the JWT. If using <see cref="OpenIdMockServer"/> then the security key should be the same.</param>
-    internal JwtProvider(string issuer, RsaSecurityKey securityKey)
+    /// <param name="subject">The value written to the 'sub' claim in the internal token</param>
+    /// <param name="azp">The value written to the 'azp' claim in the internal token</param>
+    internal JwtProvider(string issuer, RsaSecurityKey securityKey, string subject, string azp)
     {
         _issuer = issuer;
         _securityKey = securityKey;
+        _subject = subject;
+        _azp = azp;
     }
 
     /// <summary>
@@ -63,8 +66,8 @@ public class JwtProvider
         var claims = new List<Claim>
         {
             new(TokenClaim, externalToken),
-            new(JwtRegisteredClaimNames.Sub, SubValue),
-            new(JwtRegisteredClaimNames.Azp, AzpValue),
+            new(JwtRegisteredClaimNames.Sub, _subject),
+            new(JwtRegisteredClaimNames.Azp, _azp),
         };
 
         foreach (var role in roles)

@@ -49,19 +49,38 @@ public sealed class OpenIdMockServer : IDisposable
         _port = port;
     }
 
+    /// <summary>
+    /// Get the URL of the running OpenId server.
+    /// <remarks>
+    /// ATTENTION: This requires the server to already be running or an exception will be thrown.
+    /// Ensure that the <see cref="StartServer"/> method has been executed beforehand.
+    /// </remarks>
+    /// </summary>
     public string Url => GetRunningServer().Url!;
 
+    /// <summary>
+    /// Get the address of the running server's OpenId configuration endpoint.
+    /// <remarks>
+    /// ATTENTION: This requires the server to already be running or an exception will be thrown.
+    /// Ensure that the <see cref="StartServer"/> method has been executed beforehand.
+    /// </remarks>
+    /// </summary>
     public string MetadataAddress => $"{Url}{ConfigurationEndpointPath}";
 
+    /// <summary>
+    /// Get the address of the running server's OpenId public keys endpoint.
+    /// <remarks>
+    /// ATTENTION: This requires the server to already be running or an exception will be thrown.
+    /// Ensure that the <see cref="StartServer"/> method has been executed beforehand.
+    /// </remarks>
+    /// </summary>
     public string PublicKeysAddress => $"{Url}{PublicKeysEndpointPath}";
 
     /// <summary>
     /// Start the OpenId JWT server using WireMock. The server is running at port specified by the configuration (defaults to port 1051).
     /// The server will be listening for requests on the following endpoints, which are defined in the OpenId specification:
-    /// - /v2.0/.well-known/openid-configuration
-    /// - /discovery/v2.0/keys
-    ///
-    /// OpenId configuration endpoints must use HTTPS, so a developer certificate is provided and used automatically.
+    /// /v2.0/.well-known/openid-configuration, /discovery/v2.0/keys.
+    /// <remarks>OpenId configuration endpoints must use HTTPS, so a developer certificate is provided and used automatically.</remarks>
     /// </summary>
     public void StartServer()
     {

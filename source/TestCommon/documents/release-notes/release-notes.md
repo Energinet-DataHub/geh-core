@@ -1,5 +1,11 @@
 # TestCommon Release notes
 
+## Version 6.0.1
+
+- Added `OpenIdJwtManager` to enable testing DH3 applications that requires OpenId and JWT for HTTP authentication and authorization, with the following features:
+    - Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints
+    - Creating internal JWT tokens used for testing DH3 applications that require authentication and authorization
+
 ## Version 6.0.0
 
 - Breaking changes
