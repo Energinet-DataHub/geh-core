@@ -13,22 +13,23 @@
 // limitations under the License.
 
 using System.Security.Cryptography;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 
 /// <summary>
-/// A Http server that mocks "JWT token configuration" endpoints as well as
+/// A Http server that mocks "JWT configuration" endpoints as well as
 /// expose an endpoint for creating access token's that can be used for
 /// testing DH3 applications that require Http authentication and authorization.
 /// </summary>
 /// <summary>
 /// Used to help test DH3 applications that requires OpenId and JWT for HTTP authentication and authorization.
 /// The OpenIdJwtManager supports:
-/// - Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints
-/// - Creating internal JWT tokens used for testing DH3 applications that require authentication and authorization
+/// - Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints.
+/// - Creating internal JWT's used for testing DH3 applications that require authentication and authorization.
 /// </summary>
-public class OpenIdJwtManager : IDisposable
+public class OpenIdJwtManager : IDisposable, IOpenIdServer
 {
     private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
 
@@ -37,22 +38,20 @@ public class OpenIdJwtManager : IDisposable
     /// <summary>
     /// Create manager to handle OpenId and JWT.
     /// </summary>
+    /// <param name="azureB2CSettings">Azure B2C settings used to get an external token. Can be retrieved from <see cref="IntegrationTestConfiguration"/></param>
     /// <param name="openIdServerPort">The port to run the OpenId configuration server on. Defaults to 1051.</param>
-    /// <param name="jwtIssuer">The issuer used by the OpenId configuration server and written to the JWT when creating an internal token. Defaults to https://test.datahub.dk</param>
-    /// <param name="jwtSubject">The subject value written to the JWT when creating an internal token. Defaults to A1AAB954-136A-444A-94BD-E4B615CA4A78</param>
-    /// <param name="jwtAzp">The azp value written to the JWT when creating an internal token. Defaults to A1DEA55A-3507-4777-8CF3-F425A6EC2094</param>
+    /// <param name="jwtIssuer">The issuer used by the OpenId configuration server and written to the JWT when creating an internal token. Defaults to https://test-common.datahub.dk</param>
     public OpenIdJwtManager(
+        AzureB2CSettings azureB2CSettings,
         int openIdServerPort = 1051,
-        string jwtIssuer = "https://test.datahub.dk",
-        string jwtSubject = "A1AAB954-136A-444A-94BD-E4B615CA4A78",
-        string jwtAzp = "A1DEA55A-3507-4777-8CF3-F425A6EC2094")
+        string jwtIssuer = "https://test-common.datahub.dk")
     {
-        JwtProvider = new JwtProvider(jwtIssuer, _testSecurityKey, jwtSubject, jwtAzp);
         OpenIdServer = new OpenIdMockServer(jwtIssuer, _testSecurityKey, openIdServerPort);
+        JwtProvider = new JwtProvider(azureB2CSettings, OpenIdServer.Issuer, OpenIdServer.SecurityKey);
     }
 
     /// <summary>
-    /// A JWT provider used for creating internal JWT tokens for testing DH3 applications that
+    /// A JWT provider used for creating internal JWT's for testing DH3 applications that
     /// require authentication and authorization. The tokens can be used by applications using OpenId if the <see cref="OpenIdServer"/>
     /// is running.
     /// </summary>
@@ -64,6 +63,8 @@ public class OpenIdJwtManager : IDisposable
     /// that can be validated according to the OpenId configuration provided by this server.
     /// </summary>
     public OpenIdMockServer OpenIdServer { get; }
+
+    public void StartServer() => OpenIdServer.StartServer();
 
     public void Dispose()
     {

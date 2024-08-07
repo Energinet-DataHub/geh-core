@@ -36,4 +36,11 @@ public record AzureB2CSettings()
 
     public string BackendAppObjectId { get; internal set; }
         = string.Empty;
+
+    /// <summary>
+    /// This is not the actual BFF but a test app registration that allows
+    /// us to verify some of the JWT code.
+    /// </summary>
+    public string TestBffAppId { get; internal set; }
+        = string.Empty;
 }

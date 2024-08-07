@@ -29,23 +29,21 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 /// require OpenId configuration endpoints. Use in combination with <see cref="JwtProvider"/> to create JWT tokens
 /// that can be validated according to the OpenId configuration provided by this server.
 /// </summary>
-public sealed class OpenIdMockServer : IDisposable
+public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
 {
     // Path's used to configure endpoints in WireMock.NET
     // They must begin with "/".
     private const string ConfigurationEndpointPath = "/v2.0/.well-known/openid-configuration";
     private const string PublicKeysEndpointPath = "/discovery/v2.0/keys";
 
-    private readonly string _issuer;
-    private readonly RsaSecurityKey _securityKey;
     private readonly int _port;
 
     private WireMockServer? _mockServer;
 
     internal OpenIdMockServer(string issuer, RsaSecurityKey securityKey, int port)
     {
-        _issuer = issuer;
-        _securityKey = securityKey;
+        Issuer = issuer;
+        SecurityKey = securityKey;
         _port = port;
     }
 
@@ -67,21 +65,10 @@ public sealed class OpenIdMockServer : IDisposable
     /// </summary>
     public string MetadataAddress => $"{Url}{ConfigurationEndpointPath}";
 
-    /// <summary>
-    /// Get the address of the running server's OpenId public keys endpoint.
-    /// <remarks>
-    /// ATTENTION: This requires the server to already be running or an exception will be thrown.
-    /// Ensure that the <see cref="StartServer"/> method has been executed beforehand.
-    /// </remarks>
-    /// </summary>
-    public string PublicKeysAddress => $"{Url}{PublicKeysEndpointPath}";
+    internal string Issuer { get; }
 
-    /// <summary>
-    /// Start the OpenId JWT server using WireMock. The server is running at port specified by the configuration (defaults to port 1051).
-    /// The server will be listening for requests on the following endpoints, which are defined in the OpenId specification:
-    /// /v2.0/.well-known/openid-configuration, /discovery/v2.0/keys.
-    /// <remarks>OpenId configuration endpoints must use HTTPS, so a developer certificate is provided and used automatically.</remarks>
-    /// </summary>
+    internal RsaSecurityKey SecurityKey { get; }
+
     public void StartServer()
     {
         _mockServer = WireMockServer.Start(new WireMockServerSettings
@@ -132,7 +119,7 @@ public sealed class OpenIdMockServer : IDisposable
             .WithHeader(HeaderNames.ContentType, "application/json")
             .WithBody(JsonSerializer.Serialize(new
             {
-                issuer = _issuer,
+                issuer = Issuer,
                 jwks_uri = $"{GetRunningServer().Url}{PublicKeysEndpointPath}",
             }));
 
@@ -143,7 +130,7 @@ public sealed class OpenIdMockServer : IDisposable
 
     private void MockGetPublicKeys()
     {
-        var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(_securityKey);
+        var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(SecurityKey);
 
         var request = Request
             .Create()
