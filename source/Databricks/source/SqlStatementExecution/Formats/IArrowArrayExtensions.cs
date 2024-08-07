@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
 internal static class IArrowArrayExtensions
 {
-    public static object? GetValue(this IArrowArray arrowArray, int i)
+    public static object? GetValue(this IArrowArray arrowArray, int i, int offset = 0)
         => arrowArray switch
         {
             BooleanArray booleanArray => booleanArray.GetValue(i),
@@ -40,23 +40,24 @@ internal static class IArrowArrayExtensions
             Decimal128Array decimal128Array => decimal128Array.GetValue(i),
             StringArray stringArray => stringArray.GetString(i),
             ListArray listArray => ReadArray(listArray, i),
-            StructArray structArray => ReadStructArray(structArray, i),
+            StructArray structArray => ReadStructArray(structArray, i, offset),
             _ => throw new NotSupportedException($"Unsupported data type {arrowArray}"),
         };
 
     private static object? ReadArray(ListArray array, int i)
     {
-        var objectArray = new object?[array.Length];
-        var offset = array.ValueOffsets[i];
-        for (var j = 0; j < array.Length; j++)
+        var slice = array.GetSlicedValues(i);
+        var objectArray = new object?[slice.Length];
+
+        for (var j = 0; j < objectArray.Length; j++)
         {
-            objectArray[j] = array.Values.GetValue(j + offset);
+            objectArray[j] = slice.GetValue(j, slice.Offset);
         }
 
         return objectArray;
     }
 
-    private static object? ReadStructArray(StructArray array, int i)
+    private static object? ReadStructArray(StructArray array, int i, int offset)
     {
         if (array.Data.DataType is not StructType structType)
             return null;
@@ -65,7 +66,7 @@ internal static class IArrowArrayExtensions
         for (var k = 0; k < structType.Fields.Count; k++)
         {
             var field = structType.Fields[k];
-            var value = array.Fields[k].GetValue(i);
+            var value = array.Fields[k].GetValue(i + offset);
             ((IDictionary<string, object?>)structObject).Add(field.Name, value);
         }
 
