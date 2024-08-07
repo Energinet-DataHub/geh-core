@@ -13,9 +13,14 @@
 // limitations under the License.
 
 using System.Security.Cryptography.X509Certificates;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 
+/// <summary>
+/// Provides a test certificate which is used to support HTTPS in the <see cref="AzuriteManager"/> and the <see cref="OpenIdJwtManager"/>
+/// </summary>
 internal static class TestCertificateProvider
 {
     /// <summary>
