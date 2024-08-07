@@ -57,7 +57,7 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
     public string Url => GetRunningServer().Url!;
 
     /// <summary>
-    /// Get the address of the running server's OpenId configuration endpoint.
+    /// Get the address of the running server's OpenId configuration metadata endpoint.
     /// <remarks>
     /// ATTENTION: This requires the server to already be running or an exception will be thrown.
     /// Ensure that the <see cref="StartServer"/> method has been executed beforehand.
