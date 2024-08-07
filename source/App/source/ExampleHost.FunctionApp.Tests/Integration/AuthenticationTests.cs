@@ -28,7 +28,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 /// external and an internal token) to verify that tokens are configured
 /// to be validated as expected.
 ///
-/// Similar tests exists for Web App in the 'NestedAuthenticationTests' class
+/// Similar tests exists for Web App in the 'AuthenticationTests' class
 /// located in the 'ExampleHost.WebApi.Tests' project.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]

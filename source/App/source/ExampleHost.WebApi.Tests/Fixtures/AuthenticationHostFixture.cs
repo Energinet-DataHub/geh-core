@@ -27,21 +27,17 @@ namespace ExampleHost.WebApi.Tests.Fixtures;
 public class AuthenticationHostFixture : IAsyncLifetime
 {
     public AuthenticationHostFixture()
-        : this("http://localhost:5003", false) { }
-
-    protected AuthenticationHostFixture(string web04BaseUrl, bool supportNestedTokens)
     {
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
         BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID");
 
+        var web04BaseUrl = "http://localhost:5003";
         Web04Host = WebHost.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>
             {
                 var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
-                var internalMetadataAddress = supportNestedTokens
-                    ? $"{web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration"
-                    : string.Empty;
+                var internalMetadataAddress = $"{web04BaseUrl}/webapi04/v2.0/.well-known/openid-configuration";
 
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
@@ -52,9 +48,7 @@ public class AuthenticationHostFixture : IAsyncLifetime
                     [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = internalMetadataAddress,
                 });
             })
-            .UseStartup(supportNestedTokens
-                ? typeof(NestedAuthenticationStartup)
-                : typeof(Startup))
+            .UseStartup<Startup>()
             .UseUrls(web04BaseUrl)
             .Build();
 

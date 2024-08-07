@@ -59,50 +59,6 @@ public static class AuthenticationExtensions
 
     /// <summary>
     /// Adds JWT Bearer authentication to the Web API.
-    /// </summary>
-    /// <param name="services">A collection of service descriptors.</param>
-    /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
-    /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
-    /// <param name="backendAppId"></param>
-    [Obsolete("Should only be used for testing. Use 'AddJwtBearerAuthenticationForWebApp' for production.")]
-    public static IServiceCollection AddJwtBearerAuthenticationForWebApp(
-        this IServiceCollection services,
-        string externalMetadataAddress,
-        string internalMetadataAddress,
-        string backendAppId)
-    {
-        ArgumentNullException.ThrowIfNull(externalMetadataAddress);
-        ArgumentNullException.ThrowIfNull(backendAppId);
-
-        services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                var tokenValidationParameters = CreateValidationParameters(backendAppId, externalMetadataAddress);
-
-                if (!string.IsNullOrEmpty(internalMetadataAddress))
-                {
-                    options.TokenValidationParameters = CreateValidationParameters(backendAppId, internalMetadataAddress);
-                    options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
-                    {
-                        if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
-                            throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
-
-                        ValidateInnerJwt((JsonWebToken)token, tokenValidationParameters);
-                        return issuer;
-                    };
-                }
-                else
-                {
-                    options.TokenValidationParameters = tokenValidationParameters;
-                }
-            });
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds JWT Bearer authentication to the Web API.
     ///
     /// Expects <see cref="UserAuthenticationOptions"/> has been configured in <see cref="UserAuthenticationOptions.SectionName"/>.
     /// </summary>

@@ -5,6 +5,8 @@
 - In `FunctionApp` project:
     - Refactored implementation to only work with [ASP.NET Core integration for HTTP](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration).
     - Added functionality to configure authentication and authorization for HttpTrigger's
+- In `WebApp` project:
+    - Removed the obsolete overload of `AuthenticationExtensions.AddJwtBearerAuthenticationForWebApp`
 - Moved type `Energinet.DataHub.Core.App.WebApp.Extensions.Options.UserAuthenticationOptions` to `Energinet.DataHub.Core.App.Common.Extensions.Options.UserAuthenticationOptions`.
 
 ## Version 12.2.1
