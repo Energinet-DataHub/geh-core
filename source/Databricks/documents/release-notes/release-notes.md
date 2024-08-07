@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.0.2
+
+Bugfix for arrays.
+
 ## Version 11.0.1
 
 Remove `System.Text.Json` package since it is covered by the runtime.
