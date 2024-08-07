@@ -53,14 +53,15 @@ public sealed class OpenIdMockServer : IDisposable
 
     public string MetadataAddress => $"{Url}{ConfigurationEndpointPath}";
 
+    public string PublicKeysAddress => $"{Url}{PublicKeysEndpointPath}";
+
     /// <summary>
-    /// Start and the OpenId JWT server using WireMock. The server is running at port specified by the configuration (defaults to port 1051).
-    /// OpenId configuration endpoints must use HTTPS, so a developer certificate is provided and used automatically.
-    /// See WireMock.Net documentation for more information about developer certificates: https://github.com/WireMock-Net/WireMock.Net/wiki/Using-HTTPS-(SSL)
-    ///
+    /// Start the OpenId JWT server using WireMock. The server is running at port specified by the configuration (defaults to port 1051).
     /// The server will be listening for requests on the following endpoints, which are defined in the OpenId specification:
     /// - /v2.0/.well-known/openid-configuration
     /// - /discovery/v2.0/keys
+    ///
+    /// OpenId configuration endpoints must use HTTPS, so a developer certificate is provided and used automatically.
     /// </summary>
     public void StartServer()
     {
