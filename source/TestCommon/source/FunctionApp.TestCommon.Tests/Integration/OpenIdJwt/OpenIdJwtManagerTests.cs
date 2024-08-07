@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
@@ -71,6 +72,8 @@ public class OpenIdJwtManagerTests
         var expectedAudience = "test-common";
         var expectedRole1 = "role1";
         var expectedRole2 = "role2";
+        var expectedClaim1 = new Claim("claim1", "value1");
+        var expectedClaim2 = new Claim("claim2", "value2");
         var expectedSubject = "A1AAB954-136A-444A-94BD-E4B615CA4A78";
         var expectedAzp = "A1DEA55A-3507-4777-8CF3-F425A6EC2094";
 
@@ -81,7 +84,10 @@ public class OpenIdJwtManagerTests
             expires: DateTime.UtcNow.AddHours(1)));
 
         // Act
-        var internalToken = openIdJwtManager.JwtProvider.CreateInternalToken(expectedExternalToken, expectedRole1, expectedRole2);
+        var internalToken = openIdJwtManager.JwtProvider.CreateInternalToken(
+            expectedExternalToken,
+            roles: [expectedRole1, expectedRole2],
+            extraClaims: [expectedClaim1, expectedClaim2]);
 
         // Assert
         internalToken.Should().NotBeNullOrEmpty();
@@ -95,6 +101,8 @@ public class OpenIdJwtManagerTests
         parsedToken.Claims.Should().ContainSingle(c => c.Type == "token" && c.Value == expectedExternalToken);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == "role" && c.Value == expectedRole1);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == "role" && c.Value == expectedRole2);
+        parsedToken.Claims.Should().ContainSingle(c => c.Type == expectedClaim1.Type && c.Value == expectedClaim1.Value);
+        parsedToken.Claims.Should().ContainSingle(c => c.Type == expectedClaim2.Type && c.Value == expectedClaim2.Value);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == expectedSubject);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Azp && c.Value == expectedAzp);
     }

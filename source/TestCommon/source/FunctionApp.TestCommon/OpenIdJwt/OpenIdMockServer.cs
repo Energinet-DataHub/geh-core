@@ -156,6 +156,6 @@ public sealed class OpenIdMockServer : IDisposable
 
     private WireMockServer GetRunningServer()
     {
-        return _mockServer ?? throw new InvalidOperationException($"Server is not started. Call {nameof(StartServer)}() first.");
+        return _mockServer ?? throw new InvalidOperationException($"Cannot get running server. Make sure the server is running by calling {nameof(StartServer)}() first.");
     }
 }

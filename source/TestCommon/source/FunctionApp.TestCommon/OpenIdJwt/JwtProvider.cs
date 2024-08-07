@@ -53,9 +53,13 @@ public class JwtProvider
     /// </summary>
     /// <param name="externalToken">Value of the "token" claim. Should be a valid jwt, which represents an external token (Microsoft Entra / MitId token when running in Azure)</param>
     /// <param name="roles">Values of the "role" claims. When running in Azure this could be something like "calculations:manage".</param>
+    /// <param name="extraClaims">Extra claims to add to the internal token.</param>
     /// <returns>The internal token which wraps the provided external token</returns>
-    public string CreateInternalToken(string externalToken, params string[] roles)
+    public string CreateInternalToken(string externalToken, string[]? roles = null, Claim[]? extraClaims = null)
     {
+        roles ??= [];
+        extraClaims ??= [];
+
         var claims = new List<Claim>
         {
             new(TokenClaim, externalToken),
@@ -67,6 +71,8 @@ public class JwtProvider
         {
             claims.Add(new Claim(RoleClaim, role.Trim()));
         }
+
+        claims.AddRange(extraClaims);
 
         var externalJwt = new JwtSecurityToken(externalToken);
         var internalJwt = new JwtSecurityToken(
