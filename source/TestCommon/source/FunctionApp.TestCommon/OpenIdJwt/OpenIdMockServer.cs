@@ -83,8 +83,8 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
             UseSSL = true,
             CertificateSettings = new WireMockCertificateSettings
             {
-                X509CertificateFilePath = TestCertificateManager.FilePath,
-                X509CertificatePassword = TestCertificateManager.Password,
+                X509CertificateFilePath = TestCertificateProvider.FilePath,
+                X509CertificatePassword = TestCertificateProvider.Password,
             },
         });
 

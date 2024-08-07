@@ -16,7 +16,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 
-internal static class TestCertificateManager
+internal static class TestCertificateProvider
 {
     /// <summary>
     /// Path to the test certificate file, which is added as content to current NuGet package.

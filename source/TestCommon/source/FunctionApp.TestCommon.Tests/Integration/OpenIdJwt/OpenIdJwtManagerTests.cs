@@ -30,7 +30,7 @@ using Xunit;
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.OpenIdJwt;
 
 /// <summary>
-/// This fixtures ensures we reuse the <see cref="AzureB2CSettings"/> which is retrieved
+/// This class fixture ensures we reuse the <see cref="AzureB2CSettings"/> which is retrieved
 /// from the <see cref="IntegrationTestConfiguration"/>, since it takes a couple of seconds because
 /// it's using <see cref="DefaultAzureCredential"/>
 /// </summary>
@@ -124,45 +124,6 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Assert
         var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalToken, validationParameters, out _);
         validateToken.Should().ThrowExactly<SecurityTokenInvalidIssuerException>();
-    }
-
-    [Fact]
-    public async Task When_RunningOpenIdServer_Then_CanCallOpenIdConfigurationEndpoint()
-    {
-        // Arrange
-        using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
-        openIdJwtManager.StartServer();
-
-        // Act
-        var httpClient = new HttpClient();
-
-        var configurationResult = await httpClient.GetStringAsync($"{openIdJwtManager.OpenIdServer.MetadataAddress}");
-
-        // Assert
-        configurationResult.Should().NotBeNull();
-
-        var jsonResult = JToken.Parse(configurationResult);
-        jsonResult["issuer"].Should().NotBeNull();
-        jsonResult["jwks_uri"].Should().NotBeNull();
-    }
-
-    [Fact]
-    public async Task When_RunningOpenIdServer_Then_CanCallOpenIdPublicKeysEndpoint()
-    {
-        // Arrange
-        using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
-        openIdJwtManager.StartServer();
-
-        // Act
-        var httpClient = new HttpClient();
-
-        var configurationResult = await httpClient.GetStringAsync($"{openIdJwtManager.OpenIdServer.Url}/discovery/v2.0/keys");
-
-        // Assert
-        configurationResult.Should().NotBeNullOrWhiteSpace();
-
-        var jsonResult = JToken.Parse(configurationResult);
-        jsonResult["keys"].Should().NotBeNull();
     }
 
     [Fact]

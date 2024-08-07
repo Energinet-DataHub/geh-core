@@ -277,7 +277,7 @@ public class AzuriteManager : IDisposable
         var azuriteArguments = GetAzuriteArguments(UseOAuth);
 
         if (UseOAuth)
-            TestCertificateManager.InstallCertificate();
+            TestCertificateProvider.InstallCertificate();
 
         AzuriteProcess = new Process
         {
@@ -330,7 +330,7 @@ public class AzuriteManager : IDisposable
     private static string GetAzuriteArguments(bool useOAuth)
     {
         return useOAuth == true
-            ? $"--oauth basic --cert {TestCertificateManager.FilePath} --pwd {TestCertificateManager.Password}"
+            ? $"--oauth basic --cert {TestCertificateProvider.FilePath} --pwd {TestCertificateProvider.Password}"
             : string.Empty;
     }
 }
