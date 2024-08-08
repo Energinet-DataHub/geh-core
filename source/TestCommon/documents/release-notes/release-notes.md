@@ -1,11 +1,12 @@
 # TestCommon Release notes
 
-## Version 6.0.1
+## Version 6.1.0
 
 - Added `OpenIdJwtManager` to enable testing DH3 applications that requires OpenId and JWT for HTTP authentication and authorization, with the following features:
-    - Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints
-    - Creating internal JWT tokens used for testing DH3 applications that require authentication and authorization
-    - Rename & move certificate `/Azurite/TestCertificate/azurite-cert.pfx` to `/TestCertificate/test-common-cert.pfx` since it is now also used by the OpenId configuration server
+    - Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints.
+    - Creating internal JWT's used for testing DH3 applications that require authentication and authorization.
+    - Creating fake JWT's used for testing that clients cannot authorize using incorrect tokens.
+    - Rename & move certificate `/Azurite/TestCertificate/azurite-cert.pfx` to `/TestCertificate/test-common-cert.pfx` since it is now also used by the OpenId configuration server.
 
 ## Version 6.0.0
 
