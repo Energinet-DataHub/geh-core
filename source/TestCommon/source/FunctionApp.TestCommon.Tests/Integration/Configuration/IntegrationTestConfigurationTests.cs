@@ -56,6 +56,7 @@ public class IntegrationTestConfigurationTests
         actualValue.BackendAppId.Should().NotBeNullOrEmpty();
         actualValue.BackendServicePrincipalObjectId.Should().NotBeNullOrEmpty();
         actualValue.BackendAppObjectId.Should().NotBeNullOrEmpty();
+        actualValue.TestBffAppId.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
