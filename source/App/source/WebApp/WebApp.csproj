@@ -63,10 +63,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ExampleHost.WebApi03" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
