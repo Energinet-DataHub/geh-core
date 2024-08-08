@@ -34,8 +34,23 @@ internal static class TestCertificateProvider
     internal const string Password = "test-common";
 
     /// <summary>
-    /// Installs test certificate.
+    /// Installs the test-common dev certificate.
     /// Supports silent installation on a GitHub runner if executed as administrator.
+    ///
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>
+    ///             When exeuted on a GitHub runner: The certificate will be installed silently if the runner is
+    ///             executed as administrator (default).
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             When executed on any non-Github runner: A dialog will be shown to the user the first time the
+    ///             certificate is installed. The dialog requests the user to accept trusting the test certificate.
+    ///         </description>
+    ///     </item>
+    /// </list>
     /// </summary>
     internal static void InstallCertificate()
     {

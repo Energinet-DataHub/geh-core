@@ -77,6 +77,8 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
 
     public void StartServer()
     {
+        TestCertificateProvider.InstallCertificate();
+
         _mockServer = WireMockServer.Start(new WireMockServerSettings
         {
             Port = _port,

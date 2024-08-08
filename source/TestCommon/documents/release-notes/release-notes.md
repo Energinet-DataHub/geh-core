@@ -5,6 +5,7 @@
 - Added `OpenIdJwtManager` to enable testing DH3 applications that requires OpenId and JWT for HTTP authentication and authorization, with the following features:
     - Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints
     - Creating internal JWT tokens used for testing DH3 applications that require authentication and authorization
+    - Rename & move certificate `/Azurite/TestCertificate/azurite-cert.pfx` to `/TestCertificate/test-common-cert.pfx` since it is now also used by the OpenId configuration server
 
 ## Version 6.0.0
 
@@ -19,7 +20,7 @@
     - Method `InsertFromCsvFileAsync`
 
 ## Version 5.2.1
-
+~~~~
 - Extended `IntegrationTestConfiguration` with the option to pass in `DefaultAzureCredential` from the outside.
 
 ## Version 5.2.0

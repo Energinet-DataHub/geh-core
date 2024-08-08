@@ -24,16 +24,20 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 /// Used to start Azurite, which is the storage emulator that replaced Azure Storage Emulator.
 /// Remember to dispose, otherwise the Azurite process wont be stopped.
 ///
-/// If we use 'OAuth' a test certificate will be installed on startup:
-///  * When exeuted on a GitHub runner: The certificate will be installed silently if the runner is
-///    executed as administrator (default).
-///  * When executed on any non-Github runner: A dialog will be shown to the user the first time the
-///    certificate is installed. The dialog requests the user to accept trusting the test certificate.
+/// If 'OAuth' is enabled then a test certificate will be installed on startup (see <see cref="TestCertificateProvider"/>.<see cref="TestCertificateProvider.InstallCertificate"/>)
 ///
 /// In most cases the AzuriteManager should be used in the FunctionAppFixture:
-/// - Create it in the constructor
-/// - Start it in OnInitializeFunctionAppDependenciesAsync()
-/// - Dispose it in OnDisposeFunctionAppDependenciesAsync()
+/// <list type="bullet">
+///     <item>
+///         <description>Create it in the constructor</description>
+///     </item>
+///     <item>
+///         <description>Start it in OnInitializeFunctionAppDependenciesAsync()</description>
+///     </item>
+///     <item>
+///         <description>Dispose it in OnDisposeFunctionAppDependenciesAsync()</description>
+///     </item>
+/// </list>
 ///
 /// If Azurite is not installed globally then set the environment variable 'AzuriteFolderPath'
 /// to the location of the 'azurite.cmd' file.

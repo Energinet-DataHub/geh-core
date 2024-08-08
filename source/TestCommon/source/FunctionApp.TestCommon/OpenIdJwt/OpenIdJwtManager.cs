@@ -14,20 +14,24 @@
 
 using System.Security.Cryptography;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 
 /// <summary>
-/// A Http server that mocks "JWT configuration" endpoints as well as
-/// expose an endpoint for creating access token's that can be used for
-/// testing DH3 applications that require Http authentication and authorization.
-/// </summary>
-/// <summary>
 /// Used to help test DH3 applications that requires OpenId and JWT for HTTP authentication and authorization.
 /// The OpenIdJwtManager supports:
-/// - Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints.
-/// - Creating internal JWT's used for testing DH3 applications that require authentication and authorization.
+/// <list type="bullet">
+///     <item>
+///         <description>Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints.</description>
+///     </item>
+///     <item>
+///         <description>Creating internal JWT's used for testing DH3 applications that require authentication and authorization.</description>
+///     </item>
+/// </list>
+///
+/// A test certificate will be automatically installed on startup to support https (using <see cref="TestCertificateProvider"/>.<see cref="TestCertificateProvider.InstallCertificate"/>)
 /// </summary>
 public class OpenIdJwtManager : IDisposable, IOpenIdServer
 {
