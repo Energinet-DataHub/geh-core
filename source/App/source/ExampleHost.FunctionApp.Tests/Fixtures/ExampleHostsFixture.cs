@@ -46,7 +46,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
-        OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings);
+        OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings, openIdServerPort: 1052);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
