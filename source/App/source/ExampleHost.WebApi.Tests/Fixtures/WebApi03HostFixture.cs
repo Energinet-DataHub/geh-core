@@ -19,7 +19,6 @@ using ExampleHost.WebApi03;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Client;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixtures;
