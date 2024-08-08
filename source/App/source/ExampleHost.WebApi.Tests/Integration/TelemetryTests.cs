@@ -78,15 +78,15 @@ public class TelemetryTests
 
         var expectedEvents = new List<QueryResult>
         {
-            new() { Type = "AppDependencies", Subsystem = "ExampleHost.WebApp", Name = $"GET /webapi01/telemetry/{requestIdentification}", DependencyType = "HTTP" },
-            new() { Type = "AppRequests", Subsystem = "ExampleHost.WebApp", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5000/webapi01/telemetry/{requestIdentification}" },
-            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
-            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.WebApi", Name = $"GET /webapi01/telemetry/{requestIdentification}", DependencyType = "HTTP" },
+            new() { Type = "AppRequests", Subsystem = "ExampleHost.WebApi", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5000/webapi01/telemetry/{requestIdentification}" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApi", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApi", EventName = null!, Message = $"ExampleHost WebApi01 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
 
-            new() { Type = "AppDependencies", Subsystem = "ExampleHost.WebApp", Name = $"GET /webapi02/telemetry/{requestIdentification}", DependencyType = "HTTP" },
-            new() { Type = "AppRequests", Subsystem = "ExampleHost.WebApp", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5001/webapi02/telemetry/{requestIdentification}" },
-            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
-            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApp", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppDependencies", Subsystem = "ExampleHost.WebApi", Name = $"GET /webapi02/telemetry/{requestIdentification}", DependencyType = "HTTP" },
+            new() { Type = "AppRequests", Subsystem = "ExampleHost.WebApi", Name = "GET Telemetry/Get [identification]", Url = $"http://localhost:5001/webapi02/telemetry/{requestIdentification}" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApi", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Information: We should be able to find this log message by following the trace of the request" },
+            new() { Type = "AppTraces", Subsystem = "ExampleHost.WebApi", EventName = null!, Message = $"ExampleHost WebApi02 {requestIdentification} Warning: We should be able to find this log message by following the trace of the request" },
         };
 
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/telemetry/{requestIdentification}");

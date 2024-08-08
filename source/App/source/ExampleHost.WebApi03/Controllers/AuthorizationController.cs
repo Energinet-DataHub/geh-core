@@ -17,17 +17,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi03.Controllers;
 
+/// <summary>
+/// Similar functionality exists for Function App in the 'AuthorizationFunction' class
+/// located in the 'ExampleHost.FunctionApp01' project.
+/// </summary>
 [ApiController]
 [Route("webapi03/[controller]")]
-public class PermissionController : ControllerBase
+public class AuthorizationController : ControllerBase
 {
-    [HttpGet("anon/{identification}")]
-    [AllowAnonymous]
-    public string Get(string identification)
-    {
-        return identification;
-    }
-
     [HttpGet("org/{identification}")]
     [Authorize(Roles = "organizations:view")]
     public string GetOrganizationReadPermission(string identification)
@@ -35,13 +32,9 @@ public class PermissionController : ControllerBase
         return identification;
     }
 
-    [HttpGet("grid/{identification}")]
-    [Authorize(Roles = "grid-areas:manage")]
-    public string GetGridAreaPermission(string identification)
-    {
-        return identification;
-    }
-
+    /// <summary>
+    /// Require user to be in one of the roles (Or)
+    /// </summary>
     [HttpGet("org_or_grid/{identification}")]
     [Authorize(Roles = "organizations:view, grid-areas:manage")]
     public string GetOrganizationOrGridAreasPermission(string identification)
@@ -49,6 +42,9 @@ public class PermissionController : ControllerBase
         return identification;
     }
 
+    /// <summary>
+    /// Require user to be in both roles (And)
+    /// </summary>
     [HttpGet("org_and_grid/{identification}")]
     [Authorize(Roles = "organizations:view")]
     [Authorize(Roles = "grid-areas:manage")]

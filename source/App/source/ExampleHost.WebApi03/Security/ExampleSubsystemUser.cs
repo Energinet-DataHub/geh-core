@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
+namespace ExampleHost.WebApi03.Security;
 
-namespace ExampleHost.WebApi.Tests.Fixtures;
-
-/// <summary>
-/// A xUnit collection fixture for ensuring tests don't run in parallel.
-///
-/// xUnit documentation of collection fixtures:
-///  * https://xunit.net/docs/shared-context#collection-fixture
-/// </summary>
-[CollectionDefinition(nameof(NestedAuthenticationHostCollectionFixture))]
-public class NestedAuthenticationHostCollectionFixture : ICollectionFixture<NestedAuthenticationHostFixture>
+public sealed class ExampleSubsystemUser
 {
+    public ExampleSubsystemUser(Guid userId, Guid externalActorId)
+    {
+        UserId = userId;
+        ExternalActorId = externalActorId;
+    }
+
+    public Guid UserId { get; }
+
+    public Guid ExternalActorId { get; }
 }

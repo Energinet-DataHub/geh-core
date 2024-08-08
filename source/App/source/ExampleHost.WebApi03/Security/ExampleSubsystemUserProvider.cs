@@ -15,7 +15,7 @@
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
-namespace ExampleHost.WebApi04.Security;
+namespace ExampleHost.WebApi03.Security;
 
 public sealed class ExampleSubsystemUserProvider : IUserProvider<ExampleSubsystemUser>
 {

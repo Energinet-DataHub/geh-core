@@ -30,7 +30,7 @@ public class Startup
         services.AddControllers();
 
         // Configuration verified in tests. See comments in WebApi01.Startup.
-        services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApp");
+        services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApi");
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)

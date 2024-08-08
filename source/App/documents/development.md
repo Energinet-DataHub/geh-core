@@ -27,16 +27,16 @@ These allows us to easily debug, as well as implement integration tests, for ver
 * Health Checks configuration.
 * Authentication configuration.
 
-### ExampleHost.WebApp01 and ExampleHost.WebApp02
+### ExampleHost.WebApi01 and ExampleHost.WebApi02
 
-`ExampleHost.WebApp01` is used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+`ExampleHost.WebApi01` is used from integration tests located in `ExampleHost.WebApi.Tests` for verifying:
 
-* Telemetry or Application Insights configuration. It depends on `ExampleHost.WebApp02` for the verification scenario.
+* Telemetry or Application Insights configuration. It depends on `ExampleHost.WebApi02` for the verification scenario.
 * Health Checks configuration.
 
-### ExampleHost.WebApp03 and ExampleHost.WebApp04
+### ExampleHost.WebApi03
 
-These applications are used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+`ExampleHost.WebApi03` is used from integration tests located in `ExampleHost.WebApi.Tests` for verifying:
 
 * Authentication and authorization configuration.
 
@@ -48,7 +48,7 @@ Secondly, we must ensure we obey the following [prerequisites](../../TestCommon/
 
 ### Dependencies to live Azure resources
 
-The `ExampleHost.FunctionApp.Tests` and `ExampleHost.WebApp.Tests` depends on live Azure resources like Application Insights and Service Bus. We cannot mock, or install these locally, so we have to use actual instances.
+The `ExampleHost.FunctionApp.Tests` and `ExampleHost.WebApi.Tests` depends on live Azure resources like Application Insights and Service Bus. We cannot mock, or install these locally, so we have to use actual instances.
 
 To be able to use the Azure resources prepared in the Integration Test environment, developers must do the following per test project:
 

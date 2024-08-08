@@ -16,13 +16,13 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
 using Azure.Monitor.Query;
-using Energinet.DataHub.Core.FunctionApp.TestCommon;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Microsoft.Identity.Client;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -44,14 +44,8 @@ public class ExampleHostsFixture : IAsyncLifetime
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
-        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID");
+        OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings, openIdServerPort: 1052);
     }
-
-    /// <summary>
-    /// This is not the actual BFF but a test app registration that allows
-    /// us to verify some of the JWT code.
-    /// </summary>
-    public string BffAppId { get; set; }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
@@ -74,6 +68,8 @@ public class ExampleHostsFixture : IAsyncLifetime
 
     private FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
 
+    private OpenIdJwtManager OpenIdJwtManager { get; }
+
     public async Task InitializeAsync()
     {
         // => Storage emulator
@@ -85,6 +81,17 @@ public class ExampleHostsFixture : IAsyncLifetime
         var port = 8000;
         var app01HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp01", ref port);
         var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
+
+        // => App01 settings for authentication
+        OpenIdJwtManager.StartServer();
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", OpenIdJwtManager.ExternalMetadataAddress);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", OpenIdJwtManager.ExternalMetadataAddress);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", OpenIdJwtManager.JwtProvider.TestBffAppId);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.InternalMetadataAddress);
 
         // => Integration events
         app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
@@ -115,6 +122,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         App01HostManager.Dispose();
         App02HostManager.Dispose();
 
+        OpenIdJwtManager.Dispose();
         AzuriteManager.Dispose();
 
         // => Service Bus
@@ -134,19 +142,17 @@ public class ExampleHostsFixture : IAsyncLifetime
     }
 
     /// <summary>
-    /// Get an access token that allows the "client app" to call the "backend app".
+    /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
+    /// and returns a 'Bearer' authentication header.
     /// </summary>
-    public Task<AuthenticationResult> GetTokenAsync()
+    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
     {
-        var confidentialClientApp = ConfidentialClientApplicationBuilder
-            .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
-            .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
-            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
-            .Build();
+        var internalToken = await OpenIdJwtManager.JwtProvider.CreateInternalTokenAsync(roles: roles);
+        if (string.IsNullOrWhiteSpace(internalToken))
+            throw new InvalidOperationException("Nested token was not created.");
 
-        return confidentialClientApp
-            .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
-            .ExecuteAsync();
+        var authenticationHeader = $"Bearer {internalToken}";
+        return authenticationHeader;
     }
 
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)
