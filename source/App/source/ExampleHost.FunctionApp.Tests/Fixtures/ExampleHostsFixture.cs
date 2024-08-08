@@ -21,6 +21,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Microsoft.Identity.Client;
@@ -45,15 +46,8 @@ public class ExampleHostsFixture : IAsyncLifetime
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
-        BffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID");
-        InternalTokenServer = new TokenMockServer();
+        OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings);
     }
-
-    /// <summary>
-    /// This is not the actual BFF but a test app registration that allows
-    /// us to verify some of the JWT code.
-    /// </summary>
-    public string BffAppId { get; set; }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
@@ -76,7 +70,7 @@ public class ExampleHostsFixture : IAsyncLifetime
 
     private FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
 
-    private TokenMockServer InternalTokenServer { get; }
+    private OpenIdJwtManager OpenIdJwtManager { get; }
 
     public async Task InitializeAsync()
     {
@@ -91,15 +85,16 @@ public class ExampleHostsFixture : IAsyncLifetime
         var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
 
         // => App01 settings for authentication
-        var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
+        OpenIdJwtManager.StartServer();
+        var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration"; // TODO: Update to use the property from "token provider"
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", externalMetadataAddress);
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", externalMetadataAddress);
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", BffAppId);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", IntegrationTestConfiguration.B2CSettings.TestBffAppId); // TODO: Update to use the property from "token provider"
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", InternalTokenServer.MetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.OpenIdServer.MetadataAddress);
 
         // => Integration events
         app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
@@ -130,7 +125,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         App01HostManager.Dispose();
         App02HostManager.Dispose();
 
-        InternalTokenServer.Dispose();
+        OpenIdJwtManager.Dispose();
         AzuriteManager.Dispose();
 
         // => Service Bus
@@ -150,35 +145,17 @@ public class ExampleHostsFixture : IAsyncLifetime
     }
 
     /// <summary>
-    /// Calls the <see cref="InternalTokenServer"/> on to create an "internal token"
+    /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
     /// and returns a 'Bearer' authentication header.
     /// </summary>
     public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
     {
-        var externalAuthenticationResult = await GetTokenAsync();
-
-        var internalToken = InternalTokenServer.GetToken(externalAuthenticationResult.AccessToken, roles);
+        var internalToken = await OpenIdJwtManager.JwtProvider.CreateInternalToken(roles: roles);
         if (string.IsNullOrWhiteSpace(internalToken))
             throw new InvalidOperationException("Nested token was not created.");
 
         var authenticationHeader = $"Bearer {internalToken}";
         return authenticationHeader;
-    }
-
-    /// <summary>
-    /// Get an access token that allows the "client app" to call the "backend app".
-    /// </summary>
-    private Task<AuthenticationResult> GetTokenAsync()
-    {
-        var confidentialClientApp = ConfidentialClientApplicationBuilder
-            .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
-            .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
-            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
-            .Build();
-
-        return confidentialClientApp
-            .AcquireTokenForClient(scopes: new[] { $"{BffAppId}/.default" })
-            .ExecuteAsync();
     }
 
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)
