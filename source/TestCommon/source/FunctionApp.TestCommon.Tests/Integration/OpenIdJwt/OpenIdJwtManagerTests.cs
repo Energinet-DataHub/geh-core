@@ -54,20 +54,10 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
 
         // Act
         openIdJwtManager.StartServer();
-        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = openIdConfig.Issuer,
-            ValidateAudience = true,
-            ValidAudience = Fixture.AzureB2CSettings.TestBffAppId,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKeys = openIdConfig.SigningKeys,
-            ValidateLifetime = true,
-        };
+        var tokenValidationParameters = await GetTokenValidationParametersFromServer(openIdJwtManager.InternalMetadataAddress);
 
         // Assert
-        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalToken, validationParameters, out _);
+        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalToken, tokenValidationParameters, out _);
         validateToken.Should().NotThrow();
     }
 
@@ -81,20 +71,11 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
 
         // Act
         openIdJwtManager.StartServer();
-        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = openIdConfig.Issuer,
-            ValidateAudience = true,
-            ValidAudience = Fixture.AzureB2CSettings.TestBffAppId,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKeys = [_incorrectSigningKey],
-            ValidateLifetime = true,
-        };
+        var tokenValidationParameters = await GetTokenValidationParametersFromServer(openIdJwtManager.InternalMetadataAddress);
+        tokenValidationParameters.IssuerSigningKeys = [_incorrectSigningKey];
 
         // Assert
-        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalToken, validationParameters, out _);
+        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalToken, tokenValidationParameters, out _);
         validateToken.Should().ThrowExactly<SecurityTokenSignatureKeyNotFoundException>();
     }
 
@@ -108,20 +89,11 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
 
         // Act
         openIdJwtManager.StartServer();
-        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = "incorrect-issuer",
-            ValidateAudience = true,
-            ValidAudience = Fixture.AzureB2CSettings.TestBffAppId,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKeys = openIdConfig.SigningKeys,
-            ValidateLifetime = true,
-        };
+        var tokenValidationParameters = await GetTokenValidationParametersFromServer(openIdJwtManager.InternalMetadataAddress);
+        tokenValidationParameters.ValidIssuer = "incorrect-issuer";
 
         // Assert
-        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalToken, validationParameters, out _);
+        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalToken, tokenValidationParameters, out _);
         validateToken.Should().ThrowExactly<SecurityTokenInvalidIssuerException>();
     }
 
@@ -135,20 +107,10 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
 
         // Act
         openIdJwtManager.StartServer();
-        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = openIdConfig.Issuer,
-            ValidateAudience = true,
-            ValidAudience = Fixture.AzureB2CSettings.TestBffAppId,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKeys = openIdConfig.SigningKeys,
-            ValidateLifetime = true,
-        };
+        var tokenValidationParameters = await GetTokenValidationParametersFromServer(openIdJwtManager.InternalMetadataAddress);
 
         // Assert
-        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(fakeToken, validationParameters, out _);
+        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(fakeToken, tokenValidationParameters, out _);
         validateToken.Should().Throw<SecurityTokenSignatureKeyNotFoundException>();
     }
 
@@ -216,12 +178,24 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         externalToken.Audiences.Should().Equal(expectedAudience);
     }
 
-    private Task<OpenIdConnectConfiguration> GetOpenIdConfigFromServer(string metadataAddress)
+    private async Task<TokenValidationParameters> GetTokenValidationParametersFromServer(string metadataAddress)
     {
         var openIdConfigManager = new ConfigurationManager<OpenIdConnectConfiguration>(
             metadataAddress,
             new OpenIdConnectConfigurationRetriever());
 
-        return openIdConfigManager.GetConfigurationAsync(CancellationToken.None);
+        var openIdConfig = await openIdConfigManager.GetConfigurationAsync(CancellationToken.None);
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = openIdConfig.Issuer,
+            ValidateAudience = true,
+            ValidAudience = Fixture.AzureB2CSettings.TestBffAppId,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKeys = openIdConfig.SigningKeys,
+            ValidateLifetime = true,
+        };
+
+        return validationParameters;
     }
 }
