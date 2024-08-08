@@ -126,6 +126,33 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
     }
 
     [Fact]
+    public async Task Given_CreatedFakeToken_When_GettingOpenIdConfigurationFromServer_Then_TokenValidationFails()
+    {
+        // Arrange
+        using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
+
+        var fakeToken = openIdJwtManager.JwtProvider.CreateFakeToken();
+
+        // Act
+        openIdJwtManager.StartServer();
+        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = openIdConfig.Issuer,
+            ValidateAudience = true,
+            ValidAudience = Fixture.AzureB2CSettings.TestBffAppId,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKeys = openIdConfig.SigningKeys,
+            ValidateLifetime = true,
+        };
+
+        // Assert
+        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(fakeToken, validationParameters, out _);
+        validateToken.Should().Throw<SecurityTokenSignatureKeyNotFoundException>();
+    }
+
+    [Fact]
     public async Task Given_ExternalTokenAndRoles_When_CreatingInternalToken_Then_CanParseInternalTokenWithExpectedValues()
     {
         // Arrange

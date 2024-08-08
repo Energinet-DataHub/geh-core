@@ -111,6 +111,24 @@ public class JwtProvider
     }
 
     /// <summary>
+    /// Create a fake token which cannot be verified by DH3 applications. This can be used for testing
+    /// that a client cannot authorize using an incorrect token.
+    /// </summary>
+    /// <returns>The token is returned in string format, without the "bearer" prefix</returns>
+    public string CreateFakeToken()
+    {
+        var securityKey = new SymmetricSecurityKey("not-a-secret-key-not-a-secret-key"u8.ToArray());
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var userIdAsSubClaim = new Claim(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString());
+        var actorIdAsAzpClaim = new Claim(JwtRegisteredClaimNames.Azp, Guid.NewGuid().ToString());
+
+        var securityToken = new JwtSecurityToken(claims: [userIdAsSubClaim, actorIdAsAzpClaim], signingCredentials: credentials);
+        var fakeToken = new JwtSecurityTokenHandler().WriteToken(securityToken);
+
+        return fakeToken;
+    }
+
+    /// <summary>
     /// Get an external JWT from Microsoft Entra using the given <see cref="AzureB2CSettings"/>
     /// </summary>
     private Task<AuthenticationResult> GetExternalTokenAsync()
