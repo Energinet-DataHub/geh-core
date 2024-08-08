@@ -34,6 +34,10 @@ public class AuthenticationController : ControllerBase
         _userContext = userContext;
     }
 
+    /// <summary>
+    /// 1: This method should not require any 'Bearer' token in the 'Authorization' header.
+    ///   It should allow anonymous access and always return the given Guid, for tests to verify.
+    /// </summary>
     [HttpGet("anon/{identification}")]
     [AllowAnonymous]
     public string Get(string identification)
@@ -41,6 +45,12 @@ public class AuthenticationController : ControllerBase
         return identification;
     }
 
+    /// <summary>
+    /// 1: This method should be called with a 'Bearer' token in the 'Authorization' header.
+    ///   The token must be a nested token (containing both external and internal token).
+    /// 2: ASP.NET Core authentication classes should retrieve the token and validate it.
+    /// 3: If successfull the given Guid is returned, for tests to verify.
+    /// </summary>
     [HttpGet("auth/{identification}")]
     [Authorize]
     public string GetWithPermission(string identification)
@@ -48,6 +58,16 @@ public class AuthenticationController : ControllerBase
         return identification;
     }
 
+    /// <summary>
+    /// 1: This method should be called with a 'Bearer' token in the 'Authorization' header.
+    ///   The token must be a nested token (containing both external and internal token).
+    /// 2: The "UserMiddleware" should retrieve the user information from this token, and
+    ///   assign it to the "UserContext" (a scoped service).
+    /// 3: The "IUserContext" (a scoped service) can then be injected to the controller class
+    ///   and give access to the stored user information.
+    /// 4: If successfull the UserId is retrieved and returned, for tests to verify.
+    ///   If the user is not available an Empty guid is returned.
+    /// </summary>
     [HttpGet("user")]
     [Authorize]
     public string GetUserWithPermission()
