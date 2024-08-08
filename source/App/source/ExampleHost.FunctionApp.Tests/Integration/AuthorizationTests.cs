@@ -60,7 +60,7 @@ public class AuthorizationTests : IAsyncLifetime
     [InlineData(HttpStatusCode.OK, PermissionOrganizationView)]
     [InlineData(HttpStatusCode.Forbidden, "")]
     [InlineData(HttpStatusCode.Forbidden, PermissionGridAreasManage)]
-    public async Task CallingApi01AuthorizationGetOrganizationReadPermission_WithRole_IsExpectedStatusCode(
+    public async Task CallingGetOrganizationReadPermission_WithRole_IsExpectedStatusCode(
         HttpStatusCode expectedStatusCode,
         params string[] roles)
     {
@@ -82,7 +82,7 @@ public class AuthorizationTests : IAsyncLifetime
     [InlineData(HttpStatusCode.OK, PermissionGridAreasManage)]
     [InlineData(HttpStatusCode.OK, PermissionGridAreasManage, PermissionOrganizationView)]
     [InlineData(HttpStatusCode.Forbidden, "")]
-    public async Task CallingApi01AuthorizationGetOrganizationOrGridAreasPermission_WithRole_IsExpectedStatusCode(
+    public async Task CallingGetOrganizationOrGridAreasPermission_WithRole_IsExpectedStatusCode(
         HttpStatusCode expectedStatusCode,
         params string[] roles)
     {
@@ -104,7 +104,7 @@ public class AuthorizationTests : IAsyncLifetime
     [InlineData(HttpStatusCode.Forbidden, "")]
     [InlineData(HttpStatusCode.Forbidden, PermissionOrganizationView)]
     [InlineData(HttpStatusCode.Forbidden, PermissionGridAreasManage)]
-    public async Task CallingApi01AuthorizationGetOrganizationAndGridAreasPermission_WithRole_IsExpectedStatusCode(
+    public async Task CallingGetOrganizationAndGridAreasPermission_WithRole_IsExpectedStatusCode(
         HttpStatusCode expectedStatusCode,
         params string[] roles)
     {

@@ -154,6 +154,7 @@ public sealed class AuthenticationTests
         Assert.True(Guid.TryParse(content, out _));
     }
 
+    // TODO: Use method from "JwtProvider" and delete this one
     private static string CreateAuthenticationHeaderWithFakeToken()
     {
         var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());

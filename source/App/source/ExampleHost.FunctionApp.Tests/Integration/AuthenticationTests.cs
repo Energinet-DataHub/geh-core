@@ -166,6 +166,7 @@ public class AuthenticationTests : IAsyncLifetime
         Guid.Parse(content).Should().NotBeEmpty();
     }
 
+    // TODO: Use method from "JwtProvider" and delete this one
     private static string CreateAuthenticationHeaderWithFakeToken()
     {
         var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
