@@ -16,9 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using ExampleHost.WebApi.Tests.Fixtures;
-using ExampleHost.WebApi03.Controllers;
 using FluentAssertions;
-using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
