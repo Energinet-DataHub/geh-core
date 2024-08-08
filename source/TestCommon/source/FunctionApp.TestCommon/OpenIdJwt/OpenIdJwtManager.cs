@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 
 /// <summary>
 /// Used to help test DH3 applications that requires OpenId and JWT for HTTP authentication and authorization.
-/// The OpenIdJwtManager supports:
+/// The manager supports:
 /// <list type="bullet">
 ///     <item>
 ///         <description>Starting an OpenId JWT server mock used for running tests that require OpenId configuration endpoints.</description>
