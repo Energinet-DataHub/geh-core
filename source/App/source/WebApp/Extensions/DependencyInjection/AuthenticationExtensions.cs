@@ -36,12 +36,6 @@ public static class AuthenticationExtensions
 {
     private const string InnerTokenClaimType = "token";
 
-    /// <summary>
-    /// Disables HTTPS requirement for OpenId configuration endpoints.
-    /// This property is intended for testing purposes only and we use InternalsVisibleTo in the project file to control who can access it.
-    /// </summary>
-    internal static bool DisableHttpsConfiguration { get; set; }
-
     public static IServiceCollection AddUserAuthenticationForWebApp<TUser, TUserProvider>(this IServiceCollection services)
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
@@ -133,7 +127,7 @@ public static class AuthenticationExtensions
             ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                 metadataAddress,
                 new OpenIdConnectConfigurationRetriever(),
-                new HttpDocumentRetriever { RequireHttps = !DisableHttpsConfiguration }),
+                new HttpDocumentRetriever { RequireHttps = true }),
         };
     }
 

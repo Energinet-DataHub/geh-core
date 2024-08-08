@@ -32,8 +32,6 @@ public class Startup
         services.AddControllers();
 
         // Http => Authentication (verified in tests)
-        // Configure for testing
-        AuthenticationExtensions.DisableHttpsConfiguration = true;
         services
             .AddJwtBearerAuthenticationForWebApp(_configuration)
             .AddUserAuthenticationForWebApp<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
