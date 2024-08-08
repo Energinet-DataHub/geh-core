@@ -35,14 +35,13 @@ public class WebApi03HostFixture : IAsyncLifetime
         Web03Host = WebHost.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>
             {
-                var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration"; // TODO: Update to use the property from "token provider"
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     // Authentication
-                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}"] = externalMetadataAddress,
-                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = externalMetadataAddress,
-                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = IntegrationTestConfiguration.B2CSettings.TestBffAppId,  // TODO: Update to use the property from "token provider"
-                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = OpenIdJwtManager.OpenIdServer.MetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}"] = OpenIdJwtManager.ExternalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = OpenIdJwtManager.ExternalMetadataAddress,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = OpenIdJwtManager.JwtProvider.TestBffAppId,
+                    [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = OpenIdJwtManager.InternalMetadataAddress,
                 });
             })
             .UseStartup<Startup>()
@@ -82,7 +81,7 @@ public class WebApi03HostFixture : IAsyncLifetime
     /// </summary>
     public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
     {
-        var internalToken = await OpenIdJwtManager.JwtProvider.CreateInternalToken(roles: roles);
+        var internalToken = await OpenIdJwtManager.JwtProvider.CreateInternalTokenAsync(roles: roles);
         if (string.IsNullOrWhiteSpace(internalToken))
             throw new InvalidOperationException("Nested token was not created.");
 
