@@ -41,7 +41,7 @@ public sealed class AuthenticationTests
     private WebApi03HostFixture Fixture { get; }
 
     [Fact]
-    public async Task CallingApi04Get_WithNoToken_NotFound()
+    public async Task CallingInvalidEndpoint_WithNoToken_NotFound()
     {
         // Arrange
         using var request = new HttpRequestMessage(HttpMethod.Get, "webapi03/authentication/does_not_exist");
@@ -54,7 +54,7 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04GetAnonymous_WithNoToken_Succeeds()
+    public async Task CallingGetAnonymous_WithNoToken_Allowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -71,7 +71,7 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04Get_AuthRequiredButNoToken_Unauthorized()
+    public async Task CallingGetWithPermission_WithNoToken_Unauthorized()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -85,7 +85,7 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04Get_AuthWithFakeToken_Unauthorized()
+    public async Task CallingGetWithPermission_WithFakeToken_Unauthorized()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -101,7 +101,7 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04Get_AuthWithToken_Allowed()
+    public async Task CallingGetWithPermission_WithToken_Allowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -120,7 +120,7 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04Get_AuthWithToken_ButUserIsDenied()
+    public async Task CallingGetWithPermission_WithToken_ButUserIsDenied()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -137,7 +137,7 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
+    public async Task CallingGetUserWithPermission_UserWithToken_ReturnsUserId()
     {
         // Arrange
         var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();

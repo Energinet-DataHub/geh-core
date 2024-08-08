@@ -57,7 +57,7 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01InvalidEndpoint_WithNoToken_NotFound()
+    public async Task CallingInvalidEndpoint_WithNoToken_NotFound()
     {
         // Arrange
 
@@ -70,7 +70,7 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetAnonymous_WithNoToken_Succeeds()
+    public async Task CallingGetAnonymous_WithNoToken_Allowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -87,7 +87,7 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetWithPermission_WithNoToken_Unauthorized()
+    public async Task CallingGetWithPermission_WithNoToken_Unauthorized()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -101,7 +101,7 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetWithPermission_WithFakeToken_Unauthorized()
+    public async Task CallingGetWithPermission_WithFakeToken_Unauthorized()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -117,7 +117,7 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetWithPermission_WithToken_Succeeds()
+    public async Task CallingGetWithPermission_WithToken_Allowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -136,7 +136,7 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetUserWithPermission_UserWithNoToken_Unauthorized()
+    public async Task CallingGetUserWithPermission_UserWithNoToken_Unauthorized()
     {
         // Arrange
 
@@ -149,7 +149,7 @@ public class AuthenticationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CallingApi01AuthenticationGetUserWithPermission_UserWithToken_ReturnsUserId()
+    public async Task CallingGetUserWithPermission_UserWithToken_ReturnsUserId()
     {
         // Arrange
         var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
