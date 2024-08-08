@@ -29,11 +29,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 /// require OpenId configuration endpoints. Use in combination with <see cref="JwtProvider"/> to create JWT tokens
 /// that can be validated according to the OpenId configuration provided by this server.
 /// </summary>
-public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
+internal sealed class OpenIdMockServer : IDisposable
 {
     // Path's used to configure endpoints in WireMock.NET
     // They must begin with "/".
-    private const string ConfigurationEndpointPath = "/v2.0/.well-known/openid-configuration";
+    public const string ConfigurationEndpointPath = "/v2.0/.well-known/openid-configuration";
+
     private const string PublicKeysEndpointPath = "/discovery/v2.0/keys";
 
     private readonly int _port;
@@ -48,22 +49,19 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
     }
 
     /// <summary>
-    /// Get the URL of the running OpenId server.
-    /// <remarks>
-    /// ATTENTION: This requires the server to already be running or an exception will be thrown.
-    /// Ensure that the <see cref="StartServer"/> method has been executed beforehand.
-    /// </remarks>
+    /// The base URL of the OpenId server.
     /// </summary>
-    public string Url => GetRunningServer().Url!;
+    public string Url => $"https://localhost:{_port}";
 
     /// <summary>
-    /// Get the address of the running server's OpenId configuration metadata endpoint.
-    /// <remarks>
-    /// ATTENTION: This requires the server to already be running or an exception will be thrown.
-    /// Ensure that the <see cref="StartServer"/> method has been executed beforehand.
-    /// </remarks>
+    /// The full address of the running server's OpenId configuration metadata endpoint.
     /// </summary>
     public string MetadataAddress => $"{Url}{ConfigurationEndpointPath}";
+
+    /// <summary>
+    /// Whether the OpenId server is already running
+    /// </summary>
+    public bool IsRunning { get; private set; }
 
     /// <summary>
     /// The issuer which must be used to create JWT tokens that are valid according to this server's OpenId configuration
@@ -75,8 +73,15 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
     /// </summary>
     internal RsaSecurityKey SecurityKey { get; }
 
+    /// <summary>
+    /// Start the OpenId server using WireMock. A test certificate will be installed to support HTTPS.
+    /// If the server is already running then an <see cref="InvalidOperationException"/> will be thrown.
+    /// </summary>
     public void StartServer()
     {
+        if (IsRunning)
+            throw new InvalidOperationException("Cannot start server since the OpenId server is already running.");
+
         TestCertificateProvider.InstallCertificate();
 
         _mockServer = WireMockServer.Start(new WireMockServerSettings
@@ -91,6 +96,8 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
         });
 
         MockTokenConfigurationEndpoints();
+
+        IsRunning = true;
     }
 
     public void Dispose()
@@ -105,6 +112,7 @@ public sealed class OpenIdMockServer : IDisposable, IOpenIdServer
         {
             _mockServer?.Dispose();
             _mockServer = null;
+            IsRunning = false;
         }
     }
 

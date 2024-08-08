@@ -47,19 +47,31 @@ public class JwtProvider
     }
 
     /// <summary>
+    /// The appllication id of the client app registration in Microsoft Entra. The App id is the client application on
+    /// which behalf the external token is retrieved from Microsoft Entra.
+    /// This is not the actual BFF but a test app registration that allows us to verify some of the JWT code.
+    /// </summary>
+    public string TestBffAppId => _azureB2CSettings.TestBffAppId;
+
+    /// <summary>
+    /// The authority url is the url from where the external token is retrieved
+    /// </summary>
+    internal string ExternalTokenAuthorityUrl => $"https://login.microsoftonline.com/{_azureB2CSettings.Tenant}";
+
+    /// <summary>
     /// Creates an internal token valid for DataHub3 applications, containing the following claims:
     /// - "token" claim which is an external token retrieved from Microsoft Entra (configured in the given <see cref="AzureB2CSettings"/>)
-    /// - "sub" claim specified in the <paramref name="userId"/> parameter (default value is "A1AAB954-136A-444A-94BD-E4B615CA4A78")
-    /// - "azp" claim specified in the <paramref name="actorId"/> parameter (default value is "A1DEA55A-3507-4777-8CF3-F425A6EC2094")
-    /// - "role" claims for each role specified in the <paramref name="roles"/> parameter (default value is no roles)
-    /// - Any extra claims specified in the <paramref name="extraClaims"/> parameter (default value is no extra claims)
+    /// - "sub" claim specified in the <paramref name="userId"/> parameter
+    /// - "azp" claim specified in the <paramref name="actorId"/> parameter
+    /// - "role" claims for each role specified in the <paramref name="roles"/> parameter
+    /// - Any extra claims specified in the <paramref name="extraClaims"/> parameter
     /// </summary>
     /// <param name="userId">The user id value written to the 'sub' claim in the internal token.</param>
     /// <param name="actorId">The actor id value written to the 'azp' claim in the internal token.</param>
     /// <param name="roles">Optional roles to add as "role" claims in the internal token. When running in Azure this could be something like "calculations:manage".</param>
     /// <param name="extraClaims">Optional extra claims to add to the internal token.</param>
     /// <returns>The internal token which wraps the provided external token.</returns>
-    public async Task<string> CreateInternalToken(
+    public async Task<string> CreateInternalTokenAsync(
         string userId = "A1AAB954-136A-444A-94BD-E4B615CA4A78", // TODO: Is it possible to override these, or are they bound to the external token?
         string actorId = "A1DEA55A-3507-4777-8CF3-F425A6EC2094", // TODO: Is it possible to override these, or are they bound to the external token?
         string[]? roles = null,
@@ -106,7 +118,7 @@ public class JwtProvider
         var confidentialClientApp = ConfidentialClientApplicationBuilder
             .Create(_azureB2CSettings.ServicePrincipalId)
             .WithClientSecret(_azureB2CSettings.ServicePrincipalSecret)
-            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{_azureB2CSettings.Tenant}")
+            .WithAuthority(authorityUri: ExternalTokenAuthorityUrl)
             .Build();
 
         return confidentialClientApp

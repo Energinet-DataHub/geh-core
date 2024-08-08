@@ -24,7 +24,6 @@ using FluentAssertions.Execution;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.OpenIdJwt;
@@ -36,8 +35,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.OpenId
 /// </summary>
 public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
 {
-    private OpenIdJwtManagerFixture Fixture { get; }
-
     private readonly RsaSecurityKey _incorrectSigningKey = new(RSA.Create()) { KeyId = "149B6F7F-F5A5-4D2C-A407-C4CD170A759F" };
 
     public OpenIdJwtManagerTests(OpenIdJwtManagerFixture fixture)
@@ -45,17 +42,19 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         Fixture = fixture;
     }
 
+    private OpenIdJwtManagerFixture Fixture { get; }
+
     [Fact]
     public async Task Given_CreatedInternalToken_When_GettingOpenIdConfigurationFromServer_Then_TokenCanBeValidated()
     {
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalToken();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
-        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.OpenIdServer.MetadataAddress);
+        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -78,11 +77,11 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalToken();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
-        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.OpenIdServer.MetadataAddress);
+        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -105,11 +104,11 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalToken();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
-        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.OpenIdServer.MetadataAddress);
+        var openIdConfig = await GetOpenIdConfigFromServer(openIdJwtManager.InternalMetadataAddress);
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -142,7 +141,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         var expectedAzp = "A1DEA55A-3507-4777-8CF3-F425A6EC2094";
 
         // Act
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalToken(
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync(
             roles: [expectedRole1, expectedRole2],
             extraClaims: [expectedClaim1, expectedClaim2]);
 
@@ -176,7 +175,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         var expectedIssuer = "https://login.microsoftonline.com/72996b41-f6a7-44db-b070-65acc2fb7818/v2.0";
 
         // Act
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalToken();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Assert
         var tokenHandler = new JwtSecurityTokenHandler();

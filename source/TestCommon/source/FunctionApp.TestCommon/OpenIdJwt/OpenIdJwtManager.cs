@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 ///
 /// A test certificate will be automatically installed on startup to support https (using <see cref="TestCertificateProvider"/>.<see cref="TestCertificateProvider.InstallCertificate"/>)
 /// </summary>
-public class OpenIdJwtManager : IDisposable, IOpenIdServer
+public class OpenIdJwtManager : IDisposable
 {
     private const string Kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
 
@@ -43,8 +43,8 @@ public class OpenIdJwtManager : IDisposable, IOpenIdServer
     /// Create manager to handle OpenId and JWT.
     /// </summary>
     /// <param name="azureB2CSettings">Azure B2C settings used to get an external token. Can be retrieved from <see cref="IntegrationTestConfiguration"/></param>
-    /// <param name="openIdServerPort">The port to run the OpenId configuration server on. Defaults to 1051.</param>
-    /// <param name="jwtIssuer">The issuer used by the OpenId configuration server and written to the JWT when creating an internal token. Defaults to https://test-common.datahub.dk</param>
+    /// <param name="openIdServerPort">The port to run the OpenId configuration server on.</param>
+    /// <param name="jwtIssuer">The issuer used by the OpenId configuration server and written to the JWT when creating an internal token.</param>
     public OpenIdJwtManager(
         AzureB2CSettings azureB2CSettings,
         int openIdServerPort = 1051,
@@ -62,13 +62,44 @@ public class OpenIdJwtManager : IDisposable, IOpenIdServer
     public JwtProvider JwtProvider { get; }
 
     /// <summary>
+    /// Start the OpenId JWT server using WireMock. The server is running at port specified by the configuration.
+    /// The server will be listening for requests on the following endpoints, which are defined in the OpenId specification:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>/v2.0/.well-known/openid-configuration</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>/discovery/v2.0/keys</description>
+    ///     </item>
+    /// </list>
+    /// The OpenId configuration endpoints must use HTTPS, so a developer certificate is installed and used automatically.
+    /// <remarks>If the server is already started then an exception will be thrown.</remarks>
+    /// </summary>
+    public void StartServer() => OpenIdServer.StartServer();
+
+    /// <summary>
+    /// The base URL of the OpenId server.
+    /// </summary>
+    public string Url => OpenIdServer.Url;
+
+    /// <summary>
+    /// The full URL of the OpenId server's configuration metadata endpoint which should be used to
+    /// get the OpenId configuration required to verify the internal token.
+    /// </summary>
+    public string InternalMetadataAddress => OpenIdServer.MetadataAddress;
+
+    /// <summary>
+    /// The full URL of the configuration metadata endpoint which should be used to
+    /// get the OpenId configuration required to verify the external token.
+    /// </summary>
+    public string ExternalMetadataAddress => $"{JwtProvider.ExternalTokenAuthorityUrl}/{OpenIdMockServer.ConfigurationEndpointPath}";
+
+    /// <summary>
     /// An OpenId configuration server used for running an OpenId JWT server mock for testing DH3 applications that
     /// require OpenId configuration endpoints. Can be used in combination with <see cref="JwtProvider"/> to create JWT tokens
     /// that can be validated according to the OpenId configuration provided by this server.
     /// </summary>
-    public OpenIdMockServer OpenIdServer { get; }
-
-    public void StartServer() => OpenIdServer.StartServer();
+    private OpenIdMockServer OpenIdServer { get; }
 
     public void Dispose()
     {
