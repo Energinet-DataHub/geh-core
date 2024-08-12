@@ -64,9 +64,10 @@ internal class JwtProvider : IJwtProvider
     /// </summary>
     private string ExternalTokenAuthorityUrl => $"https://login.microsoftonline.com/{_azureB2CSettings.Tenant}";
 
+    /// <inheritdoc />
     public async Task<string> CreateInternalTokenAsync(
-        string userId, // TODO: Is it possible to override these, or are they bound to the external token?
-        string actorId, // TODO: Is it possible to override these, or are they bound to the external token?
+        string userId,
+        string actorId,
         string[]? roles = null,
         Claim[]? extraClaims = null)
     {
@@ -103,6 +104,7 @@ internal class JwtProvider : IJwtProvider
         return internalToken;
     }
 
+    /// <inheritdoc />
     public string CreateFakeToken()
     {
         var securityKey = new SymmetricSecurityKey("not-a-secret-key-not-a-secret-key"u8.ToArray());
