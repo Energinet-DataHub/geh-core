@@ -97,11 +97,11 @@ Preparing an Azure Function App project:
        // Logging
        // => Default log level for Application Insights
        "Logging__ApplicationInsights__LogLevel__Default": "Information",
-      // Authentication
-      "UserAuthentication__MitIdExternalMetadataAddress": "<metadata address>",
-      "UserAuthentication__ExternalMetadataAddress": "<metadata address>",
-      "UserAuthentication__InternalMetadataAddress": "<metadata address>",
-      "UserAuthentication__BackendBffAppId": "<app id>",
+       // Authentication
+       "UserAuthentication__MitIdExternalMetadataAddress": "<metadata address>",
+       "UserAuthentication__ExternalMetadataAddress": "<metadata address>",
+       "UserAuthentication__InternalMetadataAddress": "<metadata address>",
+       "UserAuthentication__BackendBffAppId": "<app id>",
      }
    }
 
