@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
@@ -103,13 +104,13 @@ public static class AuthenticationExtensions
     private static void GuardAuthenticationOptions(UserAuthenticationOptions authenticationOptions)
     {
         if (string.IsNullOrWhiteSpace(authenticationOptions.MitIdExternalMetadataAddress))
-            throw new InvalidOperationException($"Missing '{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}'.");
         if (string.IsNullOrWhiteSpace(authenticationOptions.ExternalMetadataAddress))
-            throw new InvalidOperationException($"Missing '{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}'.");
         if (string.IsNullOrWhiteSpace(authenticationOptions.BackendBffAppId))
-            throw new InvalidOperationException($"Missing '{nameof(UserAuthenticationOptions.BackendBffAppId)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.BackendBffAppId)}'.");
         if (string.IsNullOrWhiteSpace(authenticationOptions.InternalMetadataAddress))
-            throw new InvalidOperationException($"Missing '{nameof(UserAuthenticationOptions.InternalMetadataAddress)}'.");
+            throw new InvalidConfigurationException($"Missing '{nameof(UserAuthenticationOptions.InternalMetadataAddress)}'.");
     }
 
     private static TokenValidationParameters CreateValidationParameters(
