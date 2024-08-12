@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 using Microsoft.IdentityModel.Tokens;
@@ -41,17 +42,18 @@ internal sealed class OpenIdMockServer : IDisposable
 
     private WireMockServer? _mockServer;
 
-    internal OpenIdMockServer(string issuer, RsaSecurityKey securityKey, int port)
+    /// <summary>
+    /// Create an instance of the OpenIdMockServer that uses WireMock to run an OpenId configuration server.
+    /// </summary>
+    /// <param name="issuer">The issuer of the tokens</param>
+    /// <param name="port">The port to run the server on</param>
+    /// <param name="securityKey">An optional security key. If none is provided then a default key will be created.</param>
+    internal OpenIdMockServer(string issuer, int port, RsaSecurityKey? securityKey = null)
     {
         Issuer = issuer;
-        SecurityKey = securityKey;
+        SecurityKey = securityKey ?? new(RSA.Create()) { KeyId = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F" };
         _port = port;
     }
-
-    /// <summary>
-    /// The base URL of the OpenId server.
-    /// </summary>
-    public string Url => $"https://localhost:{_port}";
 
     /// <summary>
     /// The full address of the running server's OpenId configuration metadata endpoint.
@@ -72,6 +74,11 @@ internal sealed class OpenIdMockServer : IDisposable
     /// The security key which must be used to create JWT tokens that are valid according to this server's OpenId configuration
     /// </summary>
     internal RsaSecurityKey SecurityKey { get; }
+
+    /// <summary>
+    /// The base URL of the OpenId server.
+    /// </summary>
+    private string Url => $"https://localhost:{_port}";
 
     /// <summary>
     /// Start the OpenId server using WireMock. A test certificate will be installed to support HTTPS.

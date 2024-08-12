@@ -50,7 +50,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
@@ -67,7 +67,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
@@ -85,7 +85,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
@@ -103,7 +103,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var fakeToken = openIdJwtManager.JwtProvider.CreateFakeToken();
+        var fakeToken = openIdJwtManager.CreateFakeToken();
 
         // Act
         openIdJwtManager.StartServer();
@@ -130,7 +130,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         var expectedAzp = "A1DEA55A-3507-4777-8CF3-F425A6EC2094";
 
         // Act
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync(
+        var internalToken = await openIdJwtManager.CreateInternalTokenAsync(
             roles: [expectedRole1, expectedRole2],
             extraClaims: [expectedClaim1, expectedClaim2]);
 
@@ -164,7 +164,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         var expectedIssuer = "https://login.microsoftonline.com/72996b41-f6a7-44db-b070-65acc2fb7818/v2.0";
 
         // Act
-        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
 
         // Assert
         var tokenHandler = new JwtSecurityTokenHandler();

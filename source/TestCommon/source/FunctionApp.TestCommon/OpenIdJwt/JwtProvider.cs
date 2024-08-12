@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 /// A JWT provider used for creating internal JWT tokens for testing DH3 applications that require authentication and authorization.
 /// Can be used with <see cref="OpenIdMockServer"/> for creating JWT tokens that are valid according to the OpenId server.
 /// </summary>
-public class JwtProvider
+internal class JwtProvider : IJwtProvider
 {
     private const string TokenClaim = "token";
     private const string RoleClaim = "role";
@@ -54,26 +54,19 @@ public class JwtProvider
     public string TestBffAppId => _azureB2CSettings.TestBffAppId;
 
     /// <summary>
-    /// The authority url is the url from where the external token is retrieved
+    /// The full URL of the configuration metadata endpoint which should be used to
+    /// get the OpenId configuration required to verify the external token.
     /// </summary>
-    internal string ExternalTokenAuthorityUrl => $"https://login.microsoftonline.com/{_azureB2CSettings.Tenant}";
+    public string ExternalMetadataAddress => $"{ExternalTokenAuthorityUrl}/{OpenIdMockServer.ConfigurationEndpointPath}";
 
     /// <summary>
-    /// Creates an internal token valid for DataHub3 applications, containing the following claims:
-    /// - "token" claim which is an external token retrieved from Microsoft Entra (configured in the given <see cref="AzureB2CSettings"/>)
-    /// - "sub" claim specified in the <paramref name="userId"/> parameter
-    /// - "azp" claim specified in the <paramref name="actorId"/> parameter
-    /// - "role" claims for each role specified in the <paramref name="roles"/> parameter
-    /// - Any extra claims specified in the <paramref name="extraClaims"/> parameter
+    /// The authority url is the url from where the external token is retrieved
     /// </summary>
-    /// <param name="userId">The user id value written to the 'sub' claim in the internal token.</param>
-    /// <param name="actorId">The actor id value written to the 'azp' claim in the internal token.</param>
-    /// <param name="roles">Optional roles to add as "role" claims in the internal token. When running in Azure this could be something like "calculations:manage".</param>
-    /// <param name="extraClaims">Optional extra claims to add to the internal token.</param>
-    /// <returns>The internal token which wraps the provided external token.</returns>
+    private string ExternalTokenAuthorityUrl => $"https://login.microsoftonline.com/{_azureB2CSettings.Tenant}";
+
     public async Task<string> CreateInternalTokenAsync(
-        string userId = "A1AAB954-136A-444A-94BD-E4B615CA4A78", // TODO: Is it possible to override these, or are they bound to the external token?
-        string actorId = "A1DEA55A-3507-4777-8CF3-F425A6EC2094", // TODO: Is it possible to override these, or are they bound to the external token?
+        string userId, // TODO: Is it possible to override these, or are they bound to the external token?
+        string actorId, // TODO: Is it possible to override these, or are they bound to the external token?
         string[]? roles = null,
         Claim[]? extraClaims = null)
     {
@@ -110,11 +103,6 @@ public class JwtProvider
         return internalToken;
     }
 
-    /// <summary>
-    /// Create a fake token which cannot be verified by DH3 applications. This can be used for testing
-    /// that a client cannot authorize using an incorrect token.
-    /// </summary>
-    /// <returns>The token is returned in string format, without the "bearer" prefix</returns>
     public string CreateFakeToken()
     {
         var securityKey = new SymmetricSecurityKey("not-a-secret-key-not-a-secret-key"u8.ToArray());
