@@ -115,22 +115,24 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
     }
 
     [Fact]
-    public async Task Given_ExternalTokenAndRoles_When_CreatingInternalToken_Then_CanParseInternalTokenWithExpectedValues()
+    public async Task Given_CustomRolesAndExtraClaims_When_CreatingInternalToken_Then_CanParseInternalTokenWithExpectedValues()
     {
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
         var expectedIssuer = "https://test-common.datahub.dk";
         var expectedAudience = Fixture.AzureB2CSettings.TestBffAppId;
+        var expectedSubject = "expected-subject";
+        var expectedAzp = "expected-azp";
         var expectedRole1 = "role1";
         var expectedRole2 = "role2";
         var expectedClaim1 = new Claim("claim1", "value1");
         var expectedClaim2 = new Claim("claim2", "value2");
-        var expectedSubject = "A1AAB954-136A-444A-94BD-E4B615CA4A78";
-        var expectedAzp = "A1DEA55A-3507-4777-8CF3-F425A6EC2094";
 
         // Act
         var internalToken = await openIdJwtManager.CreateInternalTokenAsync(
+            userId: expectedSubject,
+            actorId: expectedAzp,
             roles: [expectedRole1, expectedRole2],
             extraClaims: [expectedClaim1, expectedClaim2]);
 
@@ -145,13 +147,50 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         parsedToken!.Issuer.Should().Be(expectedIssuer);
         parsedToken.Audiences.Should().Equal(expectedAudience);
         parsedToken.Subject.Should().Be(expectedSubject);
+        parsedToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == expectedSubject);
+        parsedToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Azp && c.Value == expectedAzp);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == "token"); // An external token should exist in the 'token' claim
         parsedToken.Claims.Should().ContainSingle(c => c.Type == "role" && c.Value == expectedRole1);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == "role" && c.Value == expectedRole2);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == expectedClaim1.Type && c.Value == expectedClaim1.Value);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == expectedClaim2.Type && c.Value == expectedClaim2.Value);
-        parsedToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == expectedSubject);
-        parsedToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Azp && c.Value == expectedAzp);
+    }
+
+    [Fact]
+    public void Given_CustomClaims_When_CreatingFakeToken_Then_CanParseFakeTokenWithExpectedValues()
+    {
+        // Arrange
+        using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
+
+        var expectedSubject = "expected-subject";
+        var expectedAzp = "expected-azp";
+        var expectedRole1 = "role1";
+        var expectedRole2 = "role2";
+        var expectedClaim1 = new Claim("claim1", "value1");
+        var expectedClaim2 = new Claim("claim2", "value2");
+
+        // Act
+        var fakeToken = openIdJwtManager.CreateFakeToken(
+            userId: expectedSubject,
+            actorId: expectedAzp,
+            roles: [expectedRole1, expectedRole2],
+            extraClaims: [expectedClaim1, expectedClaim2]);
+
+        // Assert
+        fakeToken.Should().NotBeNullOrEmpty();
+
+        var parsedFakeToken = new JwtSecurityTokenHandler().ReadToken(fakeToken) as JwtSecurityToken;
+
+        parsedFakeToken.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
+        parsedFakeToken!.Subject.Should().Be(expectedSubject);
+        parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == expectedSubject);
+        parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Azp && c.Value == expectedAzp);
+        parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == "role" && c.Value == expectedRole1);
+        parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == "role" && c.Value == expectedRole2);
+        parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == expectedClaim1.Type && c.Value == expectedClaim1.Value);
+        parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == expectedClaim2.Type && c.Value == expectedClaim2.Value);
     }
 
     [Fact]

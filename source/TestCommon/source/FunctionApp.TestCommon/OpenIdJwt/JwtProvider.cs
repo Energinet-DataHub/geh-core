@@ -71,25 +71,20 @@ internal class JwtProvider : IJwtProvider
         string[]? roles = null,
         Claim[]? extraClaims = null)
     {
-        roles ??= [];
-        extraClaims ??= [];
-
         var externalTokenResult = await GetExternalTokenAsync().ConfigureAwait(false);
         var externalToken = externalTokenResult.AccessToken;
 
-        var claims = new List<Claim>
-        {
+        List<Claim> claims = [
             new(TokenClaim, externalToken),
             new(JwtRegisteredClaimNames.Sub, userId),
             new(JwtRegisteredClaimNames.Azp, actorId),
-        };
+        ];
 
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(RoleClaim, role.Trim()));
-        }
+        if (roles != null && roles.Any())
+            claims.AddRange(roles.Select(role => new Claim(RoleClaim, role.Trim())));
 
-        claims.AddRange(extraClaims);
+        if (extraClaims != null && extraClaims.Any())
+            claims.AddRange(extraClaims);
 
         var externalJwt = new JwtSecurityToken(externalToken);
         var internalJwt = new JwtSecurityToken(
@@ -105,14 +100,27 @@ internal class JwtProvider : IJwtProvider
     }
 
     /// <inheritdoc />
-    public string CreateFakeToken()
+    public string CreateFakeToken(
+        string? userId = null,
+        string? actorId = null,
+        string[]? roles = null,
+        Claim[]? extraClaims = null)
     {
         var securityKey = new SymmetricSecurityKey("not-a-secret-key-not-a-secret-key"u8.ToArray());
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var userIdAsSubClaim = new Claim(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString());
-        var actorIdAsAzpClaim = new Claim(JwtRegisteredClaimNames.Azp, Guid.NewGuid().ToString());
 
-        var securityToken = new JwtSecurityToken(claims: [userIdAsSubClaim, actorIdAsAzpClaim], signingCredentials: credentials);
+        List<Claim> claims = [
+            new Claim(JwtRegisteredClaimNames.Sub, userId ?? Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Azp, actorId ?? Guid.NewGuid().ToString())
+        ];
+
+        if (roles != null && roles.Any())
+            claims.AddRange(roles.Select(role => new Claim(RoleClaim, role.Trim())));
+
+        if (extraClaims != null && extraClaims.Any())
+            claims.AddRange(extraClaims);
+
+        var securityToken = new JwtSecurityToken(claims: claims, signingCredentials: credentials);
         var fakeToken = new JwtSecurityTokenHandler().WriteToken(securityToken);
 
         return fakeToken;

@@ -46,6 +46,14 @@ public interface IJwtProvider
     /// Create a fake token which cannot be verified by DH3 applications. This can be used for testing
     /// that a client cannot authorize using an incorrect token.
     /// </summary>
+    /// <param name="userId">Optional user id value written to the 'sub' claim in the internal token. If null then a random GUID will be used instead.</param>
+    /// <param name="actorId">Optional actor id value written to the 'azp' claim in the internal token. If null then a random GUID will be used instead.</param>
+    /// <param name="roles">Optional roles to add as "role" claims in the fake token. When running in Azure this would be something like "calculations:manage".</param>
+    /// <param name="extraClaims">Optional extra claims to add to the fake token.</param>
     /// <returns>The token is returned in string format, without the "bearer" prefix</returns>
-    string CreateFakeToken();
+    string CreateFakeToken(
+        string? userId = null,
+        string? actorId = null,
+        string[]? roles = null,
+        Claim[]? extraClaims = null);
 }

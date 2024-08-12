@@ -108,7 +108,11 @@ public class OpenIdJwtManager : IJwtProvider, IDisposable
         Claim[]? extraClaims = null) => JwtProvider.CreateInternalTokenAsync(userId, actorId, roles, extraClaims);
 
     /// <inheritdoc />
-    public string CreateFakeToken() => JwtProvider.CreateFakeToken();
+    public string CreateFakeToken(
+        string? userId = null,
+        string? actorId = null,
+        string[]? roles = null,
+        Claim[]? extraClaims = null) => JwtProvider.CreateFakeToken(userId, actorId, roles, extraClaims);
 
     public void Dispose()
     {
