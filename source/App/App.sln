@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{8936A83F-251F-43B8-9D3A-0C92EB16211E}"
 	ProjectSection(SolutionItems) = preProject
 		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
+		documents\release-notes\version_13_0_0.md = documents\release-notes\version_13_0_0.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "source\Common\Common.csproj", "{6711BD5F-4753-4E3C-AEFF-3DCAA79EFC5A}"
