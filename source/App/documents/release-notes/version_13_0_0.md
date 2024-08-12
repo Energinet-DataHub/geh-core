@@ -14,6 +14,9 @@ For detailed information of how to use the new capabilities, see [JWT Security](
 
 1) In `Program.cs` update the call to `ConfigureFunctionsWorkerDefaults` with a call to `ConfigureFunctionsWebApplication`.
 
+2) If the extension `UseUserMiddlewareForIsolatedWorker` is used and the application has HttpTrigger's that is not part of the `HealthCheckEndpoint` class:
+    - Either rewrite these HttpTrigger's to use the ASP.NET Core types, or exclude these functions so they are not handled by the middleware. To exclude functions use the parameter `excludedFunctionNames`.
+
 ## ASP.NET Core Web API
 
 There is no breaking change for consumers of the `WebApp` package.
