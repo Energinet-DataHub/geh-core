@@ -79,6 +79,7 @@ public static class AuthenticationExtensions
                 // Notes regarding "IssuerValidatorUsingConfiguration":
                 //  - We must have a dependency to "Microsoft.AspNetCore.Authentication.JwtBearer" otherwise the validation workflow
                 //    won't perform at call to get the configurations (Issuer and Keys) and then 'configuration' will be null.
+                //  - We should keep this code and its dependency in synch with the code in the 'WebApp' project.
                 options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                 {
                     if (configuration == null)

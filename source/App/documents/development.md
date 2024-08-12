@@ -13,6 +13,15 @@ The packages contain types commonly used by subsystem teams when implementing Az
 
 > Also read the general [development.md](../../../docs/development.md) as is contains information that is relevant for all NuGet package bundles.
 
+## Http authentication and authorization
+
+The extensions for registrering JWT authentication in the `FunctionApp` and `WebApp` packages should be kept in synch:
+
+* `AddJwtBearerAuthenticationForIsolatedWorker`
+* `AddJwtBearerAuthenticationForWebApp`
+
+In the future we might consider moving it to `Common` or share it by other means, but in the first release in `FunctionApp` we want to keep it separate.
+
 ## ExampleHost applications
 
 To be able to develop effeciently, especially with regards to dependency injection extensions and other types of startup configuration, we have implemented a number of `ExampleHost` applications.

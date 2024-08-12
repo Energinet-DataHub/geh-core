@@ -80,8 +80,15 @@ public static class AuthenticationExtensions
                 ];
 
                 options.TokenValidationParameters = CreateValidationParameters(authenticationOptions.BackendBffAppId, authenticationOptions.InternalMetadataAddress);
+
+                // Notes regarding "IssuerValidatorUsingConfiguration":
+                //  - We must have a dependency to "Microsoft.AspNetCore.Authentication.JwtBearer" otherwise the validation workflow
+                //    won't perform at call to get the configurations (Issuer and Keys) and then 'configuration' will be null.
+                //  - We should keep this code and its dependency in synch with the code in the 'FunctionApp' project.
                 options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                 {
+                    if (configuration == null)
+                        throw new InvalidOperationException("The 'Configuration' is null. Either JwtBearer dependencies are missing or we could not retrieve the 'Configuration' from the configured metadata address.");
                     if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
                         throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
 
