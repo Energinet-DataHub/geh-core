@@ -81,11 +81,25 @@ public class WebApi03HostFixture : IAsyncLifetime
     /// </summary>
     public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
     {
-        var internalToken = await OpenIdJwtManager.CreateInternalTokenAsync(roles: roles);
-        if (string.IsNullOrWhiteSpace(internalToken))
-            throw new InvalidOperationException("Nested token was not created.");
+        var token = await OpenIdJwtManager.CreateInternalTokenAsync(roles: roles);
+        if (string.IsNullOrWhiteSpace(token))
+            throw new InvalidOperationException("Internal token was not created.");
 
-        var authenticationHeader = $"Bearer {internalToken}";
+        var authenticationHeader = $"Bearer {token}";
         return authenticationHeader;
     }
+
+    /// <summary>
+    /// Calls the <see cref="OpenIdJwtManager"/> on to create a fake token
+    /// and returns a 'Bearer' authentication header.
+    /// </summary>
+    public string CreateAuthenticationHeaderWithFakeToken()
+    {
+        var token = OpenIdJwtManager.CreateFakeToken();
+        if (string.IsNullOrWhiteSpace(token))
+            throw new InvalidOperationException("Fake token was not created.");
+
+        var authenticationHeader = $"Bearer {token}";
+        return authenticationHeader;
+   }
 }

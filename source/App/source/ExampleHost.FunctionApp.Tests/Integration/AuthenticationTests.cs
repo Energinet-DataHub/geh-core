@@ -105,7 +105,7 @@ public class AuthenticationTests : IAsyncLifetime
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = CreateAuthenticationHeaderWithFakeToken();
+        var authenticationHeader = Fixture.CreateAuthenticationHeaderWithFakeToken();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authentication/auth/{requestIdentification}");
@@ -164,21 +164,5 @@ public class AuthenticationTests : IAsyncLifetime
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         Guid.Parse(content).Should().NotBeEmpty();
-    }
-
-    // TODO: Use method from "JwtProvider" and delete this one
-    private static string CreateAuthenticationHeaderWithFakeToken()
-    {
-        var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var userIdAsSubClaim = new Claim("sub", Guid.NewGuid().ToString());
-        var actorIdAsAzpClaim = new Claim("azp", Guid.NewGuid().ToString());
-
-        var securityToken = new JwtSecurityToken(claims: [userIdAsSubClaim, actorIdAsAzpClaim], signingCredentials: credentials);
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.WriteToken(securityToken);
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
     }
 }

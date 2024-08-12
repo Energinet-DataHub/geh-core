@@ -89,7 +89,7 @@ public sealed class AuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = CreateAuthenticationHeaderWithFakeToken();
+        var authenticationHeader = Fixture.CreateAuthenticationHeaderWithFakeToken();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
@@ -152,21 +152,5 @@ public sealed class AuthenticationTests
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         Assert.True(Guid.TryParse(content, out _));
-    }
-
-    // TODO: Use method from "JwtProvider" and delete this one
-    private static string CreateAuthenticationHeaderWithFakeToken()
-    {
-        var securityKey = new SymmetricSecurityKey("not-a-secret-keynot-a-secret-key"u8.ToArray());
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var userIdAsSubClaim = new Claim("sub", Guid.NewGuid().ToString());
-        var actorIdAsAzpClaim = new Claim("azp", Guid.NewGuid().ToString());
-
-        var securityToken = new JwtSecurityToken(claims: [userIdAsSubClaim, actorIdAsAzpClaim], signingCredentials: credentials);
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.WriteToken(securityToken);
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
     }
 }
