@@ -2,7 +2,7 @@
 
 ## Azure Functions App
 
-Consumers of the `FunctionApp` package must use [ASP.NET Core integration for HTTP}(https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration).
+Consumers of the `FunctionApp` package must use [ASP.NET Core integration for HTTP](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration).
 
 When using ASP.NET Core integration for HTTP it is still possible to have HttpTrigger's that uses the `HttpRequestData` type, which is why we are not forced to rewrite the `HealthCheckEndpoint` class in existing Azure Functions applications.
 
