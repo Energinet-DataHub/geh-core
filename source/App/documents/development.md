@@ -25,7 +25,7 @@ These allows us to easily debug, as well as implement integration tests, for ver
 
 * Telemetry or Application Insights configuration. It depends on `ExampleHost.FunctionApp02` for the verification scenario.
 * Health Checks configuration.
-* Authentication configuration.
+* Authentication and authorization configuration.
 
 ### ExampleHost.WebApi01 and ExampleHost.WebApi02
 
