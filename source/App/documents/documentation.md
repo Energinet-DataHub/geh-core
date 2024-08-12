@@ -51,10 +51,12 @@ Preparing an Azure Function App project:
 
    ```cs
    var host = new HostBuilder()
-       .ConfigureFunctionsWorkerDefaults(worker =>
+       .ConfigureFunctionsWebApplication(builder =>
        {
+           // Http => Authorization
+           builder.UseFunctionsAuthorization();
            // Http => Authentication
-           worker.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
+           builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
        })
        .ConfigureServices((context, services) =>
        {
@@ -63,7 +65,9 @@ Preparing an Azure Function App project:
            services.AddHealthChecksForIsolatedWorker();
 
            // Http => Authentication
-           services.AddUserAuthenticationForIsolatedWorker<SubsystemUser, SubsystemUserProvider>();
+           services
+             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
+             .AddUserAuthenticationForIsolatedWorker<SubsystemUser, SubsystemUserProvider>();
 
            // Would typically be registered within functional module registration methods instead of here.
            services.AddNodaTimeForApplication();
@@ -93,6 +97,11 @@ Preparing an Azure Function App project:
        // Logging
        // => Default log level for Application Insights
        "Logging__ApplicationInsights__LogLevel__Default": "Information",
+      // Authentication
+      "UserAuthentication__MitIdExternalMetadataAddress": "<metadata address>",
+      "UserAuthentication__ExternalMetadataAddress": "<metadata address>",
+      "UserAuthentication__InternalMetadataAddress": "<metadata address>",
+      "UserAuthentication__BackendBffAppId": "<app id>",
      }
    }
 
