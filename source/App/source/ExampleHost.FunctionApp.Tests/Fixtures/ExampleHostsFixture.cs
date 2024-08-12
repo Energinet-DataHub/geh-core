@@ -89,7 +89,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", OpenIdJwtManager.ExternalMetadataAddress);
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", OpenIdJwtManager.JwtProvider.TestBffAppId);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", OpenIdJwtManager.TestBffAppId);
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.InternalMetadataAddress);
 
@@ -147,7 +147,7 @@ public class ExampleHostsFixture : IAsyncLifetime
     /// </summary>
     public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
     {
-        var internalToken = await OpenIdJwtManager.JwtProvider.CreateInternalTokenAsync(roles: roles);
+        var internalToken = await OpenIdJwtManager.CreateInternalTokenAsync(roles: roles);
         if (string.IsNullOrWhiteSpace(internalToken))
             throw new InvalidOperationException("Nested token was not created.");
 
