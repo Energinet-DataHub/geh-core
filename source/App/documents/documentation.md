@@ -29,7 +29,7 @@ For a detailed documentation per registration type, see the walkthroughs listed 
 
 ### Azure Functions App
 
-For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestration/Program.cs) for Wholesale Orchestration application.
+For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestrations/Program.cs) for Wholesale Orchestration application.
 
 Features of the example:
 
