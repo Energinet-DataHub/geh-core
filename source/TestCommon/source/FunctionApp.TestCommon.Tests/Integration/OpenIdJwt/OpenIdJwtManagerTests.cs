@@ -115,7 +115,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
     }
 
     [Fact]
-    public async Task Given_CustomClaims_When_CreatingInternalToken_Then_CanParseInternalTokenWithExpectedValues()
+    public async Task When_CreatingInternalTokenWithCustomValues_Then_CanParseInternalTokenWithExpectedValues()
     {
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
@@ -157,7 +157,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
     }
 
     [Fact]
-    public void Given_CustomClaims_When_CreatingFakeToken_Then_CanParseFakeTokenWithExpectedValues()
+    public void When_CreatingFakeTokenWithCustomValues_Then_CanParseFakeTokenWithExpectedValues()
     {
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
