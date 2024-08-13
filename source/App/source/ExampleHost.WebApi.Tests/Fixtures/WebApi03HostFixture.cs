@@ -56,11 +56,11 @@ public class WebApi03HostFixture : IAsyncLifetime
 
     public HttpClient Web03HttpClient { get; }
 
+    public OpenIdJwtManager OpenIdJwtManager { get; }
+
     private IWebHost Web03Host { get; }
 
     private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
-
-    private OpenIdJwtManager OpenIdJwtManager { get; }
 
     public async Task InitializeAsync()
     {
@@ -74,32 +74,4 @@ public class WebApi03HostFixture : IAsyncLifetime
 
         OpenIdJwtManager.Dispose();
     }
-
-    /// <summary>
-    /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
-    /// and returns a 'Bearer' authentication header.
-    /// </summary>
-    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
-    {
-        var token = await OpenIdJwtManager.CreateInternalTokenAsync(roles: roles);
-        if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException("Internal token was not created.");
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
-    }
-
-    /// <summary>
-    /// Calls the <see cref="OpenIdJwtManager"/> on to create a fake token
-    /// and returns a 'Bearer' authentication header.
-    /// </summary>
-    public string CreateAuthenticationHeaderWithFakeToken()
-    {
-        var token = OpenIdJwtManager.CreateFakeToken();
-        if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException("Fake token was not created.");
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
-   }
 }

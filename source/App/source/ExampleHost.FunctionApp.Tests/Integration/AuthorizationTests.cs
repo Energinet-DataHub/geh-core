@@ -66,11 +66,10 @@ public class AuthorizationTests : IAsyncLifetime
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -88,11 +87,10 @@ public class AuthorizationTests : IAsyncLifetime
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -110,11 +108,10 @@ public class AuthorizationTests : IAsyncLifetime
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert

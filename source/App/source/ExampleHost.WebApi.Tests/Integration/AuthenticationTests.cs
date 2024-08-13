@@ -89,11 +89,10 @@ public sealed class AuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = Fixture.CreateAuthenticationHeaderWithFakeToken();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = Fixture.OpenIdJwtManager.JwtProvider.CreateFakeTokenAuthenticationHeader();
         using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
@@ -105,11 +104,10 @@ public sealed class AuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
         using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
@@ -124,12 +122,11 @@ public sealed class AuthenticationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
-        request.Headers.Add("DenyUser", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
+        request.Headers.Add("DenyUser", string.Empty);
         using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
@@ -140,11 +137,10 @@ public sealed class AuthenticationTests
     public async Task CallingGetUserWithPermission_UserWithToken_ReturnsUserId()
     {
         // Arrange
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, "webapi03/authentication/user");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
         using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert

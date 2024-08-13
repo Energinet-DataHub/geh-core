@@ -105,11 +105,10 @@ public class AuthenticationTests : IAsyncLifetime
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = Fixture.CreateAuthenticationHeaderWithFakeToken();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = Fixture.OpenIdJwtManager.JwtProvider.CreateFakeTokenAuthenticationHeader();
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -121,11 +120,10 @@ public class AuthenticationTests : IAsyncLifetime
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -152,11 +150,10 @@ public class AuthenticationTests : IAsyncLifetime
     public async Task CallingGetUserWithPermission_UserWithToken_ReturnsUserId()
     {
         // Arrange
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, "api/authentication/user");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert

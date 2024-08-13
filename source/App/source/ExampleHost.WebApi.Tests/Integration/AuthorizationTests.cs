@@ -50,11 +50,10 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
         using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
@@ -72,11 +71,10 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
         using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
@@ -94,11 +92,10 @@ public sealed class AuthorizationTests
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationHeader = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(roles);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
         using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert

@@ -54,6 +54,8 @@ public class ExampleHostsFixture : IAsyncLifetime
     public string LogAnalyticsWorkspaceId
         => IntegrationTestConfiguration.LogAnalyticsWorkspaceId;
 
+    public OpenIdJwtManager OpenIdJwtManager { get; }
+
     [NotNull]
     public FunctionAppHostManager? App01HostManager { get; private set; }
 
@@ -67,8 +69,6 @@ public class ExampleHostsFixture : IAsyncLifetime
     private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
     private FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
-
-    private OpenIdJwtManager OpenIdJwtManager { get; }
 
     public async Task InitializeAsync()
     {
@@ -139,34 +139,6 @@ public class ExampleHostsFixture : IAsyncLifetime
     public void SetTestOutputHelper(ITestOutputHelper testOutputHelper)
     {
         TestLogger.TestOutputHelper = testOutputHelper;
-    }
-
-    /// <summary>
-    /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
-    /// and returns a 'Bearer' authentication header.
-    /// </summary>
-    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
-    {
-        var token = await OpenIdJwtManager.CreateInternalTokenAsync(roles: roles);
-        if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException("Internal token was not created.");
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
-    }
-
-    /// <summary>
-    /// Calls the <see cref="OpenIdJwtManager"/> on to create a fake token
-    /// and returns a 'Bearer' authentication header.
-    /// </summary>
-    public string CreateAuthenticationHeaderWithFakeToken()
-    {
-        var token = OpenIdJwtManager.CreateFakeToken();
-        if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException("Fake token was not created.");
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
     }
 
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)
