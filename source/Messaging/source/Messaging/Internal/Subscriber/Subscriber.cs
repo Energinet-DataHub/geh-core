@@ -46,7 +46,7 @@ internal sealed class Subscriber : ISubscriber
         {
             _logger.LogError(
                 e,
-                "ServiceBusMessage that failed processing, id: {id}, subject: {sub} base64string: {base64str}",
+                "ServiceBusMessage that failed processing, messageId: {MessageId}, subject: {Subject} base64string: {Base64String}",
                 message.MessageId,
                 message.Subject,
                 Convert.ToBase64String(message.Body));
