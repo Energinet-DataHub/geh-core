@@ -23,7 +23,10 @@ internal sealed class Subscriber : ISubscriber
     private readonly IIntegrationEventHandler _integrationEventHandler;
     private readonly ILogger<ISubscriber> _logger;
 
-    public Subscriber(IIntegrationEventFactory integrationEventFactory, IIntegrationEventHandler integrationEventHandler, ILogger<ISubscriber> logger)
+    public Subscriber(
+        IIntegrationEventFactory integrationEventFactory,
+        IIntegrationEventHandler integrationEventHandler,
+        ILogger<ISubscriber> logger)
     {
         _integrationEventFactory = integrationEventFactory;
         _integrationEventHandler = integrationEventHandler;
