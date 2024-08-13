@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 
@@ -20,18 +21,34 @@ internal sealed class Subscriber : ISubscriber
 {
     private readonly IIntegrationEventFactory _integrationEventFactory;
     private readonly IIntegrationEventHandler _integrationEventHandler;
+    private readonly ILogger<ISubscriber> _logger;
 
-    public Subscriber(IIntegrationEventFactory integrationEventFactory, IIntegrationEventHandler integrationEventHandler)
+    public Subscriber(IIntegrationEventFactory integrationEventFactory, IIntegrationEventHandler integrationEventHandler, ILogger<ISubscriber> logger)
     {
         _integrationEventFactory = integrationEventFactory;
         _integrationEventHandler = integrationEventHandler;
+        _logger = logger;
     }
 
     public async Task HandleAsync(IntegrationEventServiceBusMessage message)
     {
-        if (_integrationEventFactory.TryCreate(message, out var integrationEvent))
+        try
         {
-            await _integrationEventHandler.HandleAsync(integrationEvent).ConfigureAwait(false);
+            if (_integrationEventFactory.TryCreate(message, out var integrationEvent))
+            {
+                await _integrationEventHandler.HandleAsync(integrationEvent).ConfigureAwait(false);
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(
+                e,
+                "ServiceBusMessage that failed processing, id: {id}, subject: {sub} base64string: {base64str}",
+                message.MessageId,
+                message.Subject,
+                Convert.ToBase64String(message.Body));
+
+            throw;
         }
     }
 }
