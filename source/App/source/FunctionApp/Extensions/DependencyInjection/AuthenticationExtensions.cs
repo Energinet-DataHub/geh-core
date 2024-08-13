@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 /// </summary>
 public static class AuthenticationExtensions
 {
-    private const string InnerTokenClaimType = "token";
+    private const string ExternalTokenClaimType = "token";
 
     public static IServiceCollection AddUserAuthenticationForIsolatedWorker<TUser, TUserProvider>(this IServiceCollection services)
         where TUser : class
@@ -90,7 +90,7 @@ public static class AuthenticationExtensions
 
                     foreach (var param in tokenValidationParameters)
                     {
-                        if (TryValidateInnerJwt((JsonWebToken)token, param))
+                        if (TryValidateExternalJwt((JsonWebToken)token, param))
                             return issuer;
                     }
 
@@ -134,20 +134,20 @@ public static class AuthenticationExtensions
         };
     }
 
-    private static void ValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
+    private static void ValidateExternalJwt(JsonWebToken internalToken, TokenValidationParameters tokenValidationParameters)
     {
-        var innerTokenClaim = outerToken.Claims.Single(claim =>
-            string.Equals(claim.Type, InnerTokenClaimType, StringComparison.OrdinalIgnoreCase));
+        var externalTokenClaim = internalToken.Claims.Single(claim =>
+            string.Equals(claim.Type, ExternalTokenClaimType, StringComparison.OrdinalIgnoreCase));
 
         var handler = new JwtSecurityTokenHandler();
-        handler.ValidateToken(innerTokenClaim.Value, tokenValidationParameters, out _);
+        handler.ValidateToken(externalTokenClaim.Value, tokenValidationParameters, out _);
     }
 
-    private static bool TryValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
+    private static bool TryValidateExternalJwt(JsonWebToken internalToken, TokenValidationParameters tokenValidationParameters)
     {
         try
         {
-            ValidateInnerJwt(outerToken, tokenValidationParameters);
+            ValidateExternalJwt(internalToken, tokenValidationParameters);
             return true;
         }
         catch (SecurityTokenException)
