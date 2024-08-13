@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Claims;
-using System.Security.Cryptography;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 
@@ -34,8 +31,10 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 ///
 /// A test certificate will be automatically installed on startup to support https (using <see cref="TestCertificateProvider"/>.<see cref="TestCertificateProvider.InstallCertificate"/>)
 /// </summary>
-public class OpenIdJwtManager : IJwtProvider, IDisposable
+public sealed class OpenIdJwtManager : IDisposable
 {
+    private readonly JwtProvider _jwtProvider;
+
     /// <summary>
     /// Create manager to handle OpenId and JWT.
     /// </summary>
@@ -48,8 +47,15 @@ public class OpenIdJwtManager : IJwtProvider, IDisposable
         string jwtIssuer = "https://test-common.datahub.dk")
     {
         OpenIdServer = new OpenIdMockServer(jwtIssuer, openIdServerPort);
-        JwtProvider = new JwtProvider(azureB2CSettings, OpenIdServer.Issuer, OpenIdServer.SecurityKey);
+        _jwtProvider = new JwtProvider(azureB2CSettings, OpenIdServer.Issuer, OpenIdServer.SecurityKey);
     }
+
+    /// <summary>
+    /// A JWT provider used for creating internal JWT's for testing DH3 applications that
+    /// require authentication and authorization. The tokens can be used by applications using OpenId if the <see cref="OpenIdServer"/>
+    /// is running.
+    /// </summary>
+    public IJwtProvider JwtProvider => _jwtProvider;
 
     /// <summary>
     /// Start the OpenId JWT server using WireMock. The server is running at port specified by the configuration.
@@ -77,14 +83,14 @@ public class OpenIdJwtManager : IJwtProvider, IDisposable
     /// The full URL of the configuration metadata endpoint which should be used to
     /// get the OpenId configuration required to verify the external token.
     /// </summary>
-    public string ExternalMetadataAddress => JwtProvider.ExternalMetadataAddress;
+    public string ExternalMetadataAddress => _jwtProvider.ExternalMetadataAddress;
 
     /// <summary>
     /// The appllication id of the client app registration in Microsoft Entra. The App id is the client application on
     /// which behalf the external token is retrieved from Microsoft Entra.
     /// This is not the actual BFF but a test app registration that allows us to verify some of the JWT code.
     /// </summary>
-    public string TestBffAppId => JwtProvider.TestBffAppId;
+    public string TestBffAppId => _jwtProvider.TestBffAppId;
 
     /// <summary>
     /// An OpenId configuration server used for running an OpenId JWT server mock for testing DH3 applications that
@@ -93,36 +99,8 @@ public class OpenIdJwtManager : IJwtProvider, IDisposable
     /// </summary>
     private OpenIdMockServer OpenIdServer { get; }
 
-    /// <summary>
-    /// A JWT provider used for creating internal JWT's for testing DH3 applications that
-    /// require authentication and authorization. The tokens can be used by applications using OpenId if the <see cref="OpenIdServer"/>
-    /// is running.
-    /// </summary>
-    private JwtProvider JwtProvider { get; }
-
-    /// <inheritdoc />
-    public Task<string> CreateInternalTokenAsync(
-        string userId = "A1AAB954-136A-444A-94BD-E4B615CA4A78",
-        string actorId = "A1DEA55A-3507-4777-8CF3-F425A6EC2094",
-        string[]? roles = null,
-        Claim[]? extraClaims = null) => JwtProvider.CreateInternalTokenAsync(userId, actorId, roles, extraClaims);
-
-    /// <inheritdoc />
-    public string CreateFakeToken(
-        string? userId = null,
-        string? actorId = null,
-        string[]? roles = null,
-        Claim[]? extraClaims = null) => JwtProvider.CreateFakeToken(userId, actorId, roles, extraClaims);
-
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-            OpenIdServer.Dispose();
+        OpenIdServer.Dispose();
     }
 }

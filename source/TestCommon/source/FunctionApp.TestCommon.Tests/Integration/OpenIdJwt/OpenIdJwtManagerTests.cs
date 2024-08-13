@@ -50,7 +50,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
@@ -67,7 +67,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
@@ -85,7 +85,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Act
         openIdJwtManager.StartServer();
@@ -103,7 +103,42 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
 
-        var fakeToken = openIdJwtManager.CreateFakeToken();
+        var fakeToken = openIdJwtManager.JwtProvider.CreateFakeToken();
+
+        // Act
+        openIdJwtManager.StartServer();
+        var tokenValidationParameters = await GetTokenValidationParametersFromServer(openIdJwtManager.InternalMetadataAddress);
+
+        // Assert
+        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(fakeToken, tokenValidationParameters, out _);
+        validateToken.Should().Throw<SecurityTokenSignatureKeyNotFoundException>();
+    }
+
+    [Fact]
+    public async Task Given_CreatedInternalTokenAuthenticationHeader_When_GettingOpenIdConfigurationFromServer_Then_TokenCanBeValidated()
+    {
+        // Arrange
+        using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
+
+        var internalTokenAuthenticationHeader = await openIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
+
+        // Act
+        openIdJwtManager.StartServer();
+        var tokenValidationParameters = await GetTokenValidationParametersFromServer(openIdJwtManager.InternalMetadataAddress);
+        tokenValidationParameters.ValidIssuer = "incorrect-issuer";
+
+        // Assert
+        var validateToken = () => new JwtSecurityTokenHandler().ValidateToken(internalTokenAuthenticationHeader.Parameter, tokenValidationParameters, out _);
+        validateToken.Should().ThrowExactly<SecurityTokenInvalidIssuerException>();
+    }
+
+    [Fact]
+    public async Task Given_CreatedFakeTokenAuthenticationHeader_When_GettingOpenIdConfigurationFromServer_Then_TokenValidationFails()
+    {
+        // Arrange
+        using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
+
+        var fakeToken = openIdJwtManager.JwtProvider.CreateFakeToken();
 
         // Act
         openIdJwtManager.StartServer();
@@ -130,7 +165,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         var expectedClaim2 = new Claim("claim2", "value2");
 
         // Act
-        var internalToken = await openIdJwtManager.CreateInternalTokenAsync(
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync(
             userId: expectedSubject,
             actorId: expectedAzp,
             roles: [expectedRole1, expectedRole2],
@@ -139,12 +174,12 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Assert
         internalToken.Should().NotBeNullOrEmpty();
 
-        var parsedToken = new JwtSecurityTokenHandler().ReadToken(internalToken) as JwtSecurityToken;
+        var parsedToken = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(internalToken);
 
         parsedToken.Should().NotBeNull();
 
         using var assertionScope = new AssertionScope();
-        parsedToken!.Issuer.Should().Be(expectedIssuer);
+        parsedToken.Issuer.Should().Be(expectedIssuer);
         parsedToken.Audiences.Should().Equal(expectedAudience);
         parsedToken.Subject.Should().Be(expectedSubject);
         parsedToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == expectedSubject);
@@ -170,7 +205,7 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         var expectedClaim2 = new Claim("claim2", "value2");
 
         // Act
-        var fakeToken = openIdJwtManager.CreateFakeToken(
+        var fakeToken = openIdJwtManager.JwtProvider.CreateFakeToken(
             userId: expectedSubject,
             actorId: expectedAzp,
             roles: [expectedRole1, expectedRole2],
@@ -179,12 +214,12 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
         // Assert
         fakeToken.Should().NotBeNullOrEmpty();
 
-        var parsedFakeToken = new JwtSecurityTokenHandler().ReadToken(fakeToken) as JwtSecurityToken;
+        var parsedFakeToken = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(fakeToken);
 
         parsedFakeToken.Should().NotBeNull();
 
         using var assertionScope = new AssertionScope();
-        parsedFakeToken!.Subject.Should().Be(expectedSubject);
+        parsedFakeToken.Subject.Should().Be(expectedSubject);
         parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == expectedSubject);
         parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == JwtRegisteredClaimNames.Azp && c.Value == expectedAzp);
         parsedFakeToken.Claims.Should().ContainSingle(c => c.Type == "role" && c.Value == expectedRole1);
@@ -194,27 +229,38 @@ public class OpenIdJwtManagerTests : IClassFixture<OpenIdJwtManagerFixture>
     }
 
     [Fact]
-    public async Task Given_ExternalToken_When_CreatingInternalToken_Then_CanParseExternalTokenWithExpectedValuesFromInternalToken()
+    public async Task Given_ExternalToken_When_CreatingInternalToken_Then_CanValidateAndParseExternalTokenWithExpectedValues()
     {
         // Arrange
         using var openIdJwtManager = new OpenIdJwtManager(Fixture.AzureB2CSettings);
+        openIdJwtManager.StartServer();
+
+        var httpRequest = new HttpRequestMessage();
+        httpRequest.Headers.Authorization = await openIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
 
         var expectedAudience = Fixture.AzureB2CSettings.TestBffAppId;
-        var expectedIssuer = "https://login.microsoftonline.com/72996b41-f6a7-44db-b070-65acc2fb7818/v2.0";
+        var expectedIssuer = $"https://login.microsoftonline.com/72996b41-f6a7-44db-b070-65acc2fb7818/v2.0";
 
         // Act
-        var internalToken = await openIdJwtManager.CreateInternalTokenAsync();
+        var internalToken = await openIdJwtManager.JwtProvider.CreateInternalTokenAsync();
 
         // Assert
         var tokenHandler = new JwtSecurityTokenHandler();
-        var parsedToken = tokenHandler.ReadToken(internalToken) as JwtSecurityToken;
+        var parsedInternalToken = (JwtSecurityToken)tokenHandler.ReadToken(internalToken);
 
-        var externalTokenClaim = parsedToken!.Claims.Single(c => c.Type == "token");
-        var externalToken = tokenHandler.ReadToken(externalTokenClaim.Value) as JwtSecurityToken;
+        var externalTokenValue = parsedInternalToken.Claims.Single(c => c.Type == "token").Value;
+
+        // Validate external token
+        var externalTokenValidationParameters = await GetTokenValidationParametersFromServer(openIdJwtManager.ExternalMetadataAddress);
+        var validateExternalToken = () => tokenHandler.ValidateToken(externalTokenValue, externalTokenValidationParameters, out _);
+        validateExternalToken.Should().NotThrow();
+
+        // Parse external token
+        var parsedExternalToken = (JwtSecurityToken)tokenHandler.ReadToken(externalTokenValue);
 
         using var assertionScope = new AssertionScope();
-        externalToken!.Issuer.Should().Be(expectedIssuer);
-        externalToken.Audiences.Should().Equal(expectedAudience);
+        parsedExternalToken.Issuer.Should().Be(expectedIssuer);
+        parsedExternalToken.Audiences.Should().Equal(expectedAudience);
     }
 
     private async Task<TokenValidationParameters> GetTokenValidationParametersFromServer(string metadataAddress)

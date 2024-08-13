@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Identity.Client;
@@ -66,11 +67,14 @@ internal class JwtProvider : IJwtProvider
 
     /// <inheritdoc />
     public async Task<string> CreateInternalTokenAsync(
-        string userId,
-        string actorId,
+        string? userId = null,
+        string? actorId = null,
         string[]? roles = null,
         Claim[]? extraClaims = null)
     {
+        userId ??= Guid.NewGuid().ToString();
+        actorId ??= Guid.NewGuid().ToString();
+
         var externalTokenResult = await GetExternalTokenAsync().ConfigureAwait(false);
         var externalToken = externalTokenResult.AccessToken;
 
@@ -124,6 +128,31 @@ internal class JwtProvider : IJwtProvider
         var fakeToken = new JwtSecurityTokenHandler().WriteToken(securityToken);
 
         return fakeToken;
+    }
+
+    /// <inheritdoc />
+    public async Task<AuthenticationHeaderValue> CreateInternalTokenAuthenticationHeaderAsync(
+        string? userId = null,
+        string? actorId = null,
+        string[]? roles = null,
+        Claim[]? extraClaims = null)
+    {
+        var internalToken = await CreateInternalTokenAsync(userId, actorId, roles, extraClaims)
+            .ConfigureAwait(false);
+
+        return new AuthenticationHeaderValue("bearer", internalToken);
+    }
+
+    /// <inheritdoc />
+    public AuthenticationHeaderValue CreateFakeTokenAuthenticationHeader(
+        string? userId = null,
+        string? actorId = null,
+        string[]? roles = null,
+        Claim[]? extraClaims = null)
+    {
+        var fakeToken = CreateFakeToken(userId, actorId, roles, extraClaims);
+
+        return new AuthenticationHeaderValue("bearer", fakeToken);
     }
 
     /// <summary>

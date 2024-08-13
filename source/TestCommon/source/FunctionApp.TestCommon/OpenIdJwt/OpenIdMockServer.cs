@@ -109,18 +109,9 @@ internal sealed class OpenIdMockServer : IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _mockServer?.Dispose();
-            _mockServer = null;
-            IsRunning = false;
-        }
+        _mockServer?.Dispose();
+        _mockServer = null;
+        IsRunning = false;
     }
 
     private void MockTokenConfigurationEndpoints()
