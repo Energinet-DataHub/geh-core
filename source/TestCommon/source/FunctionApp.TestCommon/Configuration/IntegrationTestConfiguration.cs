@@ -136,6 +136,7 @@ public class IntegrationTestConfiguration
             BackendAppId = configuration.GetValue("AZURE-B2C-TESTBACKEND-APP-ID"),
             BackendServicePrincipalObjectId = configuration.GetValue("AZURE-B2C-TESTBACKEND-SPN-OBJECTID"),
             BackendAppObjectId = configuration.GetValue("AZURE-B2C-TESTBACKEND-APP-OBJECTID"),
+            TestBffAppId = configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID"),
         };
     }
 
