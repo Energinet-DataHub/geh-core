@@ -195,11 +195,11 @@ public sealed class DatabricksSchemaManagerTests
         (await mockHandler.LastRequest!.Content!.ReadAsStringAsync()).Should().Contain(expectedCommand);
     }
 
-    private Mock<IHttpClientFactory> CreateHttpClientFactoryMock(MockHttpMessageHandler mockHandler)
+    private Mock<TestCommon.Databricks.IHttpClientFactory> CreateHttpClientFactoryMock(MockHttpMessageHandler mockHandler)
     {
         var mockHttpClient = new HttpClient(mockHandler);
         mockHttpClient.BaseAddress = new Uri("https://test");
-        var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+        var mockHttpClientFactory = new Mock<TestCommon.Databricks.IHttpClientFactory>();
 
         mockHttpClientFactory
         .Setup(f => f.CreateHttpClient(It.IsAny<DatabricksSettings>())).Returns(mockHttpClient);
