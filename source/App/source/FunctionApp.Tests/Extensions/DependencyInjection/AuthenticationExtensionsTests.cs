@@ -44,7 +44,10 @@ public class AuthenticationExtensionsTests
         });
 
         // Act
-        Services.AddJwtBearerAuthenticationForIsolatedWorker(configuration);
+        var act = () => Services.AddJwtBearerAuthenticationForIsolatedWorker(configuration);
+
+        // Assert
+        act.Should().NotThrow();
     }
 
     [Fact]

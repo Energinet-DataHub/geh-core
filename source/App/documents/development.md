@@ -15,7 +15,7 @@ The packages contain types commonly used by subsystem teams when implementing Az
 
 ## Http authentication and authorization
 
-The extensions for registrering JWT authentication in the `FunctionApp` and `WebApp` packages should be kept in synch:
+The extensions for registrering JWT authentication in the `FunctionApp` and `WebApp` packages should be kept in sync:
 
 * `AddJwtBearerAuthenticationForIsolatedWorker`
 * `AddJwtBearerAuthenticationForWebApp`

@@ -17,6 +17,8 @@ For detailed information of how to use the new capabilities, see [JWT Security](
 2) If the extension `UseUserMiddlewareForIsolatedWorker` is used and the application has HttpTrigger's that is not part of the `HealthCheckEndpoint` class:
     - Either rewrite these HttpTrigger's to use the ASP.NET Core types, or exclude these functions so they are not handled by the middleware. To exclude functions use the parameter `excludedFunctionNames`.
 
+3) Any existing middleware that uses `HttpRequestData` should be refactored to use `HttpContext` instead, and the HttpTrigger's for which the middleware is used should be refactored to use ASP.NET Core types.
+
 ## ASP.NET Core Web API
 
 There is no breaking change for consumers of the `WebApp` package.

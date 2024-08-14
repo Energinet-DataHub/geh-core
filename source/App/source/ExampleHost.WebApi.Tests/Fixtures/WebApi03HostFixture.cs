@@ -29,7 +29,6 @@ public class WebApi03HostFixture : IAsyncLifetime
     {
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
         OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings);
-        OpenIdJwtManager.StartServer();
 
         var web03BaseUrl = "http://localhost:5002";
         Web03Host = WebHost.CreateDefaultBuilder()
@@ -64,6 +63,7 @@ public class WebApi03HostFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        OpenIdJwtManager.StartServer();
         await Web03Host.StartAsync();
     }
 
