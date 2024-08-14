@@ -13,32 +13,48 @@
 // limitations under the License.
 
 using System.Net;
-using ExampleHost.WebApi.Tests.Fixtures;
+using ExampleHost.FunctionApp.Tests.Fixtures;
 using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace ExampleHost.WebApi.Tests.Integration;
+namespace ExampleHost.FunctionApp.Tests.Integration;
 
 /// <summary>
 /// Authorization tests using a nested token (a token which contains both an
 /// external and an internal token). Focus is on verifying the use of the Authorize
 /// attribute with Roles.
 ///
-/// Similar tests exists for Function App in the 'AuthorizationTests' class
-/// located in the 'ExampleHost.FunctionApp.Tests' project.
+/// Similar tests exists for Web App in the 'AuthorizationTests' class
+/// located in the 'ExampleHost.WebApi.Tests' project.
 /// </summary>
-[Collection(nameof(WebApi03HostCollectionFixture))]
-public sealed class AuthorizationTests
+[Collection(nameof(ExampleHostsCollectionFixture))]
+public class AuthorizationTests : IAsyncLifetime
 {
     private const string PermissionOrganizationView = "organizations:view";
     private const string PermissionGridAreasManage = "grid-areas:manage";
 
-    public AuthorizationTests(WebApi03HostFixture fixture)
+    public AuthorizationTests(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
+        Fixture.SetTestOutputHelper(testOutputHelper);
+
+        Fixture.App01HostManager.ClearHostLog();
     }
 
-    private WebApi03HostFixture Fixture { get; }
+    private ExampleHostsFixture Fixture { get; }
+
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync()
+    {
+        Fixture.SetTestOutputHelper(null!);
+
+        return Task.CompletedTask;
+    }
 
     [Theory]
     [InlineData(HttpStatusCode.OK, PermissionOrganizationView)]
@@ -52,9 +68,9 @@ public sealed class AuthorizationTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org/{requestIdentification}");
         request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
-        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(expectedStatusCode);
@@ -73,9 +89,9 @@ public sealed class AuthorizationTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_or_grid/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org_or_grid/{requestIdentification}");
         request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
-        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(expectedStatusCode);
@@ -94,9 +110,9 @@ public sealed class AuthorizationTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_and_grid/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/authorization/org_and_grid/{requestIdentification}");
         request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
-        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(expectedStatusCode);

@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.App.WebApp.Extensions.Options;
+namespace Energinet.DataHub.Core.App.Common.Extensions.Options;
 
+/// <summary>
+/// Options for the configuration of JWT bearer authentication.
+/// </summary>
 public class UserAuthenticationOptions
 {
     public const string SectionName = "UserAuthentication";

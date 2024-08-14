@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
-using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.Configuration;
+using Xunit;
 
-namespace Energinet.DataHub.Core.App.WebApp.Tests.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Extensions.DependencyInjection;
 
 public class AuthenticationExtensionsTests
 {
@@ -31,7 +32,7 @@ public class AuthenticationExtensionsTests
     private ServiceCollection Services { get; }
 
     [Fact]
-    public void AddJwtBearerAuthenticationForWebApp_WhenCalledWithConfiguredSection_RegistrationsArePerformed()
+    public void AddJwtBearerAuthenticationForIsolatedWorker_WhenCalledWithConfiguredSection_RegistrationsArePerformed()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
@@ -43,17 +44,20 @@ public class AuthenticationExtensionsTests
         });
 
         // Act
-        Services.AddJwtBearerAuthenticationForWebApp(configuration);
+        var act = () => Services.AddJwtBearerAuthenticationForIsolatedWorker(configuration);
+
+        // Assert
+        act.Should().NotThrow();
     }
 
     [Fact]
-    public void AddJwtBearerAuthenticationForWebApp_WhenCalledAndNoConfiguredSection_ExceptionIsThrown()
+    public void AddJwtBearerAuthenticationForIsolatedWorker_WhenCalledAndNoConfiguredSection_ExceptionIsThrown()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>());
 
         // Act
-        var act = () => Services.AddJwtBearerAuthenticationForWebApp(configuration);
+        var act = () => Services.AddJwtBearerAuthenticationForIsolatedWorker(configuration);
 
         // Assert
         act.Should()
@@ -62,7 +66,7 @@ public class AuthenticationExtensionsTests
     }
 
     [Fact]
-    public void AddJwtBearerAuthenticationForWebApp_WhenCalledAndConfiguredPropertyIsMissing_ExceptionIsThrown()
+    public void AddJwtBearerAuthenticationForIsolatedWorker_WhenCalledAndConfiguredPropertyIsMissing_ExceptionIsThrown()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
@@ -73,7 +77,7 @@ public class AuthenticationExtensionsTests
         });
 
         // Act
-        var act = () => Services.AddJwtBearerAuthenticationForWebApp(configuration);
+        var act = () => Services.AddJwtBearerAuthenticationForIsolatedWorker(configuration);
 
         // Assert
         act.Should()

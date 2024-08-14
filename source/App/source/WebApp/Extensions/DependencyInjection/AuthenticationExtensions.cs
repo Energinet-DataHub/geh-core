@@ -14,8 +14,8 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.App.Common.Users;
-using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -34,13 +34,7 @@ namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 /// </summary>
 public static class AuthenticationExtensions
 {
-    private const string InnerTokenClaimType = "token";
-
-    /// <summary>
-    /// Disables HTTPS requirement for OpenId configuration endpoints.
-    /// This property is intended for testing purposes only and we use InternalsVisibleTo in the project file to control who can access it.
-    /// </summary>
-    internal static bool DisableHttpsConfiguration { get; set; }
+    private const string ExternalTokenClaimType = "token";
 
     public static IServiceCollection AddUserAuthenticationForWebApp<TUser, TUserProvider>(this IServiceCollection services)
         where TUser : class
@@ -53,50 +47,6 @@ public static class AuthenticationExtensions
         services.AddScoped<IUserContext<TUser>>(s => s.GetRequiredService<UserContext<TUser>>());
         services.AddScoped<IUserProvider<TUser>, TUserProvider>();
         services.AddScoped<UserMiddleware<TUser>>();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds JWT Bearer authentication to the Web API.
-    /// </summary>
-    /// <param name="services">A collection of service descriptors.</param>
-    /// <param name="externalMetadataAddress">The address of OpenId configuration endpoint for the external token, e.g. https://{b2clogin.com/tenant-id/policy}/v2.0/.well-known/openid-configuration.</param>
-    /// <param name="internalMetadataAddress">The address of OpenId configuration endpoint for the internal token, e.g. https://{market-participant-web-api}/.well-known/openid-configuration.</param>
-    /// <param name="backendAppId"></param>
-    [Obsolete("Should only be used for testing. Use 'AddJwtBearerAuthenticationForWebApp' for production.")]
-    public static IServiceCollection AddJwtBearerAuthenticationForWebApp(
-        this IServiceCollection services,
-        string externalMetadataAddress,
-        string internalMetadataAddress,
-        string backendAppId)
-    {
-        ArgumentNullException.ThrowIfNull(externalMetadataAddress);
-        ArgumentNullException.ThrowIfNull(backendAppId);
-
-        services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                var tokenValidationParameters = CreateValidationParameters(backendAppId, externalMetadataAddress);
-
-                if (!string.IsNullOrEmpty(internalMetadataAddress))
-                {
-                    options.TokenValidationParameters = CreateValidationParameters(backendAppId, internalMetadataAddress);
-                    options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
-                    {
-                        if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
-                            throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
-
-                        ValidateInnerJwt((JsonWebToken)token, tokenValidationParameters);
-                        return issuer;
-                    };
-                }
-                else
-                {
-                    options.TokenValidationParameters = tokenValidationParameters;
-                }
-            });
 
         return services;
     }
@@ -130,14 +80,21 @@ public static class AuthenticationExtensions
                 ];
 
                 options.TokenValidationParameters = CreateValidationParameters(authenticationOptions.BackendBffAppId, authenticationOptions.InternalMetadataAddress);
+
+                // Notes regarding "IssuerValidatorUsingConfiguration":
+                //  - We must have a dependency to "Microsoft.AspNetCore.Authentication.JwtBearer" otherwise the validation workflow
+                //    won't perform at call to get the configurations (Issuer and Keys) and then 'configuration' will be null.
+                //  - We should keep this code and its dependency in synch with the code in the 'FunctionApp' project.
                 options.TokenValidationParameters.IssuerValidatorUsingConfiguration = (issuer, token, _, configuration) =>
                 {
+                    if (configuration == null)
+                        throw new InvalidOperationException("The 'Configuration' is null. Either JwtBearer dependencies are missing or we could not retrieve the 'Configuration' from the configured metadata address.");
                     if (!string.Equals(configuration.Issuer, issuer, StringComparison.Ordinal))
                         throw new SecurityTokenInvalidIssuerException { InvalidIssuer = issuer };
 
                     foreach (var param in tokenValidationParameters)
                     {
-                        if (TryValidateInnerJwt((JsonWebToken)token, param))
+                        if (TryValidateExternalJwt((JsonWebToken)token, param))
                             return issuer;
                     }
 
@@ -177,24 +134,24 @@ public static class AuthenticationExtensions
             ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                 metadataAddress,
                 new OpenIdConnectConfigurationRetriever(),
-                new HttpDocumentRetriever { RequireHttps = !DisableHttpsConfiguration }),
+                new HttpDocumentRetriever { RequireHttps = true }),
         };
     }
 
-    private static void ValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
+    private static void ValidateExternalJwt(JsonWebToken internalToken, TokenValidationParameters tokenValidationParameters)
     {
-        var innerTokenClaim = outerToken.Claims.Single(claim =>
-            string.Equals(claim.Type, InnerTokenClaimType, StringComparison.OrdinalIgnoreCase));
+        var externalTokenClaim = internalToken.Claims.Single(claim =>
+            string.Equals(claim.Type, ExternalTokenClaimType, StringComparison.OrdinalIgnoreCase));
 
         var handler = new JwtSecurityTokenHandler();
-        handler.ValidateToken(innerTokenClaim.Value, tokenValidationParameters, out _);
+        handler.ValidateToken(externalTokenClaim.Value, tokenValidationParameters, out _);
     }
 
-    private static bool TryValidateInnerJwt(JsonWebToken outerToken, TokenValidationParameters tokenValidationParameters)
+    private static bool TryValidateExternalJwt(JsonWebToken internalToken, TokenValidationParameters tokenValidationParameters)
     {
         try
         {
-            ValidateInnerJwt(outerToken, tokenValidationParameters);
+            ValidateExternalJwt(internalToken, tokenValidationParameters);
             return true;
         }
         catch (SecurityTokenException)

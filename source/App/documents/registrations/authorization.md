@@ -18,9 +18,20 @@
 
 ## Azure Functions App
 
+Azure Functions apps must use [ASP.NET Core integration for HTTP](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration). This allows us to use the ASP.NET Core types for supporting authentication and authorization for HttpTrigger's.
+
+Endpoint authorization for HttpTrigger's is enforced by role-based authorization using the `Authorize` attribute, similar to what is shown below for ASP.NET Core Web API under [Usage](#usage). The `AllowAnonymous` attribute is also supported.
+
+### Configuration of Authentication and Authorization
+
+- Add `UseFunctionsAuthorization()` to `IFunctionsWorkerApplicationBuilder`.
+    - This registers services and middleware which allows us to use certain ASP.NET Core types, including the previously mentioned attributes.
+- Add `AddJwtBearerAuthenticationForIsolatedWorker()` to `IServiceProvider`.
+    - This will enable verification of and authentication by JWT, configuring the `ClaimsPrincipal`.
+
 ### Configuration of IUserProvider
 
-Configuring middleware for obtaining the current user with the current actor.
+Configuring middleware for obtaining the current user with the current actor. This middleware depends on services registered by `UseFunctionsAuthorization()`.
 
 - Implement `TUserProvider` and `TUser`.
 - Add `UseUserMiddlewareForIsolatedWorker<TUser>()` to `IFunctionsWorkerApplicationBuilder`.

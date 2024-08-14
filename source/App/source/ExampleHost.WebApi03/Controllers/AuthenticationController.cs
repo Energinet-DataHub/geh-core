@@ -13,23 +13,23 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using ExampleHost.FunctionApp01.Security;
+using ExampleHost.WebApi03.Security;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
 
-namespace ExampleHost.FunctionApp01.Functions;
+namespace ExampleHost.WebApi03.Controllers;
 
 /// <summary>
-/// Similar functionality exists for Web App in the 'AuthenticationController' class
-/// located in the 'ExampleHost.WebApi03' project.
+/// Similar functionality exists for Function App in the 'AuthenticationFunction' class
+/// located in the 'ExampleHost.FunctionApp01' project.
 /// </summary>
-public class AuthenticationFunction
+[ApiController]
+[Route("webapi03/[controller]")]
+public class AuthenticationController : ControllerBase
 {
     private readonly IUserContext<ExampleSubsystemUser> _userContext;
 
-    public AuthenticationFunction(IUserContext<ExampleSubsystemUser> userContext)
+    public AuthenticationController(IUserContext<ExampleSubsystemUser> userContext)
     {
         _userContext = userContext;
     }
@@ -38,37 +38,24 @@ public class AuthenticationFunction
     /// 1: This method should not require any 'Bearer' token in the 'Authorization' header.
     ///   It should allow anonymous access and always return the given Guid, for tests to verify.
     /// </summary>
-    [Function(nameof(GetAnonymous))]
+    [HttpGet("anon/{identification}")]
     [AllowAnonymous]
-    public IActionResult GetAnonymous(
-        [HttpTrigger(
-            AuthorizationLevel.Anonymous,
-            "get",
-            Route = "authentication/anon/{identification:guid}")]
-        HttpRequest httpRequest,
-        Guid identification)
+    public string Get(string identification)
     {
-        return new OkObjectResult(identification.ToString());
+        return identification;
     }
 
     /// <summary>
     /// 1: This method should be called with a 'Bearer' token in the 'Authorization' header.
     ///   The token must be a nested token (containing both external and internal token).
-    /// 2: The DarkLoop Authorization extension in combination with ASP.NET Core authentication classes
-    ///   should retrieve the token and validate it.
+    /// 2: ASP.NET Core authentication classes should retrieve the token and validate it.
     /// 3: If successfull the given Guid is returned, for tests to verify.
     /// </summary>
-    [Function(nameof(GetWithPermission))]
+    [HttpGet("auth/{identification}")]
     [Authorize]
-    public IActionResult GetWithPermission(
-        [HttpTrigger(
-            AuthorizationLevel.Anonymous,
-            "get",
-            Route = "authentication/auth/{identification:guid}")]
-        HttpRequest httpRequest,
-        Guid identification)
+    public string GetWithPermission(string identification)
     {
-        return new OkObjectResult(identification.ToString());
+        return identification;
     }
 
     /// <summary>
@@ -76,28 +63,15 @@ public class AuthenticationFunction
     ///   The token must be a nested token (containing both external and internal token).
     /// 2: The "UserMiddleware" should retrieve the user information from this token, and
     ///   assign it to the "UserContext" (a scoped service).
-    /// 3: The "IUserContext" (a scoped service) can then be injected to the function class
+    /// 3: The "IUserContext" (a scoped service) can then be injected to the controller class
     ///   and give access to the stored user information.
     /// 4: If successfull the UserId is retrieved and returned, for tests to verify.
     ///   If the user is not available an Empty guid is returned.
     /// </summary>
-    [Function(nameof(GetUserWithPermission))]
+    [HttpGet("user")]
     [Authorize]
-    public IActionResult GetUserWithPermission(
-        [HttpTrigger(
-            AuthorizationLevel.Anonymous,
-            "get",
-            Route = "authentication/user")]
-        HttpRequest httpRequest,
-        FunctionContext context)
+    public string GetUserWithPermission()
     {
-        try
-        {
-            return new OkObjectResult(_userContext.CurrentUser.UserId.ToString());
-        }
-        catch
-        {
-            return new OkObjectResult(Guid.Empty.ToString());
-        }
+        return _userContext.CurrentUser.UserId.ToString();
     }
 }

@@ -14,10 +14,12 @@
 
 using System.Net;
 using System.Security.Claims;
+using DarkLoop.Azure.Functions.Authorization;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.Common.Users;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,6 +28,10 @@ using Microsoft.IdentityModel.JsonWebTokens;
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
 
 /// <summary>
+/// This middleware is only supported for HttpTrigger functions that uses ASP.NET Core integration for HTTP.
+/// It depends on types registered by DarkLoop Authorization extension and expects DarkLoop middleware has
+/// been executed earlier in the middleware pipeline.
+///
 /// If possible, retrieved JWT from header and creates a user, which is then
 /// set to the <see cref="UserContext{TUser}"/> and thereby made available
 /// for dependency injection in the executing function and other services.
@@ -35,31 +41,46 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 {
     private const string MultiTenancyClaim = "multitenancy";
 
+    private readonly IFunctionsAuthorizationProvider _authorizationProvider;
+    private readonly IAuthorizationPolicyProvider _policyProvider;
+
     // DO NOT inject scoped services in the middleware constructor.
     // DO use scoped services in middleware by retrieving them from 'FunctionContext.InstanceServices'
     // DO NOT store scoped services in fields or properties of the middleware object. See https://github.com/Azure/azure-functions-dotnet-worker/issues/1327#issuecomment-1434408603
-    public UserMiddleware()
+    public UserMiddleware(
+        IFunctionsAuthorizationProvider authorizationProvider,
+        IAuthorizationPolicyProvider policyProvider)
     {
+        _authorizationProvider = authorizationProvider;
+        _policyProvider = policyProvider;
     }
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        var httpRequestData = await context.GetHttpRequestDataAsync().ConfigureAwait(false)
-            ?? throw new InvalidOperationException("UserMiddleware running without HttpRequestData.");
+        var httpContext = context.GetHttpContext()
+            ?? throw new InvalidOperationException("UserMiddleware running without HttpContext. ASP.NET Core integration for HTTP is required.");
 
-        var isUserSet = await CanSetUserAsync(context, httpRequestData).ConfigureAwait(false);
+        var filter = await _authorizationProvider.GetAuthorizationAsync(context.FunctionDefinition.Name, _policyProvider).ConfigureAwait(false);
+        if (filter.AllowAnonymous)
+        {
+            // Next middleware
+            await next(context).ConfigureAwait(false);
+            return;
+        }
+
+        var isUserSet = await TrySetUserAsync(context, httpContext.Request).ConfigureAwait(false);
         if (isUserSet)
         {
             // Next middleware
             await next(context).ConfigureAwait(false);
+            return;
         }
-        else
-        {
-            await CreateUnauthorizedResponseAsync(context, httpRequestData).ConfigureAwait(false);
-        }
+
+        // Subsystem did not accept the user or we could not create the user.
+        httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
     }
 
-    private static async Task<bool> CanSetUserAsync(FunctionContext context, HttpRequestData httpRequestData)
+    private static async Task<bool> TrySetUserAsync(FunctionContext context, HttpRequest httpRequest)
     {
         var logger = context.GetLogger<UserMiddleware<TUser>>();
         var userProvider = context.InstanceServices.GetRequiredService<IUserProvider<TUser>>();
@@ -67,7 +88,7 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
 
         try
         {
-            var token = TryGetTokenFromHeader(httpRequestData);
+            var token = TryGetTokenFromHeader(httpRequest);
             if (!string.IsNullOrWhiteSpace(token))
             {
                 var tokenHandler = new JsonWebTokenHandler();
@@ -99,13 +120,14 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
         return false;
     }
 
-    private static string TryGetTokenFromHeader(HttpRequestData requestData)
+    private static string TryGetTokenFromHeader(HttpRequest httpRequest)
     {
         var token = string.Empty;
 
-        if (requestData.Headers.TryGetValues("authorization", out var authorizationHeaders))
+        // We only accept one Authorization header
+        if (httpRequest.Headers.Authorization.Count == 1)
         {
-            var authorizationHeader = authorizationHeaders.First();
+            var authorizationHeader = httpRequest.Headers.Authorization.ToString();
             if (authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
                 token = authorizationHeader["Bearer ".Length..].Trim();
@@ -130,38 +152,5 @@ public class UserMiddleware<TUser> : IFunctionsWorkerMiddleware
     private static bool GetMultiTenancy(IEnumerable<Claim> claims)
     {
         return claims.Any(claim => claim is { Type: MultiTenancyClaim, Value: "true" });
-    }
-
-    // Inspired by: https://github.com/Azure/azure-functions-dotnet-worker/blob/main/samples/CustomMiddleware/ExceptionHandlingMiddleware.cs
-    private static async Task CreateUnauthorizedResponseAsync(FunctionContext context, HttpRequestData httpRequestData)
-    {
-        var newHttpResponse = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
-        // You need to explicitly pass the status code in WriteAsJsonAsync method.
-        // https://github.com/Azure/azure-functions-dotnet-worker/issues/776
-        await newHttpResponse
-            .WriteAsJsonAsync(string.Empty, newHttpResponse.StatusCode)
-            .ConfigureAwait(false);
-
-        var invocationResult = context.GetInvocationResult();
-
-        var httpOutputBindingFromMultipleOutputBindings = GetHttpOutputBindingFromMultipleOutputBinding(context);
-        if (httpOutputBindingFromMultipleOutputBindings is not null)
-        {
-            httpOutputBindingFromMultipleOutputBindings.Value = newHttpResponse;
-        }
-        else
-        {
-            invocationResult.Value = newHttpResponse;
-        }
-    }
-
-    // Inspired by: https://github.com/Azure/azure-functions-dotnet-worker/blob/main/samples/CustomMiddleware/ExceptionHandlingMiddleware.cs
-    private static OutputBindingData<HttpResponseData>? GetHttpOutputBindingFromMultipleOutputBinding(FunctionContext context)
-    {
-        // The output binding entry name will be "$return" only when the function return type is HttpResponseData
-        var httpOutputBinding = context.GetOutputBindings<HttpResponseData>()
-            .FirstOrDefault(b => b.BindingType == "http" && b.Name != "$return");
-
-        return httpOutputBinding;
     }
 }

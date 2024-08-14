@@ -12,6 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
+using Xunit;
 
-[assembly: InternalsVisibleTo("Energinet.DataHub.Core.App.FunctionApp.Tests")]
+namespace ExampleHost.WebApi.Tests.Fixtures;
+
+/// <summary>
+/// A xUnit collection fixture for ensuring tests don't run in parallel.
+///
+/// xUnit documentation of collection fixtures:
+///  * https://xunit.net/docs/shared-context#collection-fixture
+/// </summary>
+[CollectionDefinition(nameof(WebApi03HostCollectionFixture))]
+public class WebApi03HostCollectionFixture : ICollectionFixture<WebApi03HostFixture>
+{
+}
