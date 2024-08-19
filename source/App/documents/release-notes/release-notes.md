@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 13.0.1
+
+- In `FunctionApp` project:
+    - Updated dependency to `DarkLoop.Azure.Functions.Authorization.Isolated` to fix [issue](https://github.com/dark-loop/functions-authorize/issues/62).
+
 ## Version 13.0.0
 
 - See also [Version 13.0.0 release notes](./version_13_0_0.md)
