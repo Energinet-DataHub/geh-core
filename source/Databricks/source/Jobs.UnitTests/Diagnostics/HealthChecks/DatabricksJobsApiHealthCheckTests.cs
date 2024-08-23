@@ -53,8 +53,7 @@ public class DatabricksJobsApiHealthCheckTests
         var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, databricksOptions);
 
         // Act
-        var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
-            .ConfigureAwait(false);
+        var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
 
         // Assert
         actualHealthStatus.Status.Should().Be(expectedHealthStatus);
@@ -84,8 +83,7 @@ public class DatabricksJobsApiHealthCheckTests
         var sut = new DatabricksJobsApiHealthCheck(jobsApiClientMock.Object, clock.Object, databricksOptions);
 
         // Act
-        var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
-            .ConfigureAwait(false);
+        var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
 
         // Assert
         jobsApiClientMock.Verify(x => x.Jobs, Times.Exactly(times));
