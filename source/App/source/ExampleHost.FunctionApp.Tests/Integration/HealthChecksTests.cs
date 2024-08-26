@@ -94,4 +94,38 @@ public class HealthChecksTests : IAsyncLifetime
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().Contain($"description\":\"{expectedSourceVersionInformation}");
     }
+
+    [Fact]
+    public async Task CallingReadyEndpoint_Should_ReturnOKAndOnlyContainExpectedHealthChecks()
+    {
+        // Act
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/ready");
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Contain("verify-ready");
+        content.Should().NotContain("verify-status");
+    }
+
+    [Fact]
+    public async Task CallingStatusEndpoint_Should_ReturnOKAndOnlyContainExpectedHealthChecks()
+    {
+        // Act
+        using var actualResponse = await Fixture.App01HostManager.HttpClient.GetAsync($"api/monitor/status");
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Contain("verify-status");
+        content.Should().NotContain("verify-ready");
+    }
 }
