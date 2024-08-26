@@ -20,4 +20,7 @@ public static class HealthChecksConstants
     public const string LiveHealthCheckEndpointRoute = "/monitor/live";
 
     public const string ReadyHealthCheckEndpointRoute = "/monitor/ready";
+
+    public const string StatusHealthCheckTag = "status";
+    public const string StatusHealthCheckEndpointRoute = "/monitor/status";
 }
