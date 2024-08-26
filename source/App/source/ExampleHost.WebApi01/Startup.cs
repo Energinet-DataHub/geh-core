@@ -73,6 +73,7 @@ public class Startup
             // Health Checks (verified in tests)
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
+            endpoints.MapStatusHealthChecks();
         });
 
         // Swagger (verified in tests)

@@ -40,6 +40,7 @@ public class HealthChecksTests
     [Theory]
     [InlineData(HealthChecksConstants.LiveHealthCheckEndpointRoute)]
     [InlineData(HealthChecksConstants.ReadyHealthCheckEndpointRoute)]
+    [InlineData(HealthChecksConstants.StatusHealthCheckEndpointRoute)]
     public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
     {
         // Act
