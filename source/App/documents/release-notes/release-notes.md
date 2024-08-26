@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 13.1.0
+
+- Extended health checks with an additional category `status`. Health checks can then be registerede as beeing called as part of the `ready` or the `status` endpoint.
+
 ## Version 13.0.1
 
 - In `FunctionApp` project:
