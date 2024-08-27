@@ -124,7 +124,9 @@ See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.
            name: "MyDb",
            connectionString: Configuration.GetConnectionString("MyDbConnectionString"))
        // Example where our application has a dependency to another service
-       .AddServiceHealthCheck("service-name", <url-to-ping>);
+       .AddServiceHealthCheck("service-name", <url-to-ping>)
+       // Example where we register a health check as part of the "status" endpoint
+       .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
    ```
 
 ## ASP.NET Core Web API
@@ -169,5 +171,7 @@ See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.
            name: "MyDb",
            connectionString: Configuration.GetConnectionString("MyDbConnectionString"))
        // Example where our application has a dependency to another service
-       .AddServiceHealthCheck("service-name", <url-to-ping>);
+       .AddServiceHealthCheck("service-name", <url-to-ping>)
+       // Example where we register a health check as part of the "status" endpoint
+       .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
    ```
