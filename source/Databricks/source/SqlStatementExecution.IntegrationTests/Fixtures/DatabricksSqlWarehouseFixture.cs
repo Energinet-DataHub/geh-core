@@ -41,7 +41,7 @@ public sealed class DatabricksSqlWarehouseFixture
     private static ServiceCollection CreateServiceCollection()
     {
         var integrationTestConfiguration = _lazyConfiguration.Value;
-        var config = new Dictionary<string, string>
+        var config = new Dictionary<string, string?>
         {
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WorkspaceUrl", integrationTestConfiguration.DatabricksSettings.WorkspaceUrl },
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WorkspaceToken", integrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken },

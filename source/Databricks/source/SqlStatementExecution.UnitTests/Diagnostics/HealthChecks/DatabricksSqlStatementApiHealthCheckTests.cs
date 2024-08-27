@@ -63,8 +63,7 @@ public class DatabricksSqlStatementApiHealthCheckTests
 
         // Act
         var actualHealthStatus = await sut
-            .CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
-            .ConfigureAwait(false);
+            .CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
 
         // Assert
         actualHealthStatus.Status.Should().Be(expectedHealthStatus);
