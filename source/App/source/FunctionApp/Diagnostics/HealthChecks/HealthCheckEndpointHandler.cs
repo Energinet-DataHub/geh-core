@@ -69,7 +69,16 @@ public class HealthCheckEndpointHandler : IHealthCheckEndpointHandler
 
         if (string.Compare(endpoint, "ready", ignoreCase: true) == 0)
         {
-            predicate = r => !r.Name.Contains(HealthChecksConstants.LiveHealthCheckName);
+            predicate = r =>
+                !r.Name.Contains(HealthChecksConstants.LiveHealthCheckName)
+                && !r.Tags.Contains(HealthChecksConstants.StatusHealthCheckTag);
+        }
+
+        if (string.Compare(endpoint, "status", ignoreCase: true) == 0)
+        {
+            predicate = r =>
+                !r.Name.Contains(HealthChecksConstants.LiveHealthCheckName)
+                && r.Tags.Contains(HealthChecksConstants.StatusHealthCheckTag);
         }
 
         return predicate;

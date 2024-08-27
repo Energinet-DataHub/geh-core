@@ -14,9 +14,11 @@
 
 using System.Reflection;
 using Asp.Versioning;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace ExampleHost.WebApi01;
 
@@ -51,6 +53,10 @@ public class Startup
 
         // Health Checks (verified in tests)
         services.AddHealthChecksForWebApp();
+        services
+            .AddHealthChecks()
+            .AddCheck("verify-ready", () => HealthCheckResult.Healthy())
+            .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
 
         // Swagger and api versioning (verified in tests)
         services
@@ -73,6 +79,7 @@ public class Startup
             // Health Checks (verified in tests)
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
+            endpoints.MapStatusHealthChecks();
         });
 
         // Swagger (verified in tests)

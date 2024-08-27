@@ -1,5 +1,11 @@
 # App Release notes
 
+## Version 13.1.0
+
+- Extended health checks with an additional category `status`. Health checks can then be registerede as beeing called as part of the `ready` or the `status` endpoint.
+    - In Azure Functions App the status endpoint is automatically available if the application already registerede health checks according to the documentation.
+    - In ASP.NET Core Web API developers must add a call to `MapStatusHealthChecks()`. See the [Quick start for application startup](../documentation.md#quick-start-for-application-startup).
+
 ## Version 13.0.1
 
 - In `FunctionApp` project:

@@ -56,6 +56,7 @@ public sealed class HealthChecksFixture : IDisposable
                 {
                     endpoints.MapLiveHealthChecks();
                     endpoints.MapReadyHealthChecks();
+                    endpoints.MapStatusHealthChecks();
                 });
             });
     }

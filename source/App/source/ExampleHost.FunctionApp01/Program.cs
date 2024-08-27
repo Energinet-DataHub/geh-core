@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection.Metadata.Ecma335;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
@@ -20,6 +23,7 @@ using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
@@ -61,6 +65,10 @@ var host = new HostBuilder()
 
         // Health Checks (verified in tests)
         services.AddHealthChecksForIsolatedWorker();
+        services
+            .AddHealthChecks()
+            .AddCheck("verify-ready", () => HealthCheckResult.Healthy())
+            .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
 
         // Http => Authentication using DarkLoop Authorization extension (verified in tests)
         services
