@@ -19,14 +19,17 @@ Health checks should be used to check critical components of our applications.
 
 In DataHub, any application implemented as an Azure Function App or an ASP.NET Core Web API should implement health checks.
 
-Each application should expose two health checks endpoints:
+Each application should expose three health checks endpoints:
 
 - **liveness**: for determining if the application is live (like a _ping_).
 - **readiness**: for determining if the application is ready to serve requests.
+- **status**: for determining the runtime status of the application; e.g. if there is any indications that it might be degraded or at least require attention.
 
-The **readiness** check should validate that the application can reach critical dependencies, e.g. a SQL Server database or a Service Bus queue.
+The **readiness** check should validate that the application can reach critical dependencies, e.g. a SQL Server database or a Service Bus queue. Checks that should stop deployment from happening.
 
 The **liveness** check should be used when validating critical application dependencies. E.g if App-A depends on App-B, then App-A should check its dependency with App-B by calling the _liveness_ endpoint of App-B. It is imperative that applications does not call each others _readiness_ check as this could cause an endless loop. See also [Calling liveness of other service](#calling-liveness-of-other-service).
+
+The **status** check should notify if the application detects anomalies or degraded performance. Checks that should not stop further deployment from happening.
 
 ### Health Checks UI compatible response
 
@@ -67,6 +70,7 @@ After following the guidelines below, the health checks endpoints will be:
 
 - _liveness_: `api/monitor/live`
 - _readiness_: `api/monitor/ready`
+- _status_: `api/monitor/status`
 
 ### Preparing an Azure Function App project
 
@@ -107,6 +111,8 @@ After following the guidelines below, the health checks endpoints will be:
 
 ### Add health checks for Azure Function App dependencies
 
+By **default** any registerede health check will be added to the **ready** category and performed when the `ready` endpoint is called. To register a health check as part of the **status** category use the _tags_ parameter and add the tag `HealthChecksConstants.StatusHealthCheckTag`.
+
 See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages. Even though they are implemented for ASP.NET Core, they also work for Azure Functions.
 
 1) Add additional health checks using `AddHealthChecks()`. See an example below.
@@ -127,6 +133,7 @@ After following the guidelines below, the health checks endpoints will be:
 
 - _liveness_: `monitor/live`
 - _readiness_: `monitor/ready`
+- _status_: `monitor/status`
 
 ### Preparing a Web App project
 
@@ -144,9 +151,12 @@ After following the guidelines below, the health checks endpoints will be:
    ```cs
    app.MapLiveHealthChecks();
    app.MapReadyHealthChecks();
+   app.MapStatusHealthChecks();
    ```
 
 ### Add health checks for Web App dependencies
+
+By **default** any registerede health check will be added to the **ready** category and performed as part of the _readiness_ call. To register a health check as part of the **status** category use the _tags_ parameter and add the tag `HealthChecksConstants.StatusHealthCheckTag`.
 
 See [AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#health-checks) for a number of health checks supported through NuGet packages.
 
