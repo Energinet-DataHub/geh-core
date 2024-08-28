@@ -3,6 +3,7 @@
 ## Version 11.1.0
 
 - Update NuGet package dependencies.
+- Refactor parsing of "StructArray" in `IArrowArrayExtensions`
 
 ## Version 11.0.2
 
