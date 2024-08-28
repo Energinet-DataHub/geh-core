@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.1.0
+
+- Update NuGet package dependencies.
+
 ## Version 11.0.2
 
 Bugfix for arrays.
