@@ -30,8 +30,8 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks" Version="1.0.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="8.0.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.0.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="13.1.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="13.1.0" />
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="6.1.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.8" />
