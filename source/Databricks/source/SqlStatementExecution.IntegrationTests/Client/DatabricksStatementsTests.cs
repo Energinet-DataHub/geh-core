@@ -39,10 +39,11 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     public async Task CanHandleStructArray()
     {
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var stmt = DatabricksStatement.FromRawSql(@"
-SELECT * FROM VALUES
-('Centrum', array(struct(5, 'd'), struct(7, 'z'))),
-('Zen', array(struct(1, 'a'), struct(2, 'b'))) as data(name, ts)").Build();
+        var stmt = DatabricksStatement.FromRawSql(
+            @"SELECT * FROM VALUES
+                ('Centrum', array(struct(5, 'd'), struct(7, 'z'))),
+                ('Zen', array(struct(1, 'a'), struct(2, 'b'))) as data(name, ts)")
+            .Build();
 
         var result = client.ExecuteStatementAsync(stmt, Format.ApacheArrow);
         var rows = await result.ToArrayAsync();
@@ -58,7 +59,8 @@ SELECT * FROM VALUES
         var statement = DatabricksStatement.FromRawSql(
             @"SELECT a, b FROM VALUES
                 ('one', array(0, 1)),
-                ('two', array(2, 3)) AS data(a, b);").Build();
+                ('two', array(2, 3)) AS data(a, b);")
+            .Build();
 
         // Act
         var result = client.ExecuteStatementAsync(statement, Format.ApacheArrow);
@@ -75,7 +77,8 @@ SELECT * FROM VALUES
         // Arrange
         const int expectedRows = 2;
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+        var statement = DatabricksStatement.FromRawSql(
+            @"SELECT * FROM VALUES
               ('Zen Hui', 25),
               ('Anil B' , 18),
               ('Shone S', 16),
@@ -100,7 +103,8 @@ SELECT * FROM VALUES
         // Arrange
         const int expectedRows = 6;
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+        var statement = DatabricksStatement.FromRawSql(
+            @"SELECT * FROM VALUES
               ('Zen Hui', 25),
               ('Anil B' , 18),
               ('Shone S', 16),
