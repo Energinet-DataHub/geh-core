@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
 internal static class IArrowArrayExtensions
 {
-    public static object? GetValue(this IArrowArray arrowArray, int i, int offset = 0)
+    public static object? GetValue(this IArrowArray arrowArray, int i)
         => arrowArray switch
         {
             BooleanArray booleanArray => booleanArray.GetValue(i),
@@ -40,7 +40,7 @@ internal static class IArrowArrayExtensions
             Decimal128Array decimal128Array => decimal128Array.GetValue(i),
             StringArray stringArray => stringArray.GetString(i),
             ListArray listArray => ReadArray(listArray, i),
-            StructArray structArray => ReadStructArray(structArray, i, offset),
+            StructArray structArray => ReadStructArray(structArray, i),
             _ => throw new NotSupportedException($"Unsupported data type {arrowArray}"),
         };
 
@@ -51,13 +51,13 @@ internal static class IArrowArrayExtensions
 
         for (var j = 0; j < objectArray.Length; j++)
         {
-            objectArray[j] = slice.GetValue(j, slice.Offset);
+            objectArray[j] = slice.GetValue(j);
         }
 
         return objectArray;
     }
 
-    private static object? ReadStructArray(StructArray array, int i, int offset)
+    private static object? ReadStructArray(StructArray array, int i)
     {
         if (array.Data.DataType is not StructType structType)
             return null;
@@ -66,7 +66,7 @@ internal static class IArrowArrayExtensions
         for (var k = 0; k < structType.Fields.Count; k++)
         {
             var field = structType.Fields[k];
-            var value = array.Fields[k].GetValue(i + offset);
+            var value = array.Fields[k].GetValue(i);
             ((IDictionary<string, object?>)structObject).Add(field.Name, value);
         }
 
