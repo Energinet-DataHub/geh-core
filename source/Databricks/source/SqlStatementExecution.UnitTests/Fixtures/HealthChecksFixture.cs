@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Extensions.Builder;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -76,6 +76,7 @@ public sealed class HealthChecksFixture : IDisposable
                 {
                     endpoints.MapLiveHealthChecks();
                     endpoints.MapReadyHealthChecks();
+                    endpoints.MapStatusHealthChecks();
                 });
             });
     }
