@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging", "source\Messaging\Messaging.csproj", "{B3CC1EFC-DA6C-45F3-9AA6-D75FDBE1504B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Tests", "source\Messaging.Tests\Messaging.Tests.csproj", "{68412EBF-701D-467D-8716-74269E171F41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.UnitTests", "source\Messaging.UnitTests\Messaging.UnitTests.csproj", "{68412EBF-701D-467D-8716-74269E171F41}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{05DE980B-A2A7-4235-AE53-3167E94699DD}"
 EndProject
