@@ -15,9 +15,11 @@
 using Energinet.DataHub.Core.App.Common.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
@@ -29,8 +31,10 @@ public sealed class HealthChecksFixture : IDisposable
 
     public HealthChecksFixture()
     {
-        var webHostBuilder = CreateWebHostBuilder();
+        var integrationTestConfiguration = new IntegrationTestConfiguration();
+        var webHostBuilder = CreateWebHostBuilder(integrationTestConfiguration);
         _server = new TestServer(webHostBuilder);
+
         HttpClient = _server.CreateClient();
     }
 
@@ -41,22 +45,27 @@ public sealed class HealthChecksFixture : IDisposable
         _server.Dispose();
     }
 
-    private static IWebHostBuilder CreateWebHostBuilder()
+    private static IWebHostBuilder CreateWebHostBuilder(IntegrationTestConfiguration integrationTestConfiguration)
     {
         return new WebHostBuilder()
             .ConfigureServices(services =>
             {
-                services.AddOptions<DatabricksSqlStatementOptions>().Configure(options =>
-                {
-                    options.WarehouseId = "baz";
-                    options.WorkspaceToken = "bar";
-                    options.WorkspaceUrl = "https://foo.com";
-                    options.DatabricksHealthCheckStartHour = 0;
-                    options.DatabricksHealthCheckEndHour = 23;
-                });
+                var configuration = new ConfigurationBuilder()
+                    .AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        [$"{nameof(DatabricksSqlStatementOptions.WorkspaceUrl)}"]
+                            = integrationTestConfiguration.DatabricksSettings.WorkspaceUrl,
+                        [$"{nameof(DatabricksSqlStatementOptions.WorkspaceToken)}"]
+                            = integrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken,
+                        [$"{nameof(DatabricksSqlStatementOptions.WarehouseId)}"]
+                            = integrationTestConfiguration.DatabricksSettings.WarehouseId,
+                    })
+                    .Build();
 
                 services.AddRouting();
                 services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
+
+                services.AddDatabricksSqlStatementExecution(configuration);
 
                 services.AddHealthChecks()
                     .AddLiveCheck()
