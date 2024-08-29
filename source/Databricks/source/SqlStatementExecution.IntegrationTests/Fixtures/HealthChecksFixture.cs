@@ -25,7 +25,7 @@ using Moq;
 using Moq.Protected;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixtures;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
 public sealed class HealthChecksFixture : IDisposable
 {
@@ -74,9 +74,8 @@ public sealed class HealthChecksFixture : IDisposable
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapLiveHealthChecks();
+                    // Databricks SQL Statement health check is registered for "ready" endpoint
                     endpoints.MapReadyHealthChecks();
-                    endpoints.MapStatusHealthChecks();
                 });
             });
     }
@@ -96,13 +95,13 @@ public sealed class HealthChecksFixture : IDisposable
             .ReturnsAsync(response);
 
         var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-        services.AddScoped<HttpClient>(_ => httpClient);
+        services.AddScoped(_ => httpClient);
 
         var httpClientFactoryMock = new Mock<IHttpClientFactory>();
         httpClientFactoryMock
             .Setup(x => x.CreateClient(Options.DefaultName))
             .Returns(() => httpClient);
 
-        services.AddScoped<IHttpClientFactory>(_ => httpClientFactoryMock.Object);
+        services.AddScoped(_ => httpClientFactoryMock.Object);
     }
 }
