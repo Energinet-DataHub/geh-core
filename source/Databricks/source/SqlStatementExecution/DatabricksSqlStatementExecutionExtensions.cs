@@ -30,13 +30,7 @@ public static class DatabricksSqlStatementExecutionExtensions
         serviceCollection
             .AddOptions<DatabricksSqlStatementOptions>()
             .Bind(configuration)
-            .ValidateDataAnnotations()
-            .Validate(
-                options =>
-                {
-                    return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
-                },
-                "Databricks Jobs Health Check end hour must be greater than start hour.");
+            .ValidateDataAnnotations();
 
         serviceCollection
             .AddHttpClient(

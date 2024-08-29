@@ -40,18 +40,4 @@ public class DatabricksJobsOptions
     /// </summary>
     [Required]
     public string WarehouseId { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Defines the hour of the day when the health check DataLake should start.
-    /// The default value is 6:00 AM.
-    /// </summary>
-    [Range(0, 23, ErrorMessage = "Value for {0} must be between {1} and {2} inclusive.")]
-    public int DatabricksHealthCheckStartHour { get; set; } = 6;
-
-    /// <summary>
-    /// Defines the hour of the day when the health check towards DataLake should end.
-    /// The default value is 8:00 PM.
-    /// </summary>
-    [Range(0, 23, ErrorMessage = "Value for {0} must be between {1} and {2} inclusive.")]
-    public int DatabricksHealthCheckEndHour { get; set; } = 20;
 }

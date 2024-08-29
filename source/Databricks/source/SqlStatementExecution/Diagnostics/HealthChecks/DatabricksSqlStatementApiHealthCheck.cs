@@ -15,23 +15,19 @@
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 
 public class DatabricksSqlStatementApiHealthCheck : IHealthCheck
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IClock _clock;
     private readonly DatabricksSqlStatementOptions _options;
 
     public DatabricksSqlStatementApiHealthCheck(
         IHttpClientFactory httpClientFactory,
-        IClock clock,
         IOptions<DatabricksSqlStatementOptions> databricksOptions)
     {
         _httpClientFactory = httpClientFactory;
-        _clock = clock;
         _options = databricksOptions.Value;
     }
 
@@ -43,26 +39,22 @@ public class DatabricksSqlStatementApiHealthCheck : IHealthCheck
     /// <returns>An async task of <see cref="HealthCheckResult"/></returns>
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
-        if (_options.DatabricksHealthCheckStartHour <= currentHour && currentHour <= _options.DatabricksHealthCheckEndHour)
+        try
         {
-            try
-            {
-                var httpClient = CreateHttpClient();
-                var url = $"{_options.WorkspaceUrl}/api/2.0/sql/warehouses/{_options.WarehouseId}";
-                var response = await httpClient
-                    .GetAsync(url, cancellationToken)
-                    .ConfigureAwait(false);
+            var httpClient = CreateHttpClient();
+            var url = $"{_options.WorkspaceUrl}/api/2.0/sql/warehouses/{_options.WarehouseId}";
+            var response = await httpClient
+                .GetAsync(url, cancellationToken)
+                .ConfigureAwait(false);
 
-                return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
-            }
-            catch (Exception ex)
-            {
-                return HealthCheckResult.Unhealthy("Databricks Sql Statement Execution API is unhealthy", ex);
-            }
+            return response.IsSuccessStatusCode
+                ? HealthCheckResult.Healthy()
+                : new HealthCheckResult(context.Registration.FailureStatus);
         }
-
-        return HealthCheckResult.Healthy();
+        catch (Exception ex)
+        {
+            return new HealthCheckResult(context.Registration.FailureStatus, "Databricks Sql Statement Execution API is unhealthy", ex);
+        }
     }
 
     private HttpClient CreateHttpClient()

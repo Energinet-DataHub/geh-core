@@ -16,23 +16,19 @@ using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 
 public class DatabricksJobsApiHealthCheck : IHealthCheck
 {
     private readonly IJobsApiClient _jobsApiClient;
-    private readonly IClock _clock;
     private readonly DatabricksJobsOptions _options;
 
     public DatabricksJobsApiHealthCheck(
         IJobsApiClient jobsApiClient,
-        IClock clock,
         IOptions<DatabricksJobsOptions> options)
     {
         _jobsApiClient = jobsApiClient;
-        _clock = clock;
         _options = options.Value;
     }
 
@@ -44,23 +40,18 @@ public class DatabricksJobsApiHealthCheck : IHealthCheck
     /// <returns>An async task of <see cref="HealthCheckResult"/></returns>
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
-        if (_options.DatabricksHealthCheckStartHour <= currentHour
-            && currentHour <= _options.DatabricksHealthCheckEndHour)
+        try
         {
-            try
-            {
-                await _jobsApiClient.Jobs
-                    .ListPageable(cancellationToken: cancellationToken)
-                    .FirstOrDefaultAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                return HealthCheckResult.Unhealthy("Databricks Jobs API is unhealthy", ex);
-            }
-        }
+            await _jobsApiClient.Jobs
+                .ListPageable(cancellationToken: cancellationToken)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-        return HealthCheckResult.Healthy();
+            return HealthCheckResult.Healthy();
+        }
+        catch (Exception ex)
+        {
+            return new HealthCheckResult(context.Registration.FailureStatus, "Databricks Jobs API is unhealthy", ex);
+        }
     }
 }
