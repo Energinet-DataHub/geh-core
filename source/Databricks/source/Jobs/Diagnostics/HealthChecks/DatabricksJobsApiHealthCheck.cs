@@ -50,7 +50,15 @@ public class DatabricksJobsApiHealthCheck : IHealthCheck
         {
             try
             {
-                await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
+                var pageable = _jobsApiClient.Jobs
+                    .ListPageable(pageSize: 1, cancellationToken: cancellationToken);
+
+                if (pageable != null)
+                {
+                    await pageable
+                        .CountAsync()
+                        .ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {

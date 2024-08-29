@@ -33,13 +33,11 @@ public class DatabricksJobsApiHealthCheckBuilderExtensionsTests
     /// <summary>
     /// Verify the response contains JSON in a format that the Health Checks UI supports.
     /// </summary>
-    [Theory]
-    [InlineData("live")]
-    [InlineData("ready")]
-    public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
+    [Fact]
+    public async Task CallingReadyEndpoint_Should_ReturnOKAndExpectedContent()
     {
         // Act
-        using var actualResponse = await _fixture.HttpClient.GetAsync($"/monitor/{healthCheckEndpoint}");
+        using var actualResponse = await _fixture.HttpClient.GetAsync($"/monitor/ready");
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -49,5 +47,6 @@ public class DatabricksJobsApiHealthCheckBuilderExtensionsTests
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().StartWith("{\"status\":\"Healthy\"");
+        content.Should().Contain("DatabricksJobsApiHealthCheck");
     }
 }

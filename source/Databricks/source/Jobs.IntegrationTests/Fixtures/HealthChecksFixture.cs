@@ -79,9 +79,8 @@ public sealed class HealthChecksFixture : IDisposable
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapLiveHealthChecks();
+                    // Databricks Jobs health check is registered for "ready" endpoint
                     endpoints.MapReadyHealthChecks();
-                    endpoints.MapStatusHealthChecks();
                 });
             });
     }
