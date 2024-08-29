@@ -6,7 +6,7 @@
 - Refactor parsing of "StructArray" in `IArrowArrayExtensions` as v16+ of `Apache.Arrow` has a breaking change. See [PR](https://github.com/apache/arrow/pull/40805) and [Issue](https://github.com/apache/arrow/issues/40790).
 - Update Microsoft.Azure.Databricks.Client NuGet package and refactor `DatabricksJobsApiHealthCheck` accordingly.
 - Cleanup code and tests (remove dead code, remove unnecessary dependencies).
-- Removed unused properties of options `DatabricksHealthCheckStartHour` and `DatabricksHealthCheckEndHour`.
+- Removed unused properties `DatabricksHealthCheckStartHour` and `DatabricksHealthCheckEndHour` of options classes.
 
 ## Version 11.0.2
 
