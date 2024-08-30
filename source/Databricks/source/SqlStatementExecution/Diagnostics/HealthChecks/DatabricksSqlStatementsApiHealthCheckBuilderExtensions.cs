@@ -15,7 +15,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 
@@ -26,11 +25,11 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
     /// <summary>
     /// Add a health check of the Databricks SQL Statement Execution Api to be used by the "ready" endpoint.
     /// </summary>
-    /// <param name="builder"></param>
-    /// <param name="name"></param>
-    /// <param name="failureStatus"></param>
-    /// <param name="tags"></param>
-    /// <param name="timeout"></param>
+    /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
+    /// <param name="name">The name of the service to call.</param>
+    /// <param name="failureStatus">The response health status on failure.</param>
+    /// <param name="tags">A list of tags that can be used for filtering health checks.</param>
+    /// <param name="timeout">The amount of time to wait before timing out.</param>
     /// <returns>The <see cref="IHealthChecksBuilder"/> for chaining.</returns>
     public static IHealthChecksBuilder AddDatabricksSqlStatementApiHealthCheck(
         this IHealthChecksBuilder builder,
@@ -43,7 +42,6 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
             name ?? Name,
             serviceProvider => new DatabricksSqlStatementApiHealthCheck(
                 serviceProvider.GetRequiredService<IHttpClientFactory>(),
-                serviceProvider.GetRequiredService<IClock>(),
                 serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()),
             failureStatus,
             tags,

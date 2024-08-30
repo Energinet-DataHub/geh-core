@@ -30,31 +30,21 @@ public static class DatabricksSqlStatementExecutionExtensions
         serviceCollection
             .AddOptions<DatabricksSqlStatementOptions>()
             .Bind(configuration)
-            .ValidateDataAnnotations()
-            .Validate(
-                options =>
+            .ValidateDataAnnotations();
+
+        serviceCollection
+            .AddHttpClient(
+                HttpClientNameConstants.Databricks,
+                (serviceProvider, client) =>
                 {
-                    return options.DatabricksHealthCheckStartHour < options.DatabricksHealthCheckEndHour;
-                },
-                "Databricks Jobs Health Check end hour must be greater than start hour.");
+                    var options = serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
 
-        return serviceCollection.AddSqlStatementExecutionInner();
-    }
-
-    private static IServiceCollection AddSqlStatementExecutionInner(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddHttpClient(
-            HttpClientNameConstants.Databricks,
-            (serviceProvider, client) =>
-            {
-                var options = serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
-
-                client.BaseAddress = new Uri(options.WorkspaceUrl);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-            });
+                    client.BaseAddress = new Uri(options.WorkspaceUrl);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+                });
 
         serviceCollection.AddSingleton(sp =>
             new DatabricksSqlWarehouseQueryExecutor(

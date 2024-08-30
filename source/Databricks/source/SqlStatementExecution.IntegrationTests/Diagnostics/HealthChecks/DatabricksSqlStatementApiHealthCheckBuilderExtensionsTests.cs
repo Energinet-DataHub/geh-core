@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Fixtures;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
+using FluentAssertions;
 using FluentAssertions.Execution;
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Diagnostics.HealthChecks;
 
 public class DatabricksSqlStatementApiHealthCheckBuilderExtensionsTests
     : IClassFixture<HealthChecksFixture>
@@ -31,13 +32,11 @@ public class DatabricksSqlStatementApiHealthCheckBuilderExtensionsTests
     /// <summary>
     /// Verify the response contains JSON in a format that the Health Checks UI supports.
     /// </summary>
-    [Theory]
-    [InlineData("live")]
-    [InlineData("ready")]
-    public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
+    [Fact]
+    public async Task CallingReadyEndpoint_Should_ReturnOKAndExpectedContent()
     {
         // Act
-        using var actualResponse = await _fixture.HttpClient.GetAsync($"/monitor/{healthCheckEndpoint}");
+        using var actualResponse = await _fixture.HttpClient.GetAsync($"/monitor/ready");
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -47,5 +46,6 @@ public class DatabricksSqlStatementApiHealthCheckBuilderExtensionsTests
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().StartWith("{\"status\":\"Healthy\"");
+        content.Should().Contain("DatabricksSqlStatementApiHealthCheck");
     }
 }

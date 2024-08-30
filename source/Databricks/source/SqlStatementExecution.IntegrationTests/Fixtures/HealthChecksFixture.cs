@@ -14,9 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
-using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
-using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +23,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.IntegrationTests.Fixtures;
 
 public sealed class HealthChecksFixture : IDisposable
 {
@@ -55,11 +53,11 @@ public sealed class HealthChecksFixture : IDisposable
                 var configuration = new ConfigurationBuilder()
                     .AddInMemoryCollection(new Dictionary<string, string?>
                     {
-                        [$"{nameof(DatabricksJobsOptions.WorkspaceUrl)}"]
+                        [$"{nameof(DatabricksSqlStatementOptions.WorkspaceUrl)}"]
                             = integrationTestConfiguration.DatabricksSettings.WorkspaceUrl,
-                        [$"{nameof(DatabricksJobsOptions.WorkspaceToken)}"]
+                        [$"{nameof(DatabricksSqlStatementOptions.WorkspaceToken)}"]
                             = integrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken,
-                        [$"{nameof(DatabricksJobsOptions.WarehouseId)}"]
+                        [$"{nameof(DatabricksSqlStatementOptions.WarehouseId)}"]
                             = integrationTestConfiguration.DatabricksSettings.WarehouseId,
                     })
                     .Build();
@@ -67,11 +65,11 @@ public sealed class HealthChecksFixture : IDisposable
                 services.AddRouting();
                 services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
 
-                services.AddDatabricksJobs(configuration);
+                services.AddDatabricksSqlStatementExecution(configuration);
 
                 services.AddHealthChecks()
                     .AddLiveCheck()
-                    .AddDatabricksJobsApiHealthCheck();
+                    .AddDatabricksSqlStatementApiHealthCheck();
             })
             .Configure(app =>
             {
@@ -79,7 +77,7 @@ public sealed class HealthChecksFixture : IDisposable
 
                 app.UseEndpoints(endpoints =>
                 {
-                    // Databricks Jobs health check is registered for "ready" endpoint
+                    // Databricks SQL Statement health check is registered for "ready" endpoint
                     endpoints.MapReadyHealthChecks();
                 });
             });
