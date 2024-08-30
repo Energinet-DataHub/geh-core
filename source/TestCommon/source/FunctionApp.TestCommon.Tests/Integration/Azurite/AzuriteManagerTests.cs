@@ -96,6 +96,29 @@ public class AzuriteManagerTests
         }
     }
 
+    public class Given_Construction
+    {
+        [Fact]
+        public void When_Default_Then_UseSilentModeIsTrue()
+        {
+            // Act
+            using var sut = new AzuriteManager();
+
+            // Assert
+            sut.UseSilentMode.Should().BeTrue();
+        }
+
+        [Fact]
+        public void When_SetUseSilentModeToFalse_Then_UseSilentModeIsFalse()
+        {
+            // Act
+            using var sut = new AzuriteManager(useSilentMode: false);
+
+            // Assert
+            sut.UseSilentMode.Should().BeFalse();
+        }
+    }
+
     /// <summary>
     /// When using Azurite with OAuth we must use Https and 'localhost' (not '127.0.0.1').
     ///
