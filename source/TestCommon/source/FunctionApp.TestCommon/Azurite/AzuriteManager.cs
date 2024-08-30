@@ -15,7 +15,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Management;
-using System.Security.Cryptography.X509Certificates;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
