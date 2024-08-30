@@ -12,13 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Messaging.IntegrationTests.Fixtures;
+
 namespace Messaging.IntegrationTests;
 
-public class UnitTest1
+public class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : IClassFixture<ServiceBusFixture>, IAsyncLifetime
 {
-    [Fact]
-    public void Test1()
+    private ServiceBusFixture Fixture { get; } = fixture;
+
+    public Task InitializeAsync()
     {
-        // No-op
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    [Fact]
+    public void Can_create_topic_and_subscription()
+    {
+        Fixture.ServiceBusResourceProvider
+            .BuildTopic("The_Topic")
+            .AddSubscription("The_Subscription")
+            .CreateAsync();
     }
 }
