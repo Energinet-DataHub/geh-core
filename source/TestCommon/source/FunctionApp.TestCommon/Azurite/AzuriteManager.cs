@@ -15,6 +15,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Management;
+using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -58,9 +59,10 @@ public class AzuriteManager : IDisposable
     /// <summary>
     /// Create manager to startup Azurite.
     /// </summary>
-    public AzuriteManager(bool useOAuth = false)
+    public AzuriteManager(bool useOAuth = false, bool useSilentMode = true)
     {
         UseOAuth = useOAuth;
+        UseSilentMode = useSilentMode;
         FullConnectionString = BuildConnectionString(UseOAuth, useBlob: true, useQueue: true, useTable: true);
         BlobStorageConnectionString = BuildConnectionString(UseOAuth, useBlob: true);
         BlobStorageServiceUri = BuildServiceUri(UseOAuth, BlobServicePort);
@@ -74,6 +76,11 @@ public class AzuriteManager : IDisposable
     /// If true then start Azurite with OAuth and HTTPS options.
     /// </summary>
     public bool UseOAuth { get; }
+
+    /// <summary>
+    /// If true then start Azurite silent mode (disable output of the access log).
+    /// </summary>
+    public bool UseSilentMode { get; }
 
     /// <summary>
     /// Connection string for connecting to all Azurite services (blob, queue, table).
@@ -277,7 +284,7 @@ public class AzuriteManager : IDisposable
     private void StartAzuriteProcess()
     {
         var azuriteCommandFilePath = GetAzuriteCommandFilePath();
-        var azuriteArguments = GetAzuriteArguments(UseOAuth);
+        var azuriteArguments = GetAzuriteArguments(UseOAuth, UseSilentMode);
 
         if (UseOAuth)
             TestCertificateProvider.InstallCertificate();
@@ -330,10 +337,20 @@ public class AzuriteManager : IDisposable
             : Path.Combine(azuriteFolderPath, azuriteFileName);
     }
 
-    private static string GetAzuriteArguments(bool useOAuth)
+    private static string GetAzuriteArguments(bool useOAuth, bool useSilentMode)
     {
-        return useOAuth == true
-            ? $"--oauth basic --cert {TestCertificateProvider.FilePath} --pwd {TestCertificateProvider.Password}"
-            : string.Empty;
+        var arguments = new List<string>();
+
+        if (useOAuth)
+        {
+            arguments.Add($"--oauth basic --cert {TestCertificateProvider.FilePath} --pwd {TestCertificateProvider.Password}");
+        }
+
+        if (useSilentMode)
+        {
+            arguments.Add("--silent");
+        }
+
+        return string.Join(" ", arguments);
     }
 }
