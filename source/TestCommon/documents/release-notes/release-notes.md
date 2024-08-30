@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 6.2.0
+
+- Added parameter `UseSilentMode` with default value `true` to `AzuriteManager`. This disables access log output, which can be useful to reduce noise in test logs.
+
 ## Version 6.1.0
 
 - Added `OpenIdJwtManager` to enable testing DH3 applications that requires OpenId and JWT for HTTP authentication and authorization, with the following features:

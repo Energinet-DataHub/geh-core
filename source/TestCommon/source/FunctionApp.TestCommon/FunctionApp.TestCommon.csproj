@@ -31,7 +31,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.FunctionApp.TestCommon</PackageId>
-    <PackageVersion>6.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>6.2.0$(VersionSuffix)</PackageVersion>
     <Title>FunctionApp TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -70,7 +70,7 @@ limitations under the License.
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Content Include="TestCertificate\test-common-cert.pfx">
       <PackageCopyToOutput>true</PackageCopyToOutput>
