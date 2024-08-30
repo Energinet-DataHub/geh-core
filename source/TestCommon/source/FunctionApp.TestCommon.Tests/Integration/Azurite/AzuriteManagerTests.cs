@@ -99,7 +99,7 @@ public class AzuriteManagerTests
     public class Given_Construction
     {
         [Fact]
-        public void When_Default_Then_UseSilentModeIsFalse()
+        public void When_Default_Then_UseSilentModeIsTrue()
         {
             // Act
             using var sut = new AzuriteManager();
@@ -109,7 +109,7 @@ public class AzuriteManagerTests
         }
 
         [Fact]
-        public void When_UseSilentModeIsFalse_Then_UseSilentModeIsFalse()
+        public void When_SetUseSilentModeToFalse_Then_UseSilentModeIsFalse()
         {
             // Act
             using var sut = new AzuriteManager(useSilentMode: false);
