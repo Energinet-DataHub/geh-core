@@ -29,7 +29,9 @@ public class ServiceBusResourceProviderFixture
     {
         TestLogger = new TestDiagnosticsLogger();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         ConnectionString = SingletonIntegrationTestConfiguration.Instance.ServiceBusConnectionString;
+#pragma warning restore CS0618 // Type or member is obsolete
 
         AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
     }

@@ -78,20 +78,6 @@ public class IntegrationTestConfigurationTests
     }
 
     [Fact]
-    public void Given_IdentityHasAccess_When_ApplicationInsightsInstrumentationKey_Then_HasValue()
-    {
-        // Arrange
-
-        // Act
-#pragma warning disable CS0618 // Type or member is obsolete
-        var actualValue = Sut.ApplicationInsightsInstrumentationKey;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        // Assert
-        actualValue.Should().NotBeNullOrEmpty();
-    }
-
-    [Fact]
     public void Given_IdentityHasAccess_When_ApplicationInsightsConnectionString_Then_HasValue()
     {
         // Arrange
@@ -133,7 +119,9 @@ public class IntegrationTestConfigurationTests
         // Arrange
 
         // Act
+#pragma warning disable CS0618 // Type or member is obsolete
         var actualValue = Sut.ServiceBusConnectionString;
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
         actualValue.Should().NotBeNullOrEmpty();

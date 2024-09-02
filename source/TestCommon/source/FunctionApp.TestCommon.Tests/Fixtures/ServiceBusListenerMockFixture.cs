@@ -32,7 +32,9 @@ public class ServiceBusListenerMockFixture
     {
         TestLogger = new TestDiagnosticsLogger();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         ConnectionString = SingletonIntegrationTestConfiguration.Instance.ServiceBusConnectionString;
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
