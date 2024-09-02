@@ -19,8 +19,6 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
-using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
 
@@ -526,32 +524,32 @@ public class ServiceBusListenerMockTests
     /// A new <see cref="ServiceBusListenerMock"/> is created and disposed for each test.
     /// Similar we must create new queues/topics for each test; see summary on <see cref="ListenerMockFixture"/>.
     /// </summary>
-    public abstract class ServiceBusListenerMockTestsBase : TestBase<ServiceBusListenerMock>, IAsyncLifetime
+    public abstract class ServiceBusListenerMockTestsBase : IAsyncLifetime
     {
         public const string DefaultBody = "valid body";
 
         protected ServiceBusListenerMockTestsBase(ServiceBusListenerMockFixture listenerMockFixture)
         {
             ListenerMockFixture = listenerMockFixture;
+            Sut = new ServiceBusListenerMock(ListenerMockFixture.TestLogger, ListenerMockFixture.FullyQualifiedNamespace);
+            ResourceProvider = new ServiceBusResourceProvider(ListenerMockFixture.TestLogger, ListenerMockFixture.FullyQualifiedNamespace);
 
             // Customize auto fixture
-            Fixture.Inject<ITestDiagnosticsLogger>(ListenerMockFixture.TestLogger);
-            Fixture.ForConstructorOn<ServiceBusListenerMock>()
-                .SetParameter("connectionString").To(ListenerMockFixture.ConnectionString);
+            Fixture = new Fixture();
             Fixture.Customize<ServiceBusMessage>(composer => composer
                 .OmitAutoProperties()
                 .With(p => p.MessageId)
                 .With(p => p.Subject)
                 .With(p => p.Body, new BinaryData(DefaultBody)));
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            ResourceProvider = new ServiceBusResourceProvider(ListenerMockFixture.ConnectionString, ListenerMockFixture.TestLogger);
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         protected ServiceBusListenerMockFixture ListenerMockFixture { get; }
 
+        protected ServiceBusListenerMock Sut { get; }
+
         protected ServiceBusResourceProvider ResourceProvider { get; }
+
+        protected IFixture Fixture { get; }
 
         protected TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(10);
 

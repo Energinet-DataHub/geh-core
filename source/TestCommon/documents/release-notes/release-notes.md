@@ -11,6 +11,11 @@
     - Marked property `ConnectionString` as obsolete.
     - Added constructor with `FullyQualifiedNamespace` parameter.
     - Added property `FullyQualifiedNamespace`.
+- Refactored class `ServiceBusListenerMock`:
+    - Marked constructor with `ConnectionString` parameter as obsolete.
+    - Marked property `ConnectionString` as obsolete.
+    - Added constructor with `FullyQualifiedNamespace` parameter.
+    - Added property `FullyQualifiedNamespace`.
 
 ## Version 6.2.0
 
