@@ -544,7 +544,9 @@ public class ServiceBusListenerMockTests
                 .With(p => p.Subject)
                 .With(p => p.Body, new BinaryData(DefaultBody)));
 
+#pragma warning disable CS0618 // Type or member is obsolete
             ResourceProvider = new ServiceBusResourceProvider(ListenerMockFixture.ConnectionString, ListenerMockFixture.TestLogger);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         protected ServiceBusListenerMockFixture ListenerMockFixture { get; }

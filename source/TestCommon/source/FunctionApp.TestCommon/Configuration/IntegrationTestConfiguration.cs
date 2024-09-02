@@ -38,6 +38,7 @@ public class IntegrationTestConfiguration
 #pragma warning disable CS0618 // Type or member is obsolete
         ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
 #pragma warning restore CS0618 // Type or member is obsolete
+        ServiceBusFullyQualifiedNamespace = Configuration.GetValue("AZURE-SERVICEBUS-ENDPOINT");
 
         ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
         B2CSettings = CreateB2CSettings(Configuration);
@@ -67,8 +68,13 @@ public class IntegrationTestConfiguration
     /// <summary>
     /// Connection string to the Azure Service Bus in the Integration Test environment.
     /// </summary>
-    [Obsolete("Use role-based access control (RBAC) instead of shared access policies.", false)]
+    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'ServiceBusFullyQualifiedNamespace' instead.", false)]
     public string ServiceBusConnectionString { get; }
+
+    /// <summary>
+    /// Fully qualified namespace of the Azure Service Bus in the Integration Test environment.
+    /// </summary>
+    public string ServiceBusFullyQualifiedNamespace { get; }
 
     /// <summary>
     /// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.

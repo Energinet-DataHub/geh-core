@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 
 /// <summary>
-/// This fixtures ensures we reuse <see cref="ConnectionString"/> and
+/// This fixtures ensures we reuse <see cref="FullyQualifiedNamespace"/> and
 /// relevant instances, so we only have to retrieve an access token
 /// and values in Key Vault one time.
 /// </summary>
@@ -27,17 +28,13 @@ public class ServiceBusResourceProviderFixture
     public ServiceBusResourceProviderFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
-
-#pragma warning disable CS0618 // Type or member is obsolete
-        ConnectionString = SingletonIntegrationTestConfiguration.Instance.ServiceBusConnectionString;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
+        FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.ServiceBusFullyQualifiedNamespace;
+        AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, new DefaultAzureCredential());
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public string ConnectionString { get; }
+    public string FullyQualifiedNamespace { get; }
 
     public ServiceBusAdministrationClient AdministrationClient { get; }
 }
