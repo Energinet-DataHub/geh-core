@@ -7,10 +7,10 @@
     - Marked property `ServiceBusConnectionString` as obsolete.
     - Added property `ServiceBusFullyQualifiedNamespace`.
 - Refactored class `ServiceBusResourceProvider`:
-    - Marked constructor with 'ConnectionString' parameter as obsolete.
-    - Marked property 'ConnectionString' as obsolete.
-    - Added constructor with 'FullyQualifiedNamespace' parameter.
-    - Added property 'FullyQualifiedNamespace'.
+    - Marked constructor with `ConnectionString` parameter as obsolete.
+    - Marked property `ConnectionString` as obsolete.
+    - Added constructor with `FullyQualifiedNamespace` parameter.
+    - Added property `FullyQualifiedNamespace`.
 
 ## Version 6.2.0
 
