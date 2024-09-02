@@ -1,8 +1,8 @@
 # Databricks Release Notes
 
 ## Version 11.1.1
-- Add parallel execution for fetching of databricks result chunks.
 
+- Add parallel execution for fetching of databricks result chunks.
 
 ## Version 11.1.0
 
