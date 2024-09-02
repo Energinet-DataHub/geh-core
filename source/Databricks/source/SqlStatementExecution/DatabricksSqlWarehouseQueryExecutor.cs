@@ -234,7 +234,7 @@ public class DatabricksSqlWarehouseQueryExecutor
             yield break;
         }
 
-        foreach (var requestChunks in response.manifest.chunks.Chunk(3))
+        foreach (var requestChunks in response.manifest.chunks.Chunk(6))
         {
             var tasks = requestChunks.Select(chunk => FetchChunkAsync(chunk, response, strategy, cancellationToken)).ToArray();
             Task.WaitAll(tasks);
