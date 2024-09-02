@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Messaging.IntegrationTests.Fixtures;
+using HealthChecks.AzureServiceBus.Configuration;
 
-namespace Messaging.IntegrationTests;
+namespace Energinet.DataHub.Core.Messaging.Communication.Configuration;
 
-public class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : IClassFixture<ServiceBusFixture>
+public sealed class ServiceBusDeadLetterHealthCheckOptions(string topicName, string subscriptionName)
+    : AzureServiceBusHealthCheckOptions
 {
-    private ServiceBusFixture Fixture { get; } = fixture;
+    /// <summary>
+    /// The name of the topic to check.
+    /// </summary>
+    public string TopicName { get; } = topicName;
 
-    [Fact]
-    public async Task Can_create_topic_and_subscription()
-    {
-        var topicResource = await Fixture.ServiceBusResourceProvider
-            .BuildTopic("The_Topic")
-            .AddSubscription("The_Subscription")
-            .CreateAsync();
-    }
+    /// <summary>
+    /// The subscription name of the topic subscription to check.
+    /// </summary>
+    public string SubscriptionName { get; } = subscriptionName;
 }
