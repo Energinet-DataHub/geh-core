@@ -126,4 +126,16 @@ public class IntegrationTestConfigurationTests
         // Assert
         actualValue.Should().NotBeNullOrEmpty();
     }
+
+    [Fact]
+    public void Given_IdentityHasAccess_When_ServiceBusFullyQualifiedNamespace_Then_HasValue()
+    {
+        // Arrange
+
+        // Act
+        var actualValue = Sut.ServiceBusFullyQualifiedNamespace;
+
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
+    }
 }
