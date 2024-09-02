@@ -100,6 +100,35 @@ public class DatabricksSqlWarehouseQueryExecutor
     }
 
     /// <summary>
+    /// Asynchronously executes a parameterized SQL query on Databricks and streams the results back in parallel.
+    /// </summary>
+    /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
+    /// <param name="format">The desired format of the data returned.</param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
+    /// The cancellation token can be used to implement time out as well.</param>
+    /// <returns>
+    /// An asynchronous enumerable of <see cref="ExpandoObject"/> object representing the result of the query.
+    /// </returns>
+    /// <remarks>
+    /// Use this method to execute SQL queries combined with Parameter Markers against Databricks to protect against SQL injection attacks.
+    /// The <paramref name="statement"/> should contain a collection of <see cref="QueryParameter"/>.
+    ///
+    /// Optionally, to simply execute a SQL query without parameters, the collection of <see cref="QueryParameter"/>
+    /// can be left empty. However, it is recommended to make use of parameters to protect against SQL injection attacks.
+    /// </remarks>
+    public virtual async IAsyncEnumerable<dynamic> ExecuteStatementParallelAsync(
+        DatabricksStatement statement,
+        Format format,
+        [EnumeratorCancellation]CancellationToken cancellationToken = default)
+    {
+        await foreach (var record in DoExecuteStatementAsync(statement, format, cancellationToken).ConfigureAwait(false))
+        {
+            yield return record;
+        }
+    }
+
+    /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
@@ -186,6 +215,70 @@ public class DatabricksSqlWarehouseQueryExecutor
                     yield return row;
                 }
             }
+        }
+    }
+
+    private async IAsyncEnumerable<dynamic> DoExecuteStatementParallelAsync(
+        DatabricksStatement statement,
+        Format format,
+        [EnumeratorCancellation]CancellationToken cancellationToken)
+    {
+        var strategy = format.GetStrategy(_options);
+        var request = strategy.GetStatementRequest(statement);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken).ConfigureAwait(false);
+
+        if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
+
+        if (response.manifest.total_row_count <= 0)
+        {
+            yield break;
+        }
+
+        foreach (var requestChunks in response.manifest.chunks.Chunk(3))
+        {
+            var tasks = requestChunks.Select(chunk => FetchChunkAsync(chunk, response, strategy, cancellationToken)).ToArray();
+            Task.WaitAll(tasks);
+            foreach (var task in tasks.OrderBy(x => x.Result.ChunkIndex))
+            {
+                var result = task.Result;
+                foreach (var row in result.Rows)
+                {
+                    yield return row;
+                }
+            }
+        }
+    }
+
+    private async Task<FetchResult> FetchChunkAsync(Chunks chunk, DatabricksStatementResponse response, IExecuteStrategy strategy, CancellationToken cancellationToken)
+    {
+        var uri = StatementsEndpointPath +
+                  $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
+        var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken).ConfigureAwait(false);
+        var result = new List<dynamic>();
+        if (chunkResponse?.external_links == null) return new FetchResult([], -1);
+
+        var stream = await _externalHttpClient.GetStreamAsync(chunkResponse.external_links[0].external_link, cancellationToken).ConfigureAwait(false);
+        await using (stream.ConfigureAwait(false))
+        {
+            await foreach (var row in strategy.ExecuteAsync(stream, response, cancellationToken).ConfigureAwait(false))
+            {
+                result.Add(row);
+            }
+        }
+
+        return new FetchResult(result, chunk.chunk_index);
+    }
+
+    private class FetchResult
+    {
+        public IEnumerable<dynamic> Rows { get; }
+
+        public long ChunkIndex { get; }
+
+        public FetchResult(IEnumerable<dynamic> rows, long chunkIndex)
+        {
+            Rows = rows;
+            ChunkIndex = chunkIndex;
         }
     }
 }

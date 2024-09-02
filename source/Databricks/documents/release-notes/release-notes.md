@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.1.1
+- Add parallel execution for fetching of databricks result chunks.
+
+
 ## Version 11.1.0
 
 - Update NuGet package dependencies and refactor code accordingly.
