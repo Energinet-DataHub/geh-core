@@ -122,7 +122,7 @@ public class DatabricksSqlWarehouseQueryExecutor
         Format format,
         [EnumeratorCancellation]CancellationToken cancellationToken = default)
     {
-        await foreach (var record in DoExecuteStatementAsync(statement, format, cancellationToken).ConfigureAwait(false))
+        await foreach (var record in DoExecuteStatementParallelAsync(statement, format, cancellationToken).ConfigureAwait(false))
         {
             yield return record;
         }
