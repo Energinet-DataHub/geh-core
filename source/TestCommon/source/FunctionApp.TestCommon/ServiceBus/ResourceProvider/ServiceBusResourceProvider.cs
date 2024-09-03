@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -35,9 +36,14 @@ public class ServiceBusResourceProvider : IAsyncDisposable
     /// </summary>
     private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(15);
 
+    private readonly string _connectionString;
+    private readonly string _fullyQualifiedNamespace;
+
+    [Obsolete("Use constructur with 'FullyQualifiedNamespace'.")]
     public ServiceBusResourceProvider(string connectionString, ITestDiagnosticsLogger testLogger)
     {
-        ConnectionString = string.IsNullOrWhiteSpace(connectionString)
+        _fullyQualifiedNamespace = string.Empty;
+        _connectionString = string.IsNullOrWhiteSpace(connectionString)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
             : connectionString;
         TestLogger = testLogger
@@ -51,7 +57,44 @@ public class ServiceBusResourceProvider : IAsyncDisposable
         TopicResources = new Dictionary<string, TopicResource>();
     }
 
-    public string ConnectionString { get; }
+    public ServiceBusResourceProvider(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace)
+    {
+        _connectionString = string.Empty;
+        _fullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
+            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(fullyQualifiedNamespace))
+            : fullyQualifiedNamespace;
+        TestLogger = testLogger
+            ?? throw new ArgumentNullException(nameof(testLogger));
+
+        var credential = new DefaultAzureCredential();
+        AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, credential);
+        Client = new ServiceBusClient(FullyQualifiedNamespace, credential);
+
+        RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
+        QueueResources = new Dictionary<string, QueueResource>();
+        TopicResources = new Dictionary<string, TopicResource>();
+    }
+
+    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'FullyQualifiedNamespace' instead.", false)]
+    public string ConnectionString
+    {
+        get
+        {
+            return _connectionString == string.Empty
+                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'FullyQualifiedNamespace'.")
+                : _connectionString;
+        }
+    }
+
+    public string FullyQualifiedNamespace
+    {
+        get
+        {
+            return _fullyQualifiedNamespace == string.Empty
+                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'ConnectionString'.")
+                : _fullyQualifiedNamespace;
+        }
+    }
 
     /// <summary>
     /// Is used as part of the resource names.

@@ -32,13 +32,13 @@ public class IntegrationTestConfiguration
     {
         Configuration = BuildKeyVaultConfigurationRoot(defaultAzureCredential);
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        ApplicationInsightsInstrumentationKey = Configuration.GetValue("AZURE-APPINSIGHTS-INSTRUMENTATIONKEY");
-#pragma warning restore CS0618 // Type or member is obsolete
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
         EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
+#pragma warning disable CS0618 // Type or member is obsolete
         ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
+#pragma warning restore CS0618 // Type or member is obsolete
+        ServiceBusFullyQualifiedNamespace = Configuration.GetValue("AZURE-SERVICEBUS-ENDPOINT");
 
         ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
         B2CSettings = CreateB2CSettings(Configuration);
@@ -49,12 +49,6 @@ public class IntegrationTestConfiguration
     /// Can be used to extract secrets from the Key Vault in the Integration Test environment.
     /// </summary>
     public IConfigurationRoot Configuration { get; }
-
-    /// <summary>
-    /// Instrumentation Key to the Application Insights in the Integration Test environment.
-    /// </summary>
-    [Obsolete("The official support for instrumentation key is ending on March 31 2025. Use ApplicationInsightsConnectionString instead.", false)]
-    public string ApplicationInsightsInstrumentationKey { get; }
 
     /// <summary>
     /// Connection string to the Application Insights in the Integration Test environment.
@@ -74,7 +68,13 @@ public class IntegrationTestConfiguration
     /// <summary>
     /// Connection string to the Azure Service Bus in the Integration Test environment.
     /// </summary>
+    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'ServiceBusFullyQualifiedNamespace' instead.", false)]
     public string ServiceBusConnectionString { get; }
+
+    /// <summary>
+    /// Fully qualified namespace of the Azure Service Bus in the Integration Test environment.
+    /// </summary>
+    public string ServiceBusFullyQualifiedNamespace { get; }
 
     /// <summary>
     /// Settings necessary for managing some Azure resources, like Event Hub, in the Integration Test environment.

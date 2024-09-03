@@ -6,7 +6,7 @@ The `ServiceBusResourceProvider` and its related types, support us with the foll
 - The `Builder` types encapsulate the creation of queues/topics/subscriptions in an existing Azure Service Bus namespace.
 - The `Resource` types support lazy creation of matching sender clients.
 
-> For usage, see `ServiceBusResourceProviderTests` or [Charges](https://github.com/Energinet-DataHub/geh-charges) repository/domain.
+> For usage, see `ServiceBusResourceProviderTests` or [EDI](https://github.com/Energinet-DataHub/opengeh-edi) repository/subsystem.
 
 ## Resource names
 
@@ -53,9 +53,8 @@ Prepare resource provider:
 ```csharp
 // Remember to call DisposeAsync() on the resource provider to delete resources and close sender client connections.
 var integrationTestConfiguration = new IntegrationTestConfiguration();
-var resourceProvider = new ServiceBusResourceProvider(
-    integrationTestConfiguration.ServiceBusConnectionString,
-    new TestDiagnosticsLogger());
+await using var resourceProvider = new ServiceBusResourceProvider(new TestDiagnosticsLogger(), 
+    integrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
 ```
 
 Example 1 - creating a topic with two subscriptions:

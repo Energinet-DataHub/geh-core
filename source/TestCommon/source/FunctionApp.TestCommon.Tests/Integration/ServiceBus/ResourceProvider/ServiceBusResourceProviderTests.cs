@@ -17,9 +17,6 @@ using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
-using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
-using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
 
@@ -117,8 +114,8 @@ public class ServiceBusResourceProviderTests
         private ServiceBusResourceProvider CreateSut()
         {
             return new ServiceBusResourceProvider(
-                ResourceProviderFixture.ConnectionString,
-                ResourceProviderFixture.TestLogger);
+                ResourceProviderFixture.TestLogger,
+                ResourceProviderFixture.FullyQualifiedNamespace);
         }
     }
 
@@ -418,19 +415,19 @@ public class ServiceBusResourceProviderTests
     /// <summary>
     /// A new <see cref="ServiceBusResourceProvider"/> is created and disposed for each test.
     /// </summary>
-    public abstract class ServiceBusResourceProviderTestsBase : TestBase<ServiceBusResourceProvider>, IAsyncLifetime
+    public abstract class ServiceBusResourceProviderTestsBase : IAsyncLifetime
     {
         protected ServiceBusResourceProviderTestsBase(ServiceBusResourceProviderFixture resourceProviderFixture)
         {
             ResourceProviderFixture = resourceProviderFixture;
-
-            // Customize auto fixture
-            Fixture.Inject<ITestDiagnosticsLogger>(resourceProviderFixture.TestLogger);
-            Fixture.ForConstructorOn<ServiceBusResourceProvider>()
-                .SetParameter("connectionString").To(ResourceProviderFixture.ConnectionString);
+            Sut = new ServiceBusResourceProvider(
+                ResourceProviderFixture.TestLogger,
+                ResourceProviderFixture.FullyQualifiedNamespace);
         }
 
         protected ServiceBusResourceProviderFixture ResourceProviderFixture { get; }
+
+        protected ServiceBusResourceProvider Sut { get; }
 
         public Task InitializeAsync()
         {

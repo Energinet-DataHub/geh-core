@@ -1,5 +1,22 @@
 # TestCommon Release notes
 
+## Version 6.3.0
+
+- Refactored class `IntegrationTestConfiguration`:
+    - Deleted obsolete property `ApplicationInsightsInstrumentationKey`.
+    - Marked property `ServiceBusConnectionString` as obsolete.
+    - Added property `ServiceBusFullyQualifiedNamespace`.
+- Refactored class `ServiceBusResourceProvider`:
+    - Marked constructor with `ConnectionString` parameter as obsolete.
+    - Marked property `ConnectionString` as obsolete.
+    - Added constructor with `FullyQualifiedNamespace` parameter.
+    - Added property `FullyQualifiedNamespace`.
+- Refactored class `ServiceBusListenerMock`:
+    - Marked constructor with `ConnectionString` parameter as obsolete.
+    - Marked property `ConnectionString` as obsolete.
+    - Added constructor with `FullyQualifiedNamespace` parameter.
+    - Added property `FullyQualifiedNamespace`.
+
 ## Version 6.2.0
 
 - Added parameter `UseSilentMode` with default value `true` to `AzuriteManager`. This disables access log output, which can be useful to reduce noise in test logs.
