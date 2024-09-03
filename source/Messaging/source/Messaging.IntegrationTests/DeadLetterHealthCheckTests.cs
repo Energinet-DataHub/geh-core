@@ -32,19 +32,14 @@ public sealed class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : ICla
     public async Task Can_add_health_check_to_service_bus()
     {
         // Arrange
-        var topicResource = await Fixture.ServiceBusResourceProvider
-            .BuildTopic("The_Topic")
-            .AddSubscription("The_Subscription")
-            .CreateAsync();
-
         var healthChecksBuilder = Services.AddLogging()
             .AddHealthChecks();
 
         // Act
         var act = () => healthChecksBuilder.AddServiceBusDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.ConnectionString,
-            _ => topicResource.Name,
-            _ => topicResource.Subscriptions.First().SubscriptionName,
+            _ => Fixture.TopicResource!.Name,
+            _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,
             "Some_Health_Check_Name");
 
         act.Should().NotThrow();
@@ -66,24 +61,19 @@ public sealed class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : ICla
     public async Task Healthy_if_message_added_to_service_bus()
     {
         // Arrange
-        var topicResource = await Fixture.ServiceBusResourceProvider
-            .BuildTopic("The_Topic")
-            .AddSubscription("The_Subscription")
-            .CreateAsync();
-
         var healthChecksBuilder = Services.AddLogging()
             .AddHealthChecks();
 
         var act = () => healthChecksBuilder.AddServiceBusDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.ConnectionString,
-            _ => topicResource.Name,
-            _ => topicResource.Subscriptions.First().SubscriptionName,
+            _ => Fixture.TopicResource!.Name,
+            _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,
             "Some_Health_Check_Name");
 
         act.Should().NotThrow();
 
         // Act
-        var sender = topicResource.SenderClient;
+        var sender = Fixture.TopicResource!.SenderClient;
 
         var message = new ServiceBusMessage("Test message");
 
@@ -98,32 +88,35 @@ public sealed class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : ICla
 
         var healthReportEntry = healthReport.Entries["Some_Health_Check_Name"];
         healthReportEntry.Status.Should().Be(HealthStatus.Healthy);
+
+        // Cleanup
+        await RemoveMessageFromTopicAsync(
+            Fixture.ServiceBusResourceProvider.ConnectionString,
+            Fixture.TopicResource!.Name,
+            Fixture.TopicResource!.Subscriptions.First().SubscriptionName);
     }
 
     [Fact]
     public async Task Unhealthy_if_message_added_to_dead_letter()
     {
         // Arrange
-        var topicResource = await Fixture.ServiceBusResourceProvider
-            .BuildTopic("The_Topic")
-            .AddSubscription("The_Subscription")
-            .CreateAsync();
-
         var healthChecksBuilder = Services.AddLogging()
             .AddHealthChecks();
 
         var act = () => healthChecksBuilder.AddServiceBusDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.ConnectionString,
-            _ => topicResource.Name,
-            _ => topicResource.Subscriptions.First().SubscriptionName,
+            _ => Fixture.TopicResource!.Name,
+            _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,
             "Some_Health_Check_Name");
 
         act.Should().NotThrow();
 
         // Act
-        var sender = topicResource.SenderClient;
+        var sender = Fixture.TopicResource!.SenderClient;
         await using var client = new ServiceBusClient(Fixture.ServiceBusResourceProvider.ConnectionString);
-        await using var receiver = client.CreateReceiver(topicResource.Name, topicResource.Subscriptions.First().SubscriptionName);
+        await using var receiver = client.CreateReceiver(
+            Fixture.TopicResource.Name,
+            Fixture.TopicResource.Subscriptions.First().SubscriptionName);
 
         var message = new ServiceBusMessage("Test message");
 
@@ -141,5 +134,58 @@ public sealed class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : ICla
 
         var healthReportEntry = healthReport.Entries["Some_Health_Check_Name"];
         healthReportEntry.Status.Should().Be(HealthStatus.Unhealthy);
+
+        // Cleanup
+        await RemoveMessageFromDeadLetterQueueAsync(
+            Fixture.ServiceBusResourceProvider.ConnectionString,
+            Fixture.TopicResource.Name,
+            Fixture.TopicResource.Subscriptions.First().SubscriptionName);
+    }
+
+    private static async Task RemoveMessageFromTopicAsync(
+        string connectionString,
+        string topicName,
+        string subscriptionName)
+    {
+        await using var client = new ServiceBusClient(connectionString);
+        await using var receiver = client.CreateReceiver(
+            topicName,
+            subscriptionName);
+
+        var receivedMessage = await receiver.ReceiveMessageAsync();
+        if (receivedMessage is not null)
+        {
+            await receiver.CompleteMessageAsync(receivedMessage);
+        }
+
+        var checkMessage = await receiver.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
+        if (checkMessage != null)
+        {
+            throw new InvalidOperationException("Message was not removed from the topic.");
+        }
+    }
+
+    private static async Task RemoveMessageFromDeadLetterQueueAsync(
+        string connectionString,
+        string topicName,
+        string subscriptionName)
+    {
+        await using var client = new ServiceBusClient(connectionString);
+        await using var deadLetterReceiver = client.CreateReceiver(
+            topicName,
+            subscriptionName,
+            new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
+
+        var deadLetterMessage = await deadLetterReceiver.ReceiveMessageAsync();
+        if (deadLetterMessage != null)
+        {
+            await deadLetterReceiver.CompleteMessageAsync(deadLetterMessage);
+        }
+
+        var checkMessage = await deadLetterReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
+        if (checkMessage != null)
+        {
+            throw new InvalidOperationException("Message was not removed from the dead letter queue.");
+        }
     }
 }

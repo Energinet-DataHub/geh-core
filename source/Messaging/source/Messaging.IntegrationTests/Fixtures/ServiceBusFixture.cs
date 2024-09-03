@@ -37,10 +37,14 @@ public class ServiceBusFixture : IAsyncLifetime
 
     public ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
-    public Task InitializeAsync()
+    public TopicResource? TopicResource { get; private set; }
+
+    public async Task InitializeAsync()
     {
-        // No-op
-        return Task.CompletedTask;
+        TopicResource = await ServiceBusResourceProvider
+            .BuildTopic("The_Topic")
+            .AddSubscription("The_Subscription")
+            .CreateAsync();
     }
 
     public async Task DisposeAsync()
