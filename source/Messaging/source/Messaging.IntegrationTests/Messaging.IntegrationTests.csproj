@@ -33,4 +33,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Messaging\Messaging.csproj" />
+    </ItemGroup>
+
 </Project>
