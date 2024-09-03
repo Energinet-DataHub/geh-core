@@ -132,3 +132,20 @@ When used as a hosted BackgroundService, in addition to the registration of the 
 services.Configure<SubscriberWorkerOptions>(builder.Configuration.GetSection(nameof(SubscriberWorkerOptions)));
 services.AddSubscriberWorker();
 ```
+
+## Health checks
+
+The package provides an opt-in dead-letter health check, which can be registered as shown below.
+
+```csharp
+services
+    .AddHealthChecks()
+    .AddServiceBusDeadLetter(
+        sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+        sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
+        sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
+        healthCheckName);
+```
+
+The health check is meant for monitoring the dead-letter queue of a ServiceBus subscription to a particular topic.
+The health check will return unhealthy if there are any messages in the dead-letter queue.

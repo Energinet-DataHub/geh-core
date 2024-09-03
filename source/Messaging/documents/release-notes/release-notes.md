@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 5.1.1
+
+- Added opt-in dead-letter health check `ServiceBusDeadLetterHealthCheck`
+
 ## Version 5.0.1
 
 - No functional change
