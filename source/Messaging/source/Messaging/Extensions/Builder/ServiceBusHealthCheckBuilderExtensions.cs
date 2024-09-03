@@ -21,14 +21,17 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 
 public static class ServiceBusHealthCheckBuilderExtensions
 {
+    // TODO (MWO): Do we want the connection string version, or should it all be namespace-based?
     public static IHealthChecksBuilder AddServiceBusDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> connectionStringFactory,
         Func<IServiceProvider, string> topicNameFactory,
         Func<IServiceProvider, string> subscriptionNameFactory,
         string? name = default,
+        // TODO (MWO): Default to unhealthy without allowing the caller to override?
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
+        // TODO (MWO): Default to 'default' without allowing the caller to override?
         TimeSpan? timeout = default)
     {
         ArgumentNullException.ThrowIfNull(connectionStringFactory);
@@ -37,7 +40,7 @@ public static class ServiceBusHealthCheckBuilderExtensions
 
         return builder.Add(
             new HealthCheckRegistration(
-                name ?? "AZURESUBSCRIPTION_NAME",
+                name ?? "AZURESUBSCRIPTION_NAME", // TODO (MWO): What should the default name be?
                 sp =>
                 {
                     var options =
