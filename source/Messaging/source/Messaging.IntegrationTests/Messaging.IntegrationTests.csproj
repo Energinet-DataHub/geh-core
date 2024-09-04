@@ -1,10 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <AssemblyName>Energinet.DataHub.Core.Messaging.IntegrationTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Messaging.IntegrationTests</RootNamespace>
+  </PropertyGroup>
 
+  <PropertyGroup>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
