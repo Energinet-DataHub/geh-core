@@ -93,8 +93,18 @@ internal static class Reflections
                 var index = Expression.Constant(i);
                 var parameterType = parameters[i].ParameterType;
                 var accessor = Expression.ArrayIndex(param, index);
-                var typeMatch = Expression.TypeIs(accessor, parameterType);
-                checks[i] = typeMatch;
+
+                // Check if the parameter type is nullable
+                if (parameterType.IsValueType && Nullable.GetUnderlyingType(parameterType) == null)
+                {
+                    checks[i] = Expression.TypeIs(accessor, parameterType);
+                }
+                else
+                {
+                    checks[i] = Expression.OrElse(
+                        Expression.Equal(accessor, Expression.Constant(null)),
+                        Expression.TypeIs(accessor, parameterType));
+                }
             }
 
             var allChecks = checks.Aggregate(Expression.AndAlso);

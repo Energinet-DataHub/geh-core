@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.1.1
+
+- Fix handling of null values in constructor when using `StronglyTypedApacheArrowFormat`
+
 ## Version 11.1.0
 
 - Update NuGet package dependencies and refactor code accordingly.
