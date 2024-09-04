@@ -1,6 +1,6 @@
 # Messaging Release notes
 
-## Version 5.1.1
+## Version 5.1.0
 
 - Added opt-in dead-letter health check `ServiceBusTopicSubscriptionDeadLetterHealthCheck`
 - New health check can be registered using `ServiceBusHealthCheckBuilderExtensions`
