@@ -22,7 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.Messaging.Tests;
+namespace Energinet.DataHub.Core.Messaging.UnitTests;
 
 [UnitTest]
 public class ServiceProviderTests

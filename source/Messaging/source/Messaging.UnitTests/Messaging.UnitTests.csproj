@@ -17,8 +17,8 @@ limitations under the License.
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Energinet.DataHub.Core.Messaging.Tests</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.Messaging.Tests</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.Messaging.UnitTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Messaging.UnitTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

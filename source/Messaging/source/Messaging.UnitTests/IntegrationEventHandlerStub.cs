@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 
-namespace Energinet.DataHub.Core.Messaging.Tests;
+namespace Energinet.DataHub.Core.Messaging.UnitTests;
 
 public class IntegrationEventHandlerStub : IIntegrationEventHandler
 {
