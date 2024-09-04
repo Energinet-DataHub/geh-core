@@ -15,6 +15,7 @@
 using Azure.Core;
 using Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
+using HealthChecks.AzureServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -22,6 +23,25 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 
 public static class ServiceBusHealthCheckBuilderExtensions
 {
+    /// <summary>
+    /// Add a health check that verifies that a subscription for a given topic has no dead-letter messages.
+    /// Note the following:
+    /// <p>
+    /// The health check verifies that a subscription for a given topic has no dead-letter messages.
+    /// If dead-letter messages are found, the health check will return a failure status.
+    /// The health check will return a healthy status if no dead-letter messages are found.
+    /// This check must only ever be used for dead-letter validation.
+    /// For ensuring that a given topic and subscription relationship is healthy,
+    /// use the <see cref="AzureServiceBusSubscriptionHealthCheck"/> which can be added
+    /// using <see cref="AzureServiceBusHealthCheckBuilderExtensions" />.
+    /// </p>
+    /// </summary>
+    /// <param name="builder">The health checks builder.</param>
+    /// <param name="connectionStringFactory">A factory to create the connection string.</param>
+    /// <param name="topicNameFactory">A factory to create the topic name.</param>
+    /// <param name="subscriptionNameFactory">A factory to create the subscription name.</param>
+    /// <param name="name">The name of the health check.</param>
+    /// <param name="tags">Tags that can be used to filter health checks. Optional.</param>
     public static IHealthChecksBuilder AddServiceBusTopicSubscriptionDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> connectionStringFactory,
@@ -55,6 +75,26 @@ public static class ServiceBusHealthCheckBuilderExtensions
                 timeout: default));
     }
 
+    /// <summary>
+    /// Add a health check that verifies that a subscription for a given topic has no dead-letter messages.
+    /// Note the following:
+    /// <p>
+    /// The health check verifies that a subscription for a given topic has no dead-letter messages.
+    /// If dead-letter messages are found, the health check will return a failure status.
+    /// The health check will return a healthy status if no dead-letter messages are found.
+    /// This check must only ever be used for dead-letter validation.
+    /// For ensuring that a given topic and subscription relationship is healthy,
+    /// use the <see cref="AzureServiceBusSubscriptionHealthCheck"/> which can be added
+    /// using <see cref="AzureServiceBusHealthCheckBuilderExtensions" />.
+    /// </p>
+    /// </summary>
+    /// <param name="builder">The health checks builder.</param>
+    /// <param name="fullyQualifiedNamespaceFactory">A factory to create the namespace</param>
+    /// <param name="topicNameFactory">A factory to create the topic name.</param>
+    /// <param name="subscriptionNameFactory">A factory to create the subscription name.</param>
+    /// <param name="tokenCredentialFactory">A factory to create the token credential factory</param>
+    /// <param name="name">The name of the health check.</param>
+    /// <param name="tags">Tags that can be used to filter health checks. Optional.</param>
     public static IHealthChecksBuilder AddServiceBusTopicSubscriptionDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> fullyQualifiedNamespaceFactory,
