@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Azure.Core;
-using Energinet.DataHub.Core.Messaging.Communication.Configuration;
 using Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -41,7 +41,7 @@ public static class ServiceBusHealthCheckBuilderExtensions
                 sp =>
                 {
                     var options =
-                        new ServiceBusDeadLetterHealthCheckOptions(
+                        new ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions(
                             topicNameFactory(sp),
                             subscriptionNameFactory(sp))
                         {
@@ -76,7 +76,7 @@ public static class ServiceBusHealthCheckBuilderExtensions
                 sp =>
                 {
                     var options =
-                        new ServiceBusDeadLetterHealthCheckOptions(
+                        new ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions(
                             topicNameFactory(sp),
                             subscriptionNameFactory(sp))
                         {

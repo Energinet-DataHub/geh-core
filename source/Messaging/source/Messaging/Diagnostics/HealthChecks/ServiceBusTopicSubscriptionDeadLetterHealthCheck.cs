@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication.Configuration;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using HealthChecks.AzureServiceBus;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -27,10 +27,10 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthCheck
 /// Thus, it is advisable to use both health checks in conjunction.
 /// </summary>
 internal sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheck
-    : AzureServiceBusHealthCheck<ServiceBusDeadLetterHealthCheckOptions>, IHealthCheck
+    : AzureServiceBusHealthCheck<ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions>, IHealthCheck
 {
     internal ServiceBusTopicSubscriptionDeadLetterHealthCheck(
-        ServiceBusDeadLetterHealthCheckOptions options,
+        ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions options,
         ServiceBusClientProvider clientProvider)
         : base(options, clientProvider)
     {
@@ -38,7 +38,7 @@ internal sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheck
         ArgumentException.ThrowIfNullOrEmpty(options.SubscriptionName);
     }
 
-    internal ServiceBusTopicSubscriptionDeadLetterHealthCheck(ServiceBusDeadLetterHealthCheckOptions options)
+    internal ServiceBusTopicSubscriptionDeadLetterHealthCheck(ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions options)
         : this(options, new ServiceBusClientProvider())
     {
     }

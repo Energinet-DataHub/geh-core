@@ -20,10 +20,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\DependencyInjection\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
     <PackageVersion>5.1.1$(VersionSuffix)</PackageVersion>
