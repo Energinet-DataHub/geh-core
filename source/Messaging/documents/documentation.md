@@ -17,6 +17,18 @@ public record IntegrationEvent(
 
 The package is still work in progress.
 
+## Overview
+
+<!-- TOC -->
+* [Messaging](#messaging)
+  * [Overview](#overview)
+  * [Publishing](#publishing)
+  * [Subscribing](#subscribing)
+    * [ServiceBusTrigger](#servicebustrigger)
+    * [BackgroundService](#backgroundservice)
+  * [Health checks](#health-checks)
+<!-- TOC -->
+
 ## Publishing
 
 The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface has to be implemented.
