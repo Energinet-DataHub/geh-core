@@ -151,7 +151,7 @@ The package provides an opt-in dead-letter health check, which can be registered
 ```csharp
 services
     .AddHealthChecks()
-    .AddServiceBusDeadLetter(
+    .AddServiceBusTopicSubscriptionDeadLetter(
         sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
         sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
         sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,

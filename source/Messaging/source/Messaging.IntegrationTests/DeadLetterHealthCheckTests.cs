@@ -36,7 +36,7 @@ public sealed class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : ICla
             .AddHealthChecks();
 
         // Act
-        var act = () => healthChecksBuilder.AddServiceBusDeadLetter(
+        var act = () => healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.ConnectionString,
             _ => Fixture.TopicResource!.Name,
             _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,
@@ -64,7 +64,7 @@ public sealed class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : ICla
         var healthChecksBuilder = Services.AddLogging()
             .AddHealthChecks();
 
-        var act = () => healthChecksBuilder.AddServiceBusDeadLetter(
+        var act = () => healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.ConnectionString,
             _ => Fixture.TopicResource!.Name,
             _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,
@@ -103,7 +103,7 @@ public sealed class DeadLetterHealthCheckTests(ServiceBusFixture fixture) : ICla
         var healthChecksBuilder = Services.AddLogging()
             .AddHealthChecks();
 
-        var act = () => healthChecksBuilder.AddServiceBusDeadLetter(
+        var act = () => healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.ConnectionString,
             _ => Fixture.TopicResource!.Name,
             _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,

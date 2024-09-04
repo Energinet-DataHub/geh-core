@@ -21,26 +21,22 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 
 public static class ServiceBusHealthCheckBuilderExtensions
 {
-    // TODO (MWO): Do we want the connection string version, or should it all be namespace-based?
-    public static IHealthChecksBuilder AddServiceBusDeadLetter(
+    public static IHealthChecksBuilder AddServiceBusTopicSubscriptionDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> connectionStringFactory,
         Func<IServiceProvider, string> topicNameFactory,
         Func<IServiceProvider, string> subscriptionNameFactory,
-        string? name = default,
-        // TODO (MWO): Default to unhealthy without allowing the caller to override?
-        HealthStatus? failureStatus = default,
-        IEnumerable<string>? tags = default,
-        // TODO (MWO): Default to 'default' without allowing the caller to override?
-        TimeSpan? timeout = default)
+        string name,
+        IEnumerable<string>? tags = default)
     {
         ArgumentNullException.ThrowIfNull(connectionStringFactory);
         ArgumentNullException.ThrowIfNull(topicNameFactory);
         ArgumentNullException.ThrowIfNull(subscriptionNameFactory);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         return builder.Add(
             new HealthCheckRegistration(
-                name ?? "AZURESUBSCRIPTION_NAME", // TODO (MWO): What should the default name be?
+                name,
                 sp =>
                 {
                     var options =
@@ -53,30 +49,29 @@ public static class ServiceBusHealthCheckBuilderExtensions
 
                     return new ServiceBusDeadLetterHealthCheck(options);
                 },
-                failureStatus,
+                HealthStatus.Unhealthy,
                 tags,
-                timeout));
+                timeout: default));
     }
 
-    public static IHealthChecksBuilder AddServiceBusDeadLetter(
+    public static IHealthChecksBuilder AddServiceBusTopicSubscriptionDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> fullyQualifiedNamespaceFactory,
         Func<IServiceProvider, string> topicNameFactory,
         Func<IServiceProvider, string> subscriptionNameFactory,
         Func<IServiceProvider, TokenCredential> tokenCredentialFactory,
-        string? name = default,
-        HealthStatus? failureStatus = default,
-        IEnumerable<string>? tags = default,
-        TimeSpan? timeout = default)
+        string name,
+        IEnumerable<string>? tags = default)
     {
         ArgumentNullException.ThrowIfNull(fullyQualifiedNamespaceFactory);
         ArgumentNullException.ThrowIfNull(topicNameFactory);
         ArgumentNullException.ThrowIfNull(subscriptionNameFactory);
         ArgumentNullException.ThrowIfNull(tokenCredentialFactory);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         return builder.Add(
             new HealthCheckRegistration(
-                name ?? "AZURESUBSCRIPTION_NAME",
+                name,
                 sp =>
                 {
                     var options =
@@ -90,8 +85,8 @@ public static class ServiceBusHealthCheckBuilderExtensions
 
                     return new ServiceBusDeadLetterHealthCheck(options);
                 },
-                failureStatus,
+                HealthStatus.Unhealthy,
                 tags,
-                timeout));
+                timeout: default));
     }
 }
