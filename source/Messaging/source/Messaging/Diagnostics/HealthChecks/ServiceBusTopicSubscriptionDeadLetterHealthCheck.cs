@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.Messaging.Communication.Configuration;
 using HealthChecks.AzureServiceBus;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 
 /// <summary>
 /// This health check verifies that a subscription for a given topic has no dead-letter messages.
@@ -26,10 +26,10 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// For ensuring that a given topic + subscription relationship is healthy, use the <see cref="AzureServiceBusSubscriptionHealthCheck"/>.
 /// Thus, it is advisable to use both health checks in conjunction.
 /// </summary>
-internal sealed class ServiceBusDeadLetterHealthCheck
+internal sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheck
     : AzureServiceBusHealthCheck<ServiceBusDeadLetterHealthCheckOptions>, IHealthCheck
 {
-    internal ServiceBusDeadLetterHealthCheck(
+    internal ServiceBusTopicSubscriptionDeadLetterHealthCheck(
         ServiceBusDeadLetterHealthCheckOptions options,
         ServiceBusClientProvider clientProvider)
         : base(options, clientProvider)
@@ -38,7 +38,7 @@ internal sealed class ServiceBusDeadLetterHealthCheck
         ArgumentException.ThrowIfNullOrEmpty(options.SubscriptionName);
     }
 
-    internal ServiceBusDeadLetterHealthCheck(ServiceBusDeadLetterHealthCheckOptions options)
+    internal ServiceBusTopicSubscriptionDeadLetterHealthCheck(ServiceBusDeadLetterHealthCheckOptions options)
         : this(options, new ServiceBusClientProvider())
     {
     }

@@ -14,6 +14,7 @@
 
 using Azure.Core;
 using Energinet.DataHub.Core.Messaging.Communication.Configuration;
+using Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -47,7 +48,7 @@ public static class ServiceBusHealthCheckBuilderExtensions
                             ConnectionString = connectionStringFactory(sp),
                         };
 
-                    return new ServiceBusDeadLetterHealthCheck(options);
+                    return new ServiceBusTopicSubscriptionDeadLetterHealthCheck(options);
                 },
                 HealthStatus.Unhealthy,
                 tags,
@@ -83,7 +84,7 @@ public static class ServiceBusHealthCheckBuilderExtensions
                             Credential = tokenCredentialFactory(sp),
                         };
 
-                    return new ServiceBusDeadLetterHealthCheck(options);
+                    return new ServiceBusTopicSubscriptionDeadLetterHealthCheck(options);
                 },
                 HealthStatus.Unhealthy,
                 tags,
