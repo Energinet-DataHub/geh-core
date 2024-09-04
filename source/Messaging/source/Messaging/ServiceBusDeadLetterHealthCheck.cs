@@ -26,10 +26,10 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// For ensuring that a given topic + subscription relationship is healthy, use the <see cref="AzureServiceBusSubscriptionHealthCheck"/>.
 /// Thus, it is advisable to use both health checks in conjunction.
 /// </summary>
-public sealed class ServiceBusDeadLetterHealthCheck
+internal sealed class ServiceBusDeadLetterHealthCheck
     : AzureServiceBusHealthCheck<ServiceBusDeadLetterHealthCheckOptions>, IHealthCheck
 {
-    public ServiceBusDeadLetterHealthCheck(
+    internal ServiceBusDeadLetterHealthCheck(
         ServiceBusDeadLetterHealthCheckOptions options,
         ServiceBusClientProvider clientProvider)
         : base(options, clientProvider)
@@ -38,7 +38,7 @@ public sealed class ServiceBusDeadLetterHealthCheck
         ArgumentException.ThrowIfNullOrEmpty(options.SubscriptionName);
     }
 
-    public ServiceBusDeadLetterHealthCheck(ServiceBusDeadLetterHealthCheckOptions options)
+    internal ServiceBusDeadLetterHealthCheck(ServiceBusDeadLetterHealthCheckOptions options)
         : this(options, new ServiceBusClientProvider())
     {
     }

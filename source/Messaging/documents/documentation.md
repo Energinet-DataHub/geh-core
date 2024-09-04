@@ -19,7 +19,8 @@ The package is still work in progress.
 
 ## Publishing
 
-The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface has to be implemented.
+The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface
+has to be implemented.
 
 Below code shows an example of an IIntegrationEventProvider implementation as well as the registration.
 
@@ -59,14 +60,19 @@ services.Configure<PublisherOptions>(builder.Configuration.GetSection(nameof(Pub
 services.AddPublisher<IntegrationEventProvider>();
 ```
 
-When publishing, the above IIntegrationEventProvider interface and registration is enough to start publishing integration events.
-Simply inject IPublisher and call the PublishAsync method, which will then call the IIntegrationEventProvider implementation, and dispatch the returned integration events.
+When publishing, the above IIntegrationEventProvider interface and registration is enough to start publishing
+integration events.
+Simply inject IPublisher and call the PublishAsync method, which will then call the IIntegrationEventProvider
+implementation, and dispatch the returned integration events.
 
 ## Subscribing
 
-Subscribing functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
-The subscribing functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
-In both cases the IIntegrationEventHandler implementation is needed. An example of an IIIntegrationEventHandler implementation is shown below.
+Subscribing functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler
+implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
+The subscribing functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted
+BackgroundService.
+In both cases the IIntegrationEventHandler implementation is needed. An example of an IIIntegrationEventHandler
+implementation is shown below.
 
 ```csharp
 public sealed class IntegrationEventHandler : IIntegrationEventHandler
@@ -86,7 +92,8 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
 }
 ```
 
-Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation needs to be registered as a dependency using the code below.
+Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation
+needs to be registered as a dependency using the code below.
 
 ```csharp
 services.AddSubscriber<IntegrationEventHandler>(new[]
@@ -96,11 +103,13 @@ services.AddSubscriber<IntegrationEventHandler>(new[]
 });
 ```
 
-The descriptors are used to deserialize the event as well as filtering unwanted messages. In the example above, we expect messages of type ActorCreated and UserCreated.
+The descriptors are used to deserialize the event as well as filtering unwanted messages. In the example above, we
+expect messages of type ActorCreated and UserCreated.
 
 ### ServiceBusTrigger
 
-When using a ServiceBusTrigger to handle integration events, the ISubscriber dependency needs to be injected into the function and called in the manner shown below.
+When using a ServiceBusTrigger to handle integration events, the ISubscriber dependency needs to be injected into the
+function and called in the manner shown below.
 
 ```csharp
 // MessageBusTrigger function
@@ -126,7 +135,8 @@ public sealed class ServiceBusFunction
 
 ### BackgroundService
 
-When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code, registering the worker, is also needed.
+When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation
+shown above, the below code, registering the worker, is also needed.
 
 ```csharp
 services.Configure<SubscriberWorkerOptions>(builder.Configuration.GetSection(nameof(SubscriberWorkerOptions)));
@@ -135,7 +145,8 @@ services.AddSubscriberWorker();
 
 ## Health checks
 
-The package provides an opt-in dead-letter health check, which can be registered as shown below.
+The package provides an opt-in dead-letter health check, which can be registered using
+`ServiceBusHealthCheckBuilderExtensions` as shown below:
 
 ```csharp
 services

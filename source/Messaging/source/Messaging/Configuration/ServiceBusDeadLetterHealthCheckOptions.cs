@@ -16,16 +16,16 @@ using HealthChecks.AzureServiceBus.Configuration;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Configuration;
 
-public sealed class ServiceBusDeadLetterHealthCheckOptions(string topicName, string subscriptionName)
+internal sealed class ServiceBusDeadLetterHealthCheckOptions(string topicName, string subscriptionName)
     : AzureServiceBusHealthCheckOptions
 {
     /// <summary>
     /// The name of the topic to check.
     /// </summary>
-    public string TopicName { get; } = topicName;
+    internal string TopicName { get; } = topicName;
 
     /// <summary>
     /// The subscription name of the topic subscription to check.
     /// </summary>
-    public string SubscriptionName { get; } = subscriptionName;
+    internal string SubscriptionName { get; } = subscriptionName;
 }
