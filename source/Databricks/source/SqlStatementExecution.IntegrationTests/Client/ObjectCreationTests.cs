@@ -91,7 +91,7 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
         var result = client.ExecuteStatementAsync<PersonWithTitle>(NullStatement);
         var persons = await result.ToListAsync();
 
-        Assert.Equal(2, persons.Count);
+        persons.Count.Should().Be(2);
     }
 
     public class ReallyBadPerson
