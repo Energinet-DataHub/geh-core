@@ -2,7 +2,8 @@
 
 ## Version 5.1.1
 
-- Added opt-in dead-letter health check `ServiceBusDeadLetterHealthCheck`
+- Added opt-in dead-letter health check `ServiceBusTopicSubscriptionDeadLetterHealthCheck`
+- New health check can be registered using `ServiceBusHealthCheckBuilderExtensions`
 
 ## Version 5.0.1
 
