@@ -18,7 +18,7 @@ using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
 namespace Messaging.IntegrationTests.Fixtures;
 
-public class ServiceBusFixture : IAsyncLifetime
+public sealed class ServiceBusFixture : IAsyncLifetime
 {
     public ServiceBusFixture()
     {
