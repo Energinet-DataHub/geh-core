@@ -4,10 +4,6 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>Energinet.DataHub.Core.Messaging.IntegrationTests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Messaging.IntegrationTests</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
