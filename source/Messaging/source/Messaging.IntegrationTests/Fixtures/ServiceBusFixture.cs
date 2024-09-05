@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -20,24 +22,19 @@ namespace Energinet.DataHub.Core.Messaging.IntegrationTests.Fixtures;
 
 public sealed class ServiceBusFixture : IAsyncLifetime
 {
-    public ServiceBusFixture()
-    {
-        TestDiagnosticsLogger = new TestDiagnosticsLogger();
+    public ServiceBusResourceProvider ServiceBusResourceProvider { get; } = new(
+        new TestDiagnosticsLogger(),
+        new IntegrationTestConfiguration().ServiceBusFullyQualifiedNamespace);
 
-        IntegrationTestConfiguration = new IntegrationTestConfiguration();
-
-        ServiceBusResourceProvider = new ServiceBusResourceProvider(
-            IntegrationTestConfiguration.ServiceBusConnectionString,
-            TestDiagnosticsLogger);
-    }
-
-    public TestDiagnosticsLogger TestDiagnosticsLogger { get; }
-
-    public IntegrationTestConfiguration IntegrationTestConfiguration { get; }
-
-    public ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+    public DefaultAzureCredential AzureCredential { get; } = new();
 
     public TopicResource? TopicResource { get; private set; }
+
+    public ServiceBusReceiver? Receiver { get; private set; }
+
+    public ServiceBusReceiver? DeadLetterReceiver { get; private set; }
+
+    private ServiceBusClient? Client { get; set; }
 
     public async Task InitializeAsync()
     {
@@ -45,10 +42,38 @@ public sealed class ServiceBusFixture : IAsyncLifetime
             .BuildTopic("The_Topic")
             .AddSubscription("The_Subscription")
             .CreateAsync();
+
+        Client = new ServiceBusClient(
+            ServiceBusResourceProvider.FullyQualifiedNamespace,
+            AzureCredential);
+
+        Receiver = Client.CreateReceiver(
+            TopicResource.Name,
+            TopicResource.Subscriptions.First().SubscriptionName);
+
+        DeadLetterReceiver = Client.CreateReceiver(
+            TopicResource.Name,
+            TopicResource.Subscriptions.First().SubscriptionName,
+            new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
     }
 
     public async Task DisposeAsync()
     {
-        await ServiceBusResourceProvider.DisposeAsync().ConfigureAwait(false);
+        await ServiceBusResourceProvider.DisposeAsync();
+
+        if (Receiver is not null)
+        {
+            await Receiver.DisposeAsync();
+        }
+
+        if (DeadLetterReceiver is not null)
+        {
+            await DeadLetterReceiver.DisposeAsync();
+        }
+
+        if (Client is not null)
+        {
+            await Client.DisposeAsync();
+        }
     }
 }
