@@ -41,7 +41,7 @@ public static class ServiceBusHealthCheckBuilderExtensions
     /// <param name="topicNameFactory">A factory to create the topic name.</param>
     /// <param name="subscriptionNameFactory">A factory to create the subscription name.</param>
     /// <param name="name">The name of the health check.</param>
-    /// <param name="tags">Tags that can be used to filter health checks. Optional.</param>
+    /// <param name="tags">Tags that can be used to filter health checks.</param>
     public static IHealthChecksBuilder AddServiceBusTopicSubscriptionDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> connectionStringFactory,
@@ -89,12 +89,12 @@ public static class ServiceBusHealthCheckBuilderExtensions
     /// </p>
     /// </summary>
     /// <param name="builder">The health checks builder.</param>
-    /// <param name="fullyQualifiedNamespaceFactory">A factory to create the namespace</param>
+    /// <param name="fullyQualifiedNamespaceFactory">A factory to create the namespace.</param>
     /// <param name="topicNameFactory">A factory to create the topic name.</param>
     /// <param name="subscriptionNameFactory">A factory to create the subscription name.</param>
-    /// <param name="tokenCredentialFactory">A factory to create the token credential factory</param>
+    /// <param name="tokenCredentialFactory">A factory to create the token credential factory.</param>
     /// <param name="name">The name of the health check.</param>
-    /// <param name="tags">Tags that can be used to filter health checks. Optional.</param>
+    /// <param name="tags">Tags that can be used to filter health checks.</param>
     public static IHealthChecksBuilder AddServiceBusTopicSubscriptionDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> fullyQualifiedNamespaceFactory,
