@@ -50,7 +50,7 @@ internal sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheck
     {
         try
         {
-            var managementClient = CreateManagementClient();
+            var managementClient = ClientCache.GetOrAdd(ConnectionKey, _ => CreateManagementClient());
 
             var properties = await managementClient.GetSubscriptionRuntimePropertiesAsync(
                     Options.TopicName,
