@@ -21,12 +21,12 @@ The package is still work in progress.
 
 <!-- TOC -->
 * [Messaging](#messaging)
-  * [Overview](#overview)
-  * [Publishing](#publishing)
-  * [Subscribing](#subscribing)
-    * [ServiceBusTrigger](#servicebustrigger)
-    * [BackgroundService](#backgroundservice)
-  * [Health checks](#health-checks)
+    * [Overview](#overview)
+    * [Publishing](#publishing)
+    * [Subscribing](#subscribing)
+        * [ServiceBusTrigger](#servicebustrigger)
+        * [BackgroundService](#backgroundservice)
+    * [Health checks](#health-checks)
 <!-- TOC -->
 
 ## Publishing
