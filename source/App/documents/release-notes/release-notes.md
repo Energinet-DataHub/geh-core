@@ -1,5 +1,9 @@
 # App Release notes
 
+## WebaApp Version 13.2.0
+
+- Added support for x-enumNames in OpenApiExtensions, which allows for the use of Enum names in the OpenAPI documentation.
+
 ## Version 13.1.0
 
 - Extended health checks with an additional category `status`. Health checks can then be registerede as beeing called as part of the `ready` or the `status` endpoint.
