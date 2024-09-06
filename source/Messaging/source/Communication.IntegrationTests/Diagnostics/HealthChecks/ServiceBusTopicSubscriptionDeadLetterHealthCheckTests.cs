@@ -14,12 +14,12 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
-using Energinet.DataHub.Core.Messaging.IntegrationTests.Fixtures;
+using Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Core.Messaging.IntegrationTests.Diagnostics.HealthChecks;
+namespace Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Diagnostics.HealthChecks;
 
 public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
     ServiceBusFixture fixture)

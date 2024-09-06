@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Energinet.DataHub.Core.Messaging.IntegrationTests</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.Messaging.IntegrationTests</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Core.Messaging.Communication.IntegrationTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.Messaging.Communication.IntegrationTests</RootNamespace>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Messaging\Messaging.csproj"/>
+    <ProjectReference Include="..\Communication\Communication.csproj"/>
   </ItemGroup>
 
 </Project>

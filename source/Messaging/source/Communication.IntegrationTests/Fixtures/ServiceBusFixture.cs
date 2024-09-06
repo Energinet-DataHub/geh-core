@@ -18,7 +18,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
-namespace Energinet.DataHub.Core.Messaging.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Fixtures;
 
 public sealed class ServiceBusFixture : IAsyncLifetime
 {

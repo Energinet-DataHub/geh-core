@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
-[assembly: InternalsVisibleTo("Energinet.DataHub.Core.Messaging.UnitTests")]
+namespace Energinet.DataHub.Core.Messaging.Communication.UnitTests;
+
+public class IntegrationEventProviderStub : IIntegrationEventProvider
+{
+    public IAsyncEnumerable<IntegrationEvent> GetAsync()
+        => Array.Empty<IntegrationEvent>().ToAsyncEnumerable();
+}

@@ -21,7 +21,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Energinet.DataHub.Core.Messaging.UnitTests.Extensions.Builder;
+namespace Energinet.DataHub.Core.Messaging.Communication.UnitTests.Extensions.Builder;
 
 public sealed class ServiceBusHealthCheckBuilderExtensionsTests
 {
