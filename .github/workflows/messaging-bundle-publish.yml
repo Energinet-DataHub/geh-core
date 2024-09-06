@@ -21,7 +21,7 @@ on:
     branches:
       - main
     paths:
-      - source/Messaging/source/Messaging/**
+      - source/Messaging/source/Communication/**
       - .github/workflows/messaging-bundle-publish.yml
   # Build, test, pack
   # Executed if Messaging folder or build scripts has changed; including if documentation or tests has changed
@@ -70,14 +70,14 @@ jobs:
       - name: Pack Communication project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
-          project_path: ./source/Messaging/source/Messaging/Communication.csproj
+          project_path: ./source/Messaging/source/Communication/Communication.csproj
 
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v41
         with:
           files: |
-            source/Messaging/source/Messaging/**/*.*
+            source/Messaging/source/Communication/**/*.*
             .github/workflows/messaging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
