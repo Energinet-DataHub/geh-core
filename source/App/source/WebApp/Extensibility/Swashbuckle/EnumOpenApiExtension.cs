@@ -20,6 +20,11 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 
+/// <summary>
+/// OpenAPI extension for adding enum names to the OpenAPI schema.
+/// This will enable nswag to generate the enum names in the client. Without using JsonStringEnumConverter,
+/// enabling having both the enum value and the name in the client.
+/// </summary>
 public class EnumOpenApiExtension : IOpenApiExtension
 {
     private readonly SchemaFilterContext _context;

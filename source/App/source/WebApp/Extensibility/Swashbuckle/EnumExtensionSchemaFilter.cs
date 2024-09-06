@@ -17,6 +17,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 
+/// <summary>
+/// Schema filter for adding enum names to the OpenAPI schema.
+/// </summary>
 public class EnumExtensionSchemaFilter : ISchemaFilter
 {
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)
