@@ -16,7 +16,7 @@ using HealthChecks.AzureServiceBus.Configuration;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 
-internal sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions(
+public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions(
     string topicName,
     string subscriptionName)
     : AzureServiceBusHealthCheckOptions
