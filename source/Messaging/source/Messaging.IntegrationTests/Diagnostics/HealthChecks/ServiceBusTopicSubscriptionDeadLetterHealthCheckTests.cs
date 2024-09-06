@@ -19,7 +19,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Core.Messaging.IntegrationTests;
+namespace Energinet.DataHub.Core.Messaging.IntegrationTests.Diagnostics.HealthChecks;
 
 public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(ServiceBusFixture fixture)
     : IClassFixture<ServiceBusFixture>, IAsyncLifetime

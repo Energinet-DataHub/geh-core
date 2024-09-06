@@ -13,9 +13,12 @@
 // limitations under the License.
 
 using Azure.Identity;
+using Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Energinet.DataHub.Core.Messaging.UnitTests.Extensions.Builder;
@@ -25,7 +28,8 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
     private ServiceCollection Services { get; } = new();
 
     [Fact]
-    public void Given_Namespace_Then_HealthCheckAdded()
+    public void
+        Given_FullyQualifiedNamespace_When_AddServiceBusTopicSubscriptionDeadLetter_Then_HealthCheckIsRegistered()
     {
         // Arrange
         var healthChecksBuilder = Services
@@ -42,11 +46,29 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
 
         // Assert
         act.Should().NotThrow();
+
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var healthCheckRegistrations = serviceProvider
+            .GetRequiredService<IOptions<HealthCheckServiceOptions>>()
+            .Value
+            .Registrations;
+
+        healthCheckRegistrations
+            .Should()
+            .ContainSingle();
+
+        var healthCheckRegistration = healthCheckRegistrations.Single();
+
+        healthCheckRegistration.Name.Should().Be("Some_Health_Check_Name");
+        healthCheckRegistration.Factory(serviceProvider)
+            .Should()
+            .BeOfType<ServiceBusTopicSubscriptionDeadLetterHealthCheck>();
     }
 
     [Fact]
     [Obsolete("Obsolete")]
-    public void Given_ConnectionString_Then_HealthCheckAdded()
+    public void Given_ConnectionString_When_AddServiceBusTopicSubscriptionDeadLetter_Then_HealthCheckIsRegistered()
     {
         // Arrange
         var healthChecksBuilder = Services
@@ -62,5 +84,23 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
 
         // Assert
         act.Should().NotThrow();
+
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var healthCheckRegistrations = serviceProvider
+            .GetRequiredService<IOptions<HealthCheckServiceOptions>>()
+            .Value
+            .Registrations;
+
+        healthCheckRegistrations
+            .Should()
+            .ContainSingle();
+
+        var healthCheckRegistration = healthCheckRegistrations.Single();
+
+        healthCheckRegistration.Name.Should().Be("Some_Health_Check_Name");
+        healthCheckRegistration.Factory(serviceProvider)
+            .Should()
+            .BeOfType<ServiceBusTopicSubscriptionDeadLetterHealthCheck>();
     }
 }
