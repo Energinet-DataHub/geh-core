@@ -21,7 +21,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Core.Messaging.IntegrationTests.Diagnostics.HealthChecks;
 
-public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(ServiceBusFixture fixture)
+public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
+    ServiceBusFixture fixture)
     : IClassFixture<ServiceBusFixture>, IAsyncLifetime
 {
     private const string HealthCheckName = "Some_Health_Check_Name";

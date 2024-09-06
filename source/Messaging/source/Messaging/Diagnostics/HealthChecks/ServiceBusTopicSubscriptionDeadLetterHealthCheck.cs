@@ -38,7 +38,8 @@ internal sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheck
         ArgumentException.ThrowIfNullOrEmpty(options.SubscriptionName);
     }
 
-    internal ServiceBusTopicSubscriptionDeadLetterHealthCheck(ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions options)
+    internal ServiceBusTopicSubscriptionDeadLetterHealthCheck(
+        ServiceBusTopicSubscriptionDeadLetterHealthCheckOptions options)
         : this(options, new ServiceBusClientProvider())
     {
     }
