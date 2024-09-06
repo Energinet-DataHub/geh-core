@@ -67,10 +67,10 @@ jobs:
           azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
           publish_test_report: "true"
 
-      - name: Pack Messaging project
+      - name: Pack Communication project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
-          project_path: ./source/Messaging/source/Messaging/Messaging.csproj
+          project_path: ./source/Messaging/source/Messaging/Communication.csproj
 
       - name: Package content or build has changed
         id: changed-content
