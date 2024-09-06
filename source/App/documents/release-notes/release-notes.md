@@ -1,6 +1,6 @@
 # App Release notes
 
-## WebaApp Version 13.2.0
+## WebaApp, Common, Common.Abstractions, FunctionApp Version 13.2.0
 
 - Added support for x-enumNames in OpenApiExtensions, which allows for the use of Enum names in the OpenAPI documentation.
 
