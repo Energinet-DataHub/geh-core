@@ -65,7 +65,7 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
     }
 
     [Fact]
-    public async Task Given_MessageAddedToServiceBusTopic_Then_Healthy()
+    public async Task Given_MessageAddedToServiceBusTopic_When_CheckHealth_Then_Healthy()
     {
         // Arrange
         var healthChecksBuilder = Services
@@ -79,17 +79,17 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
             _ => Fixture.AzureCredential,
             HealthCheckName);
 
-        // Act
         var sender = Fixture.TopicResource!.SenderClient;
         var message = new ServiceBusMessage("Test message");
         await sender.SendMessageAsync(message);
 
-        // Assert
+        // Act
         var provider = Services.BuildServiceProvider();
         var healthReport = await provider
             .GetRequiredService<HealthCheckService>()
             .CheckHealthAsync();
 
+        // Assert
         healthReport.Status.Should().Be(HealthStatus.Healthy);
         healthReport.Entries.Keys.Should().Contain(HealthCheckName);
 
@@ -98,7 +98,7 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
     }
 
     [Fact]
-    public async Task Given_MessageAddedToServiceBusDeadLetter_Then_Unhealthy()
+    public async Task Given_MessageAddedToServiceBusDeadLetter_When_CheckHealth_Then_Unhealthy()
     {
         // Arrange
         var healthChecksBuilder = Services.AddLogging()
@@ -111,7 +111,6 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
             _ => Fixture.AzureCredential,
             HealthCheckName);
 
-        // Act
         var sender = Fixture.TopicResource!.SenderClient;
         var message = new ServiceBusMessage("Test message");
         await sender.SendMessageAsync(message);
@@ -119,12 +118,13 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
         var receivedMessage = await Fixture.Receiver!.ReceiveMessageAsync();
         await Fixture.Receiver!.DeadLetterMessageAsync(receivedMessage);
 
-        // Assert
+        // Act
         var provider = Services.BuildServiceProvider();
         var healthReport = await provider
             .GetRequiredService<HealthCheckService>()
             .CheckHealthAsync();
 
+        // Assert
         healthReport.Status.Should().Be(HealthStatus.Unhealthy);
         healthReport.Entries.Keys.Should().Contain(HealthCheckName);
 
