@@ -16,6 +16,7 @@ using Azure.Core;
 using Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using HealthChecks.AzureServiceBus;
+using HealthChecks.AzureServiceBus.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -42,6 +43,7 @@ public static class ServiceBusHealthCheckBuilderExtensions
     /// <param name="subscriptionNameFactory">A factory to create the subscription name.</param>
     /// <param name="name">The name of the health check.</param>
     /// <param name="tags">Tags that can be used to filter health checks.</param>
+    [Obsolete("This method is obsolete as we want to use IAM on the service bus.")]
     public static IHealthChecksBuilder AddServiceBusTopicSubscriptionDeadLetter(
         this IHealthChecksBuilder builder,
         Func<IServiceProvider, string> connectionStringFactory,
@@ -129,5 +131,102 @@ public static class ServiceBusHealthCheckBuilderExtensions
                 HealthStatus.Unhealthy,
                 tags,
                 timeout: default));
+    }
+
+    /// <summary>
+    /// Add a health check that verifies that a queue has no dead-letter messages.
+    /// Note the following:
+    /// <p>
+    /// The health check verifies that a subscription for a given topic has no dead-letter messages.
+    /// If dead-letter messages are found, the health check will return a failure status.
+    /// The health check will return a healthy status if no dead-letter messages are found.
+    /// This check must only ever be used for dead-letter validation.
+    /// For ensuring that a given topic and subscription relationship is healthy,
+    /// use the <see cref="AzureServiceBusSubscriptionHealthCheck"/> which can be added
+    /// using <see cref="AzureServiceBusHealthCheckBuilderExtensions" />.
+    /// </p>
+    /// </summary>
+    /// <param name="builder">The health checks builder.</param>
+    /// <param name="connectionStringFactory">A factory to create the connection string.</param>
+    /// <param name="queueNameFactory">A factory to create the queue name.</param>
+    /// <param name="name">The name of the health check.</param>
+    /// <param name="tags">Tags that can be used to filter health checks.</param>
+    [Obsolete("This method is obsolete as we want to use IAM on the service bus.")]
+    public static IHealthChecksBuilder AddServiceBusQueueDeadLetter(
+        this IHealthChecksBuilder builder,
+        Func<IServiceProvider, string> connectionStringFactory,
+        Func<IServiceProvider, string> queueNameFactory,
+        string name,
+        IEnumerable<string>? tags = default)
+    {
+        ArgumentNullException.ThrowIfNull(connectionStringFactory);
+        ArgumentNullException.ThrowIfNull(queueNameFactory);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        return builder.Add(
+            new HealthCheckRegistration(
+                name,
+                sp =>
+                {
+                    var options = new ServiceBusQueueDeadLetterHealthCheckOptions(queueNameFactory(sp))
+                    {
+                        ConnectionString = connectionStringFactory(sp),
+                    };
+
+                    return new ServiceBusQueueDeadLetterHealthCheck(options);
+                },
+                HealthStatus.Unhealthy,
+                tags,
+                default));
+    }
+
+    /// <summary>
+    /// Add a health check that verifies that a queue has no dead-letter messages.
+    /// Note the following:
+    /// <p>
+    /// The health check verifies that a subscription for a given topic has no dead-letter messages.
+    /// If dead-letter messages are found, the health check will return a failure status.
+    /// The health check will return a healthy status if no dead-letter messages are found.
+    /// This check must only ever be used for dead-letter validation.
+    /// For ensuring that a given topic and subscription relationship is healthy,
+    /// use the <see cref="AzureServiceBusSubscriptionHealthCheck"/> which can be added
+    /// using <see cref="AzureServiceBusHealthCheckBuilderExtensions" />.
+    /// </p>
+    /// </summary>
+    /// <param name="builder">The health checks builder.</param>
+    /// <param name="fullyQualifiedNamespaceFactory">A factory to create the namespace.</param>
+    /// <param name="queueNameFactory">A factory to create the queue name.</param>
+    /// <param name="tokenCredentialFactory">A factory to create the token credential factory.</param>
+    /// <param name="name">The name of the health check.</param>
+    /// <param name="tags">Tags that can be used to filter health checks.</param>
+    public static IHealthChecksBuilder AddServiceBusQueueDeadLetter(
+        this IHealthChecksBuilder builder,
+        Func<IServiceProvider, string> fullyQualifiedNamespaceFactory,
+        Func<IServiceProvider, string> queueNameFactory,
+        Func<IServiceProvider, TokenCredential> tokenCredentialFactory,
+        string name,
+        IEnumerable<string>? tags = default)
+    {
+        ArgumentNullException.ThrowIfNull(fullyQualifiedNamespaceFactory);
+        ArgumentNullException.ThrowIfNull(queueNameFactory);
+        ArgumentNullException.ThrowIfNull(tokenCredentialFactory);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        return builder.Add(
+            new HealthCheckRegistration(
+                name,
+                sp =>
+                {
+                    var options = new ServiceBusQueueDeadLetterHealthCheckOptions(queueNameFactory(sp))
+                    {
+                        FullyQualifiedNamespace = fullyQualifiedNamespaceFactory(sp),
+                        Credential = tokenCredentialFactory(sp),
+                    };
+
+                    return new ServiceBusQueueDeadLetterHealthCheck(options);
+                },
+                HealthStatus.Unhealthy,
+                tags,
+                default));
     }
 }

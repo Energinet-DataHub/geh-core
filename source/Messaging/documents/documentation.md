@@ -164,5 +164,8 @@ services
 The usage of the `StatusHealthCheckTag` from `App.Common.Diagnostics.HealthChecks` is optional but highly recommended.
 It denotes that the health check should not block deployments if it fails.
 
+Health checks can be added both with connection strings and fully qualified namespaces.
+Note, however, that using connection strings is already an obsolete feature as we are pushing towards AIM on the service bus.
+
 The health check is meant for monitoring the dead-letter queue of a ServiceBus subscription to a particular topic.
 The health check will return unhealthy if there are any messages in the dead-letter queue.

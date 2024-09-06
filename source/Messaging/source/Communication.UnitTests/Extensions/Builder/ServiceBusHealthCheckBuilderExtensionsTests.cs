@@ -37,7 +37,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
             .AddHealthChecks();
 
         // Act
-        var act = () => healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
+        healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
             _ => Guid.NewGuid().ToString("N"),
             _ => "topicName",
             _ => "subscriptionName",
@@ -45,8 +45,6 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
             "Some_Health_Check_Name");
 
         // Assert
-        act.Should().NotThrow();
-
         var serviceProvider = Services.BuildServiceProvider();
 
         var healthCheckRegistrations = serviceProvider
@@ -76,15 +74,13 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
             .AddHealthChecks();
 
         // Act
-        var act = () => healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
+        healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
             _ => Guid.NewGuid().ToString("N"),
             _ => "topicName",
             _ => "subscriptionName",
             "Some_Health_Check_Name");
 
         // Assert
-        act.Should().NotThrow();
-
         var serviceProvider = Services.BuildServiceProvider();
 
         var healthCheckRegistrations = serviceProvider
@@ -102,5 +98,76 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
         healthCheckRegistration.Factory(serviceProvider)
             .Should()
             .BeOfType<ServiceBusTopicSubscriptionDeadLetterHealthCheck>();
+    }
+
+    [Fact]
+    public void
+        Given_FullyQualifiedNamespace_When_AddServiceBusQueueDeadLetter_Then_HealthCheckIsRegistered()
+    {
+        // Arrange
+        var healthChecksBuilder = Services
+            .AddLogging()
+            .AddHealthChecks();
+
+        // Act
+        healthChecksBuilder.AddServiceBusQueueDeadLetter(
+            _ => Guid.NewGuid().ToString("N"),
+            _ => "queueName",
+            _ => new DefaultAzureCredential(),
+            "Some_Health_Check_Name");
+
+        // Assert
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var healthCheckRegistrations = serviceProvider
+            .GetRequiredService<IOptions<HealthCheckServiceOptions>>()
+            .Value
+            .Registrations;
+
+        healthCheckRegistrations
+            .Should()
+            .ContainSingle();
+
+        var healthCheckRegistration = healthCheckRegistrations.Single();
+
+        healthCheckRegistration.Name.Should().Be("Some_Health_Check_Name");
+        healthCheckRegistration.Factory(serviceProvider)
+            .Should()
+            .BeOfType<ServiceBusQueueDeadLetterHealthCheck>();
+    }
+
+    [Fact]
+    [Obsolete("Obsolete")]
+    public void Given_ConnectionString_When_AddServiceBusQueueDeadLetter_Then_HealthCheckIsRegistered()
+    {
+        // Arrange
+        var healthChecksBuilder = Services
+            .AddLogging()
+            .AddHealthChecks();
+
+        // Act
+        healthChecksBuilder.AddServiceBusQueueDeadLetter(
+            _ => Guid.NewGuid().ToString("N"),
+            _ => "queueName",
+            "Some_Health_Check_Name");
+
+        // Assert
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var healthCheckRegistrations = serviceProvider
+            .GetRequiredService<IOptions<HealthCheckServiceOptions>>()
+            .Value
+            .Registrations;
+
+        healthCheckRegistrations
+            .Should()
+            .ContainSingle();
+
+        var healthCheckRegistration = healthCheckRegistrations.Single();
+
+        healthCheckRegistration.Name.Should().Be("Some_Health_Check_Name");
+        healthCheckRegistration.Factory(serviceProvider)
+            .Should()
+            .BeOfType<ServiceBusQueueDeadLetterHealthCheck>();
     }
 }

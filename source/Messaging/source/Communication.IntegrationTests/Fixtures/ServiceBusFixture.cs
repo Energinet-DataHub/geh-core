@@ -30,9 +30,15 @@ public sealed class ServiceBusFixture : IAsyncLifetime
 
     public TopicResource? TopicResource { get; private set; }
 
-    public ServiceBusReceiver? Receiver { get; private set; }
+    public QueueResource? QueueResource { get; private set; }
 
-    public ServiceBusReceiver? DeadLetterReceiver { get; private set; }
+    public ServiceBusReceiver? TopicReceiver { get; private set; }
+
+    public ServiceBusReceiver? TopicDeadLetterReceiver { get; private set; }
+
+    public ServiceBusReceiver? QueueReceiver { get; private set; }
+
+    public ServiceBusReceiver? QueueDeadLetterReceiver { get; private set; }
 
     private ServiceBusClient? Client { get; set; }
 
@@ -43,17 +49,27 @@ public sealed class ServiceBusFixture : IAsyncLifetime
             .AddSubscription("The_Subscription")
             .CreateAsync();
 
+        QueueResource = await ServiceBusResourceProvider
+            .BuildQueue("The_Queue")
+            .CreateAsync();
+
         Client = new ServiceBusClient(
             ServiceBusResourceProvider.FullyQualifiedNamespace,
             AzureCredential);
 
-        Receiver = Client.CreateReceiver(
+        TopicReceiver = Client.CreateReceiver(
             TopicResource.Name,
             TopicResource.Subscriptions.First().SubscriptionName);
 
-        DeadLetterReceiver = Client.CreateReceiver(
+        TopicDeadLetterReceiver = Client.CreateReceiver(
             TopicResource.Name,
             TopicResource.Subscriptions.First().SubscriptionName,
+            new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
+
+        QueueReceiver = Client.CreateReceiver(QueueResource.Name);
+
+        QueueDeadLetterReceiver = Client.CreateReceiver(
+            QueueResource.Name,
             new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
     }
 
@@ -61,14 +77,14 @@ public sealed class ServiceBusFixture : IAsyncLifetime
     {
         await ServiceBusResourceProvider.DisposeAsync();
 
-        if (Receiver is not null)
+        if (TopicReceiver is not null)
         {
-            await Receiver.DisposeAsync();
+            await TopicReceiver.DisposeAsync();
         }
 
-        if (DeadLetterReceiver is not null)
+        if (TopicDeadLetterReceiver is not null)
         {
-            await DeadLetterReceiver.DisposeAsync();
+            await TopicDeadLetterReceiver.DisposeAsync();
         }
 
         if (Client is not null)

@@ -21,7 +21,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Diagnostics.HealthChecks;
 
-public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
+public sealed class ServiceBusQueueDeadLetterHealthCheckTests(
     ServiceBusFixture fixture)
     : IClassFixture<ServiceBusFixture>, IAsyncLifetime
 {
@@ -39,25 +39,25 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
 
     public async Task DisposeAsync()
     {
-        var receivedMessage = await Fixture.TopicReceiver!.ReceiveMessageAsync();
+        var receivedMessage = await Fixture.QueueReceiver!.ReceiveMessageAsync();
         if (receivedMessage is not null)
         {
-            await Fixture.TopicReceiver!.CompleteMessageAsync(receivedMessage);
+            await Fixture.QueueReceiver!.CompleteMessageAsync(receivedMessage);
         }
 
-        var checkMessageReceiver = await Fixture.TopicReceiver!.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
+        var checkMessageReceiver = await Fixture.QueueReceiver!.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
         if (checkMessageReceiver != null)
         {
             throw new InvalidOperationException("Message was not removed from the topic.");
         }
 
-        var deadLetterMessage = await Fixture.TopicDeadLetterReceiver!.ReceiveMessageAsync();
+        var deadLetterMessage = await Fixture.QueueDeadLetterReceiver!.ReceiveMessageAsync();
         if (deadLetterMessage != null)
         {
-            await Fixture.TopicDeadLetterReceiver!.CompleteMessageAsync(deadLetterMessage);
+            await Fixture.QueueDeadLetterReceiver!.CompleteMessageAsync(deadLetterMessage);
         }
 
-        var checkMessageDeadLetter = await Fixture.TopicDeadLetterReceiver!.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
+        var checkMessageDeadLetter = await Fixture.QueueDeadLetterReceiver!.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
         if (checkMessageDeadLetter != null)
         {
             throw new InvalidOperationException("Message was not removed from the dead letter queue.");
@@ -72,14 +72,13 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
             .AddLogging()
             .AddHealthChecks();
 
-        healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
+        healthChecksBuilder.AddServiceBusQueueDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.FullyQualifiedNamespace,
-            _ => Fixture.TopicResource!.Name,
-            _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,
+            _ => Fixture.QueueResource!.Name,
             _ => Fixture.AzureCredential,
             HealthCheckName);
 
-        var sender = Fixture.TopicResource!.SenderClient;
+        var sender = Fixture.QueueResource!.SenderClient;
         var message = new ServiceBusMessage("Test message");
         await sender.SendMessageAsync(message);
 
@@ -104,19 +103,18 @@ public sealed class ServiceBusTopicSubscriptionDeadLetterHealthCheckTests(
         var healthChecksBuilder = Services.AddLogging()
             .AddHealthChecks();
 
-        healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
+        healthChecksBuilder.AddServiceBusQueueDeadLetter(
             _ => Fixture.ServiceBusResourceProvider.FullyQualifiedNamespace,
-            _ => Fixture.TopicResource!.Name,
-            _ => Fixture.TopicResource!.Subscriptions.First().SubscriptionName,
+            _ => Fixture.QueueResource!.Name,
             _ => Fixture.AzureCredential,
             HealthCheckName);
 
-        var sender = Fixture.TopicResource!.SenderClient;
+        var sender = Fixture.QueueResource!.SenderClient;
         var message = new ServiceBusMessage("Test message");
         await sender.SendMessageAsync(message);
 
-        var receivedMessage = await Fixture.TopicReceiver!.ReceiveMessageAsync();
-        await Fixture.TopicReceiver!.DeadLetterMessageAsync(receivedMessage);
+        var receivedMessage = await Fixture.QueueReceiver!.ReceiveMessageAsync();
+        await Fixture.QueueReceiver!.DeadLetterMessageAsync(receivedMessage);
 
         // Act
         var provider = Services.BuildServiceProvider();
