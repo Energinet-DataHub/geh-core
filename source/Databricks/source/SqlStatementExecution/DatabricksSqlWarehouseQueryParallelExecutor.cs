@@ -21,13 +21,13 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
-public class DatabricksSqlWarehouseQueryExecutorParallel2 : DatabricksSqlWarehouseQueryExecutor
+public class DatabricksSqlWarehouseQueryParallelExecutor : DatabricksSqlWarehouseQueryExecutor
 {
     private readonly HttpClient _httpClient;
     private readonly HttpClient _externalHttpClient;
     private readonly DatabricksSqlStatementOptions _options;
 
-    internal DatabricksSqlWarehouseQueryExecutorParallel2(IHttpClientFactory httpClientFactory, IOptions<DatabricksSqlStatementOptions> options)
+    internal DatabricksSqlWarehouseQueryParallelExecutor(IHttpClientFactory httpClientFactory, IOptions<DatabricksSqlStatementOptions> options)
         : base(httpClientFactory, options)
     {
         _httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
@@ -62,7 +62,7 @@ public class DatabricksSqlWarehouseQueryExecutorParallel2 : DatabricksSqlWarehou
             yield break;
         }
 
-        var semaphore = new SemaphoreSlim(Environment.ProcessorCount);
+        var semaphore = new SemaphoreSlim(_options.MaxBufferedChunks);
         var tempFolder = CreateRandomTempFolder();
         var downloadTasks = response.manifest.chunks.Select(chunk => DownloadChunkAsync(tempFolder, response.statement_id, chunk, semaphore, cancellationToken)).ToArray();
         Task.WaitAll(downloadTasks, cancellationToken);
@@ -141,7 +141,7 @@ public class DatabricksSqlWarehouseQueryExecutorParallel2 : DatabricksSqlWarehou
         var tempPath = Path.GetTempPath();
 
         // Generate a short, unique folder name
-        var folderName = $"{DateTime.Now:yyyyMMddHHmmss}_{new Random().Next(1000, 9999)}";
+        var folderName = $"{DateTime.Now:yyyyMMddHHmmss}_{Random.Shared.Next(1000, 9999)}";
 
         // Combine the temporary folder path and the unique folder name
         var fullPath = Path.Combine(tempPath, folderName);

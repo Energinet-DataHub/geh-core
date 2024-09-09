@@ -29,18 +29,11 @@ public sealed class DatabricksSqlWarehouseFixture
         return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
     }
 
-    public DatabricksSqlWarehouseQueryExecutorParallel CreateParallelSqlStatementClient()
+    public DatabricksSqlWarehouseQueryParallelExecutor CreateParallelSqlStatementClient()
     {
         var services = CreateServiceCollection();
         var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutorParallel>();
-    }
-
-    public DatabricksSqlWarehouseQueryExecutorParallel2 CreateParallelSqlStatementClient_2()
-    {
-        var services = CreateServiceCollection();
-        var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutorParallel2>();
+        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryParallelExecutor>();
     }
 
     public HttpClient CreateHttpClient()
