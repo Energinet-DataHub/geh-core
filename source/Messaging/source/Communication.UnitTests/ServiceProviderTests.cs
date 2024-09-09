@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using FluentAssertions;
@@ -22,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Core.Messaging.Tests;
+namespace Energinet.DataHub.Core.Messaging.Communication.UnitTests;
 
 [UnitTest]
 public class ServiceProviderTests

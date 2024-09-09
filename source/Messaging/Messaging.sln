@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging", "source\Messaging\Messaging.csproj", "{B3CC1EFC-DA6C-45F3-9AA6-D75FDBE1504B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Communication", "source\Communication\Communication.csproj", "{B3CC1EFC-DA6C-45F3-9AA6-D75FDBE1504B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Tests", "source\Messaging.Tests\Messaging.Tests.csproj", "{68412EBF-701D-467D-8716-74269E171F41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Communication.UnitTests", "source\Communication.UnitTests\Communication.UnitTests.csproj", "{68412EBF-701D-467D-8716-74269E171F41}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{05DE980B-A2A7-4235-AE53-3167E94699DD}"
 EndProject
@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-no
 	ProjectSection(SolutionItems) = preProject
 		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication.IntegrationTests", "source\Communication.IntegrationTests\Communication.IntegrationTests.csproj", "{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{68412EBF-701D-467D-8716-74269E171F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68412EBF-701D-467D-8716-74269E171F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68412EBF-701D-467D-8716-74269E171F41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,6 +46,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{68412EBF-701D-467D-8716-74269E171F41} = {05DE980B-A2A7-4235-AE53-3167E94699DD}
 		{7B8A3DCF-D347-4832-8E74-C374E7144421} = {5731DAF9-B9EF-480B-B4B9-585D41EE21BC}
+		{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97} = {05DE980B-A2A7-4235-AE53-3167E94699DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D18003C-89D6-455C-87D2-BDCDC4C636E3}
