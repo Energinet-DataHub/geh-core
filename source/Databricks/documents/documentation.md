@@ -97,6 +97,23 @@ var values = ((object[])row.b).OfType<int>();
 var values = JsonConvert.DeserializeObject<string[]>((string)row.b).Select(int.Parse);
 ```
 
+#### DatabricksSqlWarehouseQueryExecutor with QueryOptions
+
+DatabricksSqlWarehouseQueryExecutor can be used with QueryOptions to customize the behavior of the query execution.
+
+The QueryOptions class allows you to specify the following properties:
+
+- `Format`: Specifies the streaming format of the query results. Options are `Format.ApacheArrow` (default) or `Format.JsonArray`.
+- `Parallel`: Wether or not the code should download chunks in parallel to the temp folder.
+
+Usage:
+
+```c#
+// Using ApacheArrow format and download in parallel
+var query = new QueryPersons(name: "Sheldon Cooper", date: new DateTime(1980, 2, 26));
+var records = _warehouse.ExecuteStatementAsync(query, QueryOptions.Default.WithParallelDownload()); // _warehouse is an instance of DatabricksSqlWarehouseQueryExecutor
+```
+
 #### Adhoc queries
 
 It's possible to create adhoc queries from `DatabricksStatement` class.

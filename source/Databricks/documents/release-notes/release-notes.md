@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.2.0
+
+- Add support for downloading chunks in parallel from Databricks. See [documentation](documentation.md#databrickssqlwarehousequeryexecutor-with-queryoptions) for usage.
+
 ## Version 11.1.1
 
 - Fix handling of null values in constructor when using `StronglyTypedApacheArrowFormat`
