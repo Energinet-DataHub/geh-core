@@ -17,6 +17,18 @@ public record IntegrationEvent(
 
 The package is still work in progress.
 
+## Overview
+
+<!-- TOC -->
+* [Messaging](#messaging)
+    * [Overview](#overview)
+    * [Publishing](#publishing)
+    * [Subscribing](#subscribing)
+        * [ServiceBusTrigger](#servicebustrigger)
+        * [BackgroundService](#backgroundservice)
+    * [Health checks](#health-checks)
+<!-- TOC -->
+
 ## Publishing
 
 The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface has to be implemented.
@@ -132,3 +144,39 @@ When used as a hosted BackgroundService, in addition to the registration of the 
 services.Configure<SubscriberWorkerOptions>(builder.Configuration.GetSection(nameof(SubscriberWorkerOptions)));
 services.AddSubscriberWorker();
 ```
+
+## Health checks
+
+The package provides an opt-in dead-letter health check, which can be registered using
+`ServiceBusHealthCheckBuilderExtensions` as shown below:
+
+```csharp
+services
+    .AddHealthChecks()
+    .AddServiceBusTopicSubscriptionDeadLetter(
+        sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+        sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
+        sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
+        "HealthCheckName",
+        [HealthChecksConstants.StatusHealthCheckTag]);
+```
+
+```csharp
+services
+    .AddHealthChecks()
+    .AddServiceBusQueueDeadLetter(
+        sp => sp.GetRequiredService<IOptions<ServiceBusOptions>>().Value.FullyQualifiedNamespace,
+        sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.QueueName,
+        _ => new DefaultAzureCredential(),
+        "HealthCheckName",
+        [HealthChecksConstants.StatusHealthCheckTag]);
+```
+
+The usage of the `StatusHealthCheckTag` from `App.Common.Diagnostics.HealthChecks` is optional but highly recommended.
+It denotes that the health check should not block deployments if it fails.
+
+Health checks can be added both with connection strings and fully qualified namespaces.
+Note, however, that using connection strings is already an obsolete feature as we are pushing towards AIM on the service bus.
+
+The health check is meant for monitoring the dead-letter queue of a ServiceBus subscription to a particular topic.
+The health check will return unhealthy if there are any messages in the dead-letter queue.

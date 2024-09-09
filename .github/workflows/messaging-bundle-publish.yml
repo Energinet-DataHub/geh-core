@@ -21,7 +21,7 @@ on:
     branches:
       - main
     paths:
-      - source/Messaging/source/Messaging/**
+      - source/Messaging/source/Communication/**
       - .github/workflows/messaging-bundle-publish.yml
   # Build, test, pack
   # Executed if Messaging folder or build scripts has changed; including if documentation or tests has changed
@@ -33,14 +33,19 @@ on:
 env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
+  # Necessary to manage Azure resources from automated tests
+  AZURE_KEYVAULT_URL: ${{ vars.integration_test_azure_keyvault_url }}
 
 jobs:
   build_and_publish:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
+    environment: AzureAuth
+
     # We need to have permissions here to be able to support manually triggering this workflow for releasing a pre-release
     permissions:
+      id-token: write # Needed by 'dotnet-solution-build-and-test' to login to Azure
       contents: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
       issues: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
       checks: write # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
@@ -57,19 +62,22 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
         with:
           solution_file_path: ./source/Messaging/Messaging.sln
+          azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+          azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+          azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
           publish_test_report: "true"
 
-      - name: Pack Messaging project
+      - name: Pack Communication project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
         with:
-          project_path: ./source/Messaging/source/Messaging/Messaging.csproj
+          project_path: ./source/Messaging/source/Communication/Communication.csproj
 
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v41
         with:
           files: |
-            source/Messaging/source/Messaging/**/*.*
+            source/Messaging/source/Communication/**/*.*
             .github/workflows/messaging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
