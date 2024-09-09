@@ -137,12 +137,12 @@ public static class ServiceBusHealthCheckBuilderExtensions
     /// Add a health check that verifies that a queue has no dead-letter messages.
     /// Note the following:
     /// <p>
-    /// The health check verifies that a subscription for a given topic has no dead-letter messages.
+    /// The health check verifies that a queue has no dead-letter messages.
     /// If dead-letter messages are found, the health check will return a failure status.
     /// The health check will return a healthy status if no dead-letter messages are found.
     /// This check must only ever be used for dead-letter validation.
-    /// For ensuring that a given topic and subscription relationship is healthy,
-    /// use the <see cref="AzureServiceBusSubscriptionHealthCheck"/> which can be added
+    /// For ensuring that a given queue is healthy,
+    /// use the <see cref="AzureServiceBusQueueHealthCheck"/> which can be added
     /// using <see cref="AzureServiceBusHealthCheckBuilderExtensions" />.
     /// </p>
     /// </summary>
@@ -184,12 +184,12 @@ public static class ServiceBusHealthCheckBuilderExtensions
     /// Add a health check that verifies that a queue has no dead-letter messages.
     /// Note the following:
     /// <p>
-    /// The health check verifies that a subscription for a given topic has no dead-letter messages.
+    /// The health check verifies that a queue has no dead-letter messages.
     /// If dead-letter messages are found, the health check will return a failure status.
     /// The health check will return a healthy status if no dead-letter messages are found.
     /// This check must only ever be used for dead-letter validation.
-    /// For ensuring that a given topic and subscription relationship is healthy,
-    /// use the <see cref="AzureServiceBusSubscriptionHealthCheck"/> which can be added
+    /// For ensuring that a given queue is healthy,
+    /// use the <see cref="AzureServiceBusQueueHealthCheck"/> which can be added
     /// using <see cref="AzureServiceBusHealthCheckBuilderExtensions" />.
     /// </p>
     /// </summary>

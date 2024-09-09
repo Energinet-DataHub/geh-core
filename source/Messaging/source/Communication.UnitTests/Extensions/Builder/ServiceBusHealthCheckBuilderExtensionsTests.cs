@@ -38,7 +38,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
 
         // Act
         healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
-            _ => Guid.NewGuid().ToString("N"),
+            _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "topicName",
             _ => "subscriptionName",
             _ => new DefaultAzureCredential(),
@@ -75,7 +75,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
 
         // Act
         healthChecksBuilder.AddServiceBusTopicSubscriptionDeadLetter(
-            _ => Guid.NewGuid().ToString("N"),
+            _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "topicName",
             _ => "subscriptionName",
             "Some_Health_Check_Name");
@@ -111,7 +111,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
 
         // Act
         healthChecksBuilder.AddServiceBusQueueDeadLetter(
-            _ => Guid.NewGuid().ToString("N"),
+            _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "queueName",
             _ => new DefaultAzureCredential(),
             "Some_Health_Check_Name");
@@ -147,7 +147,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
 
         // Act
         healthChecksBuilder.AddServiceBusQueueDeadLetter(
-            _ => Guid.NewGuid().ToString("N"),
+            _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "queueName",
             "Some_Health_Check_Name");
 

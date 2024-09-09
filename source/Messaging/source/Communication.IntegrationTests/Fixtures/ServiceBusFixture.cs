@@ -87,6 +87,16 @@ public sealed class ServiceBusFixture : IAsyncLifetime
             await TopicDeadLetterReceiver.DisposeAsync();
         }
 
+        if (QueueReceiver is not null)
+        {
+            await QueueReceiver.DisposeAsync();
+        }
+
+        if (QueueDeadLetterReceiver is not null)
+        {
+            await QueueDeadLetterReceiver.DisposeAsync();
+        }
+
         if (Client is not null)
         {
             await Client.DisposeAsync();

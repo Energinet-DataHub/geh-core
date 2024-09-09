@@ -48,7 +48,7 @@ public sealed class ServiceBusQueueDeadLetterHealthCheckTests(
         var checkMessageReceiver = await Fixture.QueueReceiver!.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
         if (checkMessageReceiver != null)
         {
-            throw new InvalidOperationException("Message was not removed from the topic.");
+            throw new InvalidOperationException("Message was not removed from the queue.");
         }
 
         var deadLetterMessage = await Fixture.QueueDeadLetterReceiver!.ReceiveMessageAsync();
@@ -65,7 +65,7 @@ public sealed class ServiceBusQueueDeadLetterHealthCheckTests(
     }
 
     [Fact]
-    public async Task Given_MessageAddedToServiceBusTopic_When_CheckHealth_Then_Healthy()
+    public async Task Given_MessageAddedToServiceBusQueue_When_CheckHealth_Then_Healthy()
     {
         // Arrange
         var healthChecksBuilder = Services
