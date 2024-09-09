@@ -161,6 +161,15 @@ services
         [HealthChecksConstants.StatusHealthCheckTag]);
 ```
 
+```csharp
+builder.AddServiceBusQueueDeadLetter(
+    sp => sp.GetRequiredService<IOptions<ServiceBusOptions>>().Value.FullyQualifiedNamespace,
+    sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.QueueName,
+    _ => new DefaultAzureCredential(),
+    "HealthCheckName",
+    [HealthChecksConstants.StatusHealthCheckTag])
+```
+
 The usage of the `StatusHealthCheckTag` from `App.Common.Diagnostics.HealthChecks` is optional but highly recommended.
 It denotes that the health check should not block deployments if it fails.
 
