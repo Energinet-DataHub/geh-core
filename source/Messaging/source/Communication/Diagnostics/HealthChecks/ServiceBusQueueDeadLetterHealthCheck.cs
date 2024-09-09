@@ -61,7 +61,7 @@ internal sealed class ServiceBusQueueDeadLetterHealthCheck
             {
                 return new HealthCheckResult(
                     context.Registration.FailureStatus,
-                    $"No runtime properties found for subscription '{Options.QueueName}'.");
+                    $"No runtime properties found for queue '{Options.QueueName}'.");
             }
 
             if (properties.Value.DeadLetterMessageCount > 0)
