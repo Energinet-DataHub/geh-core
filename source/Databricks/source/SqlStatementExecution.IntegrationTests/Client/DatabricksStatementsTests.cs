@@ -174,7 +174,23 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
     {
         // Arrange
-        var client = _sqlWarehouseFixture.CreateParallelSqlStatementClient();
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new Above2GbDataRows();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, format);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(1000000);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementParallelAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
         var statement = new Above2GbDataRows();
 
         // Act

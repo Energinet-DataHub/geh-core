@@ -51,11 +51,6 @@ public static class DatabricksSqlStatementExecutionExtensions
                 sp.GetRequiredService<IHttpClientFactory>(),
                 sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));
 
-        serviceCollection.AddSingleton(sp =>
-            new DatabricksSqlWarehouseQueryParallelExecutor(
-                sp.GetRequiredService<IHttpClientFactory>(),
-                sp.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>()));
-
         return serviceCollection;
     }
 }

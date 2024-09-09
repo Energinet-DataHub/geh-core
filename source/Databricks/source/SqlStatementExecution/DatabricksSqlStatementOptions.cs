@@ -45,9 +45,6 @@ public class DatabricksSqlStatementOptions
     /// Controls how many chunks are fetched concurrently.
     /// Default value is <see cref="Environment.ProcessorCount"/>
     /// </summary>
-    /// <remarks>
-    /// This only applies to <see cref="DatabricksSqlWarehouseQueryParallelExecutor"/>
-    /// </remarks>
     [Required]
     [Range(1, 200)]
     public int MaxBufferedChunks { get; set; } = Environment.ProcessorCount;
