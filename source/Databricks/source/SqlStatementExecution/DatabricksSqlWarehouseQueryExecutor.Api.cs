@@ -42,7 +42,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
     public virtual IAsyncEnumerable<dynamic> ExecuteStatementAsync(
         DatabricksStatement statement,
         CancellationToken cancellationToken = default)
-        => ExecuteStatementAsync(statement, DatabricksSqlWarehouseQueryOptions.Default, cancellationToken);
+        => ExecuteStatementAsync(statement, QueryOptions.Default, cancellationToken);
 
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
@@ -66,7 +66,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
         DatabricksStatement statement,
         Format format,
         CancellationToken cancellationToken = default)
-        => ExecuteStatementAsync(statement, DatabricksSqlWarehouseQueryOptions.WithFormat(format), cancellationToken);
+        => ExecuteStatementAsync(statement, QueryOptions.WithFormat(format), cancellationToken);
 
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the results.
@@ -88,7 +88,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
     /// </remarks>
     public virtual async IAsyncEnumerable<dynamic> ExecuteStatementAsync(
         DatabricksStatement statement,
-        DatabricksSqlWarehouseQueryOptions options,
+        QueryOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         ExecuteStatementInternalAsyncDelegate executeStatementInternalAsync = options.DownloadInParallel
@@ -101,7 +101,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
         }
     }
 
-    private delegate IAsyncEnumerable<dynamic> ExecuteStatementInternalAsyncDelegate(DatabricksStatement statement, DatabricksSqlWarehouseQueryOptions options, CancellationToken cancellationToken);
+    private delegate IAsyncEnumerable<dynamic> ExecuteStatementInternalAsyncDelegate(DatabricksStatement statement, QueryOptions options, CancellationToken cancellationToken);
 
     /// <summary>
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.

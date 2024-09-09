@@ -194,7 +194,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         var statement = new Above2GbDataRows();
 
         // Act
-        var result = client.ExecuteStatementAsync(statement, format);
+        var result = client.ExecuteStatementAsync(statement, QueryOptions.WithFormat(format).WithParallelDownload());
         var rowCount = await result.CountAsync();
 
         // Assert

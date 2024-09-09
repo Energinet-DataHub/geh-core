@@ -19,14 +19,14 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 /// <summary>
 /// Represents options for configuring Databricks SQL Warehouse queries.
 /// </summary>
-public class DatabricksSqlWarehouseQueryOptions
+public class QueryOptions
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DatabricksSqlWarehouseQueryOptions"/> class.
+    /// Initializes a new instance of the <see cref="QueryOptions"/> class.
     /// </summary>
     /// <param name="format">The format in which the results should be returned.</param>
     /// <param name="downloadInParallel">Indicates whether to download results in parallel.</param>
-    private DatabricksSqlWarehouseQueryOptions(Format format, bool downloadInParallel)
+    private QueryOptions(Format format, bool downloadInParallel)
     {
         Format = format;
         DownloadInParallel = downloadInParallel;
@@ -40,28 +40,33 @@ public class DatabricksSqlWarehouseQueryOptions
     /// <summary>
     /// Gets the default query options with Apache Arrow format and no parallel download.
     /// </summary>
-    public static DatabricksSqlWarehouseQueryOptions Default => new(Format.ApacheArrow, false);
+    public static QueryOptions Default => new(Format.ApacheArrow, false);
 
     /// <summary>
-    /// Creates a new instance of <see cref="DatabricksSqlWarehouseQueryOptions"/> with the specified format.
+    /// Gets the query options with Apache Arrow format and parallel download.
+    /// </summary>
+    public static QueryOptions ApacheArrowParallel => new(Format.ApacheArrow, true);
+
+    /// <summary>
+    /// Creates a new instance of <see cref="QueryOptions"/> with the specified format.
     /// </summary>
     /// <param name="format">The format in which the results should be returned.</param>
-    /// <returns>A new instance of <see cref="DatabricksSqlWarehouseQueryOptions"/>.</returns>
-    public static DatabricksSqlWarehouseQueryOptions WithFormat(Format format) => new(format, false);
+    /// <returns>A new instance of <see cref="QueryOptions"/>.</returns>
+    public static QueryOptions WithFormat(Format format) => new(format, false);
 
     /// <summary>
-    /// Creates a new instance of <see cref="DatabricksSqlWarehouseQueryOptions"/> with the specified format and parallel download option.
+    /// Creates a new instance of <see cref="QueryOptions"/> with the specified format and parallel download option.
     /// </summary>
     /// <param name="format">The format in which the results should be returned.</param>
     /// <param name="downloadInParallel">Indicates whether to download results in parallel.</param>
-    /// <returns>A new instance of <see cref="DatabricksSqlWarehouseQueryOptions"/>.</returns>
-    public static DatabricksSqlWarehouseQueryOptions WithFormat(Format format, bool downloadInParallel) => new(format, downloadInParallel);
+    /// <returns>A new instance of <see cref="QueryOptions"/>.</returns>
+    public static QueryOptions WithFormat(Format format, bool downloadInParallel) => new(format, downloadInParallel);
 
     /// <summary>
     /// Enables parallel download for the query options.
     /// </summary>
-    /// <returns>The current instance of <see cref="DatabricksSqlWarehouseQueryOptions"/> with parallel download enabled.</returns>
-    public DatabricksSqlWarehouseQueryOptions WithParallelDownload()
+    /// <returns>The current instance of <see cref="QueryOptions"/> with parallel download enabled.</returns>
+    public QueryOptions WithParallelDownload()
     {
         DownloadInParallel = true;
         return this;

@@ -50,7 +50,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
 
     private async IAsyncEnumerable<dynamic> ExecuteStatementSerialInternalAsync(
         DatabricksStatement statement,
-        DatabricksSqlWarehouseQueryOptions options,
+        QueryOptions options,
         [EnumeratorCancellation]CancellationToken cancellationToken)
     {
         var strategy = options.Format.GetStrategy(_options);
@@ -88,7 +88,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
     #region Download parellel
     private async IAsyncEnumerable<dynamic> ExecuteStatementParallelInternalAsync(
         DatabricksStatement statement,
-        DatabricksSqlWarehouseQueryOptions options,
+        QueryOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var strategy = options.Format.GetStrategy(_options);
