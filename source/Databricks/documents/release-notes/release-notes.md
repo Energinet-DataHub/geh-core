@@ -2,7 +2,7 @@
 
 ## Version 11.2.0
 
-- Add support for downloading chunks in parallel from Databricks. See [documentation](documentation.md#databrickssqlwarehousequeryexecutor-with-queryoptions) for usage.
+- Add support for downloading chunks in parallel from Databricks.
 
 ## Version 11.1.1
 
