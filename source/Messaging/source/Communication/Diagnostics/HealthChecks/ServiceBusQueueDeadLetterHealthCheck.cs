@@ -19,11 +19,11 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 namespace Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 
 /// <summary>
-/// This health check verifies that a subscription for a given topic has no dead-letter messages.
+/// This health check verifies that a queue has no dead-letter messages.
 /// If dead-letter messages are found, the health check will return a failure status.
 /// The health check will return a healthy status if no dead-letter messages are found.
 /// This check must only ever be used for dead-letter validation.
-/// For ensuring that a given topic + subscription relationship is healthy, use the <see cref="AzureServiceBusSubscriptionHealthCheck"/>.
+/// For ensuring that a given queue is healthy, use the <see cref="AzureServiceBusQueueHealthCheck"/>.
 /// Thus, it is advisable to use both health checks in conjunction.
 /// </summary>
 internal sealed class ServiceBusQueueDeadLetterHealthCheck
