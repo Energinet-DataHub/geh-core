@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 public class DatabricksSqlWarehouseQueryExecutor
 {
-    private const string StatementsEndpointPath = "/api/2.0/sql/statements";
+    private protected const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly HttpClient _externalHttpClient;
     private readonly DatabricksSqlStatementOptions _options;

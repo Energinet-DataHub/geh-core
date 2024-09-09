@@ -29,6 +29,20 @@ public sealed class DatabricksSqlWarehouseFixture
         return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
     }
 
+    public DatabricksSqlWarehouseQueryExecutorParallel CreateParallelSqlStatementClient()
+    {
+        var services = CreateServiceCollection();
+        var serviceProvider = services.BuildServiceProvider();
+        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutorParallel>();
+    }
+
+    public DatabricksSqlWarehouseQueryExecutorParallel2 CreateParallelSqlStatementClient_2()
+    {
+        var services = CreateServiceCollection();
+        var serviceProvider = services.BuildServiceProvider();
+        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutorParallel2>();
+    }
+
     public HttpClient CreateHttpClient()
     {
         var services = CreateServiceCollection();
@@ -46,6 +60,7 @@ public sealed class DatabricksSqlWarehouseFixture
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WorkspaceUrl", integrationTestConfiguration.DatabricksSettings.WorkspaceUrl },
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WorkspaceToken", integrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken },
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WarehouseId", integrationTestConfiguration.DatabricksSettings.WarehouseId },
+            { $"{DatabricksSqlStatementOptions.DatabricksOptions}:MaxBufferedChunks", "15" },
         };
 
         var configuration = new ConfigurationBuilder()
