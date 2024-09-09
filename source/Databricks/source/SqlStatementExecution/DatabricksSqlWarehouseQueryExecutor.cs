@@ -102,17 +102,18 @@ public partial class DatabricksSqlWarehouseQueryExecutor
             yield break;
         }
 
-        await foreach (var p in ProcessChunksInParallel(cancellationToken, response, strategy)) yield return p;
+        await foreach (var p in ProcessChunksInParallel(cancellationToken, response, strategy, options.MaxParallelChunks)) yield return p;
     }
 
     private async IAsyncEnumerable<dynamic> ProcessChunksInParallel(
         [EnumeratorCancellation] CancellationToken cancellationToken,
         DatabricksStatementResponse response,
-        IExecuteStrategy strategy)
+        IExecuteStrategy strategy,
+        int maxParallelChunks = 0)
     {
         if (response.statement_id == null) yield break;
 
-        var semaphore = new SemaphoreSlim(_options.MaxBufferedChunks);
+        var semaphore = new SemaphoreSlim(maxParallelChunks);
         var tempFolder = CreateRandomTempFolder();
         var downloadTasks = response.manifest.chunks.Select(chunk => DownloadChunkAsync(tempFolder, response.statement_id, chunk, semaphore, cancellationToken)).ToArray();
         Task.WaitAll(downloadTasks, cancellationToken);

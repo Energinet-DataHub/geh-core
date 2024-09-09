@@ -65,12 +65,28 @@ public class QueryOptions
     /// <summary>
     /// Enables parallel download for the query options.
     /// </summary>
+    /// <remarks>
+    /// The number of parallel chunks is set to the number of processors available on the machine.
+    /// </remarks>
     /// <returns>The current instance of <see cref="QueryOptions"/> with parallel download enabled.</returns>
     public QueryOptions WithParallelDownload()
+        => WithParallelDownload(Environment.ProcessorCount);
+
+    /// <summary>
+    /// Enables parallel download for the query options with the specified number of parallel chunks.
+    /// </summary>
+    /// <param name="maxParallelChunks"></param>
+    /// <returns>The current instance of <see cref="QueryOptions"/> with parallel download enabled.</returns>
+    public QueryOptions WithParallelDownload(int maxParallelChunks)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxParallelChunks, nameof(maxParallelChunks));
+
         DownloadInParallel = true;
+        MaxParallelChunks = maxParallelChunks;
         return this;
     }
+
+    internal int MaxParallelChunks { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether to download results in parallel.

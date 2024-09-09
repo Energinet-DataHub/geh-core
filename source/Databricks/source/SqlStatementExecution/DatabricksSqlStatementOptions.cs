@@ -40,12 +40,4 @@ public class DatabricksSqlStatementOptions
     /// </summary>
     [Required]
     public string WarehouseId { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Controls how many chunks are fetched concurrently.
-    /// Default value is <see cref="Environment.ProcessorCount"/>
-    /// </summary>
-    [Required]
-    [Range(1, 200)]
-    public int MaxBufferedChunks { get; set; } = Environment.ProcessorCount;
 }
