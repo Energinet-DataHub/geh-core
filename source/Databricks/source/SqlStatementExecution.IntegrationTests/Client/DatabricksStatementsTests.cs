@@ -174,7 +174,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
     {
         // Arrange
-        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var client = _sqlWarehouseFixture.CreateParallelSqlStatementClient_2();
         var statement = new Above2GbDataRows();
 
         // Act
@@ -230,8 +230,8 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
 
     public static IEnumerable<object[]> GetFormats()
     {
-        yield return new object[] { Format.ApacheArrow };
-        yield return new object[] { Format.JsonArray };
+        yield return [Format.ApacheArrow];
+        yield return [Format.JsonArray];
     }
 
     public class QueryHistory

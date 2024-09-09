@@ -40,4 +40,14 @@ public class DatabricksSqlStatementOptions
     /// </summary>
     [Required]
     public string WarehouseId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Controls how many results are fetched concurrently.
+    /// </summary>
+    /// <remarks>
+    /// This only applies to <see cref="DatabricksSqlWarehouseQueryExecutorParallel"/>
+    /// </remarks>
+    [Required]
+    [Range(1, 200)]
+    public int MaxBufferedChunks { get; set; } = 3;
 }
