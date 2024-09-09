@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System.Net;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -70,6 +72,27 @@ public class SwaggerOpenApiTests
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().Contain($"\"info\": {{\n    \"title\": \"{title}\",\n ");
         content.Should().Contain($"\"version\": \"{majorVersion}.");
+    }
+
+    [Fact]
+    public async Task DoesSwaggerHandleEnumCorrectly()
+    {
+        // Arrange
+        var url = "swagger/v2/swagger.json";
+
+        // Act
+        var actualResponse = await Fixture.Web01HttpClient.GetAsync(url);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        var swagger = System.Text.Json.JsonSerializer.Deserialize<JsonNode>(content);
+        var enumValues = swagger?["components"]?["schemas"]?["EnumTest"]?["enum"];
+        var enumNames = swagger?["components"]?["schemas"]?["EnumTest"]?["x-enumNames"];
+        enumValues?.AsArray().GetValues<int>().Should().BeEquivalentTo(new[] { 1, 2, 3, 40 });
+        enumNames?.AsArray().GetValues<string>().Should().BeEquivalentTo(new[] { "First", "Secound", "Third", "Fourth" });
     }
 
     [Fact]
