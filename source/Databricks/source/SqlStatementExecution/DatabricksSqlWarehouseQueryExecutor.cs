@@ -116,7 +116,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
         var semaphore = new SemaphoreSlim(maxParallelChunks);
         var tempFolder = CreateRandomTempFolder();
         var downloadTasks = response.manifest.chunks.Select(chunk => DownloadChunkAsync(tempFolder, response.statement_id, chunk, semaphore, cancellationToken)).ToArray();
-        Task.WaitAll(downloadTasks, cancellationToken);
+        await Task.WhenAll(downloadTasks).ConfigureAwait(false);
 
         try
         {
