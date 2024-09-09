@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Asp.Versioning;
+using ExampleHost.WebApi01.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi01.Controllers;
