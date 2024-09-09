@@ -89,7 +89,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
         DatabricksSqlWarehouseQueryOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        await foreach (var record in DoExecuteStatementAsync(statement, options, cancellationToken).ConfigureAwait(false))
+        await foreach (var record in ExecuteStatementInternalAsync(statement, options, cancellationToken).ConfigureAwait(false))
         {
             yield return record;
         }

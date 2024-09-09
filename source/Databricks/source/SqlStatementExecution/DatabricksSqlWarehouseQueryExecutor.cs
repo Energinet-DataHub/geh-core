@@ -103,7 +103,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
         }
     }
 
-    private async IAsyncEnumerable<dynamic> DoExecuteStatementAsync(
+    private async IAsyncEnumerable<dynamic> ExecuteStatementInternalAsync(
         DatabricksStatement statement,
         DatabricksSqlWarehouseQueryOptions options,
         [EnumeratorCancellation]CancellationToken cancellationToken)
