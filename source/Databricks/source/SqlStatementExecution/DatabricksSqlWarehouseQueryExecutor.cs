@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Dynamic;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 using Microsoft.Extensions.Options;
 
@@ -48,62 +46,9 @@ public partial class DatabricksSqlWarehouseQueryExecutor
         _options = null!;
     }
 
-    /// <summary>
-    /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
-    /// </summary>
-    /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
-    /// <param name="cancellationToken">
-    /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
-    /// The cancellation token can be used to implement time out as well.</param>
-    /// <typeparam name="T">Target type</typeparam>
-    /// <returns>An asynchronous enumerable of <typeparamref name="T"/> representing the result of the query.</returns>
-    /// <remarks>
-    /// This is an experimental feature and may be removed in a future version.
-    /// <br/><br/>
-    /// Requirements for <typeparamref name="T"/>:<br/>
-    /// - Must be a reference type<br/>
-    /// - Must have a public constructor with parameters matching the columns in the result set<br/>
-    /// - Must only have a single constructor<br/>
-    /// - Must be annotated with <see cref="ArrowFieldAttribute"/> to indicate the order of the constructor parameters
-    /// </remarks>
-    public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(
-        DatabricksStatement statement,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
-        where T : class
-    {
-        var strategy = new StronglyTypedApacheArrowFormat(_options);
-        var request = strategy.GetStatementRequest(statement);
-        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken).ConfigureAwait(false);
+    #region Download serial
 
-        if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
-
-        if (response.manifest.total_row_count <= 0)
-        {
-            yield break;
-        }
-
-        foreach (var chunk in response.manifest.chunks)
-        {
-            var uri = StatementsEndpointPath +
-                      $"/{response.statement_id}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
-            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken).ConfigureAwait(false);
-
-            if (chunkResponse?.external_links == null) continue;
-
-            var stream = await _externalHttpClient.GetStreamAsync(
-                chunkResponse.external_links[0].external_link,
-                cancellationToken).ConfigureAwait(false);
-            await using (stream.ConfigureAwait(false))
-            {
-                await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken).ConfigureAwait(false))
-                {
-                    yield return row;
-                }
-            }
-        }
-    }
-
-    private async IAsyncEnumerable<dynamic> ExecuteStatementInternalAsync(
+    private async IAsyncEnumerable<dynamic> ExecuteStatementSerialInternalAsync(
         DatabricksStatement statement,
         DatabricksSqlWarehouseQueryOptions options,
         [EnumeratorCancellation]CancellationToken cancellationToken)
@@ -137,4 +82,126 @@ public partial class DatabricksSqlWarehouseQueryExecutor
             }
         }
     }
+
+    #endregion
+
+    #region Download parellel
+    private async IAsyncEnumerable<dynamic> ExecuteStatementParallelInternalAsync(
+        DatabricksStatement statement,
+        DatabricksSqlWarehouseQueryOptions options,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var strategy = options.Format.GetStrategy(_options);
+        var request = strategy.GetStatementRequest(statement);
+        var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken).ConfigureAwait(false);
+
+        if (_httpClient.BaseAddress == null) throw new InvalidOperationException();
+
+        if (response.manifest.total_row_count <= 0)
+        {
+            yield break;
+        }
+
+        await foreach (var p in ProcessChunksInParallel(cancellationToken, response, strategy)) yield return p;
+    }
+
+    private async IAsyncEnumerable<dynamic> ProcessChunksInParallel(
+        [EnumeratorCancellation] CancellationToken cancellationToken,
+        DatabricksStatementResponse response,
+        IExecuteStrategy strategy)
+    {
+        if (response.statement_id == null) yield break;
+
+        var semaphore = new SemaphoreSlim(_options.MaxBufferedChunks);
+        var tempFolder = CreateRandomTempFolder();
+        var downloadTasks = response.manifest.chunks.Select(chunk => DownloadChunkAsync(tempFolder, response.statement_id, chunk, semaphore, cancellationToken)).ToArray();
+        Task.WaitAll(downloadTasks, cancellationToken);
+
+        try
+        {
+            var files = GetFilesOrderByName(tempFolder);
+            foreach (var file in files)
+            {
+                var fs = File.OpenRead(file);
+                await using (fs.ConfigureAwait(false))
+                {
+                    await foreach (var row in strategy.ExecuteAsync(fs, response, cancellationToken).ConfigureAwait(false))
+                    {
+                        yield return row;
+                    }
+                }
+            }
+        }
+        finally
+        {
+            // Cleanup the temporary folder
+            Directory.Delete(tempFolder, true);
+        }
+    }
+
+    private static IEnumerable<string> GetFilesOrderByName(string tempFolder)
+    {
+        return Directory.GetFiles(tempFolder, "*.file").OrderBy(FileNameSorter);
+
+        static int FileNameSorter(string fileName)
+        {
+            // Extract the filename without the extension
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
+            // Convert the matched numeric part to an integer
+            return int.TryParse(fileNameWithoutExtension, out var numericPrefix)
+                ? numericPrefix
+                : throw new InvalidOperationException("Unable to convert the numeric prefix to an integer.");
+        }
+    }
+
+    private async Task DownloadChunkAsync(string tempFolder, string statementId, Chunks chunk, SemaphoreSlim semaphore, CancellationToken cancellationToken)
+    {
+        var uri = StatementsEndpointPath +
+                  $"/{statementId}/result/chunks/{chunk.chunk_index}?row_offset={chunk.row_offset}";
+
+        try
+        {
+            await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            var chunkResponse = await _httpClient.GetFromJsonAsync<ManifestChunk>(uri, cancellationToken).ConfigureAwait(false);
+
+            if (chunkResponse?.external_links == null) return;
+
+            var filePath = Path.Combine(tempFolder, $"{chunk.chunk_index}.file");
+            var stream = await _externalHttpClient.GetStreamAsync(
+                chunkResponse.external_links[0].external_link,
+                cancellationToken).ConfigureAwait(false);
+            var fs = File.OpenWrite(filePath);
+
+            await using (stream.ConfigureAwait(false))
+            await using (fs.ConfigureAwait(false))
+            {
+                await stream.CopyToAsync(fs, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+    }
+
+    private static string CreateRandomTempFolder()
+    {
+        // Get the path to the user's temporary folder
+        var tempPath = Path.GetTempPath();
+
+        // Generate a short, unique folder name
+        var folderName = $"{DateTime.Now:yyyyMMddHHmmss}_{Random.Shared.Next(1000, 9999)}";
+
+        // Combine the temporary folder path and the unique folder name
+        var fullPath = Path.Combine(tempPath, folderName);
+
+        // Create the new folder
+        Directory.CreateDirectory(fullPath);
+
+        return fullPath;
+    }
+
+    #endregion
+
 }
