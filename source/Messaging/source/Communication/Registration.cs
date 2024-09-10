@@ -30,6 +30,7 @@ public static class Registration
     /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
+    [Obsolete("We should use identity access management (IAM) with ServiceBus. To do this use the method 'AddIntegrationEventsPublisher'.")]
     public static IServiceCollection AddPublisher<TIntegrationEventProvider>(this IServiceCollection services)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {

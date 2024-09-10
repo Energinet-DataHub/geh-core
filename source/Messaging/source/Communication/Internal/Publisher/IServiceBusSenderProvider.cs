@@ -16,6 +16,7 @@ using Azure.Messaging.ServiceBus;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
+[Obsolete("We should use Azure SDK extensions for client registrations and lifetime handling.")]
 internal interface IServiceBusSenderProvider
 {
     ServiceBusSender Instance { get; }

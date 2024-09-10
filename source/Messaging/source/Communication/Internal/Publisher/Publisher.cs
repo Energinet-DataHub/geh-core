@@ -22,6 +22,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
+[Obsolete("We should use Azure SDK extensions for client registrations and lifetime handling.")]
 internal sealed class Publisher : IPublisher
 {
     private readonly IIntegrationEventProvider _integrationEventProvider;

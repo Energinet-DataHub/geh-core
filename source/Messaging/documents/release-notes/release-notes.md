@@ -3,6 +3,9 @@
 ## Version 5.2.0
 
 - Added dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` and related options `ServiceBusNamespaceOptions`.
+- Added dependency injection extensions `ServiceBusExtensions.AddIntegrationEventsPublisher` and related options `IntegrationEventsOptions`.
+- Mark dependency injection extensions `Registration.AddPublisher` as obsolete.
+- Implemented internal class `IntegrationEventsPublisher` as a substitue for the obsolete `Publisher`.
 
 ## Version 5.1.0
 
