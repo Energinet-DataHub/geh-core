@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
+namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests;
 
-internal class Fibonacci
+public class FibonacciTests
 {
-    private int _firstNumber;
-    private int _secondNumber = 1;
-
-    /// <summary>
-    /// Get the next number in the Fibonacci sequence.
-    /// </summary>
-    public int GetNextNumber()
+    [Fact]
+    public void GetNextNumber_WhenCalled_ReturnsNextNumberInSequence()
     {
-        var result = _firstNumber + _secondNumber;
-        _firstNumber = _secondNumber;
-        _secondNumber = result;
-        return result;
+        // Arrange
+        var fibonacci = new Fibonacci();
+        var result = 0;
+
+        // Act
+        for (int i = 0; i < 5; i++)
+        {
+            result = fibonacci.GetNextNumber();
+        }
+
+        // Assert
+        Assert.Equal(8, result);
     }
 }
