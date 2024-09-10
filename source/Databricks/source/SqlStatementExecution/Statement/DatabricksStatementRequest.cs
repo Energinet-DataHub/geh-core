@@ -26,6 +26,7 @@ internal class DatabricksStatementRequest
 {
     internal const string JsonFormat = "JSON_ARRAY";
     internal const string ArrowFormat = "ARROW_STREAM";
+    private const int MaxWaitTimeForLoopInMilliseconds = 10000;
 
     internal DatabricksStatementRequest(string warehouseId, DatabricksStatement statement, string format)
     {
@@ -58,16 +59,18 @@ internal class DatabricksStatementRequest
     public string WaitTimeout { get; init; }
 
     [JsonPropertyName("format")]
-    public string Format { get; set; }
+    public string Format { get; init; }
 
     public async ValueTask<DatabricksStatementResponse> WaitForSqlWarehouseResultAsync(HttpClient client, string endpoint, CancellationToken cancellationToken)
     {
         DatabricksStatementResponse? response = null;
+        var fibonacci = new Fibonacci();
         do
         {
             try
             {
-                response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, cancellationToken).ConfigureAwait(false);
+                var delayInMilliseconds = Math.Min(fibonacci.GetNextNumber() * 10, MaxWaitTimeForLoopInMilliseconds);
+                response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, delayInMilliseconds, cancellationToken).ConfigureAwait(false);
                 if (response.IsSucceeded)
                     return response;
 
@@ -97,30 +100,30 @@ internal class DatabricksStatementRequest
         HttpClient client,
         string endpoint,
         DatabricksStatementResponse? response,
+        int delayInMilliseconds,
         CancellationToken cancellationToken)
     {
         if (response == null)
         {
             // No cancellation token is used because we want to wait for the result
             // With the response we are able to cancel the statement if needed
+            // ReSharper disable MethodSupportsCancellation
+#pragma warning disable CA2016
             using var httpResponse = await client.PostAsJsonAsync(endpoint, this).ConfigureAwait(false);
             response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>().ConfigureAwait(false);
+#pragma warning restore CA2016
+            // ReSharper restore MethodSupportsCancellation
         }
         else
         {
-            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(delayInMilliseconds), cancellationToken).ConfigureAwait(false);
 
             var path = $"{endpoint}/{response.statement_id}";
             using var httpResponse = await client.GetAsync(path, cancellationToken).ConfigureAwait(false);
             response = await httpResponse.Content.ReadFromJsonAsync<DatabricksStatementResponse>(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        if (response == null)
-        {
-            throw new DatabricksException(this);
-        }
-
-        return response;
+        return response ?? throw new DatabricksException(this);
     }
 
     private static async Task CancelStatementAsync(HttpClient client, string endpoint, string statementId)

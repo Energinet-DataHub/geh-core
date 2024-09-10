@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.2.1
+
+- Introduce an exponential backoff strategy for retrieving statement query response from the Databricks SQL Statement Execution API.
+
 ## Version 11.2.0
 
 - Add support for downloading chunks in parallel from Databricks.
