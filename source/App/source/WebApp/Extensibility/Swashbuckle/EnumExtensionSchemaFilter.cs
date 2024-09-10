@@ -12,15 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Energinet.DataHub.Core.Messaging.Tests;
+namespace Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 
-public class IntegrationEventHandlerStub : IIntegrationEventHandler
+/// <summary>
+/// Schema filter for adding enum names to the OpenAPI schema.
+/// </summary>
+public class EnumExtensionSchemaFilter : ISchemaFilter
 {
-    public Task HandleAsync(IntegrationEvent integrationEvent)
+    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {
-        return Task.CompletedTask;
+        ArgumentNullException.ThrowIfNull(schema);
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (context.Type.IsEnum)
+            schema.Extensions.Add("x-enumNames", new EnumOpenApiExtension(context));
     }
 }

@@ -40,6 +40,14 @@ After following the guidelines below, one should have a functional web api proje
 
 ### Additional configuration
 
+#### Handling enums
+
+Enum names are add to the x-enumNames via source/App/source/WebApp/Extensibility/Swashbuckle/EnumExtensionSchemaFilter.cs so it is possible
+for nswag to generate enums with both the correct int and name in the client.
+
+if AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())) is in the program.cs it should be removed.
+or the enums will be serialized as strings instead of integers.
+
 #### Overwriting the version of a method/class
 
 It is possible to overwrite the api version of a method/controller, which is by default the version set in
