@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 5.2.0
+
+- Added dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` and related options `ServiceBusNamespaceOptions`.
+
 ## Version 5.1.0
 
 - Added opt-in dead-letter health check `ServiceBusTopicSubscriptionDeadLetterHealthCheck`
