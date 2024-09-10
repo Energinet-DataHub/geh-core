@@ -46,6 +46,7 @@ public sealed class DatabricksSqlWarehouseFixture
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WorkspaceUrl", integrationTestConfiguration.DatabricksSettings.WorkspaceUrl },
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WorkspaceToken", integrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken },
             { $"{DatabricksSqlStatementOptions.DatabricksOptions}:WarehouseId", integrationTestConfiguration.DatabricksSettings.WarehouseId },
+            { $"{DatabricksSqlStatementOptions.DatabricksOptions}:MaxBufferedChunks", "15" },
         };
 
         var configuration = new ConfigurationBuilder()

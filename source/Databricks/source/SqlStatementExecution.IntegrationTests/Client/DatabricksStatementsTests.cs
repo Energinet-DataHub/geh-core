@@ -185,6 +185,22 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         rowCount.Should().Be(1000000);
     }
 
+    [Theory]
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementParallelAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new Above2GbDataRows();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, QueryOptions.WithFormat(format).WithParallelDownload());
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(1000000);
+    }
+
     /// <summary>
     /// Given a query that takes more than 10 seconds
     /// And the initial timeout is set to 1 second
@@ -230,8 +246,8 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
 
     public static IEnumerable<object[]> GetFormats()
     {
-        yield return new object[] { Format.ApacheArrow };
-        yield return new object[] { Format.JsonArray };
+        yield return [Format.ApacheArrow];
+        yield return [Format.JsonArray];
     }
 
     public class QueryHistory
