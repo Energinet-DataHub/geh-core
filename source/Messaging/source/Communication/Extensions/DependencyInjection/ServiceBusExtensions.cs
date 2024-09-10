@@ -13,7 +13,10 @@
 // limitations under the License.
 
 using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
+using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,9 +30,12 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyIn
 public static class ServiceBusExtensions
 {
     /// <summary>
-    /// Register ServiceBus services commonly used by DH3 applications.
+    /// Register a ServiceBusClient to be used for the creation of subclients communicating
+    /// within the configured ServiceBus namespace.
     /// </summary>
-    public static IServiceCollection AddServiceBusClientForApplication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddServiceBusClientForApplication(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
@@ -52,6 +58,47 @@ public static class ServiceBusExtensions
             builder
                 .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions.FullyQualifiedNamespace);
         });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Method for registering publisher.
+    /// A <see cref="ServiceBusClient"/> should have been registered first by calling <see cref="AddServiceBusClientForApplication"/>.
+    /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventProvider"/> implementation.
+    /// </summary>
+    /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
+    public static IServiceCollection AddIntegrationEventsPublisher<TIntegrationEventProvider>(
+        this IServiceCollection services,
+        IConfiguration configuration)
+        where TIntegrationEventProvider : class, IIntegrationEventProvider
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services
+            .AddOptions<IntegrationEventsOptions>()
+            .BindConfiguration(IntegrationEventsOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services.AddAzureClients(builder =>
+        {
+            var integrationEventsOptions =
+                configuration
+                    .GetRequiredSection(IntegrationEventsOptions.SectionName)
+                    .Get<IntegrationEventsOptions>()
+                ?? throw new InvalidOperationException("Missing Integration Events configuration.");
+
+            builder
+                .AddClient<ServiceBusSender, ServiceBusClientOptions>((_, _, provider) =>
+                    provider
+                        .GetRequiredService<ServiceBusClient>()
+                        .CreateSender(integrationEventsOptions.TopicName))
+                .WithName(integrationEventsOptions.TopicName);
+        });
+
+        services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
+        services.AddScoped<IPublisher, IntegrationEventsPublisher>();
+        services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         return services;
     }
