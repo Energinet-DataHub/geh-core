@@ -6,6 +6,7 @@
 - Added dependency injection extensions `ServiceBusExtensions.AddIntegrationEventsPublisher` and related options `IntegrationEventsOptions`.
 - Mark dependency injection extensions `Registration.AddPublisher` and certain related types as obsolete.
 - Implemented internal class `IntegrationEventsPublisher` as a substitue for the obsolete `Publisher`.
+- Exposed types `IServiceBusMessageFactory` and `ServiceBusMessageFactory` to support extensibility and usage from other publisher implementations.
 
 ## Version 5.1.0
 
