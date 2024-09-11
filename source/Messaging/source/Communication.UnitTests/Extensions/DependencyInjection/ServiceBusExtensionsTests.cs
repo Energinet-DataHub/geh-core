@@ -29,6 +29,8 @@ public class ServiceBusExtensionsTests
 {
     private ServiceCollection Services { get; } = new();
 
+    #region AddServiceBusClientForApplication
+
     [Fact]
     public void AddServiceBusClientForApplication_WhenCalledWithConfiguredSection_ServicesCanBeCreated()
     {
@@ -103,6 +105,10 @@ public class ServiceBusExtensionsTests
             .WithMessage("The value '' is not a well-formed Service Bus fully qualified namespace*");
     }
 
+    #endregion
+
+    #region AddIntegrationEventsPublisher
+
     [Fact]
     public void AddIntegrationEventsPublisher_WhenCalledWithConfiguredSections_ServicesCanBeCreated()
     {
@@ -174,6 +180,8 @@ public class ServiceBusExtensionsTests
             .Throw<InvalidOperationException>()
             .WithMessage("No service for type 'Azure.Messaging.ServiceBus.ServiceBusClient' has been registered*");
     }
+
+    #endregion
 
     protected IConfiguration CreateInMemoryConfigurations(Dictionary<string, string?> configurations)
     {
