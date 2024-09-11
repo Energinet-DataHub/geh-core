@@ -57,17 +57,4 @@ public static class Registration
         services.AddScoped<ISubscriber, Internal.Subscriber.Subscriber>();
         return services;
     }
-
-    /// <summary>
-    /// Method for registering subscriber worker.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddSubscriberWorker(this IServiceCollection services)
-    {
-        services.AddSingleton<IServiceBusProcessorFactory, ServiceBusProcessorFactory>();
-        services.AddSingleton<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
-        services.AddHostedService<SubscriberTrigger>();
-        return services;
-    }
 }

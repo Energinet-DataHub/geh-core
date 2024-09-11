@@ -1,12 +1,13 @@
 # Messaging Release notes
 
-## Version 5.2.0
+## Version 6.0.0
 
 - Added dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` and related options `ServiceBusNamespaceOptions`.
 - Added dependency injection extensions `ServiceBusExtensions.AddIntegrationEventsPublisher` and related options `IntegrationEventsOptions`.
 - Mark dependency injection extensions `Registration.AddPublisher` and certain related types as obsolete.
 - Implemented internal class `IntegrationEventsPublisher` as a substitute for the obsolete `Publisher`.
 - Exposed types `IServiceBusMessageFactory` and `ServiceBusMessageFactory` to support extensibility and usage from other publisher implementations.
+- Removed dependency injection extension `Registration.AddSubscriberWorker` and deleted related internal types.
 
 ## Version 5.1.0
 
