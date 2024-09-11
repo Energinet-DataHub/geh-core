@@ -2,7 +2,7 @@
 
 ## Version 6.0.0
 
-- Added dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` and related options `ServiceBusNamespaceOptions`.
+- Added dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` and related options `ServiceBusNamespaceOptions`. This registration ensures we use identity access management (IAM) for the ServiceBus namespace.
 - Added dependency injection extensions `ServiceBusExtensions.AddIntegrationEventsPublisher` and related options `IntegrationEventsOptions`.
 - Mark dependency injection extensions `Registration.AddPublisher` and certain related types as obsolete.
 - Implemented internal class `IntegrationEventsPublisher` as a substitute for the obsolete `Publisher`.
