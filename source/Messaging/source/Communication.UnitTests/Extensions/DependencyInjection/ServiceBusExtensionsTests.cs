@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInject
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -41,14 +42,15 @@ public class ServiceBusExtensionsTests
         // Act
         Services.AddServiceBusClientForApplication(configuration);
 
-        var serviceProvider = Services.BuildServiceProvider();
-        var actualClient = serviceProvider.GetRequiredService<ServiceBusClient>();
-        var actualOptions = serviceProvider.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>();
-
         // Assert
         using var assertionScope = new AssertionScope();
-        actualClient.FullyQualifiedNamespace.Should().Be(fullyQualifiedNamespace);
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var actualOptions = serviceProvider.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>();
         actualOptions.Value.FullyQualifiedNamespace.Should().Be(fullyQualifiedNamespace);
+
+        var actualClient = serviceProvider.GetRequiredService<ServiceBusClient>();
+        actualClient.FullyQualifiedNamespace.Should().Be(fullyQualifiedNamespace);
     }
 
     [Fact]
@@ -74,7 +76,7 @@ public class ServiceBusExtensionsTests
     /// when the registered client is about to be created.
     /// </summary>
     [Fact]
-    public void AddServiceBusClientForApplication_WhenCalledAndRequiredPropertyValueIsMissing_RegistrationsArePerformedButCreationShouldThrowException()
+    public void AddServiceBusClientForApplication_WhenCalledAndRequiredPropertyValueIsMissing_ShouldThrowExceptionsDuringValidationAndCreation()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
@@ -85,21 +87,92 @@ public class ServiceBusExtensionsTests
         // Act
         Services.AddServiceBusClientForApplication(configuration);
 
+        // Assert
+        using var assertionScope = new AssertionScope();
         var serviceProvider = Services.BuildServiceProvider();
-        var clientAct = serviceProvider.GetRequiredService<ServiceBusClient>;
+
         var actualOptions = serviceProvider.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>();
+        var optionsValidationAct = () => actualOptions.Value;
+        optionsValidationAct.Should()
+            .Throw<OptionsValidationException>()
+            .WithMessage("*The FullyQualifiedNamespace field is required*");
+
+        var clientCreationAct = serviceProvider.GetRequiredService<ServiceBusClient>;
+        clientCreationAct.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("The value '' is not a well-formed Service Bus fully qualified namespace*");
+    }
+
+    [Fact]
+    public void AddIntegrationEventsPublisher_WhenCalledWithConfiguredSections_ServicesCanBeCreated()
+    {
+        // Arrange
+        var fullyQualifiedNamespace = "namespace.servicebus.windows.net";
+        var topic = "topic";
+        var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
+        {
+            [$"{ServiceBusNamespaceOptions.SectionName}:{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}"] = fullyQualifiedNamespace,
+            [$"{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}"] = topic,
+            [$"{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}"] = "subscription",
+        });
+
+        Services.AddServiceBusClientForApplication(configuration);
+
+        // Act
+        Services.AddIntegrationEventsPublisher<IntegrationEventProviderStub>(configuration);
 
         // Assert
         using var assertionScope = new AssertionScope();
+        var serviceProvider = Services.BuildServiceProvider();
 
-        clientAct.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("The value '' is not a well-formed Service Bus fully qualified namespace*");
+        var actualOptions = serviceProvider.GetRequiredService<IOptions<IntegrationEventsOptions>>();
+        actualOptions.Value.TopicName.Should().Be(topic);
 
-        var validationAct = () => actualOptions.Value;
-        validationAct.Should()
-            .Throw<OptionsValidationException>()
-            .WithMessage("*The FullyQualifiedNamespace field is required*");
+        var actualSenderFactory = serviceProvider.GetRequiredService<IAzureClientFactory<ServiceBusSender>>();
+        var actualSender = actualSenderFactory.CreateClient(actualOptions.Value.TopicName);
+        actualSender.FullyQualifiedNamespace.Should().Be(fullyQualifiedNamespace);
+        actualSender.EntityPath.Should().Be(topic);
+    }
+
+    [Fact]
+    public void AddIntegrationEventsPublisher_WhenCalledAndNoConfiguredSection_ExceptionIsThrown()
+    {
+        // Arrange
+        var configuration = CreateInMemoryConfigurations([]);
+
+        // Act
+        var act = () => Services.AddIntegrationEventsPublisher<IntegrationEventProviderStub>(configuration);
+
+        // Assert
+        act.Should()
+            .Throw<InvalidOperationException>()
+            .WithMessage("Section 'IntegrationEvents' not found in configuration*");
+    }
+
+    [Fact]
+    public void AddIntegrationEventsPublisher_WhenNoCallToAddServiceBusClientForApplication_ShouldThrowExceptionsDuringCreation()
+    {
+        // Arrange
+        var topic = "topic";
+        var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
+        {
+            [$"{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}"] = topic,
+            [$"{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}"] = "subscription",
+        });
+
+        // Act
+        Services.AddIntegrationEventsPublisher<IntegrationEventProviderStub>(configuration);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var actualOptions = serviceProvider.GetRequiredService<IOptions<IntegrationEventsOptions>>();
+        var actualSenderFactory = serviceProvider.GetRequiredService<IAzureClientFactory<ServiceBusSender>>();
+        var senderCreationAct = () => actualSenderFactory.CreateClient(actualOptions.Value.TopicName);
+        senderCreationAct.Should()
+            .Throw<InvalidOperationException>()
+            .WithMessage("No service for type 'Azure.Messaging.ServiceBus.ServiceBusClient' has been registered*");
     }
 
     protected IConfiguration CreateInMemoryConfigurations(Dictionary<string, string?> configurations)
