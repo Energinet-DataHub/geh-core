@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Outbox.Abstractions;
-using ExampleHost.WebApi.DbContext;
-using ExampleHost.WebApi.UseCases;
+using Energinet.DataHub.Core.Outbox.Application;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 
 namespace ExampleHost.WebApi.Controllers;
 
