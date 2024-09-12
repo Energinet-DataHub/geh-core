@@ -14,7 +14,7 @@
 
 using System.Collections.Concurrent;
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 
 /// <summary>
 /// This is a re-implementation of the ClientCache class from <see href="https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/blob/master/src/HealthChecks.AzureServiceBus/ClientCache.cs"/>.
@@ -30,9 +30,7 @@ internal static class ClientCache
         where T : IDisposable
     {
         if (Cache<T>.Instance.TryGetValue(key, out var value))
-        {
             return value;
-        }
 
         value = clientFactory(key);
 
@@ -49,9 +47,7 @@ internal static class ClientCache
         where T : IDisposable
     {
         if (Cache<T>.Instance.TryGetValue(key, out var value))
-        {
             return value;
-        }
 
         value = await clientFactory(key).ConfigureAwait(false);
 
@@ -68,9 +64,7 @@ internal static class ClientCache
         where T : IAsyncDisposable
     {
         if (Cache<T>.Instance.TryGetValue(key, out var value))
-        {
             return value;
-        }
 
         value = clientFactory(key);
 
@@ -89,9 +83,7 @@ internal static class ClientCache
         where T : IAsyncDisposable
     {
         if (Cache<T>.Instance.TryGetValue(key, out var value))
-        {
             return value;
-        }
 
         value = await clientFactory(key).ConfigureAwait(false);
 

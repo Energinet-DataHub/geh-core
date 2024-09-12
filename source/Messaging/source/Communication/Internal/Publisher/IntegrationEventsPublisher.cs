@@ -14,30 +14,30 @@
 
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
-/// <summary>
-/// The sender runs as a background service
-/// </summary>
-[Obsolete("We should use Azure SDK extensions for client registrations and lifetime handling.")]
-internal sealed class Publisher : IPublisher
+internal sealed class IntegrationEventsPublisher : IPublisher
 {
+    private readonly ServiceBusSender _sender;
     private readonly IIntegrationEventProvider _integrationEventProvider;
-    private readonly IServiceBusSenderProvider _senderProvider;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly ILogger _logger;
 
-    public Publisher(
+    public IntegrationEventsPublisher(
+        IOptions<IntegrationEventsOptions> integrationEventsOptions,
+        IAzureClientFactory<ServiceBusSender> senderFactory,
         IIntegrationEventProvider integrationEventProvider,
-        IServiceBusSenderProvider senderProvider,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        ILogger<Publisher> logger)
+        ILogger<IntegrationEventsPublisher> logger)
     {
+        _sender = senderFactory.CreateClient(integrationEventsOptions.Value.TopicName);
         _integrationEventProvider = integrationEventProvider;
-        _senderProvider = senderProvider;
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _logger = logger;
     }
@@ -46,7 +46,7 @@ internal sealed class Publisher : IPublisher
     {
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
-        var messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
+        var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
         await foreach (var @event in _integrationEventProvider.GetAsync().WithCancellation(cancellationToken).ConfigureAwait(false))
         {
@@ -57,7 +57,7 @@ internal sealed class Publisher : IPublisher
             if (!messageBatch.TryAddMessage(serviceBusMessage))
             {
                 await SendBatchAsync(messageBatch).ConfigureAwait(false);
-                messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
+                messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
                 if (!messageBatch.TryAddMessage(serviceBusMessage))
                 {
@@ -68,7 +68,7 @@ internal sealed class Publisher : IPublisher
 
         try
         {
-            await _senderProvider.Instance.SendMessagesAsync(messageBatch, cancellationToken).ConfigureAwait(false);
+            await _sender.SendMessagesAsync(messageBatch, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -81,13 +81,13 @@ internal sealed class Publisher : IPublisher
         }
     }
 
-    private async Task SendBatchAsync(ServiceBusMessageBatch batch)
+    private Task SendBatchAsync(ServiceBusMessageBatch batch)
     {
-        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
+        return _sender.SendMessagesAsync(batch);
     }
 
-    private async Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
+    private Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
     {
-        await _senderProvider.Instance.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
+        return _sender.SendMessageAsync(serviceBusMessage);
     }
 }

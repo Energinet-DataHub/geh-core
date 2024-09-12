@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 
+[Obsolete("This implementation isn't thread safe, and we should use Azure SDK extensions for client registrations and lifetime handling.")]
 internal sealed class ServiceBusSenderProvider : IServiceBusSenderProvider
 {
     private readonly IOptions<PublisherOptions> _options;
