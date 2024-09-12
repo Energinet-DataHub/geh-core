@@ -12,11 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+using System.ComponentModel.DataAnnotations;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
+namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 
-internal interface IServiceBusProcessorFactory
+/// <summary>
+/// Options for the ServiceBus namespace used in the DH3 system.
+/// </summary>
+public class ServiceBusNamespaceOptions
 {
-    ServiceBusProcessor CreateProcessor(string topicName, string subscriptionName);
+    public const string SectionName = "ServiceBus";
+
+    [Required]
+    public string FullyQualifiedNamespace { get; set; } = string.Empty;
 }

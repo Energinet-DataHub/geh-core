@@ -27,6 +27,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.UnitTests;
 public class ServiceProviderTests
 {
     [Fact]
+    [Obsolete]
     public void ConfiguredServiceProvider_CanResolve_IPublisher()
     {
         var serviceProvider = CreateAndConfigureServiceCollectionDefaults()

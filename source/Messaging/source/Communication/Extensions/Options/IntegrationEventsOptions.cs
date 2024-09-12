@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+using System.ComponentModel.DataAnnotations;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
+namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 
-[Obsolete("We should use Azure SDK extensions for client registrations and lifetime handling.")]
-internal interface IServiceBusSenderProvider
+/// <summary>
+/// Options for Integration Events communication used in the DH3 system.
+/// </summary>
+public class IntegrationEventsOptions
 {
-    ServiceBusSender Instance { get; }
+    public const string SectionName = "IntegrationEvents";
+
+    [Required]
+    public string TopicName { get; set; } = string.Empty;
+
+    [Required]
+    public string SubscriptionName { get; set; } = string.Empty;
 }

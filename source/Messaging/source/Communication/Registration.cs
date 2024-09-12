@@ -30,6 +30,7 @@ public static class Registration
     /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
+    [Obsolete("We should use identity access management (IAM) with ServiceBus. To do this use the method 'AddIntegrationEventsPublisher'.")]
     public static IServiceCollection AddPublisher<TIntegrationEventProvider>(this IServiceCollection services)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
@@ -54,19 +55,6 @@ public static class Registration
         services.AddScoped<IIntegrationEventHandler, TIntegrationEventHandler>();
         services.AddScoped<IIntegrationEventFactory>(_ => new IntegrationEventFactory(messageDescriptors.ToList()));
         services.AddScoped<ISubscriber, Internal.Subscriber.Subscriber>();
-        return services;
-    }
-
-    /// <summary>
-    /// Method for registering subscriber worker.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-    /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IServiceCollection AddSubscriberWorker(this IServiceCollection services)
-    {
-        services.AddSingleton<IServiceBusProcessorFactory, ServiceBusProcessorFactory>();
-        services.AddSingleton<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
-        services.AddHostedService<SubscriberTrigger>();
         return services;
     }
 }

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
+using Azure.Messaging.ServiceBus;
+
+namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 
 /// <summary>
-/// Receives and handles service bus messages
+/// Creates a <see cref="ServiceBusMessage"/> instance from an <see cref="IntegrationEvent"/>
 /// </summary>
-internal interface IIntegrationEventSubscriber
+public interface IServiceBusMessageFactory
 {
-    Task StartAsync(CancellationToken cancellationToken);
-
-    Task StopAsync(CancellationToken cancellationToken);
+    ServiceBusMessage Create(IntegrationEvent @event);
 }
