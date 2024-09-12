@@ -27,12 +27,14 @@ public class OutboxProcessorController(IOutboxProcessor outboxProcessor) : Contr
     private readonly IOutboxProcessor _outboxProcessor = outboxProcessor;
 
     /// <summary>
-    /// Perform the following steps as an example of using the outbox:
+    /// Use the <see cref="IOutboxProcessor"/> to process the outbox. This is in a http controller to make it
+    /// easy to trigger in tests, but in a real world scenario this should be triggered on a schedule by
+    /// a background service or a timer trigger.
     /// </summary>
     [HttpPost("run")]
     public async Task<IActionResult> Run(CancellationToken cancellationToken)
     {
-        // The CreateUserService service creates a user in the database and sends en email (through the outbox)
+        // Process all waiting outbox messages in the outbox
         await _outboxProcessor.ProcessOutboxAsync(
                 limit: 1000,
                 cancellationToken: cancellationToken)

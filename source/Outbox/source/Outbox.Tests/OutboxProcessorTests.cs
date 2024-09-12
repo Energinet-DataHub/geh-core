@@ -42,9 +42,6 @@ public class OutboxProcessorTests
         clock.Setup(c => c.GetCurrentInstant())
             .Returns(now);
 
-        var logger = new Mock<ILogger<OutboxProcessor>>();
-        var outboxScopeFactory = new Mock<IOutboxScopeFactory>();
-
         var expectedType = "mock-type";
         var expectedPayload = "mock-payload";
         var outboxMessage = new OutboxMessage(
@@ -52,17 +49,50 @@ public class OutboxProcessorTests
             type: expectedType,
             payload: expectedPayload);
 
+        var (outboxScopeFactory, outboxPublisher) = MockOutboxDependencies(
+            [outboxMessage],
+            expectedType,
+            expectedPayload);
+
+        var outboxProcessor = new OutboxProcessor(
+            outboxScopeFactory.Object,
+            clock.Object,
+            Mock.Of<ILogger<OutboxProcessor>>());
+
+        // Act
+        await outboxProcessor.ProcessOutboxAsync();
+
+        // Assert
+        outboxPublisher.Verify(p => p.CanPublish(expectedType), Times.Once);
+        outboxPublisher.Verify(p => p.PublishAsync(expectedPayload), Times.Once);
+        outboxPublisher.VerifyNoOtherCalls();
+
+        using var scope = new AssertionScope();
+        outboxMessage.PublishedAt.Should().Be(now);
+        outboxMessage.ErrorCount.Should().Be(0);
+        outboxMessage.FailedAt.Should().Be(null);
+    }
+
+    private static (Mock<IOutboxScopeFactory> ScopeFactory, Mock<IOutboxPublisher> Publisher) MockOutboxDependencies(
+        List<OutboxMessage> outboxMessages,
+        string expectedType,
+        string expectedPayload)
+    {
+        var outboxScopeFactory = new Mock<IOutboxScopeFactory>();
+
+        var outboxMessageIds = outboxMessages.Select(om => om.Id).ToList();
+
         var outboxRepository = new Mock<IOutboxRepository>();
         outboxRepository
             .Setup(r => r.GetUnprocessedOutboxMessageIdsAsync(
                 It.IsAny<int>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync([outboxMessage.Id]);
+            .ReturnsAsync(outboxMessageIds);
         outboxRepository
             .Setup(r => r.GetAsync(
-                It.Is<OutboxMessageId>(id => id == outboxMessage.Id),
+                It.Is<OutboxMessageId>(id => outboxMessageIds.Contains(id)),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(outboxMessage);
+            .ReturnsAsync((OutboxMessageId id, CancellationToken _) => outboxMessages.Single(om => om.Id == id));
 
         var outboxPublisher = new Mock<IOutboxPublisher>();
         outboxPublisher.Setup(p => p.CanPublish(expectedType))
@@ -84,19 +114,6 @@ public class OutboxProcessorTests
             .Setup(o => o.CreateScopedDependencies())
             .Returns(scopedOutboxDependencies.Object);
 
-        var outboxProcessor = new OutboxProcessor(outboxScopeFactory.Object, clock.Object, logger.Object);
-
-        // Act
-        await outboxProcessor.ProcessOutboxAsync();
-
-        // Assert
-        outboxPublisher.Verify(p => p.CanPublish(expectedType), Times.Once);
-        outboxPublisher.Verify(p => p.PublishAsync(expectedPayload), Times.Once);
-        outboxPublisher.VerifyNoOtherCalls();
-
-        using var scope = new AssertionScope();
-        outboxMessage.PublishedAt.Should().Be(now);
-        outboxMessage.ErrorCount.Should().Be(0);
-        outboxMessage.FailedAt.Should().Be(null);
+        return (outboxScopeFactory, outboxPublisher);
     }
 }
