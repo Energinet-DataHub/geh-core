@@ -19,6 +19,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Publisher;
 /// <summary>
 /// Settings for the communication with the Service Bus.
 /// </summary>
+[Obsolete("We should use identity access management (IAM) with ServiceBus. To do this use 'ServiceBusNamespaceOptions'.")]
 public sealed class PublisherOptions
 {
     /// <summary>
