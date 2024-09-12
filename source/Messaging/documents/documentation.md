@@ -14,7 +14,6 @@ Using the package bundle enables an easy opt-in/opt-out pattern of Azure Service
     - [Publishing](#publishing)
     - [Subscribing](#subscribing)
         - [ServiceBusTrigger](#servicebustrigger)
-        - [BackgroundService](#backgroundservice)
 - [Health checks](#health-checks)
 <!-- TOC -->
 
@@ -58,7 +57,7 @@ public record IntegrationEvent(
 
 The publishing functionality is responsible for publishing integration events. Simply inject `IPublisher` and call the `PublishAsync` method, which will then call the `IIntegrationEventProvider` implementation, and dispatch the returned integration events.
 
-For this to work the `IIntegrationEventProvider` interface has to be implemented. The guide below shows an example of an `IIntegrationEventProvider` implementation, as well as the registration and configuration.
+For this to work the `IIntegrationEventProvider` interface has to be implemented. The guide below shows an example of an `IIntegrationEventProvider` implementation, as well as the necessary registrations and configuration.
 
 Preparing a Web App project (similar can be done for an Azure Function application):
 
@@ -75,6 +74,7 @@ Preparing a Web App project (similar can be done for an Azure Function applicati
 1) Implement `IIntegrationEventProvider` accordingly. The following is an example.
 
    ```csharp
+   // Example implementation
    public sealed class IntegrationEventProvider : IIntegrationEventProvider
    {
        public IntegrationEventProvider(DbContext dbContext)
@@ -123,9 +123,10 @@ Preparing a Web App project (similar can be done for an Azure Function applicati
 
 ### Subscribing
 
-Subscribing functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
-The subscribing functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
-In both cases the IIntegrationEventHandler implementation is needed. An example of an IIIntegrationEventHandler implementation is shown below.
+Subscribing functionality is responsible for receiving and relaying `IntegrationEvents` to an `IIntegrationEventHandler` implementation which, in the same manner as `IIntegrationEventProvider`, is the responsibility of the package consumer.
+
+The subscribing functionality can be used in two ways: using a `ServiceBusTrigger` function or using a hosted `BackgroundService`.
+In both cases the `IIntegrationEventHandler` implementation is needed. An example of an `IIntegrationEventHandler` implementation is shown below.
 
 ```csharp
 public sealed class IntegrationEventHandler : IIntegrationEventHandler
@@ -145,7 +146,7 @@ public sealed class IntegrationEventHandler : IIntegrationEventHandler
 }
 ```
 
-Regardless of whether a ServiceBusTrigger or the hosted service is used, the IIntegrationEventHandler implementation needs to be registered as a dependency using the code below.
+Regardless of whether a `ServiceBusTrigger` or the hosted service is used, the `IIntegrationEventHandler` implementation needs to be registered as a dependency using the code below.
 
 ```csharp
 services.AddSubscriber<IntegrationEventHandler>(new[]
@@ -155,11 +156,11 @@ services.AddSubscriber<IntegrationEventHandler>(new[]
 });
 ```
 
-The descriptors are used to deserialize the event as well as filtering unwanted messages. In the example above, we expect messages of type ActorCreated and UserCreated.
+The descriptors are used to deserialize the event as well as filtering unwanted messages. In the example above, we expect messages of type `ActorCreated` and `UserCreated`.
 
 #### ServiceBusTrigger
 
-When using a ServiceBusTrigger to handle integration events, the ISubscriber dependency needs to be injected into the function and called in the manner shown below.
+When using a ServiceBusTrigger to handle integration events, the `ISubscriber` dependency needs to be injected into the function and called in the manner shown below.
 
 ```csharp
 // MessageBusTrigger function
@@ -181,15 +182,6 @@ public sealed class ServiceBusFunction
         await _subscriber.HandleAsync(IntegrationEventServiceBusMessage.Create(message, context.BindingContext.BindingData!));
     }
 }
-```
-
-#### BackgroundService
-
-When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code, registering the worker, is also needed.
-
-```csharp
-services.Configure<SubscriberWorkerOptions>(builder.Configuration.GetSection(nameof(SubscriberWorkerOptions)));
-services.AddSubscriberWorker();
 ```
 
 ## Health checks
