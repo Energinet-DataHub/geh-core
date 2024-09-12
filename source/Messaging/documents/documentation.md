@@ -192,7 +192,10 @@ Preparing a **Function App** project:
 
         [Function("ServiceBusFunction")]
         public async Task RunAsync(
-            [ServiceBusTrigger("topic-...", "subscription-...", Connection = ServiceBusNamespaceOptions.SectionName)]
+            [ServiceBusTrigger(
+            $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}%",
+            $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%", 
+            Connection = ServiceBusNamespaceOptions.SectionName)]
             byte[] message,
             FunctionContext context)
         {
