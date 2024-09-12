@@ -20,12 +20,14 @@ Using the package bundle enables an easy opt-in/opt-out pattern of Azure Service
 
 ## Following best practices
 
+**Important:** If the implemented extensions or types dosn't support what we need, and we have to implement any additional extensions or types, then be sure to follow the same best practices for any implementation.
+
 The implemented extensions ensures we follow best practices documented by Microsoft:
 
 - Use token-based authentication rather than connection strings
 - Reuse factories and clients
 
-The implemented extensions build upon Azure SDK extensions. By using the Azure SDK extensions for dependency injection we get the following benefits:
+The implemented extensions also builds upon Azure SDK extensions. By using the Azure SDK extensions for dependency injection we get the following benefits:
 
 - Singleton instances
     - Lazy creation of instances
