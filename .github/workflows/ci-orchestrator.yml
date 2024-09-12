@@ -75,6 +75,12 @@ jobs:
     uses: ./.github/workflows/databricks-bundle-publish.yml
     secrets: inherit
 
+  outbox:
+    needs: changes
+    if: ${{ needs.changes.outputs.outbox == 'true' }}
+    uses: ./.github/workflows/outbox-bundle-publish.yml
+    secrets: inherit
+
   #
   # Branch policy status check
   #

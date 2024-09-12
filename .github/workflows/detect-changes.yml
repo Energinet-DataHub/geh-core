@@ -36,6 +36,8 @@ on:
         value: ${{ jobs.changes.outputs.messaging }}
       testcommon:
         value: ${{ jobs.changes.outputs.testcommon }}
+      outbox:
+        value: ${{ jobs.changes.outputs.outbox }}
 
 jobs:
   changes:
@@ -50,6 +52,7 @@ jobs:
       logging: ${{ steps.filter.outputs.logging }}
       messaging: ${{ steps.filter.outputs.messaging }}
       testcommon: ${{ steps.filter.outputs.testcommon }}
+      outbox: ${{ steps.filter.outputs.outbox }}
     steps:
       # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
       - name: Checkout repository
@@ -89,3 +92,7 @@ jobs:
               - '.github/workflows/detect-changes.yml'
               - 'source/TestCommon/**'
               - '.github/workflows/testcommon-bundle-publish.yml'
+            outbox:
+              - '.github/workflows/detect-changes.yml'
+              - 'source/Outbox/**'
+              - '.github/workflows/outbox-bundle-publish.yml'
