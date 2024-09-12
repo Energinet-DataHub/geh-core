@@ -13,7 +13,6 @@ Using the package bundle enables an easy opt-in/opt-out pattern of Azure Service
 - [Integration Events communication](#integration-events-communication)
     - [Publishing](#publishing)
     - [Subscribing](#subscribing)
-        - [ServiceBusTrigger](#servicebustrigger)
 - [Health checks](#health-checks)
 <!-- TOC -->
 
@@ -57,9 +56,11 @@ public record IntegrationEvent(
 
 The publishing functionality is responsible for publishing integration events. Simply inject `IPublisher` and call the `PublishAsync` method, which will then call the `IIntegrationEventProvider` implementation, and dispatch the returned integration events.
 
-For this to work the `IIntegrationEventProvider` interface has to be implemented. The guide below shows an example of an `IIntegrationEventProvider` implementation, as well as the necessary registrations and configuration.
+It is the package consumers responsibility to implement the `IIntegrationEventProvider` and register it.
 
-Preparing a Web App project (similar can be done for an Azure Function application):
+The guide below shows an **example** of an `IIntegrationEventProvider` implementation with necessary registrations and configuration.
+
+Preparing a **Web App** project (similar can be done for a Function App project):
 
 1) Install this NuGet package: `Energinet.DataHub.Core.Messaging.Communication`
 
@@ -71,7 +72,7 @@ Preparing a Web App project (similar can be done for an Azure Function applicati
    builder.Services.AddIntegrationEventsPublisher<IntegrationEventProvider>(builder.Configuration);
    ```
 
-1) Implement `IIntegrationEventProvider` accordingly. The following is an example.
+1) Implement a `IIntegrationEventProvider`.
 
    ```csharp
    // Example implementation
@@ -123,66 +124,94 @@ Preparing a Web App project (similar can be done for an Azure Function applicati
 
 ### Subscribing
 
-Subscribing functionality is responsible for receiving and relaying `IntegrationEvents` to an `IIntegrationEventHandler` implementation which, in the same manner as `IIntegrationEventProvider`, is the responsibility of the package consumer.
+Subscribing functionality is responsible for receiving and relaying `IntegrationEvents` to an `IIntegrationEventHandler`. Simply inject `ISubscriber` and call the `HandleAsync` method, which will then call the `IIntegrationEventHandler` implementation.
 
-The subscribing functionality can be used in two ways: using a `ServiceBusTrigger` function or using a hosted `BackgroundService`.
-In both cases the `IIntegrationEventHandler` implementation is needed. An example of an `IIntegrationEventHandler` implementation is shown below.
+It is the package consumers responsibility to implement the `IIntegrationEventHandler` and register it.
 
-```csharp
-public sealed class IntegrationEventHandler : IIntegrationEventHandler
-{
-    public async Task HandleAsync(IntegrationEvent integrationEvent)
+The subscribing functionality can be used in two ways:
+
+- Using a `ServiceBusTrigger` function
+- Using a hosted `BackgroundService`
+
+The guide below shows an **example** of an `IIntegrationEventHandler` and `ServiceBusTrigger` implementation with necessary registrations and configuration.
+
+Preparing a **Function App** project:
+
+1) Install this NuGet package: `Energinet.DataHub.Core.Messaging.Communication`
+
+1) Extend `Program.cs` with the following registrations
+
+   The _descriptors_ are used to deserialize the event as well as filtering unwanted messages. In the example, we expect messages of type `ActorCreated` and `UserCreated`.
+
+   ```csharp
+   // Registration of dependencies
+   services.AddSubscriber<IntegrationEventHandler>(new[]
+   {
+       ActorCreated.Descriptor,
+       UserCreated.Descriptor,
+   });
+   ```
+
+1) Implement an `IIntegrationEventHandler`.
+
+   ```csharp
+   // Example implementation
+   public sealed class IntegrationEventHandler : IIntegrationEventHandler
+   {
+       public async Task HandleAsync(IntegrationEvent integrationEvent)
+       {
+           switch (integrationEvent.Message)
+           {
+               case ActorCreated actorCreated:
+                   // handle actorCreated
+                   break;
+               case UserCreated userCreated:
+                   // handle userCreated
+                   break;
+           }
+       }
+   }
+   ```
+
+1) Implement a `ServiceBusTrigger`.
+
+   When using a `ServiceBusTrigger` to handle integration events, the `ISubscriber` dependency needs to be injected into the function and called in the manner shown below.
+
+   Notice how we configure the trigger to use an identity-based connection by configuring the _configuration section_ in which to find the ServiceBus namespace. The property in the section **must** be named `FullyQualifiedNamespace`. For details read _Identity-based connection_ under [ServiceBusTrigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv5&pivots=programming-language-csharp).
+
+    ```csharp
+    // Example implementation
+    public sealed class ServiceBusFunction
     {
-        switch (integrationEvent.Message)
+        private readonly ISubscriber _subscriber;
+
+        public ServiceBusFunction(ISubscriber subscriber)
         {
-            case ActorCreated actorCreated:
-                // handle actorCreated
-                break;
-            case UserCreated userCreated:
-                // handle userCreated
-                break;
+            _subscriber = subscriber;
+        }
+
+        [Function("ServiceBusFunction")]
+        public async Task RunAsync(
+            [ServiceBusTrigger("topic-...", "subscription-...", Connection = ServiceBusNamespaceOptions.SectionName)]
+            byte[] message,
+            FunctionContext context)
+        {
+            await _subscriber.HandleAsync(IntegrationEventServiceBusMessage.Create(message, context.BindingContext.BindingData!));
         }
     }
-}
-```
+    ```
 
-Regardless of whether a `ServiceBusTrigger` or the hosted service is used, the `IIntegrationEventHandler` implementation needs to be registered as a dependency using the code below.
+1) Perform configuration in application settings
 
-```csharp
-services.AddSubscriber<IntegrationEventHandler>(new[]
-{
-    ActorCreated.Descriptor,
-    UserCreated.Descriptor,
-});
-```
-
-The descriptors are used to deserialize the event as well as filtering unwanted messages. In the example above, we expect messages of type `ActorCreated` and `UserCreated`.
-
-#### ServiceBusTrigger
-
-When using a ServiceBusTrigger to handle integration events, the `ISubscriber` dependency needs to be injected into the function and called in the manner shown below.
-
-```csharp
-// MessageBusTrigger function
-public sealed class ServiceBusFunction
-{
-    private readonly ISubscriber _subscriber;
-
-    public ServiceBusFunction(ISubscriber subscriber)
-    {
-        _subscriber = subscriber;
-    }
-
-    [Function("ServiceBusFunction")]
-    public async Task RunAsync(
-        [ServiceBusTrigger("topic-...", "subscription-...", Connection = "ConnectionString")]
-        byte[] message,
-        FunctionContext context)
-    {
-        await _subscriber.HandleAsync(IntegrationEventServiceBusMessage.Create(message, context.BindingContext.BindingData!));
-    }
-}
-```
+   ```json
+   {
+     "IsEncrypted": false,
+     "Values": {
+       // ServiceBus namespace
+       "ServiceBus__FullyQualifiedNamespace": "<namespace>"
+     }
+   }
+   ```
 
 ## Health checks
 
