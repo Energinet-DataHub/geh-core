@@ -4,24 +4,45 @@ Documentation of the NuGet package bundle `Messaging`.
 
 The `Messaging` package bundle contains common functionality for Azure ServiceBus implemented as dependency injection extensions, extensibility types etc.
 
-Using the package bundle enables an easy opt-in/opt-out pattern of services during startup, for a typical DataHub application.
+Using the package bundle enables an easy opt-in/opt-out pattern of Azure ServiceBus related services during startup, for a typical DataHub application.
 
 ## Overview
 
 <!-- TOC -->
-* [Integration Events communication](#integration-events-communication)
-    * [Publishing](#publishing)
-    * [Subscribing](#subscribing)
-        * [ServiceBusTrigger](#servicebustrigger)
-        * [BackgroundService](#backgroundservice)
-* [Health checks](#health-checks)
+- [Following best practices](#following-best-practices)
+- [Integration Events communication](#integration-events-communication)
+    - [Publishing](#publishing)
+    - [Subscribing](#subscribing)
+        - [ServiceBusTrigger](#servicebustrigger)
+        - [BackgroundService](#backgroundservice)
+- [Health checks](#health-checks)
 <!-- TOC -->
+
+## Following best practices
+
+The implemented extensions ensures we follow best practices documented by Microsoft:
+
+- Use token-based authentication rather than connection strings
+- Reuse factories and clients
+
+The implemented extensions build upon Azure SDK extensions. By using the Azure SDK extensions for dependency injection we get the following benefits:
+
+- Singleton instances
+    - Lazy creation of instances
+    - Cached instances
+- Since instances are registered to the DI container we don't have to manually dispose them
+
+For details, read the following Microsoft documentation:
+
+- [Recommended app authentication approach](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/?tabs=command-line#recommended-app-authentication-approach)
+- [Reusing factories and clients](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-performance-improvements?tabs=net-standard-sdk-2#reusing-factories-and-clients)
+- [Register clients and subclients](https://learn.microsoft.com/en-us/dotnet/azure/sdk/dependency-injection?tabs=host-builder#register-clients-and-subclients)
 
 ## Integration Events communication
 
-A main part of this package is intended for communication between different subsystems using Azure ServiceBus. For that part the types operates on the type IntegrationEvent, which wraps a protobuf message.
+A main part of this package is intended for handling integration events communication between different subsystems using Azure ServiceBus. For that part the types operates on the type `IntegrationEvent`, which wraps a protobuf message.
 
-The IntegrationEvent is defined as follows:
+The `IntegrationEvent` is defined as follows:
 
 ```csharp
 public record IntegrationEvent(
@@ -33,48 +54,70 @@ public record IntegrationEvent(
 
 ### Publishing
 
-The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface has to be implemented.
+The publishing functionality is responsible for publishing integration events. Simply inject `IPublisher` and call the `PublishAsync` method, which will then call the `IIntegrationEventProvider` implementation, and dispatch the returned integration events.
 
-Below code shows an example of an IIntegrationEventProvider implementation as well as the registration.
+For this to work the `IIntegrationEventProvider` interface has to be implemented. The guide below shows an example of an `IIntegrationEventProvider` implementation, as well as the registration and configuration.
 
-```csharp
-// IIntegrationEventProvider implementation
-public sealed class IntegrationEventProvider : IIntegrationEventProvider
-{
-    public IntegrationEventProvider(DbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+Preparing a Web App project (similar can be done for an Azure Function application):
 
-    public async IAsyncEnumerable<IntegrationEvent> GetAsync()
-    {
-        var events = await _dbContext
-            .Events
-            .Where(x => x.DispatchedAt == null)
-            .ToListAsync();
+1) Install this NuGet package: `Energinet.DataHub.Core.Messaging.Communication`
 
-        foreach (var e in events)
-        {
-            yield return new IntegrationEvent(
-                e.Id,
-                e.EventName,
-                e.Version,
-                e.Payload);
+1) Extend `Program.cs` with the following registrations
 
-            e.DispatchedAt = DateTime.UtcNow;
+   ```csharp
+   // Registration of dependencies
+   builder.Services.AddServiceBusClientForApplication(builder.configuration);
+   builder.Services.AddIntegrationEventsPublisher<IntegrationEventProvider>(builder.Configuration);
+   ```
 
-            await _dbContext.SaveChangesAsync();
-        }
-    }
-}
+1) Implement `IIntegrationEventProvider` accordingly. The following is an example.
 
-// Registration of dependencies
-services.Configure<PublisherOptions>(builder.Configuration.GetSection(nameof(PublisherOptions)));
-services.AddPublisher<IntegrationEventProvider>();
-```
+   ```csharp
+   public sealed class IntegrationEventProvider : IIntegrationEventProvider
+   {
+       public IntegrationEventProvider(DbContext dbContext)
+       {
+           _dbContext = dbContext;
+       }
 
-When publishing, the above IIntegrationEventProvider interface and registration is enough to start publishing integration events.
-Simply inject IPublisher and call the PublishAsync method, which will then call the IIntegrationEventProvider implementation, and dispatch the returned integration events.
+       public async IAsyncEnumerable<IntegrationEvent> GetAsync()
+       {
+           var events = await _dbContext
+               .Events
+               .Where(x => x.DispatchedAt == null)
+               .ToListAsync();
+
+           foreach (var e in events)
+           {
+               yield return new IntegrationEvent(
+                   e.Id,
+                   e.EventName,
+                   e.Version,
+                   e.Payload);
+
+               e.DispatchedAt = DateTime.UtcNow;
+
+               await _dbContext.SaveChangesAsync();
+           }
+       }
+   }
+   ```
+
+1) Perform configuration in application settings
+
+   ```json
+   {
+     // ServiceBus namespace
+     "ServiceBus": {
+       "FullyQualifiedNamespace": "<namespace>",
+     },
+     // Integration Events topic/subscription
+     "IntegrationEvents": {
+       "TopicName": "<topic>",
+       "SubscriptionName": "<subscription>",
+     }
+   }
+   ```
 
 ### Subscribing
 
