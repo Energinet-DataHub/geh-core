@@ -16,7 +16,6 @@ using Energinet.DataHub.Core.Outbox.Abstractions;
 using ExampleHost.WebApi.DbContext;
 using ExampleHost.WebApi.UseCases;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 
 namespace ExampleHost.WebApi.Controllers;
 
@@ -28,24 +27,13 @@ public class UserController(CreateUserService createUserService) : ControllerBas
 
     /// <summary>
     /// Perform the following steps as an example of using the outbox:
-    /// <list type="bullet">
-    /// <item>
-    /// <description>
-    /// Perform some business logic (ie. create a user in a <see cref="CreateUserService"/>)
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// Create an outbox message using an <see cref="IOutboxClient"/> (in the same transaction)
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// Save changes on the <see cref="MyApplicationDbContext"/>, to ensure a user is created and an outbox message is
-    /// created in the same transaction
-    /// </description>
-    /// </item>
-    /// </list>
+    ///
+    /// 1) Perform some business logic (ie. create a user in a <see cref="CreateUserService"/>)
+    ///
+    /// 2) Create an outbox message using an <see cref="IOutboxClient"/> (in the same transaction)
+    ///
+    /// 3) Save changes on the <see cref="MyApplicationDbContext"/>, to ensure a user is created and an outbox
+    /// message is created in the same transaction
     /// </summary>
     [HttpPost]
     public async Task<IActionResult> CreateUser(string email)
