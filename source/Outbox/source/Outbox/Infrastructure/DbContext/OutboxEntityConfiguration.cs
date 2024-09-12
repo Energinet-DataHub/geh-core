@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.Outbox.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Core.Outbox.Infrastructure;
+namespace Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 
 public class OutboxEntityConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {

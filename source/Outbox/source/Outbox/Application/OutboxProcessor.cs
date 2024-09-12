@@ -15,22 +15,20 @@
 using Energinet.DataHub.Core.Outbox.Abstractions;
 using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.Outbox.Infrastructure;
+using Energinet.DataHub.Core.Outbox.Infrastructure.Dependencies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.Outbox.Application;
 
-internal class OutboxProcessor(
-    IServiceScopeFactory serviceScopeFactory,
-    IOutboxRepository outboxRepository,
+public class OutboxProcessor(
+    IOutboxScopeFactory outboxScopeFactory,
     IClock clock,
     ILogger<OutboxProcessor> logger)
     : IOutboxProcessor
 {
-    private readonly IOutboxRepository _outboxRepository = outboxRepository;
-    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
+    private readonly IOutboxScopeFactory _outboxScopeFactory = outboxScopeFactory;
     private readonly IClock _clock = clock;
     private readonly ILogger<OutboxProcessor> _logger = logger;
 
@@ -38,7 +36,9 @@ internal class OutboxProcessor(
     {
         cancellationToken ??= CancellationToken.None;
 
-        var outboxMessageIds = await _outboxRepository
+        using var outerScope = _outboxScopeFactory.CreateScopedDependencies();
+
+        var outboxMessageIds = await outerScope.OutboxRepository
             .GetUnprocessedOutboxMessageIdsAsync(limit, cancellationToken.Value)
             .ConfigureAwait(false);
 
@@ -72,12 +72,12 @@ internal class OutboxProcessor(
     /// </summary>
     private async Task ProcessOutboxMessageAsync(OutboxMessageId outboxMessageId, CancellationToken cancellationToken)
     {
-        using var innerScope = _serviceScopeFactory.CreateScope();
-        var outboxContext = innerScope.ServiceProvider.GetRequiredService<IOutboxContext>();
-        var repository = innerScope.ServiceProvider.GetRequiredService<IOutboxRepository>();
-        var outboxMessagePublishers = innerScope.ServiceProvider.GetServices<IOutboxPublisher>();
+        using var innerScope = _outboxScopeFactory.CreateScopedDependencies();
+        var outboxContext = innerScope.OutboxContext;
+        var outboxRepository = innerScope.OutboxRepository;
+        var outboxPublishers = innerScope.OutboxPublishers;
 
-        var outboxMessage = await repository.GetAsync(outboxMessageId, cancellationToken)
+        var outboxMessage = await outboxRepository.GetAsync(outboxMessageId, cancellationToken)
             .ConfigureAwait(false);
 
         if (!outboxMessage.ShouldProcessNow(_clock))
@@ -97,7 +97,7 @@ internal class OutboxProcessor(
         }
 
         // Process outbox message
-        var outboxMessagePublisher = outboxMessagePublishers
+        var outboxMessagePublisher = outboxPublishers
             .SingleOrDefault(p => p.CanPublish(outboxMessage.Type));
 
         if (outboxMessagePublisher == null)
@@ -125,12 +125,11 @@ internal class OutboxProcessor(
             exception,
             "Failed to process outbox message with id {OutboxMessageId}",
             outboxMessageId);
+        using var errorScope = _outboxScopeFactory.CreateScopedDependencies();
+        var outboxContext = errorScope.OutboxContext;
+        var outboxRepository = errorScope.OutboxRepository;
 
-        using var errorScope = _serviceScopeFactory.CreateScope();
-        var outboxContext = errorScope.ServiceProvider.GetRequiredService<IOutboxContext>();
-        var repository = errorScope.ServiceProvider.GetRequiredService<IOutboxRepository>();
-
-        var outgoingMessage = await repository.GetAsync(outboxMessageId, CancellationToken.None)
+        var outgoingMessage = await outboxRepository.GetAsync(outboxMessageId, CancellationToken.None)
             .ConfigureAwait(false);
 
         outgoingMessage.SetAsFailed(_clock, exception.ToString());

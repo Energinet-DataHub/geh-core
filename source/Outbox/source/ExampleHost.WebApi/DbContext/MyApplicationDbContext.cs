@@ -13,22 +13,30 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Outbox.Domain;
+using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Core.Outbox.Infrastructure;
+namespace ExampleHost.WebApi.DbContext;
 
-public class OutboxContext : DbContext, IOutboxContext
+/// <summary>
+/// The application database context must implement the interface <see cref="IOutboxContext"/> and
+/// add the <see cref="OutboxEntityConfiguration"/> in the <see cref="OnModelCreating"/> method.
+/// <remarks>
+/// An example script of creating the outbox table through dbup can be seen at: (TODO: INSERT URL TO DOCS)
+/// </remarks>
+/// </summary>
+public class MyApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, IOutboxContext
 {
-    public OutboxContext(DbContextOptions<OutboxContext> options)
+    public MyApplicationDbContext(DbContextOptions<MyApplicationDbContext> options)
         : base(options)
     {
     }
 
-    // ReSharper disable once UnusedAutoPropertyAccessor.Local -- Used by EF
     public DbSet<OutboxMessage> Outbox { get; private set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // The outbox entity configuration must be added to the model builder to correctly configure the outbox table.
         modelBuilder.ApplyConfiguration(new OutboxEntityConfiguration());
     }
 }

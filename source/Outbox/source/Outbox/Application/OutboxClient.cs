@@ -26,7 +26,7 @@ internal class OutboxClient(
     private readonly IClock _clock = clock;
     private readonly IOutboxRepository _outboxRepository = outboxRepository;
 
-    public async Task CreateWithoutCommitAsync<T>(IOutboxMessage<T> message)
+    public async Task AddToOutboxAsync<T>(IOutboxMessage<T> message)
     {
         var payload = await message.SerializeAsync()
             .ConfigureAwait(false);

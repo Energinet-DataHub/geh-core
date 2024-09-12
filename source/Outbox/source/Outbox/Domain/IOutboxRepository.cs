@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Core.Outbox.Domain;
 /// <summary>
 /// A repository of outbox messages, used to implement an outbox pattern.
 /// </summary>
-internal interface IOutboxRepository
+public interface IOutboxRepository
 {
     /// <summary>
     /// Add outbox message to the repository.

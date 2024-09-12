@@ -12,21 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Outbox.Abstractions;
+using ExampleHost.WebApi;
 
-/// <summary>
-/// Publisher for individual outbox messages, depending on the type of the message.
-/// <remarks>Only one publisher for each <see cref="IOutboxMessage{TPayload}"/> is allowed.</remarks>
-/// </summary>
-public interface IOutboxPublisher
+var builder = WebApplication.CreateBuilder(args);
+
+// We keep the Startup to be able to create Web01Host using TestServer in integration tests.
+var startup = new Startup(builder.Configuration);
+
+/*
+// Add services to the container.
+*/
+startup.ConfigureServices(builder.Services);
+
+var app = builder.Build();
+
+/*
+// Configure the HTTP request pipeline.
+*/
+startup.Configure(app, app.Environment);
+
+app.Run();
+
+// ReSharper disable once ClassNeverInstantiated.Global -- Used by ExampleHostWebApiFactory in tests
+public partial class Program
 {
-    /// <summary>
-    /// Whether the publisher can publish the given outbox message type.
-    /// </summary>
-    bool CanPublish(string type);
-
-    /// <summary>
-    /// Publish the outbox message.
-    /// </summary>
-    Task PublishAsync(string serializedPayload);
 }

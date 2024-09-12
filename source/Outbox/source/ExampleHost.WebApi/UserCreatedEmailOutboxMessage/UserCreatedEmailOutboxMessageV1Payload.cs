@@ -12,21 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Outbox.Abstractions;
+namespace ExampleHost.WebApi.UserCreatedEmailOutboxMessage;
 
-/// <summary>
-/// Publisher for individual outbox messages, depending on the type of the message.
-/// <remarks>Only one publisher for each <see cref="IOutboxMessage{TPayload}"/> is allowed.</remarks>
-/// </summary>
-public interface IOutboxPublisher
-{
-    /// <summary>
-    /// Whether the publisher can publish the given outbox message type.
-    /// </summary>
-    bool CanPublish(string type);
-
-    /// <summary>
-    /// Publish the outbox message.
-    /// </summary>
-    Task PublishAsync(string serializedPayload);
-}
+public record UserCreatedEmailOutboxMessageV1Payload(Guid Id, string Email);

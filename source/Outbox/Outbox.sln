@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Outbox.Tests", "source\Outb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox.Abstractions", "source\Outbox.Abstractions\Outbox.Abstractions.csproj", "{D8FD50DE-B215-4A2D-B07B-7F656754DBB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.WebApi", "source\ExampleHost.WebApi\ExampleHost.WebApi.csproj", "{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.WebApi.Tests", "source\ExampleHost.WebApi.Tests\ExampleHost.WebApi.Tests.csproj", "{112E0315-5324-457D-A561-97D5C629045A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{D8FD50DE-B215-4A2D-B07B-7F656754DBB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8FD50DE-B215-4A2D-B07B-7F656754DBB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8FD50DE-B215-4A2D-B07B-7F656754DBB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{112E0315-5324-457D-A561-97D5C629045A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{112E0315-5324-457D-A561-97D5C629045A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{112E0315-5324-457D-A561-97D5C629045A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{112E0315-5324-457D-A561-97D5C629045A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +60,8 @@ Global
 		{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 		{CFA908F1-A9E9-465F-8EF2-393D456E1209} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 		{D8FD50DE-B215-4A2D-B07B-7F656754DBB8} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
+		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
+		{112E0315-5324-457D-A561-97D5C629045A} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A1ABFD1-64AE-4D13-816A-222340ACF4F5}

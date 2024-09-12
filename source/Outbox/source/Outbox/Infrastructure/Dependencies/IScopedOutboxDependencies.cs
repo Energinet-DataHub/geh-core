@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Outbox.Abstractions;
+using Energinet.DataHub.Core.Outbox.Abstractions;
+using Energinet.DataHub.Core.Outbox.Domain;
+using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 
-/// <summary>
-/// Publisher for individual outbox messages, depending on the type of the message.
-/// <remarks>Only one publisher for each <see cref="IOutboxMessage{TPayload}"/> is allowed.</remarks>
-/// </summary>
-public interface IOutboxPublisher
+namespace Energinet.DataHub.Core.Outbox.Infrastructure.Dependencies;
+
+public interface IScopedOutboxDependencies : IDisposable
 {
-    /// <summary>
-    /// Whether the publisher can publish the given outbox message type.
-    /// </summary>
-    bool CanPublish(string type);
+    IOutboxContext OutboxContext { get; }
 
-    /// <summary>
-    /// Publish the outbox message.
-    /// </summary>
-    Task PublishAsync(string serializedPayload);
+    IOutboxRepository OutboxRepository { get; }
+
+    IEnumerable<IOutboxPublisher> OutboxPublishers { get; }
 }

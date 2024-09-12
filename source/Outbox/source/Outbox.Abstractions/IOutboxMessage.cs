@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.Outbox.Abstractions;
 public interface IOutboxMessage<out TPayload>
 {
     /// <summary>
-    /// The type of the message, used to categorize the message, and find the correct message processor
+    /// The type of the message, used to find the corresponding <see cref="IOutboxPublisher"/> to publish the message.
     /// </summary>
     string Type { get; }
 

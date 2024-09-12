@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Outbox.Abstractions;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 
-/// <summary>
-/// Publisher for individual outbox messages, depending on the type of the message.
-/// <remarks>Only one publisher for each <see cref="IOutboxMessage{TPayload}"/> is allowed.</remarks>
-/// </summary>
-public interface IOutboxPublisher
+namespace ExampleHost.WebApi.Tests.Fixture;
+
+public class ExampleHostWebApiFactory
+    : WebApplicationFactory<Program>
 {
-    /// <summary>
-    /// Whether the publisher can publish the given outbox message type.
-    /// </summary>
-    bool CanPublish(string type);
+    public Dictionary<string, string?> AppSettings { get; set; } = [];
 
-    /// <summary>
-    /// Publish the outbox message.
-    /// </summary>
-    Task PublishAsync(string serializedPayload);
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(AppSettings)
+            .Build();
+
+        builder.UseConfiguration(configuration);
+    }
 }

@@ -16,8 +16,10 @@ using Energinet.DataHub.Core.Outbox.Abstractions;
 using Energinet.DataHub.Core.Outbox.Application;
 using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.Outbox.Infrastructure;
-using Microsoft.Extensions.Configuration;
+using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
+using Energinet.DataHub.Core.Outbox.Infrastructure.Dependencies;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Core.Outbox.Extensions.DependencyInjection;
 
@@ -25,17 +27,16 @@ public static class OutboxExtensions
 {
     /// <summary>
     /// Add services required for creating and persisting outbox messages.
-    /// <remarks>Requires <see cref="IOutboxContext"/> to be registered in service collection.</remarks>
+    /// <remarks>
+    /// Requires an <see cref="IOutboxContext"/> to be registered in the service collection. See the
+    /// <see cref="IOutboxContext"/> documentation for more information.
+    /// </remarks>
     /// </summary>
-    public static IServiceCollection AddOutboxModule(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddOutboxClient<TDbContext>(this IServiceCollection services)
+        where TDbContext : IOutboxContext
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        AddSharedDependencies<TDbContext>(services);
 
-        // services.AddTransient<IDataRetention, OutboxRetention>(); TODO: Data retention in shared package?
-        // services.AddNodaTimeForApplication(); //  TODO: Add NodaTime in shared package?
-        services.AddTransient<IOutboxRepository, OutboxRepository>();
         services.AddTransient<IOutboxClient, OutboxClient>();
 
         return services;
@@ -43,13 +44,38 @@ public static class OutboxExtensions
 
     /// <summary>
     /// Add services required for processing and publishing outbox messages.
-    /// <remarks>Requires <see cref="AddOutboxModule"/> to be registered as well</remarks>
+    /// <remarks>
+    /// <list type="bullet">
+    /// <item>
+    /// <description>
+    /// Requires an <see cref="IOutboxContext"/> to be registered in the service collection. See the
+    /// <see cref="IOutboxContext"/> documentation for more information.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// Requires <see cref="IOutboxPublisher"/>'s for each type of <see cref="IOutboxMessage{TPayload}"/> to be
+    /// registered in the service collection. See the <see cref="IOutboxContext"/> documentation for more information.
+    /// </description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     /// </summary>
-    public static IServiceCollection AddOutboxProcessor(
-        this IServiceCollection services)
+    public static IServiceCollection AddOutboxProcessor<TDbContext>(this IServiceCollection services)
+        where TDbContext : IOutboxContext
     {
+        // services.AddTransient<IDataRetention, OutboxRetention>(); TODO: Data retention in shared package? Or how do we handle deletion of outbox messages?
+        AddSharedDependencies<TDbContext>(services);
+        services.AddTransient<IOutboxScopeFactory, OutboxScopeFactory>();
         services.AddTransient<IOutboxProcessor, OutboxProcessor>();
 
         return services;
+    }
+
+    private static void AddSharedDependencies<TDbContext>(IServiceCollection services)
+        where TDbContext : IOutboxContext
+    {
+        services.TryAddTransient<IOutboxContext>(sc => sc.GetRequiredService<TDbContext>());
+        services.TryAddTransient<IOutboxRepository, OutboxRepository>();
     }
 }

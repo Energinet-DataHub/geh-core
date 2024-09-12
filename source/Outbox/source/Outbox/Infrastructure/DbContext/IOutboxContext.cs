@@ -15,13 +15,13 @@
 using Energinet.DataHub.Core.Outbox.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Core.Outbox.Infrastructure;
+namespace Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 
 /// <summary>
 /// Interface for a DbContext implementation that contains the Outbox table.
 /// <remarks>
 /// Requires <see cref="OutboxEntityConfiguration"/> to be applied to the DbContext configuration,
-/// which usually happens in the <see cref="DbContext.OnModelCreating"/> method.
+/// which usually happens in the <see cref="Microsoft.EntityFrameworkCore.DbContext"/>.<see cref="Microsoft.EntityFrameworkCore.DbContext.OnModelCreating"/> method.
 /// </remarks>
 /// <example>Example of applying the <see cref="OutboxEntityConfiguration"/> in a <see cref="DbContext"/>:
 /// <code>
@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Core.Outbox.Infrastructure;
 /// </code>
 /// </example>
 /// </summary>
-public interface IOutboxContext
+public interface IOutboxContext : IDisposable
 {
     DbSet<OutboxMessage> Outbox { get; }
 

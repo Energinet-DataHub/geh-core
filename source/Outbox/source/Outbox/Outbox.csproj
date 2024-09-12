@@ -21,6 +21,10 @@ limitations under the License.
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Energinet.DataHub.Core.Outbox.Tests" />
+  </ItemGroup>
+
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Outbox</PackageId>
     <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>

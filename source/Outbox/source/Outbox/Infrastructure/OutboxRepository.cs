@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Outbox.Abstractions;
 using Energinet.DataHub.Core.Outbox.Domain;
+using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Core.Outbox.Infrastructure;
