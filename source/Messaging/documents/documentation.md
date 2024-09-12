@@ -1,9 +1,25 @@
 # Messaging
 
-This package is intended for communication between different domains using ServiceBus.
-The package ensures reliable message processing and delivery.
+Documentation of the NuGet package bundle `Messaging`.
 
-The package operates on the type IntegrationEvent, which wraps a protobuf message.
+The `Messaging` package bundle contains common functionality for Azure ServiceBus implemented as dependency injection extensions, extensibility types etc.
+
+Using the package bundle enables an easy opt-in/opt-out pattern of services during startup, for a typical DataHub application.
+
+## Overview
+
+<!-- TOC -->
+* [Integration Events communication](#integration-events-communication)
+    * [Publishing](#publishing)
+    * [Subscribing](#subscribing)
+        * [ServiceBusTrigger](#servicebustrigger)
+        * [BackgroundService](#backgroundservice)
+* [Health checks](#health-checks)
+<!-- TOC -->
+
+## Integration Events communication
+
+A main part of this package is intended for communication between different subsystems using Azure ServiceBus. For that part the types operates on the type IntegrationEvent, which wraps a protobuf message.
 
 The IntegrationEvent is defined as follows:
 
@@ -15,21 +31,7 @@ public record IntegrationEvent(
     IMessage Message);
 ```
 
-The package is still work in progress.
-
-## Overview
-
-<!-- TOC -->
-* [Messaging](#messaging)
-    * [Overview](#overview)
-    * [Publishing](#publishing)
-    * [Subscribing](#subscribing)
-        * [ServiceBusTrigger](#servicebustrigger)
-        * [BackgroundService](#backgroundservice)
-    * [Health checks](#health-checks)
-<!-- TOC -->
-
-## Publishing
+### Publishing
 
 The publishing functionality is responsible for publishing integration events. The IIntegrationEventProvider interface has to be implemented.
 
@@ -43,14 +45,14 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
     {
         _dbContext = dbContext;
     }
-    
+
     public async IAsyncEnumerable<IntegrationEvent> GetAsync()
     {
         var events = await _dbContext
             .Events
             .Where(x => x.DispatchedAt == null)
             .ToListAsync();
-        
+
         foreach (var e in events)
         {
             yield return new IntegrationEvent(
@@ -58,9 +60,9 @@ public sealed class IntegrationEventProvider : IIntegrationEventProvider
                 e.EventName,
                 e.Version,
                 e.Payload);
-            
+
             e.DispatchedAt = DateTime.UtcNow;
-            
+
             await _dbContext.SaveChangesAsync();
         }
     }
@@ -74,7 +76,7 @@ services.AddPublisher<IntegrationEventProvider>();
 When publishing, the above IIntegrationEventProvider interface and registration is enough to start publishing integration events.
 Simply inject IPublisher and call the PublishAsync method, which will then call the IIntegrationEventProvider implementation, and dispatch the returned integration events.
 
-## Subscribing
+### Subscribing
 
 Subscribing functionality is responsible for receiving and relaying IntegrationEvents to an IIntegrationEventHandler implementation which, in the same manner as IIntegrationEventProvider, is the responsibility of the package consumer.
 The subscribing functionality can be used in two ways: using a ServiceBusTrigger function or using a hosted BackgroundService.
@@ -110,7 +112,7 @@ services.AddSubscriber<IntegrationEventHandler>(new[]
 
 The descriptors are used to deserialize the event as well as filtering unwanted messages. In the example above, we expect messages of type ActorCreated and UserCreated.
 
-### ServiceBusTrigger
+#### ServiceBusTrigger
 
 When using a ServiceBusTrigger to handle integration events, the ISubscriber dependency needs to be injected into the function and called in the manner shown below.
 
@@ -136,7 +138,7 @@ public sealed class ServiceBusFunction
 }
 ```
 
-### BackgroundService
+#### BackgroundService
 
 When used as a hosted BackgroundService, in addition to the registration of the IIntegrationEventHandler implementation shown above, the below code, registering the worker, is also needed.
 
