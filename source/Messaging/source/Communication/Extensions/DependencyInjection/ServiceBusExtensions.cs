@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyIn
 public static class ServiceBusExtensions
 {
     /// <summary>
-    /// Register a ServiceBusClient to be used for the creation of subclients communicating
+    /// Register a <see cref="ServiceBusClient"/> to be used for the creation of subclients communicating
     /// within the configured ServiceBus namespace.
     /// </summary>
     public static IServiceCollection AddServiceBusClientForApplication(
@@ -63,11 +63,11 @@ public static class ServiceBusExtensions
     }
 
     /// <summary>
-    /// Method for registering publisher.
+    /// Method for registering an integration events publisher.
     /// A <see cref="ServiceBusClient"/> must be registered first by calling <see cref="AddServiceBusClientForApplication"/>.
     /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventProvider"/> implementation.
     /// </summary>
-    /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound events.</typeparam>
+    /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound integration events.</typeparam>
     public static IServiceCollection AddIntegrationEventsPublisher<TIntegrationEventProvider>(
         this IServiceCollection services,
         IConfiguration configuration)
