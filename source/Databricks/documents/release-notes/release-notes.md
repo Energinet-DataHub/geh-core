@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.2.3
+
+- Skip tests
+
 ## Version 11.2.2
 
 - Check for valid delay input
