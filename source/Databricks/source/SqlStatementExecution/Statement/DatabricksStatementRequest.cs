@@ -103,6 +103,9 @@ internal class DatabricksStatementRequest
         int delayInMilliseconds,
         CancellationToken cancellationToken)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(delayInMilliseconds, nameof(delayInMilliseconds));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(delayInMilliseconds, MaxWaitTimeForLoopInMilliseconds, nameof(delayInMilliseconds));
+
         if (response == null)
         {
             // No cancellation token is used because we want to wait for the result
