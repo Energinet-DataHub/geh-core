@@ -27,13 +27,13 @@ internal class ManifestChunk
 
     public class External_links
     {
-        public int chunk_index { get; set; }
+        public long chunk_index { get; set; }
 
-        public int row_offset { get; set; }
+        public long row_offset { get; set; }
 
-        public int row_count { get; set; }
+        public long row_count { get; set; }
 
-        public int byte_count { get; set; }
+        public long byte_count { get; set; }
 
         public string external_link { get; set; }
 

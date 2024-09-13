@@ -109,6 +109,8 @@ public static class OpenApiExtensions
 
             // Support marking endpoint return type as binary content
             options.OperationFilter<BinaryContentFilter>();
+            // Adds extra schema details for an enum in the swagger.json i.e. x-enumNames (used by NSwag to generate Enums for C# client)
+            options.SchemaFilter<EnumExtensionSchemaFilter>();
         });
 
         return services;

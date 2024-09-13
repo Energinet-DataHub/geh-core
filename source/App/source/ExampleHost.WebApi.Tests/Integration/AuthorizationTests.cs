@@ -12,217 +12,93 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
-using System.Text;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
-using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
-/// Authorization tests ensuring that the configured permissions are working.
+/// Authorization tests using a nested token (a token which contains both an
+/// external and an internal token). Focus is on verifying the use of the Authorize
+/// attribute with Roles.
+///
+/// Similar tests exists for Function App in the 'AuthorizationTests' class
+/// located in the 'ExampleHost.FunctionApp.Tests' project.
 /// </summary>
-[Collection(nameof(AuthorizationHostCollectionFixture))]
+[Collection(nameof(WebApi03HostCollectionFixture))]
 public sealed class AuthorizationTests
 {
     private const string PermissionOrganizationView = "organizations:view";
     private const string PermissionGridAreasManage = "grid-areas:manage";
 
-    public AuthorizationTests(AuthorizationHostFixture fixture)
+    public AuthorizationTests(WebApi03HostFixture fixture)
     {
         Fixture = fixture;
     }
 
-    private AuthorizationHostFixture Fixture { get; }
+    private WebApi03HostFixture Fixture { get; }
 
-    [Fact]
-    public async Task CallingApi03Get_Anonymous_Succeeds()
+    [Theory]
+    [InlineData(HttpStatusCode.OK, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, "")]
+    [InlineData(HttpStatusCode.Forbidden, PermissionGridAreasManage)]
+    public async Task CallingGetOrganizationReadPermission_WithRole_IsExpectedStatusCode(
+        HttpStatusCode expectedStatusCode,
+        params string[] roles)
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/anon/{requestIdentification}");
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org/{requestIdentification}");
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
+        actualResponse.StatusCode.Should().Be(expectedStatusCode);
     }
 
-    [Fact]
-    public async Task CallingApi03Get_OrganizationWithClaimInToken_IsAllowed()
+    [Theory]
+    [InlineData(HttpStatusCode.OK, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.OK, PermissionGridAreasManage)]
+    [InlineData(HttpStatusCode.OK, PermissionGridAreasManage, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, "")]
+    public async Task CallingGetOrganizationOrGridAreasPermission_WithRole_IsExpectedStatusCode(
+        HttpStatusCode expectedStatusCode,
+        params string[] roles)
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionOrganizationView));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_or_grid/{requestIdentification}");
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
+        actualResponse.StatusCode.Should().Be(expectedStatusCode);
     }
 
-    [Fact]
-    public async Task CallingApi03Get_OrganizationWithNoClaimInToken_IsForbidden()
+    [Theory]
+    [InlineData(HttpStatusCode.OK, PermissionGridAreasManage, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, "")]
+    [InlineData(HttpStatusCode.Forbidden, PermissionOrganizationView)]
+    [InlineData(HttpStatusCode.Forbidden, PermissionGridAreasManage)]
+    public async Task CallingGetOrganizationAndGridAreasPermission_WithRole_IsExpectedStatusCode(
+        HttpStatusCode expectedStatusCode,
+        params string[] roles)
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken());
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_OrganizationWithWrongClaimInToken_IsForbidden()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authorization/org_and_grid/{requestIdentification}");
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(roles: roles);
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_GridAreasWithClaimInToken_IsAllowed()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_OrganizationOrGridAreasWithOrgClaimInToken_IsAllowed()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionOrganizationView));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_OrganizationOrGridAreasWithGridClaimInToken_IsAllowed()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_OrganizationOrGridAreasWithBothClaimsInToken_OrClaims_IsAllowed()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_or_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage, PermissionOrganizationView));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_OrganizationAndGridAreasWithBothClaimsInToken_AndClaims_IsAllowed()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage, PermissionOrganizationView));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
-    }
-
-    [Fact]
-    public async Task CallingApi03Get_OrganizationAndGridAreasWithOnlyOneClaimsInToken_AndClaims_IsForbidden()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/permission/org_and_grid/{requestIdentification}");
-        request.Headers.Add("Authorization", CreateBearerToken(PermissionGridAreasManage));
-
-        var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
-
-    private static string CreateBearerToken(params string[] permissions)
-    {
-        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key"));
-
-        var claims = permissions.Select(claim => new Claim("roles", claim, "arr"));
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            signingCredentials: new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256));
-
-        var handler = new JwtSecurityTokenHandler();
-        return $"Bearer {handler.WriteToken(token)}";
+        actualResponse.StatusCode.Should().Be(expectedStatusCode);
     }
 }

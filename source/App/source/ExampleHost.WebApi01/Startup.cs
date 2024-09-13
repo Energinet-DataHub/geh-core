@@ -14,9 +14,11 @@
 
 using System.Reflection;
 using Asp.Versioning;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace ExampleHost.WebApi01;
 
@@ -40,7 +42,7 @@ public class Startup
         //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
         //    See https://docs.microsoft.com/en-us/azure/azure-monitor/app/asp-net-core
         //  * Telemetry events are enriched with property "Subsystem" and configured value
-        services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApp");
+        services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApi");
 
         // Configure HttpClient for calling WebApi02
         services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
@@ -51,10 +53,14 @@ public class Startup
 
         // Health Checks (verified in tests)
         services.AddHealthChecksForWebApp();
+        services
+            .AddHealthChecks()
+            .AddCheck("verify-ready", () => HealthCheckResult.Healthy())
+            .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
 
         // Swagger and api versioning (verified in tests)
         services
-            .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "ExampleHost.WebApp")
+            .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "ExampleHost.WebApi")
 
             // Setting default version to 2.0, this will be overwritten if the method has it's own version
             .AddApiVersioningForWebApp(new ApiVersion(2, 0));
@@ -73,6 +79,7 @@ public class Startup
             // Health Checks (verified in tests)
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
+            endpoints.MapStatusHealthChecks();
         });
 
         // Swagger (verified in tests)

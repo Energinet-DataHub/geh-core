@@ -64,6 +64,7 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
         with:
           use_azure_functions_tools: "true"
+          azurite_version: 3.31.0
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13

@@ -29,7 +29,7 @@ For a detailed documentation per registration type, see the walkthroughs listed 
 
 ### Azure Functions App
 
-For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestration/Program.cs) for Wholesale Orchestration application.
+For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestrations/Program.cs) for Wholesale Orchestrations application.
 
 Features of the example:
 
@@ -37,7 +37,7 @@ Features of the example:
 - Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information". Telemetry emitted from the worker has:
     - `ApplicationVersion` property set to the value in `AssemblyInformationalVersion` of the worker assembly.
     - Custom property `Subsystem` set to a configured value
-- Registers health checks "live" and "readiness" endpoints:
+- Registers health checks "live", "ready" and "status" endpoints:
     - Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
@@ -51,10 +51,12 @@ Preparing an Azure Function App project:
 
    ```cs
    var host = new HostBuilder()
-       .ConfigureFunctionsWorkerDefaults(worker =>
+       .ConfigureFunctionsWebApplication(builder =>
        {
+           // Http => Authorization
+           builder.UseFunctionsAuthorization();
            // Http => Authentication
-           worker.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
+           builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
        })
        .ConfigureServices((context, services) =>
        {
@@ -63,7 +65,9 @@ Preparing an Azure Function App project:
            services.AddHealthChecksForIsolatedWorker();
 
            // Http => Authentication
-           services.AddUserAuthenticationForIsolatedWorker<SubsystemUser, SubsystemUserProvider>();
+           services
+             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
+             .AddUserAuthenticationForIsolatedWorker<SubsystemUser, SubsystemUserProvider>();
 
            // Would typically be registered within functional module registration methods instead of here.
            services.AddNodaTimeForApplication();
@@ -93,12 +97,17 @@ Preparing an Azure Function App project:
        // Logging
        // => Default log level for Application Insights
        "Logging__ApplicationInsights__LogLevel__Default": "Information",
+       // Authentication
+       "UserAuthentication__MitIdExternalMetadataAddress": "<metadata address>",
+       "UserAuthentication__ExternalMetadataAddress": "<metadata address>",
+       "UserAuthentication__InternalMetadataAddress": "<metadata address>",
+       "UserAuthentication__BackendBffAppId": "<app id>",
      }
    }
 
    ```
 
-## ASP.NET Core Web API
+### ASP.NET Core Web API
 
 For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
 
@@ -108,7 +117,7 @@ Features of the example:
 - Registers telemetry to Application Insights and configures the default log level for Application Insights to "Information". Telemetry emitted from the application has:
     - `ApplicationVersion` property set to the value in `AssemblyInformationalVersion` of the executing assembly.
     - Custom property `Subsystem` set to a configured value.
-- Registers health checks "live" and "readiness" endpoints:
+- Registers health checks "live", "ready" and "status" endpoints:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
@@ -167,6 +176,7 @@ Preparing a Web App project:
    // Health Checks
    app.MapLiveHealthChecks();
    app.MapReadyHealthChecks();
+   app.MapStatusHealthChecks();
 
    app.Run();
 

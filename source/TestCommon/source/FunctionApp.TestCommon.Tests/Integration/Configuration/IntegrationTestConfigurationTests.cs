@@ -56,6 +56,7 @@ public class IntegrationTestConfigurationTests
         actualValue.BackendAppId.Should().NotBeNullOrEmpty();
         actualValue.BackendServicePrincipalObjectId.Should().NotBeNullOrEmpty();
         actualValue.BackendAppObjectId.Should().NotBeNullOrEmpty();
+        actualValue.TestBffAppId.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
@@ -74,20 +75,6 @@ public class IntegrationTestConfigurationTests
         actualValue.ResourceGroup.Should().NotBeNullOrEmpty();
         actualValue.ClientId.Should().NotBeNullOrEmpty();
         actualValue.ClientSecret.Should().NotBeNullOrEmpty();
-    }
-
-    [Fact]
-    public void Given_IdentityHasAccess_When_ApplicationInsightsInstrumentationKey_Then_HasValue()
-    {
-        // Arrange
-
-        // Act
-#pragma warning disable CS0618 // Type or member is obsolete
-        var actualValue = Sut.ApplicationInsightsInstrumentationKey;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        // Assert
-        actualValue.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
@@ -132,7 +119,21 @@ public class IntegrationTestConfigurationTests
         // Arrange
 
         // Act
+#pragma warning disable CS0618 // Type or member is obsolete
         var actualValue = Sut.ServiceBusConnectionString;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void Given_IdentityHasAccess_When_ServiceBusFullyQualifiedNamespace_Then_HasValue()
+    {
+        // Arrange
+
+        // Act
+        var actualValue = Sut.ServiceBusFullyQualifiedNamespace;
 
         // Assert
         actualValue.Should().NotBeNullOrEmpty();

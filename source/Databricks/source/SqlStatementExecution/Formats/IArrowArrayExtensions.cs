@@ -46,11 +46,12 @@ internal static class IArrowArrayExtensions
 
     private static object? ReadArray(ListArray array, int i)
     {
-        var objectArray = new object?[array.Length];
-        var offset = array.ValueOffsets[i];
-        for (var j = 0; j < array.Length; j++)
+        var slice = array.GetSlicedValues(i);
+        var objectArray = new object?[slice.Length];
+
+        for (var j = 0; j < objectArray.Length; j++)
         {
-            objectArray[j] = array.Values.GetValue(j + offset);
+            objectArray[j] = slice.GetValue(j);
         }
 
         return objectArray;

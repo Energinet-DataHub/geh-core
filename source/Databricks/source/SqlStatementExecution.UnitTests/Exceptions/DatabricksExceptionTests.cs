@@ -28,15 +28,14 @@ public class DatabricksExceptionTests
     public void Constructor_WhenCalled_SetsMessage(DatabricksStatement statement)
     {
         // Arrange
-        const string message = "foo";
         var databricksStatementRequest = new DatabricksStatementRequest("2", statement, Format.ApacheArrow.Value);
         var response = new DatabricksStatementResponse();
 
         // Act
-        var actual = new DatabricksException(message, databricksStatementRequest, response);
+        var actual = new DatabricksException(databricksStatementRequest, response);
 
         // Assert
-        actual.Message.Should().Be(message);
+        actual.Message.Should().NotBeEmpty();
         actual.DatabricksStatementRequest.Should().Be(databricksStatementRequest);
         actual.Response.Should().Be(response);
     }

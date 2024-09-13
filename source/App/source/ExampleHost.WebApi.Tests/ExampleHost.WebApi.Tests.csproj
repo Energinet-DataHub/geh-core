@@ -20,11 +20,11 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Monitor.Query" Version="1.2.0" />
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="5.1.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-    <PackageReference Include="xunit" Version="2.7.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.8">
+    <PackageReference Include="Azure.Monitor.Query" Version="1.4.0" />
+    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="6.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="xunit" Version="2.9.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -38,7 +38,6 @@ limitations under the License.
     <ProjectReference Include="..\ExampleHost.WebApi01\ExampleHost.WebApi01.csproj" />
     <ProjectReference Include="..\ExampleHost.WebApi02\ExampleHost.WebApi02.csproj" />
     <ProjectReference Include="..\ExampleHost.WebApi03\ExampleHost.WebApi03.csproj" />
-    <ProjectReference Include="..\ExampleHost.WebApi04\ExampleHost.WebApi04.csproj" />
   </ItemGroup>
 
   <ItemGroup>

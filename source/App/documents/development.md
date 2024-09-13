@@ -13,6 +13,15 @@ The packages contain types commonly used by subsystem teams when implementing Az
 
 > Also read the general [development.md](../../../docs/development.md) as is contains information that is relevant for all NuGet package bundles.
 
+## Http authentication and authorization
+
+The extensions for registrering JWT authentication in the `FunctionApp` and `WebApp` packages should be kept in sync:
+
+* `AddJwtBearerAuthenticationForIsolatedWorker`
+* `AddJwtBearerAuthenticationForWebApp`
+
+In the future we might consider moving it to `Common` or share it by other means, but in the first release in `FunctionApp` we want to keep it separate.
+
 ## ExampleHost applications
 
 To be able to develop effeciently, especially with regards to dependency injection extensions and other types of startup configuration, we have implemented a number of `ExampleHost` applications.
@@ -25,18 +34,18 @@ These allows us to easily debug, as well as implement integration tests, for ver
 
 * Telemetry or Application Insights configuration. It depends on `ExampleHost.FunctionApp02` for the verification scenario.
 * Health Checks configuration.
-* Authentication configuration.
+* Authentication and authorization configuration.
 
-### ExampleHost.WebApp01 and ExampleHost.WebApp02
+### ExampleHost.WebApi01 and ExampleHost.WebApi02
 
-`ExampleHost.WebApp01` is used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+`ExampleHost.WebApi01` is used from integration tests located in `ExampleHost.WebApi.Tests` for verifying:
 
-* Telemetry or Application Insights configuration. It depends on `ExampleHost.WebApp02` for the verification scenario.
+* Telemetry or Application Insights configuration. It depends on `ExampleHost.WebApi02` for the verification scenario.
 * Health Checks configuration.
 
-### ExampleHost.WebApp03 and ExampleHost.WebApp04
+### ExampleHost.WebApi03
 
-These applications are used from integration tests located in `ExampleHost.WebApp.Tests` for verifying:
+`ExampleHost.WebApi03` is used from integration tests located in `ExampleHost.WebApi.Tests` for verifying:
 
 * Authentication and authorization configuration.
 
@@ -48,7 +57,7 @@ Secondly, we must ensure we obey the following [prerequisites](../../TestCommon/
 
 ### Dependencies to live Azure resources
 
-The `ExampleHost.FunctionApp.Tests` and `ExampleHost.WebApp.Tests` depends on live Azure resources like Application Insights and Service Bus. We cannot mock, or install these locally, so we have to use actual instances.
+The `ExampleHost.FunctionApp.Tests` and `ExampleHost.WebApi.Tests` depends on live Azure resources like Application Insights and Service Bus. We cannot mock, or install these locally, so we have to use actual instances.
 
 To be able to use the Azure resources prepared in the Integration Test environment, developers must do the following per test project:
 

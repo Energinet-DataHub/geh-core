@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Dynamic;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
@@ -40,10 +39,11 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     public async Task CanHandleStructArray()
     {
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var stmt = DatabricksStatement.FromRawSql(@"
-SELECT * FROM VALUES
-('Centrum', array(struct(5, 'd'), struct(7, 'z'))),
-('Zen', array(struct(1, 'a'), struct(2, 'b'))) as data(name, ts)").Build();
+        var stmt = DatabricksStatement.FromRawSql(
+            @"SELECT * FROM VALUES
+                ('Centrum', array(struct(5, 'd'), struct(7, 'z'))),
+                ('Zen', array(struct(1, 'a'), struct(2, 'b'))) as data(name, ts)")
+            .Build();
 
         var result = client.ExecuteStatementAsync(stmt, Format.ApacheArrow);
         var rows = await result.ToArrayAsync();
@@ -59,7 +59,8 @@ SELECT * FROM VALUES
         var statement = DatabricksStatement.FromRawSql(
             @"SELECT a, b FROM VALUES
                 ('one', array(0, 1)),
-                ('two', array(2, 3)) AS data(a, b);").Build();
+                ('two', array(2, 3)) AS data(a, b);")
+            .Build();
 
         // Act
         var result = client.ExecuteStatementAsync(statement, Format.ApacheArrow);
@@ -76,7 +77,8 @@ SELECT * FROM VALUES
         // Arrange
         const int expectedRows = 2;
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+        var statement = DatabricksStatement.FromRawSql(
+            @"SELECT * FROM VALUES
               ('Zen Hui', 25),
               ('Anil B' , 18),
               ('Shone S', 16),
@@ -101,7 +103,8 @@ SELECT * FROM VALUES
         // Arrange
         const int expectedRows = 6;
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var statement = DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+        var statement = DatabricksStatement.FromRawSql(
+            @"SELECT * FROM VALUES
               ('Zen Hui', 25),
               ('Anil B' , 18),
               ('Shone S', 16),
@@ -166,6 +169,38 @@ SELECT * FROM VALUES
         rowCount.Should().Be(1000000);
     }
 
+    [Theory]
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new Above2GbDataRows();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, format);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(1000000);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetFormats))]
+    public async Task ExecuteStatementParallelAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
+    {
+        // Arrange
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = new Above2GbDataRows();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement, QueryOptions.WithFormat(format).WithParallelDownload());
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(1000000);
+    }
+
     /// <summary>
     /// Given a query that takes more than 10 seconds
     /// And the initial timeout is set to 1 second
@@ -211,8 +246,8 @@ SELECT * FROM VALUES
 
     public static IEnumerable<object[]> GetFormats()
     {
-        yield return new object[] { Format.ApacheArrow };
-        yield return new object[] { Format.JsonArray };
+        yield return [Format.ApacheArrow];
+        yield return [Format.JsonArray];
     }
 
     public class QueryHistory
@@ -249,9 +284,11 @@ SELECT * FROM VALUES
             var history = await response.Content.ReadFromJsonAsync<QueryHistory>();
 
             var query = history?.Queries.FirstOrDefault(q => q.QueryText.EndsWith(statementId, StringComparison.InvariantCultureIgnoreCase));
-            if (query == null) continue;
+            if (query == null)
+                continue;
 
-            if (query.Status.Equals("Canceled", StringComparison.OrdinalIgnoreCase)) return;
+            if (query.Status.Equals("Canceled", StringComparison.OrdinalIgnoreCase))
+                return;
         }
 
         Assert.Fail("No cancelled query found in history for statementId: " + statementId);
@@ -259,19 +296,25 @@ SELECT * FROM VALUES
 
     private static bool CompareStructArrayResponse(dynamic[] rows, dynamic[] expected)
     {
-        if (rows.Length != expected.Length) return false;
-        if (CompareRow(rows[0], expected[0]) == false) return false;
+        if (rows.Length != expected.Length)
+            return false;
+        if (CompareRow(rows[0], expected[0]) == false)
+            return false;
         return CompareRow(rows[1], expected[1]) != false;
 
         static bool CompareRow(dynamic row, dynamic expectedRow)
         {
-            if (string.Equals(row.name, expectedRow.name, StringComparison.Ordinal) == false) return false;
-            if (row.ts.Length != expectedRow.ts.Length) return false;
+            if (string.Equals(row.name, expectedRow.name, StringComparison.Ordinal) == false)
+                return false;
+            if (row.ts.Length != expectedRow.ts.Length)
+                return false;
 
             for (var i = 0; i < row.ts.Length; i++)
             {
-                if (row.ts[i].col1 != expectedRow.ts[i].col1) return false;
-                if (string.Equals(row.ts[i].col2, expectedRow.ts[i].col2, StringComparison.Ordinal) == false) return false;
+                if (row.ts[i].col1 != expectedRow.ts[i].col1)
+                    return false;
+                if (string.Equals(row.ts[i].col2, expectedRow.ts[i].col2, StringComparison.Ordinal) == false)
+                    return false;
             }
 
             return true;

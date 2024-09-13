@@ -97,6 +97,32 @@ var values = ((object[])row.b).OfType<int>();
 var values = JsonConvert.DeserializeObject<string[]>((string)row.b).Select(int.Parse);
 ```
 
+#### Controlling the Number of Concurrently Downloaded Chunks
+
+To control the number of chunks being downloaded concurrently when using the `DatabricksSqlWarehouseQueryExecutor`, you can use the `QueryOptions` class. The `QueryOptions` class allows you to customize the behavior of the query execution, including the parallel download of chunks.
+
+By default, the parallel download is disabled. To enable parallel downloading and specify the number of concurrent chunks, you can use the `WithParallelDownload` method of the `QueryOptions` class. This method takes an optional parameter `maxParallelChunks` that specifies the maximum number of chunks to be downloaded concurrently.
+
+Here's an example of how to use the `WithParallelDownload` method to control the number of concurrently downloaded chunks:
+
+```c#
+var query = new QueryPersons(name: "Sheldon Cooper", date: new DateTime(1980, 2, 26));
+var options = QueryOptions.Default.WithParallelDownload(maxParallelChunks: 5); // Set the maximum number of concurrent chunks to 5
+var records = _warehouse.ExecuteStatementAsync(query, options); // _warehouse is an instance of DatabricksSqlWarehouseQueryExecutor
+```
+
+In the example above, the `maxParallelChunks` parameter is set to 5, which means that up to 5 chunks will be downloaded concurrently. You can adjust this value based on your specific requirements and the capabilities of your system.
+
+Remember to handle the downloaded chunks appropriately in your code to ensure efficient processing and avoid any potential performance issues.
+
+Usage:
+
+```c#
+// Using ApacheArrow format and download in parallel
+var query = new QueryPersons(name: "Sheldon Cooper", date: new DateTime(1980, 2, 26));
+var records = _warehouse.ExecuteStatementAsync(query, QueryOptions.Default.WithParallelDownload()); // _warehouse is an instance of DatabricksSqlWarehouseQueryExecutor
+```
+
 #### Adhoc queries
 
 It's possible to create adhoc queries from `DatabricksStatement` class.

@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 
@@ -45,7 +44,6 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
             name ?? Name,
             serviceProvider => new DatabricksJobsApiHealthCheck(
                 serviceProvider.GetRequiredService<IJobsApiClient>(),
-                serviceProvider.GetRequiredService<IClock>(),
                 serviceProvider.GetRequiredService<IOptions<DatabricksJobsOptions>>()),
             failureStatus,
             tags,

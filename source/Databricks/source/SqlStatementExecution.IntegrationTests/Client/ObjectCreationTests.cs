@@ -31,6 +31,11 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
               ('Jack N' , 16) AS data(name, age)")
         .Build();
 
+    private static DatabricksStatement NullStatement => DatabricksStatement.FromRawSql(@"SELECT * FROM VALUES
+('Jack N' , 16, 'Developer'),
+('Null N' , 27, NULL) AS data(name, age, title)")
+        .Build();
+
     public ObjectCreationTests(DatabricksSqlWarehouseFixture sqlWarehouseFixture)
     {
         _sqlWarehouseFixture = sqlWarehouseFixture;
@@ -78,6 +83,17 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
         await act.Should().ThrowAsync<ArgumentException>();
     }
 
+    [Fact]
+    public async Task AResponseWithNullValues_WhenMappedToANullableProperty_ThenTheObjectIsCreated()
+    {
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+
+        var result = client.ExecuteStatementAsync<PersonWithTitle>(NullStatement);
+        var persons = await result.ToListAsync();
+
+        persons.Count.Should().Be(2);
+    }
+
     public class ReallyBadPerson
     {
         public string Name { get; private set; }
@@ -105,4 +121,9 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
     public record Person(
         [property: ArrowField("name", 1)] string Name,
         [property: ArrowField("age", 2)] int Age);
+
+    public record PersonWithTitle(
+        [property: ArrowField("name", 1)] string Name,
+        [property: ArrowField("age", 2)] int Age,
+        [property: ArrowField("title", 3)] string? Title);
 }

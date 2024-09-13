@@ -15,7 +15,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.UnitTests.Extensions.DependencyInjection;
 
@@ -46,46 +45,6 @@ public class DatabricksSqlStatementExecutionExtensionsTests
         // Assert
         var serviceProvider = serviceCollection.BuildServiceProvider();
         AssertHttpClient(serviceProvider, WorkspaceUrl, WorkspaceToken);
-    }
-
-    [Theory]
-    [InlineData(0, 23, "")]
-    [InlineData(-1, 23, "*DatabricksHealthCheckStartHour must be between 0 and 23*")]
-    [InlineData(0, 24, "*DatabricksHealthCheckEndHour must be between 0 and 23*")]
-    [InlineData(1, 1, "*end hour must be greater than start hour*")]
-    public void AddDatabricksSqlStatementExecution_Should_RegisterDatabricksSqlStatementOptions(
-        int startHour, int endHour, string expectedExceptionMessageWildcardPattern)
-    {
-        // Arrange
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>()
-            {
-                ["WorkspaceUrl"] = "https://foo.com",
-                ["WarehouseId"] = "baz",
-                ["WorkspaceToken"] = "bar",
-                ["DatabricksHealthCheckStartHour"] = startHour.ToString(),
-                ["DatabricksHealthCheckEndHour"] = endHour.ToString(),
-            })
-            .Build();
-
-        var services = new ServiceCollection();
-
-        // Act
-        services.AddDatabricksSqlStatementExecution(configuration);
-
-        // Assert
-        var serviceProvider = services.BuildServiceProvider();
-        var act = () => serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
-        if (string.IsNullOrEmpty(expectedExceptionMessageWildcardPattern))
-        {
-            act.Should().NotThrow();
-        }
-        else
-        {
-            act.Should()
-                .Throw<OptionsValidationException>()
-                .WithMessage(expectedWildcardPattern: expectedExceptionMessageWildcardPattern);
-        }
     }
 
     private static void AssertHttpClient(

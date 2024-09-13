@@ -15,7 +15,8 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Management;
-using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 
@@ -23,16 +24,20 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 /// Used to start Azurite, which is the storage emulator that replaced Azure Storage Emulator.
 /// Remember to dispose, otherwise the Azurite process wont be stopped.
 ///
-/// If we use 'OAuth' a test certificate will be installed on startup:
-///  * When exeuted on a GitHub runner: The certificate will be installed silently if the runner is
-///    executed as administrator (default).
-///  * When executed on any non-Github runner: A dialog will be shown to the user the first time the
-///    certificate is installed. The dialog requests the user to accept trusting the test certificate.
+/// If 'OAuth' is enabled then a test certificate will be installed on startup (see <see cref="TestCertificateProvider"/>.<see cref="TestCertificateProvider.InstallCertificate"/>)
 ///
 /// In most cases the AzuriteManager should be used in the FunctionAppFixture:
-/// - Create it in the constructor
-/// - Start it in OnInitializeFunctionAppDependenciesAsync()
-/// - Dispose it in OnDisposeFunctionAppDependenciesAsync()
+/// <list type="bullet">
+///     <item>
+///         <description>Create it in the constructor</description>
+///     </item>
+///     <item>
+///         <description>Start it in OnInitializeFunctionAppDependenciesAsync()</description>
+///     </item>
+///     <item>
+///         <description>Dispose it in OnDisposeFunctionAppDependenciesAsync()</description>
+///     </item>
+/// </list>
 ///
 /// If Azurite is not installed globally then set the environment variable 'AzuriteFolderPath'
 /// to the location of the 'azurite.cmd' file.
@@ -52,21 +57,12 @@ public class AzuriteManager : IDisposable
     private const int TableServicePort = 10002;
 
     /// <summary>
-    /// Path to the test certificate file, which is added as content to current NuGet package.
-    /// </summary>
-    private const string TestCertificateFilePath = @".\Azurite\TestCertificate\azurite-cert.pfx";
-
-    /// <summary>
-    /// Password to the test certificate file.
-    /// </summary>
-    private const string TestCertificatePassword = "azurite";
-
-    /// <summary>
     /// Create manager to startup Azurite.
     /// </summary>
-    public AzuriteManager(bool useOAuth = false)
+    public AzuriteManager(bool useOAuth = false, bool useSilentMode = true)
     {
         UseOAuth = useOAuth;
+        UseSilentMode = useSilentMode;
         FullConnectionString = BuildConnectionString(UseOAuth, useBlob: true, useQueue: true, useTable: true);
         BlobStorageConnectionString = BuildConnectionString(UseOAuth, useBlob: true);
         BlobStorageServiceUri = BuildServiceUri(UseOAuth, BlobServicePort);
@@ -80,6 +76,11 @@ public class AzuriteManager : IDisposable
     /// If true then start Azurite with OAuth and HTTPS options.
     /// </summary>
     public bool UseOAuth { get; }
+
+    /// <summary>
+    /// If true then start Azurite silent mode (disable output of the access log).
+    /// </summary>
+    public bool UseSilentMode { get; }
 
     /// <summary>
     /// Connection string for connecting to all Azurite services (blob, queue, table).
@@ -283,9 +284,10 @@ public class AzuriteManager : IDisposable
     private void StartAzuriteProcess()
     {
         var azuriteCommandFilePath = GetAzuriteCommandFilePath();
-        var azuriteArguments = GetAzuriteArguments(UseOAuth);
+        var azuriteArguments = GetAzuriteArguments(UseOAuth, UseSilentMode);
 
-        HandleTestCertificateInstallation(UseOAuth);
+        if (UseOAuth)
+            TestCertificateProvider.InstallCertificate();
 
         AzuriteProcess = new Process
         {
@@ -335,36 +337,20 @@ public class AzuriteManager : IDisposable
             : Path.Combine(azuriteFolderPath, azuriteFileName);
     }
 
-    private static string GetAzuriteArguments(bool useOAuth)
+    private static string GetAzuriteArguments(bool useOAuth, bool useSilentMode)
     {
-        return useOAuth == true
-            ? $"--oauth basic --cert {TestCertificateFilePath} --pwd {TestCertificatePassword}"
-            : string.Empty;
-    }
+        var arguments = new List<string>();
 
-    /// <summary>
-    /// If using OAuth then installs test certificate.
-    /// Supports silent installation on a GitHub runner if executed as administrator.
-    /// </summary>
-    private static void HandleTestCertificateInstallation(bool useOAuth)
-    {
         if (useOAuth)
         {
-            // If not executed as administrator we can only install to 'CurrentUser' and this will show a dialog to the user.
-            var storeLocation = StoreLocation.CurrentUser;
-
-            // Determine if executed on a GitHub runner.
-            if (Environment.GetEnvironmentVariable("CI") == "true")
-            {
-                // If executed as administrator we can install silently to 'LocalMachine'.
-                storeLocation = StoreLocation.LocalMachine;
-            }
-
-            using var certificateStore = new X509Store(StoreName.Root, storeLocation);
-            certificateStore.Open(OpenFlags.ReadWrite);
-
-            using var testCertificate = new X509Certificate2(TestCertificateFilePath, TestCertificatePassword);
-            certificateStore.Add(testCertificate);
+            arguments.Add($"--oauth basic --cert {TestCertificateProvider.FilePath} --pwd {TestCertificateProvider.Password}");
         }
+
+        if (useSilentMode)
+        {
+            arguments.Add("--silent");
+        }
+
+        return string.Join(" ", arguments);
     }
 }

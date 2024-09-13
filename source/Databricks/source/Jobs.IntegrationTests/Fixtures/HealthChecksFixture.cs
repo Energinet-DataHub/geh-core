@@ -12,20 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
+using Energinet.DataHub.Core.App.Common.Extensions.Builder;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Azure.Databricks.Client;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Moq;
-using Moq.Protected;
 using NodaTime;
 
 namespace Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests.Fixtures;
@@ -36,8 +33,10 @@ public sealed class HealthChecksFixture : IDisposable
 
     public HealthChecksFixture()
     {
-        var webHostBuilder = CreateWebHostBuilder();
+        var integrationTestConfiguration = new IntegrationTestConfiguration();
+        var webHostBuilder = CreateWebHostBuilder(integrationTestConfiguration);
         _server = new TestServer(webHostBuilder);
+
         HttpClient = _server.CreateClient();
     }
 
@@ -48,26 +47,27 @@ public sealed class HealthChecksFixture : IDisposable
         _server.Dispose();
     }
 
-    private static IWebHostBuilder CreateWebHostBuilder()
+    private static IWebHostBuilder CreateWebHostBuilder(IntegrationTestConfiguration integrationTestConfiguration)
     {
         return new WebHostBuilder()
             .ConfigureServices(services =>
             {
-                services.AddOptions<DatabricksJobsOptions>().Configure(options =>
-                {
-                    options.WarehouseId = "baz";
-                    options.WorkspaceToken = "bar";
-                    options.WorkspaceUrl = "https://foo.com";
-                    options.DatabricksHealthCheckStartHour = 0;
-                    options.DatabricksHealthCheckEndHour = 23;
-                });
+                var configuration = new ConfigurationBuilder()
+                    .AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        [$"{nameof(DatabricksJobsOptions.WorkspaceUrl)}"]
+                            = integrationTestConfiguration.DatabricksSettings.WorkspaceUrl,
+                        [$"{nameof(DatabricksJobsOptions.WorkspaceToken)}"]
+                            = integrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken,
+                        [$"{nameof(DatabricksJobsOptions.WarehouseId)}"]
+                            = integrationTestConfiguration.DatabricksSettings.WarehouseId,
+                    })
+                    .Build();
 
                 services.AddRouting();
-
-                RegisterHttpClientFactoryMock(services);
-                RegisterJobsApiClientMock(services);
-
                 services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
+
+                services.AddDatabricksJobs(configuration);
 
                 services.AddHealthChecks()
                     .AddLiveCheck()
@@ -79,41 +79,9 @@ public sealed class HealthChecksFixture : IDisposable
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapLiveHealthChecks();
+                    // Databricks Jobs health check is registered for "ready" endpoint
                     endpoints.MapReadyHealthChecks();
                 });
             });
-    }
-
-    private static void RegisterJobsApiClientMock(IServiceCollection services)
-    {
-        var jobsApiClientMock = new Mock<IJobsApiClient>();
-        jobsApiClientMock.Setup(x => x.Jobs).Returns(new Mock<IJobsApi>().Object);
-        services.AddScoped(_ => jobsApiClientMock.Object);
-    }
-
-    private static void RegisterHttpClientFactoryMock(IServiceCollection services)
-    {
-        var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-
-        var response = new HttpResponseMessage { StatusCode = HttpStatusCode.OK };
-
-        httpMessageHandlerMock
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(response);
-
-        var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-        services.AddScoped(_ => httpClient);
-
-        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-        httpClientFactoryMock
-            .Setup(x => x.CreateClient(Options.DefaultName))
-            .Returns(() => httpClient);
-
-        services.AddScoped(_ => httpClientFactoryMock.Object);
     }
 }

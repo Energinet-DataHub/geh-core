@@ -1,5 +1,30 @@
 # App Release notes
 
+## WebaApp, Common, Common.Abstractions, FunctionApp Version 13.2.0
+
+- Added support for x-enumNames in OpenApiExtensions, which allows for the use of Enum names in the OpenAPI documentation.
+
+## Version 13.1.0
+
+- Extended health checks with an additional category `status`. Health checks can then be registerede as beeing called as part of the `ready` or the `status` endpoint.
+    - In Azure Functions App the status endpoint is automatically available if the application already registerede health checks according to the documentation.
+    - In ASP.NET Core Web API developers must add a call to `MapStatusHealthChecks()`. See the [Quick start for application startup](../documentation.md#quick-start-for-application-startup).
+
+## Version 13.0.1
+
+- In `FunctionApp` project:
+    - Updated dependency to `DarkLoop.Azure.Functions.Authorization.Isolated` to fix [issue](https://github.com/dark-loop/functions-authorize/issues/62).
+
+## Version 13.0.0
+
+- See also [Version 13.0.0 release notes](./version_13_0_0.md)
+- In `FunctionApp` project:
+    - Refactored implementation to only work with [ASP.NET Core integration for HTTP](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration).
+    - Added functionality to configure authentication and authorization for HttpTrigger's
+- In `WebApp` project:
+    - Removed the obsolete overload of `AuthenticationExtensions.AddJwtBearerAuthenticationForWebApp`
+- Moved type `Energinet.DataHub.Core.App.WebApp.Extensions.Options.UserAuthenticationOptions` to `Energinet.DataHub.Core.App.Common.Extensions.Options.UserAuthenticationOptions`.
+
 ## Version 12.2.1
 
 - In `FunctionApp` project:

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -29,9 +30,14 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 /// </summary>
 public sealed class ServiceBusListenerMock : IAsyncDisposable
 {
+    private readonly string _connectionString;
+    private readonly string _fullyQualifiedNamespace;
+
+    [Obsolete("Use constructur with 'FullyQualifiedNamespace'.")]
     public ServiceBusListenerMock(string connectionString, ITestDiagnosticsLogger testLogger)
     {
-        ConnectionString = string.IsNullOrWhiteSpace(connectionString)
+        _fullyQualifiedNamespace = string.Empty;
+        _connectionString = string.IsNullOrWhiteSpace(connectionString)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
             : connectionString;
         TestLogger = testLogger
@@ -49,7 +55,48 @@ public sealed class ServiceBusListenerMock : IAsyncDisposable
         ReceivedMessages = mutableReceivedMessages;
     }
 
-    public string ConnectionString { get; }
+    public ServiceBusListenerMock(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace)
+    {
+        _connectionString = string.Empty;
+        _fullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
+            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(fullyQualifiedNamespace))
+            : fullyQualifiedNamespace;
+        TestLogger = testLogger
+            ?? throw new ArgumentNullException(nameof(testLogger));
+
+        var credential = new DefaultAzureCredential();
+        AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, credential);
+        Client = new ServiceBusClient(FullyQualifiedNamespace, credential);
+
+        MutableReceivedMessagesLock = new SemaphoreSlim(1, 1);
+        MessageReceivers = new Dictionary<string, ServiceBusProcessor>();
+        MessageHandlers = new ConcurrentDictionary<Func<ServiceBusReceivedMessage, bool>, Func<ServiceBusReceivedMessage, Task>>();
+
+        var mutableReceivedMessages = new BlockingCollection<ServiceBusReceivedMessage>();
+        MutableReceivedMessages = mutableReceivedMessages;
+        ReceivedMessages = mutableReceivedMessages;
+    }
+
+    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'FullyQualifiedNamespace' instead.", false)]
+    public string ConnectionString
+    {
+        get
+        {
+            return _connectionString == string.Empty
+                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'FullyQualifiedNamespace'.")
+                : _connectionString;
+        }
+    }
+
+    public string FullyQualifiedNamespace
+    {
+        get
+        {
+            return _fullyQualifiedNamespace == string.Empty
+                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'ConnectionString'.")
+                : _fullyQualifiedNamespace;
+        }
+    }
 
     public IReadOnlyCollection<ServiceBusReceivedMessage> ReceivedMessages { get; private set; }
 

@@ -14,11 +14,17 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using ExampleHost.FunctionApp01.Security;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
+/// <summary>
+/// Similar functionality exists for Web App in the 'AuthenticationController' class
+/// located in the 'ExampleHost.WebApi03' project.
+/// </summary>
 public class AuthenticationFunction
 {
     private readonly IUserContext<ExampleSubsystemUser> _userContext;
@@ -26,6 +32,43 @@ public class AuthenticationFunction
     public AuthenticationFunction(IUserContext<ExampleSubsystemUser> userContext)
     {
         _userContext = userContext;
+    }
+
+    /// <summary>
+    /// 1: This method should not require any 'Bearer' token in the 'Authorization' header.
+    ///   It should allow anonymous access and always return the given Guid, for tests to verify.
+    /// </summary>
+    [Function(nameof(GetAnonymous))]
+    [AllowAnonymous]
+    public IActionResult GetAnonymous(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "authentication/anon/{identification:guid}")]
+        HttpRequest httpRequest,
+        Guid identification)
+    {
+        return new OkObjectResult(identification.ToString());
+    }
+
+    /// <summary>
+    /// 1: This method should be called with a 'Bearer' token in the 'Authorization' header.
+    ///   The token must be a nested token (containing both external and internal token).
+    /// 2: The DarkLoop Authorization extension in combination with ASP.NET Core authentication classes
+    ///   should retrieve the token and validate it.
+    /// 3: If successfull the given Guid is returned, for tests to verify.
+    /// </summary>
+    [Function(nameof(GetWithPermission))]
+    [Authorize]
+    public IActionResult GetWithPermission(
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "authentication/auth/{identification:guid}")]
+        HttpRequest httpRequest,
+        Guid identification)
+    {
+        return new OkObjectResult(identification.ToString());
     }
 
     /// <summary>
@@ -39,21 +82,22 @@ public class AuthenticationFunction
     ///   If the user is not available an Empty guid is returned.
     /// </summary>
     [Function(nameof(GetUserWithPermission))]
-    public string GetUserWithPermission(
+    [Authorize]
+    public IActionResult GetUserWithPermission(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
             Route = "authentication/user")]
-        HttpRequestData httpRequest,
+        HttpRequest httpRequest,
         FunctionContext context)
     {
         try
         {
-            return _userContext.CurrentUser.UserId.ToString();
+            return new OkObjectResult(_userContext.CurrentUser.UserId.ToString());
         }
         catch
         {
-            return Guid.Empty.ToString();
+            return new OkObjectResult(Guid.Empty.ToString());
         }
     }
 }

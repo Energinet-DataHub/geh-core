@@ -15,7 +15,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
 using ExampleHost.WebApi.Tests.Fixtures;
 using FluentAssertions;
 using Microsoft.IdentityModel.Tokens;
@@ -24,74 +23,45 @@ using Xunit;
 namespace ExampleHost.WebApi.Tests.Integration;
 
 /// <summary>
-/// Authentication tests ensuring that the configured token is validated correctly.
+/// Authentication tests using a nested token (a token which contains both an
+/// external and an internal token) to verify that tokens are configured
+/// to be validated as expected.
+///
+/// Similar tests exists for Function App in the 'AuthenticationTests' class
+/// located in the 'ExampleHost.FunctionApp.Tests' project.
 /// </summary>
-[Collection(nameof(AuthenticationHostCollectionFixture))]
+[Collection(nameof(WebApi03HostCollectionFixture))]
 public sealed class AuthenticationTests
 {
-    public AuthenticationTests(AuthenticationHostFixture fixture)
+    public AuthenticationTests(WebApi03HostFixture fixture)
     {
         Fixture = fixture;
     }
 
-    private AuthenticationHostFixture Fixture { get; }
+    private WebApi03HostFixture Fixture { get; }
 
     [Fact]
-    public async Task CallingApi04Get_Anonymous_Succeeds()
+    public async Task CallingInvalidEndpoint_WithNoToken_NotFound()
     {
         // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
+        using var request = new HttpRequestMessage(HttpMethod.Get, "webapi03/authentication/does_not_exist");
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/anon/{requestIdentification}");
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
-    }
-
-    [Fact]
-    public async Task CallingApi04Get_NoEndpoint_Returns404()
-    {
-        // Arrange
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/does_not_exist");
-
-        // Act
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task CallingApi04Get_AuthRequiredButNoToken_Unauthorized()
+    public async Task CallingGetAnonymous_WithNoToken_Allowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task CallingApi04Get_AuthWithToken_Allowed()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationResult = await Fixture.GetTokenAsync();
-        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/anon/{requestIdentification}");
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -101,62 +71,82 @@ public sealed class AuthenticationTests
     }
 
     [Fact]
-    public async Task CallingApi04Get_AuthWithToken_ButUserIsDenied()
+    public async Task CallingGetWithPermission_WithNoToken_Unauthorized()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
-        var authenticationResult = await Fixture.GetTokenAsync();
-        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", authenticationHeader);
-        request.Headers.Add("DenyUser", authenticationHeader);
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task CallingApi04Get_UserWithToken_ReturnsUserId()
+    public async Task CallingGetWithPermission_WithFakeToken_Unauthorized()
     {
         // Arrange
-        var authenticationResult = await Fixture.GetTokenAsync();
-        var authenticationHeader = authenticationResult.CreateAuthorizationHeader();
+        var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/user");
-        request.Headers.Add("Authorization", authenticationHeader);
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
+        request.Headers.Authorization = Fixture.OpenIdJwtManager.JwtProvider.CreateFakeTokenAuthenticationHeader();
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task CallingGetWithPermission_WithToken_Allowed()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Be(requestIdentification);
+    }
+
+    [Fact]
+    public async Task CallingGetWithPermission_WithToken_ButUserIsDenied()
+    {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi03/authentication/auth/{requestIdentification}");
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
+        request.Headers.Add("DenyUser", string.Empty);
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task CallingGetUserWithPermission_UserWithToken_ReturnsUserId()
+    {
+        // Arrange
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Get, "webapi03/authentication/user");
+        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
+        using var actualResponse = await Fixture.Web03HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         Assert.True(Guid.TryParse(content, out _));
-    }
-
-    [Fact]
-    public async Task CallingApi04Get_AuthWithFakeToken_Unauthorized()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("not-a-secret-keynot-a-secret-key"));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var subClaim = new Claim("sub", Guid.NewGuid().ToString());
-
-        var securityToken = new JwtSecurityToken(claims: new[] { subClaim }, signingCredentials: credentials);
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.WriteToken(securityToken);
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi04/authentication/auth/{requestIdentification}");
-        request.Headers.Add("Authorization", $"Bearer {token}");
-        using var actualResponse = await Fixture.Web04HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }
