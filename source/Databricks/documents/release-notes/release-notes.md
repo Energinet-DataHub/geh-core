@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 11.2.4
+
+- Fix overflow of backoff value.
+
 ## Version 11.2.3
 
 - Skip tests
