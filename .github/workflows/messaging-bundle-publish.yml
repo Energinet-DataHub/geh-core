@@ -35,6 +35,11 @@ env:
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
   # Necessary to manage Azure resources from automated tests
   AZURE_KEYVAULT_URL: ${{ vars.integration_test_azure_keyvault_url }}
+  # Set value used by 'AzuriteManager'
+  #  Use 'AzuriteFolderPath' for TestCommon version 4.3.0 and higher
+  AzuriteFolderPath: ${{ github.workspace }}\node_modules\.bin\
+  # Overrides settings in 'functionhost.settings.json'
+  FunctionAppHostPath: ${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll
 
 jobs:
   build_and_publish:
