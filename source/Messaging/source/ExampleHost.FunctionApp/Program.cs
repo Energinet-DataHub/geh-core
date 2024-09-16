@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Messaging.Communication;
+using ExampleHost.FunctionApp.IntegrationEvents;
+using Google.Protobuf.Reflection;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +29,7 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
 
         // Configuration verified in tests
+        services.AddSubscriber<ExampleIntegrationEventHandler>(Array.Empty<MessageDescriptor>());
     })
     .Build();
 
