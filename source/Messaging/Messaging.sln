@@ -19,7 +19,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-no
 		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication.IntegrationTests", "source\Communication.IntegrationTests\Communication.IntegrationTests.csproj", "{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Communication.IntegrationTests", "source\Communication.IntegrationTests\Communication.IntegrationTests.csproj", "{EE7F4A2D-83AF-4643-9756-A1AA4EA06E97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_ConfigurationFiles", "{C8C3B992-8701-46FB-AA02-B233597F3DB4}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
