@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using ExampleHost.FunctionApp.Functions;
+using ExampleHost.FunctionApp.IntegrationEvents.Contracts;
 using ExampleHost.FunctionApp.Tests.Fixtures;
 using Xunit.Abstractions;
 
@@ -44,15 +49,25 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     public async Task IntegrationEvent_WhenSend_ShouldTriggerIntegrationEventListener()
     {
         // Arrange
-        var serviceBusMessage = new ServiceBusMessage()
+        var token = new TokenV1
         {
-            MessageId = "messageId",
+            Content = "Any",
         };
+
+        var factory = new ServiceBusMessageFactory();
+        var serviceBusMessage = factory.Create(
+            new IntegrationEvent(
+                EventIdentification: Guid.NewGuid(),
+                EventName: token.GetType().Name,
+                EventMinorVersion: 0,
+                Message: token));
 
         // Act
         await Fixture.TopicResource.SenderClient.SendMessageAsync(serviceBusMessage);
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
+
+        // TODO: Verify that the function did not fail
     }
 }

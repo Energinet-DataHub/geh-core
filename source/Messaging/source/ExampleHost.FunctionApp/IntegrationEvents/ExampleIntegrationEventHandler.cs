@@ -14,23 +14,31 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using ExampleHost.FunctionApp.IntegrationEvents.Contracts;
 
 namespace ExampleHost.FunctionApp.IntegrationEvents;
 
+/// <summary>
+/// When sending ServiceBus messages from tests we use the event content to trigger a given test scenario.
+/// </summary>
 public sealed class ExampleIntegrationEventHandler : IIntegrationEventHandler
 {
     public Task HandleAsync(IntegrationEvent integrationEvent)
     {
-        throw new NotImplementedException();
+        switch (integrationEvent.Message)
+        {
+            case TokenV1 tokenV1:
+                if (tokenV1.Content == "DeadLetter")
+                {
+                    // Scenario: Throw exception for e.g. testing failure during event processing
+                    throw new InvalidOperationException("Content contains 'DeadLetter'.");
+                }
 
-        ////switch (integrationEvent.Message)
-        ////{
-        ////    case ActorCreated actorCreated:
-        ////        // handle actorCreated
-        ////        break;
-        ////    case UserCreated userCreated:
-        ////        // handle userCreated
-        ////        break;
-        ////}
+                // Scenario: Successful event processing
+                return Task.CompletedTask;
+            default:
+                // Not used
+                throw new InvalidOperationException("Integration Event type not supported.");
+        }
     }
 }

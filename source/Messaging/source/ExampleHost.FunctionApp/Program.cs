@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using ExampleHost.FunctionApp.IntegrationEvents;
+using ExampleHost.FunctionApp.IntegrationEvents.Contracts;
 using Google.Protobuf.Reflection;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,10 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
 
         // Configuration verified in tests
-        services.AddSubscriber<ExampleIntegrationEventHandler>(Array.Empty<MessageDescriptor>());
+        services.AddSubscriber<ExampleIntegrationEventHandler>(new[]
+        {
+            TokenV1.Descriptor,
+        });
     })
     .Build();
 
