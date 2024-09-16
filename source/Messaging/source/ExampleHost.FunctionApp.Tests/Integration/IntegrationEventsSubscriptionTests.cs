@@ -22,6 +22,7 @@ using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using ExampleHost.FunctionApp.Functions;
 using ExampleHost.FunctionApp.IntegrationEvents.Contracts;
 using ExampleHost.FunctionApp.Tests.Fixtures;
+using FluentAssertions;
 using Xunit.Abstractions;
 
 namespace ExampleHost.FunctionApp.Tests.Integration;
@@ -46,7 +47,7 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     }
 
     [Fact]
-    public async Task IntegrationEvent_WhenSend_ShouldTriggerIntegrationEventListener()
+    public async Task TokenHasAnyContent_WhenSend_IntegrationEventListenerShouldNotFail()
     {
         // Arrange
         var token = new TokenV1
@@ -67,7 +68,31 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
+        Fixture.HostManager.CheckIfFunctionThrewException().Should().BeFalse();
+    }
 
-        // TODO: Verify that the function did not fail
+    [Fact]
+    public async Task TokenHasDeadLetterContent_WhenSend_IntegrationEventListenerShouldFail()
+    {
+        // Arrange
+        var token = new TokenV1
+        {
+            Content = "DeadLetter",
+        };
+
+        var factory = new ServiceBusMessageFactory();
+        var serviceBusMessage = factory.Create(
+            new IntegrationEvent(
+                EventIdentification: Guid.NewGuid(),
+                EventName: token.GetType().Name,
+                EventMinorVersion: 0,
+                Message: token));
+
+        // Act
+        await Fixture.TopicResource.SenderClient.SendMessageAsync(serviceBusMessage);
+
+        // Assert
+        await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
+        Fixture.HostManager.CheckIfFunctionThrewException().Should().BeTrue();
     }
 }
