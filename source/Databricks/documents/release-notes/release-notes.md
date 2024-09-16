@@ -1,5 +1,17 @@
 # Databricks Release Notes
 
+## Version 11.2.4
+
+- Fix overflow of backoff value.
+
+## Version 11.2.3
+
+- Skip tests
+
+## Version 11.2.2
+
+- Check for valid delay input
+
 ## Version 11.2.1
 
 - Introduce an exponential backoff strategy for retrieving statement query response from the Databricks SQL Statement Execution API.
