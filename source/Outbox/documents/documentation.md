@@ -12,14 +12,14 @@ in a section below.
 
 The Outbox module is a pattern for handling messages in a distributed system. The outbox pattern is used to ensure that
 messages are sent at least once, even if the system crashes or the message is lost. This is achieved by storing the
-message in a database (the outbox) in the same transaction as the actual business logic, and then processing 
+message in a database (the outbox) in the same transaction as the actual business logic, and then processing
 the message in a separate process, which handles retries in case the external system is unavailable.
 
 An example of the outbox pattern can be found at [the outbox pattern](https://www.kamilgrzybek.com/blog/posts/the-outbox-pattern)
 (also referenced by Microsoft at
 [asynchronous-message-based-communication](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/architect-microservice-container-applications/asynchronous-message-based-communication))
 
-Using the outbox guarantees [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/) since 
+Using the outbox guarantees [At-least-once Delivery](https://www.cloudcomputingpatterns.org/at_least_once_delivery/) since
 messages are retried in case of failure. This should be used in combination with
 [Idempotent Processor](https://www.cloudcomputingpatterns.org/idempotent_processor/) and
 [Exactly-once Delivery](https://www.cloudcomputingpatterns.org/exactly_once_delivery/) patterns to ensures that
@@ -27,7 +27,7 @@ the received messages are only processed once.
 
 ## Getting started
 
-This section describes how to get started using the outbox pattern in a .NET application. It consists of 
+This section describes how to get started using the outbox pattern in a .NET application. It consists of
 the following topics and examples:
 
 1. Required dependencies.
@@ -38,11 +38,12 @@ the following topics and examples:
 ### Required dependencies
 
 The following dependencies are required to exist in the DI container to use the outbox package:
+
 - `IClock` (NodaTime, should be registered using the DataHub app package)
 - `ILogger` (Microsoft.Extensions.Logging, should be registered using the DataHub app package)
 - A `DbContext` implementing the `IOutboxContext` interface (see below)
 
-**Outbox database context**
+#### Outbox database context
 
 To use the `Outbox` package you first need to have an `DbContext` implementing the `IOutboxContext` interface, that
 also applies the `OutboxEntityConfiguration` to the model builder (the `DbContext` must be registered in the DI container).
@@ -51,6 +52,7 @@ The `IOutboxContext` interface is used to provide the `Outbox` module with the n
 outbox messages. It is found in the `Energinet.DataHub.Core.Outbox` NuGet package.
 
 **IOutboxContext example** (`MyApplicationDbContext`):
+
 ```csharp
 public class MyApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, IOutboxContext
 {
@@ -70,6 +72,7 @@ public class MyApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, I
 ```
 
 A script for creating the outbox table in SQL should be added to the database migration scripts, looking like this:
+
 ```sql
 CREATE TABLE [dbo].[Outbox]
 (
@@ -106,7 +109,7 @@ GO
 
 ### Adding a new message to the outbox
 
-To add new outbox messages to the outbox, you must use the `IOutboxClient` interface from 
+To add new outbox messages to the outbox, you must use the `IOutboxClient` interface from
 the `Energinet.DataHub.Core.Outbox.Abstractions`NuGet package. Register the required dependencies
 and the `IOutboxClient` in your application:
 
@@ -122,15 +125,16 @@ IServiceCollection services = new ServiceCollection();
 services.AddOutboxClient<MyApplicationDbContext>();
 ```
 
-The `MyApplicationDbContext` is the `DbContext` implementing the `IOutboxContext` interface, 
+The `MyApplicationDbContext` is the `DbContext` implementing the `IOutboxContext` interface,
 described in the "required dependencies" section.
 
 #### Implementing an outbox message
 
-To add a new outbox message to the outbox, you must also create an outbox message implementation. 
+To add a new outbox message to the outbox, you must also create an outbox message implementation.
 Add new class that implements the `IOutboxMessage<TPayload>` interface (see example below).
 
 **IOutboxMessage (UserCreatedEmailOutboxMessageV1) example:**
+
 ```csharp
 public record UserCreatedEmailOutboxMessageV1
     : IOutboxMessage<UserCreatedEmailOutboxMessageV1Payload>
@@ -160,7 +164,7 @@ public record UserCreatedEmailOutboxMessageV1Payload(Guid Id, string Email);
 #### Adding an outbox message to the outbox
 
 To add an outbox message to the outbox, you must perform the following:
- 
+
 1. Inject the `IOutboxClient` interface into your service.
 2. Create a new instance of an outbox message implementation (see `UserCreatedEmailOutboxMessageV1`example above).
 3. Add the outbox message to the outbox using the `AddToOutboxAsync` method on the `IOutboxClient`.
@@ -196,8 +200,7 @@ public class CreateUserService(IOutboxClient outboxClient, MyApplicationDbContex
 ### Publishing Outbox messages
 
 Since the outbox message is stored in the database, publishing the outbox message can happen in any application that
-has access to the same database. 
-
+has access to the same database.
 
 #### Implementing an outbox message publisher
 
@@ -205,6 +208,7 @@ To be able to publish the `UserCreatedEmailOutboxMessageV1` example from above, 
 must be implemented.
 
 **Example UserCreatedEmailOutboxMessagePublisher:**
+
 ```csharp
 public class UserCreatedEmailOutboxMessagePublisher : IOutboxPublisher
 {
@@ -252,6 +256,7 @@ or a timer trigger. Below is an example of how to use the `IOutboxProcessor` in 
 processing the outbox messages every 10 seconds.
 
 **TimerTrigger example:**
+
 ```csharp
 public class OutboxPublisher(IOutboxProcessor outboxProcessor)
 {
@@ -268,7 +273,7 @@ public class OutboxPublisher(IOutboxProcessor outboxProcessor)
 }
 ```
 
-The `_outboxProcessor.ProcessOutboxAsync()` will process all current outbox messages in the database 
+The `_outboxProcessor.ProcessOutboxAsync()` will process all current outbox messages in the database
 and publish them using the registered `IOutboxPublisher` implementations. Using the default values, it will
 maximum try to process 1000 messages per run, which can be overriden by using the optional `limit` parameter
 from the `IOutboxProcessor.ProcessOutboxAsync` method.
@@ -294,12 +299,12 @@ periodically. Make sure that each run of the `ProcessOutboxAsync` method is in a
 ## Deleting old outbox messages
 
 Remember to delete old outbox messages from the `Outbox` table (where `PublishedAt` is not null) to avoid
-the Outbox table continuing to growing indefinitely. Implementing this is currently not part of the `Outbox` 
+the Outbox table continuing to growing indefinitely. Implementing this is currently not part of the `Outbox`
 package, and should be handled individually in each application.
 
 ## Error handling and retries
 
-The `IOutboxProcessor` implementation will handle retries and error handling for the outbox messages. 
+The `IOutboxProcessor` implementation will handle retries and error handling for the outbox messages.
 If an outbox message is not successfully processed, the `ErrorCount` will be incremented and
 the `FailedAt` and `ErrorMessage` columns will be updated. The `IOutboxProcessor` will retry processing
 the message with an increasing delay based on how many times it has failed.
