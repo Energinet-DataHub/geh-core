@@ -37,6 +37,9 @@ internal class DeadLetterHandler : IDeadLetterHandler
     /// <item>Log the <paramref name="message"/>, and update <see cref="DeadLetterIsLoggedProperty" /> accordingly.</item>
     /// <item>Update the <paramref name="message"/> as deferred, so it wont retrigger the dead-letter queue trigger.</item>
     /// </list>
+    /// <remarks>
+    /// The dead-letter handler is responsible for managing the message, which is why 'AutoCompleteMessages' must be set <see langword="false"/> in the 'ServiceBusTrigger'.
+    /// </remarks>
     /// </summary>
     public async Task HandleAsync(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
     {

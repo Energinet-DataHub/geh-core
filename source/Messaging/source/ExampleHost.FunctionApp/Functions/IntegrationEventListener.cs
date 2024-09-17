@@ -30,11 +30,12 @@ public class IntegrationEventListener
     }
 
     /// <summary>
-    /// Receives messages from the integration event topic and processes them.
+    /// Receives messages from the integration event topic/subscription and processes them.
     /// </summary>
     /// <remarks>
     /// If the method fails to process a message, the Service Bus will automatically retry delivery of the message
-    /// based on the retry policy configured for the Service Bus.
+    /// based on the retry policy configured for the Service Bus. After a number of retries the message will be
+    /// moved to the dead-letter queue of the topic/subscription.
     /// </remarks>
     [Function(nameof(IntegrationEventListener))]
     public async Task RunAsync(

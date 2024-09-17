@@ -28,6 +28,12 @@ public class IntegrationEventDeadLetterListener
         _deadLetterHandler = deadLetterHandler;
     }
 
+    /// <summary>
+    /// Receives messages from the dead-letter queue of the integration event topic/subscription and processes them.
+    /// </summary>
+    /// <remarks>
+    /// The dead-letter handler is responsible for managing the message, which is why 'AutoCompleteMessages' must be set 'false'.
+    /// </remarks>
     [Function(nameof(IntegrationEventDeadLetterListener))]
     public async Task RunAsync(
         [ServiceBusTrigger(

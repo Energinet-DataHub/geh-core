@@ -191,6 +191,13 @@ Preparing a **Function App** project:
             _subscriber = subscriber;
         }
 
+        /// <summary>
+        /// Receives messages from the integration event topic/subscription and processes them.
+        /// </summary>
+        /// <remarks>
+        /// If the method fails to process a message, the Service Bus will automatically retry delivery of the message
+        /// based on the retry policy configured for the Service Bus. After a number of retries the message will be
+        /// moved to the dead-letter queue of the topic/subscription.
         [Function("ServiceBusFunction")]
         public async Task RunAsync(
             [ServiceBusTrigger(
@@ -217,6 +224,12 @@ Preparing a **Function App** project:
             _deadLetterHandler = deadLetterHandler;
         }
 
+        /// <summary>
+        /// Receives messages from the dead-letter queue of the integration event topic/subscription and processes them.
+        /// </summary>
+        /// <remarks>
+        /// The dead-letter handler is responsible for managing the message, which is why 'AutoCompleteMessages' must be set 'false'.
+        /// </remarks>
         [Function(nameof(IntegrationEventDeadLetterListener))]
         public async Task RunAsync(
             [ServiceBusTrigger(
