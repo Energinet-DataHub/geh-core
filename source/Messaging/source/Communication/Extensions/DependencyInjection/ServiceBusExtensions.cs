@@ -131,7 +131,7 @@ public static class ServiceBusExtensions
                 ?? throw new InvalidOperationException("Missing Blob Dead-Letter Logger configuration.");
 
             builder
-                .AddBlobServiceClient(new Uri(blobOptions.StorageUrl))
+                .AddBlobServiceClient(new Uri(blobOptions.StorageAccountUrl))
                 .WithName(blobOptions.ContainerName);
         });
 

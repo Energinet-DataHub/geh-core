@@ -24,7 +24,7 @@ public class BlobDeadLetterLoggerOptions
     public const string SectionName = "DeadLetterLogging";
 
     [Required]
-    public string StorageUrl { get; set; } = string.Empty;
+    public string StorageAccountUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// See container name restrictions here: https://learn.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#container-names

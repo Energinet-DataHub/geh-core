@@ -64,7 +64,7 @@ public class ExampleHostFixture : FunctionAppFixture
         // ServiceBus Namespace
         Environment.SetEnvironmentVariable($"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}", IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
         // Dead-letter logging
-        Environment.SetEnvironmentVariable($"{BlobDeadLetterLoggerOptions.SectionName}__{nameof(BlobDeadLetterLoggerOptions.StorageUrl)}", AzuriteManager.BlobStorageServiceUri.OriginalString);
+        Environment.SetEnvironmentVariable($"{BlobDeadLetterLoggerOptions.SectionName}__{nameof(BlobDeadLetterLoggerOptions.StorageAccountUrl)}", AzuriteManager.BlobStorageServiceUri.OriginalString);
     }
 
     protected override async Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
