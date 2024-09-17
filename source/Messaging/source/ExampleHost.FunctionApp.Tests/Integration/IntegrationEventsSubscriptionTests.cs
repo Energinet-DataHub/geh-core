@@ -70,7 +70,7 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
-        Fixture.HostManager.CheckIfFunctionThrewException().Should().BeFalse();
+        Fixture.HostManager.WasMessageLogged("Event was handled").Should().BeTrue();
     }
 
     [Fact]
@@ -118,6 +118,6 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
-        // TODO: Add assert on log that verifies we never call handler
+        Fixture.HostManager.WasMessageLogged("Event was handled").Should().BeFalse();
     }
 }

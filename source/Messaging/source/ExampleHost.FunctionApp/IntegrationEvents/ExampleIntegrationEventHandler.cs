@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using ExampleHost.FunctionApp.IntegrationEvents.Contracts;
+using Microsoft.Extensions.Logging;
 
 namespace ExampleHost.FunctionApp.IntegrationEvents;
 
@@ -23,6 +24,13 @@ namespace ExampleHost.FunctionApp.IntegrationEvents;
 /// </summary>
 public sealed class ExampleIntegrationEventHandler : IIntegrationEventHandler
 {
+    private readonly ILogger _logger;
+
+    public ExampleIntegrationEventHandler(ILogger<ExampleIntegrationEventHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public Task HandleAsync(IntegrationEvent integrationEvent)
     {
         switch (integrationEvent.Message)
@@ -35,6 +43,7 @@ public sealed class ExampleIntegrationEventHandler : IIntegrationEventHandler
                 }
 
                 // Scenario: Successful event processing
+                _logger.LogInformation("Event was handled");
                 return Task.CompletedTask;
             default:
                 // Not used
