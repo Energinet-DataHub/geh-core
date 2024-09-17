@@ -27,8 +27,8 @@ public sealed class ExampleIntegrationEventHandler : IIntegrationEventHandler
     {
         switch (integrationEvent.Message)
         {
-            case TokenV1 tokenV1:
-                if (tokenV1.Content == "DeadLetter")
+            case AcceptedV1 acceptedV1:
+                if (acceptedV1.Content == "DeadLetter")
                 {
                     // Scenario: Throw exception for e.g. testing failure during event processing
                     throw new InvalidOperationException("Content contains 'DeadLetter'.");

@@ -43,4 +43,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="IntegrationEvents\Contracts\UnknownV1.proto" />
+  </ItemGroup>
 </Project>

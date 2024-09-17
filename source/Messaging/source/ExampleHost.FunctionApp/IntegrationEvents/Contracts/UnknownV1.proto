@@ -18,9 +18,9 @@ syntax = "proto3";
 option csharp_namespace = "ExampleHost.FunctionApp.IntegrationEvents.Contracts";
 
  /*
- * Example integration event
+ * Example integration event which we DO NOT register and hence should not be processed by the registered handler
  */
-message TokenV1 {
+message UnknownV1 {
 
   /*
    * Some content of the event.

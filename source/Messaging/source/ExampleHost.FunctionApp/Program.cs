@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using ExampleHost.FunctionApp.IntegrationEvents;
 using ExampleHost.FunctionApp.IntegrationEvents.Contracts;
-using Google.Protobuf.Reflection;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,14 +24,17 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         // Application Insights and logging:
-        // - IMPORTANT: In a real DH3 applications we should use the App package and call 'AddApplicationInsightsForIsolatedWorker'
+        //  * IMPORTANT: In a real DH3 applications we should use the App package and call 'AddApplicationInsightsForIsolatedWorker'
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
 
-        // Configuration verified in tests
+        // Configuration verified in tests:
+        //  * Register an example implementation of 'IIntegrationEventHandler' which will process the registered events
+        //  * Register the event 'AcceptedV1' for processing
+        //  * Notice we DO NOT register the event 'UnknownV1' so it should not be given to the handler for processing
         services.AddSubscriber<ExampleIntegrationEventHandler>(new[]
         {
-            TokenV1.Descriptor,
+            AcceptedV1.Descriptor,
         });
     })
     .Build();

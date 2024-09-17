@@ -33,7 +33,10 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     public IntegrationEventsSubscriptionTests(ExampleHostFixture fixture, ITestOutputHelper testOutputHelper)
         : base(fixture, testOutputHelper)
     {
+        MessageFactory = new ServiceBusMessageFactory();
     }
+
+    private ServiceBusMessageFactory MessageFactory { get; }
 
     public Task InitializeAsync()
     {
@@ -47,24 +50,23 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     }
 
     [Fact]
-    public async Task TokenHasAnyContent_WhenSend_IntegrationEventListenerShouldNotFail()
+    public async Task AcceptedEventHasAnyContent_WhenSend_IntegrationEventHandlerShouldHandleEvent()
     {
         // Arrange
-        var token = new TokenV1
+        var acceptedEvent = new AcceptedV1
         {
             Content = "Any",
         };
 
-        var factory = new ServiceBusMessageFactory();
-        var serviceBusMessage = factory.Create(
+        var message = MessageFactory.Create(
             new IntegrationEvent(
                 EventIdentification: Guid.NewGuid(),
-                EventName: token.GetType().Name,
+                EventName: acceptedEvent.GetType().Name,
                 EventMinorVersion: 0,
-                Message: token));
+                Message: acceptedEvent));
 
         // Act
-        await Fixture.TopicResource.SenderClient.SendMessageAsync(serviceBusMessage);
+        await Fixture.TopicResource.SenderClient.SendMessageAsync(message);
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
@@ -72,27 +74,50 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     }
 
     [Fact]
-    public async Task TokenHasDeadLetterContent_WhenSend_IntegrationEventListenerShouldFail()
+    public async Task AcceptedEventHasDeadLetterContent_WhenSend_IntegrationEventHandlerShouldThrowException()
     {
         // Arrange
-        var token = new TokenV1
+        var acceptedEvent = new AcceptedV1
         {
             Content = "DeadLetter",
         };
 
-        var factory = new ServiceBusMessageFactory();
-        var serviceBusMessage = factory.Create(
+        var message = MessageFactory.Create(
             new IntegrationEvent(
                 EventIdentification: Guid.NewGuid(),
-                EventName: token.GetType().Name,
+                EventName: acceptedEvent.GetType().Name,
                 EventMinorVersion: 0,
-                Message: token));
+                Message: acceptedEvent));
 
         // Act
-        await Fixture.TopicResource.SenderClient.SendMessageAsync(serviceBusMessage);
+        await Fixture.TopicResource.SenderClient.SendMessageAsync(message);
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
         Fixture.HostManager.CheckIfFunctionThrewException().Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task UnknownEventHasAnyContent_WhenSend_IntegrationEventHandlerShouldNotHandleEvent()
+    {
+        // Arrange
+        var unknownEvent = new UnknownV1
+        {
+            Content = "Any",
+        };
+
+        var message = MessageFactory.Create(
+            new IntegrationEvent(
+                EventIdentification: Guid.NewGuid(),
+                EventName: unknownEvent.GetType().Name,
+                EventMinorVersion: 0,
+                Message: unknownEvent));
+
+        // Act
+        await Fixture.TopicResource.SenderClient.SendMessageAsync(message);
+
+        // Assert
+        await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
+        // TODO: Add assert on log that verifies we never call handler
     }
 }
