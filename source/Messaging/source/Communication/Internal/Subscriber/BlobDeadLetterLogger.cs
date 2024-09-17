@@ -80,6 +80,9 @@ internal class BlobDeadLetterLogger : IDeadLetterLogger
         await blobClient.SetMetadataAsync(metadata).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// See blob name constraints here: https://learn.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#blob-names
+    /// </summary>
     private static string BuildBlobName(string deadLetterSource, ServiceBusReceivedMessage message)
     {
         var sb = new StringBuilder();
