@@ -47,7 +47,7 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     }
 
     [Fact]
-    public async Task AcceptedEventHasAnyContent_WhenSend_IntegrationEventHandlerShouldHandleEvent()
+    public async Task AcceptedEventHasAnyContent_WhenSend_ShouldHandleEvent()
     {
         // Arrange
         var acceptedEvent = new AcceptedV1
@@ -71,7 +71,7 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     }
 
     [Fact]
-    public async Task AcceptedEventHasDeadLetterContent_WhenSend_IntegrationEventHandlerShouldThrowException()
+    public async Task AcceptedEventHasDeadLetterContent_WhenSend_EventShouldBeMovedToDeadLetterQueue()
     {
         // Arrange
         var acceptedEvent = new AcceptedV1
@@ -92,10 +92,11 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
         Fixture.HostManager.CheckIfFunctionThrewException().Should().BeTrue();
+        await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventDeadLetterListener));
     }
 
     [Fact]
-    public async Task UnknownEventHasAnyContent_WhenSend_IntegrationEventHandlerShouldNotHandleEvent()
+    public async Task UnknownEvent_WhenSend_ShouldNotHandleEvent()
     {
         // Arrange
         var unknownEvent = new UnknownV1
