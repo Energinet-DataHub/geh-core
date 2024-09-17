@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using Energinet.DataHub.Core.Outbox.Abstractions;
 
 namespace ExampleHost.WebApi.UserCreatedEmailOutboxMessage;
@@ -22,6 +23,11 @@ public class UserCreatedEmailOutboxMessagePublisher : IOutboxPublisher
 
     public Task PublishAsync(string serializedPayload)
     {
+        var payload = JsonSerializer.Deserialize<UserCreatedEmailOutboxMessageV1Payload>(serializedPayload)
+                      ?? throw new InvalidOperationException($"Failed to deserialize payload of type {nameof(UserCreatedEmailOutboxMessageV1Payload)}");
+
+        Console.WriteLine($"Payload id={payload.Id}, email={payload.Email}");
+
         // Implementation of publishing the message, e.g. sending an email, sending a http request, adding to a service bus etc.
         return Task.CompletedTask;
     }
