@@ -14,43 +14,32 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Microsoft.Azure.Functions.Worker;
 
 namespace ExampleHost.FunctionApp.Functions;
 
 public class IntegrationEventDeadLetterListener
 {
-    // TODO: Move to Messaging;
-    // TODO: Decide if it should contain '/' or not?
-    private const string DeadLetterQueueSuffix = "/$DeadLetterQueue";
+    private readonly DeadLetterHandler _deadLetterHandler;
 
-    // TODO: Move to Messaging;
-    private const string DeadLetterIsLoggedProperty = "DeadLetterIsLogged";
-
-    public IntegrationEventDeadLetterListener()
+    public IntegrationEventDeadLetterListener(DeadLetterHandler deadLetterHandler)
     {
+        _deadLetterHandler = deadLetterHandler;
     }
 
     [Function(nameof(IntegrationEventDeadLetterListener))]
     public async Task RunAsync(
         [ServiceBusTrigger(
             $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}%",
-            $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%{DeadLetterQueueSuffix}",
+            $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%{DeadLetterHandler.DeadLetterQueueSuffix}",
             Connection = ServiceBusNamespaceOptions.SectionName,
             AutoCompleteMessages = false)]
         ServiceBusReceivedMessage message,
         ServiceBusMessageActions messageActions)
     {
-        // TODO: Move into a DeadLetterHandler
-        message.ApplicationProperties.TryGetValue(DeadLetterIsLoggedProperty, out var isLogged);
-        if (isLogged is null or (object)false)
-        {
-            // TODO: Log message HERE
-            var propertiesToModify = new Dictionary<string, object>
-            {
-                [DeadLetterIsLoggedProperty] = true,
-            };
-            await messageActions.DeferMessageAsync(message, propertiesToModify).ConfigureAwait(false);
-        }
+        await _deadLetterHandler
+            .HandleAsync(message, messageActions)
+            .ConfigureAwait(false);
     }
 }
