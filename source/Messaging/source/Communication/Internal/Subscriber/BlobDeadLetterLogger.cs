@@ -69,6 +69,7 @@ internal class BlobDeadLetterLogger : IDeadLetterLogger
         await blobClient.UploadAsync(BinaryData.FromString(bodyAsBase64), overwrite: true).ConfigureAwait(false);
     }
 
+    // TODO: Should we remove this again; e.g. if we save values into the blob name OR should we Url encode the values and implement a backup
     private static async Task AddMetadataToBlobAsync(BlobClient blobClient, ServiceBusReceivedMessage message)
     {
         var metadata = new Dictionary<string, string>

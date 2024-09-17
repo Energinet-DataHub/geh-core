@@ -47,7 +47,7 @@ public class IntegrationEventDeadLetterListener
         FunctionContext context)
     {
         await _deadLetterHandler
-            .HandleAsync(deadLetterSource: "integration-events", message, messageActions)
+            .HandleAsync(deadLetterSource: "examplehost-integration-events", message, messageActions)
             .ConfigureAwait(false);
     }
 }
