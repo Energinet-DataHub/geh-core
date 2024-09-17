@@ -52,11 +52,18 @@ internal class DeadLetterHandler : IDeadLetterHandler
 
         if (HasNotBeenLogged(message))
         {
-            await _deadLetterLogger.LogAsync(deadLetterSource, message).ConfigureAwait(false);
-            var propertiesToModify = new Dictionary<string, object>
+            var propertiesToModify = new Dictionary<string, object>();
+
+            try
             {
-                [DeadLetterIsLoggedProperty] = true,
-            };
+                await _deadLetterLogger.LogAsync(deadLetterSource, message).ConfigureAwait(false);
+                propertiesToModify.Add(DeadLetterIsLoggedProperty, true);
+            }
+            catch
+            {
+                propertiesToModify.Add(DeadLetterIsLoggedProperty, false);
+            }
+
             await messageActions.DeferMessageAsync(message, propertiesToModify).ConfigureAwait(false);
         }
     }
