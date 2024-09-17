@@ -20,10 +20,21 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Outbox.Infrastructure;
 
-internal class OutboxRepository(IOutboxContext outboxContext, IClock clock) : IOutboxRepository
+internal class OutboxRepository : IOutboxRepository
 {
-    private readonly IOutboxContext _outboxContext = outboxContext;
-    private readonly IClock _clock = clock;
+    private readonly IOutboxContext _outboxContext;
+    private readonly IClock _clock;
+
+    public OutboxRepository(IOutboxContext outboxContext, IClock clock)
+    {
+        _outboxContext = outboxContext ?? throw new NullReferenceException(
+            "IOutboxContext is required when using the IOutboxClient or IOutboxProcessor. " +
+            "Has an IOutboxContext been added to the dependency injection container?");
+
+        _clock = clock ?? throw new NullReferenceException(
+            "IClock is required when using the IOutboxClient or IOutboxProcessor. " +
+            "Has NodaTime been added to the dependency injection container?");
+    }
 
     public void Add(OutboxMessage outboxMessage)
     {
