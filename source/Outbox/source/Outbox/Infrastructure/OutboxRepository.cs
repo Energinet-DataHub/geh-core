@@ -16,12 +16,14 @@ using Energinet.DataHub.Core.Outbox.Abstractions;
 using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace Energinet.DataHub.Core.Outbox.Infrastructure;
 
-internal class OutboxRepository(IOutboxContext outboxContext) : IOutboxRepository
+internal class OutboxRepository(IOutboxContext outboxContext, IClock clock) : IOutboxRepository
 {
     private readonly IOutboxContext _outboxContext = outboxContext;
+    private readonly IClock _clock = clock;
 
     public void Add(OutboxMessage outboxMessage)
     {
@@ -32,8 +34,14 @@ internal class OutboxRepository(IOutboxContext outboxContext) : IOutboxRepositor
         int limit,
         CancellationToken cancellationToken)
     {
+        var now = _clock.GetCurrentInstant();
+        var failedBefore = now.Minus(OutboxMessage.MinimumErrorRetryTimeout);
+        var processingBefore = now.Minus(OutboxMessage.ProcessingTimeout);
+
         var outboxMessageIds = await _outboxContext.Outbox
             .Where(om => om.PublishedAt == null)
+            .Where(om => om.FailedAt == null || om.FailedAt <= failedBefore)
+            .Where(om => om.ProcessingAt == null || om.ProcessingAt <= processingBefore)
             .OrderBy(om => om.CreatedAt)
             .Select(om => om.Id)
             .Take(limit)

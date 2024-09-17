@@ -161,14 +161,14 @@ public class OutboxProcessorTests
     public async Task GivenFailedOutboxMessage_WhenOutboxIsProcessed_ThenOutboxMessageIsRetriedAfterTimeout()
     {
         // Arrange
-        var inThePast = Instant.FromUtc(2024, 09, 11, 13, 37);
+        var failedAt = Instant.FromUtc(2024, 09, 11, 13, 37);
         var clock = new Mock<IClock>();
-        clock.Setup(c => c.GetCurrentInstant()).Returns(inThePast);
+        clock.Setup(c => c.GetCurrentInstant()).Returns(failedAt);
 
         var expectedType = "mock-type";
         var expectedPayload = "mock-payload";
         var outboxMessage = new OutboxMessage(
-            createdAt: inThePast,
+            createdAt: failedAt,
             type: expectedType,
             payload: expectedPayload);
         outboxMessage.SetAsFailed(clock.Object, "Initial failure");
@@ -183,18 +183,24 @@ public class OutboxProcessorTests
             clock.Object,
             Mock.Of<ILogger<OutboxProcessor>>());
 
+        // => Setup clock to be before "MinimumErrorRetryTimeout", so it should not be retried
+        var beforeRetryTimeout = failedAt
+            .Plus(OutboxMessage.MinimumErrorRetryTimeout)
+            .Minus(Duration.FromSeconds(1));
+        clock.Setup(c => c.GetCurrentInstant()).Returns(beforeRetryTimeout);
+
         // => Immediately re-processing should not retry the failed message
         await outboxProcessor.ProcessOutboxAsync();
         using (new AssertionScope())
         {
             outboxMessage.PublishedAt.Should().BeNull();
             outboxMessage.ErrorCount.Should().Be(1); // Error count should not increase on successful retry
-            outboxMessage.FailedAt.Should().Be(inThePast);
+            outboxMessage.FailedAt.Should().Be(failedAt);
         }
 
         // => Setup clock to be "MinimumErrorRetryTimeout" after the failed message, so it should be retried
-        var now = inThePast.Plus(OutboxMessage.MinimumErrorRetryTimeout);
-        clock.Setup(c => c.GetCurrentInstant()).Returns(now);
+        var afterRetryTimeout = failedAt.Plus(OutboxMessage.MinimumErrorRetryTimeout);
+        clock.Setup(c => c.GetCurrentInstant()).Returns(afterRetryTimeout);
 
         await outboxProcessor.ProcessOutboxAsync();
 
@@ -203,23 +209,23 @@ public class OutboxProcessorTests
         outboxPublisher.VerifyNoOtherCalls();
 
         using var scope = new AssertionScope();
-        outboxMessage.PublishedAt.Should().Be(now);
+        outboxMessage.PublishedAt.Should().Be(afterRetryTimeout);
         outboxMessage.ErrorCount.Should().Be(1); // Error count should not increase on successful retry
-        outboxMessage.FailedAt.Should().Be(inThePast);
+        outboxMessage.FailedAt.Should().Be(failedAt);
     }
 
     [Fact]
     public async Task GivenProcessingOutboxMessage_WhenOutboxIsProcessed_ThenOutboxMessageIsRetriedAfterTimeout()
     {
         // Arrange
-        var inThePast = Instant.FromUtc(2024, 09, 11, 13, 37);
+        var processingAt = Instant.FromUtc(2024, 09, 11, 13, 37);
         var clock = new Mock<IClock>();
-        clock.Setup(c => c.GetCurrentInstant()).Returns(inThePast);
+        clock.Setup(c => c.GetCurrentInstant()).Returns(processingAt);
 
         var expectedType = "mock-type";
         var expectedPayload = "mock-payload";
         var outboxMessage = new OutboxMessage(
-            createdAt: inThePast,
+            createdAt: processingAt,
             type: expectedType,
             payload: expectedPayload);
         outboxMessage.SetAsProcessing(clock.Object);
@@ -234,17 +240,22 @@ public class OutboxProcessorTests
             clock.Object,
             Mock.Of<ILogger<OutboxProcessor>>());
 
-        // => Immediately re-processing should not retry the processing message
+        // => Setup clock to be before "ProcessingTimeout", so it should not be retried
+        var afterRetryTimeout = processingAt
+            .Plus(OutboxMessage.ProcessingTimeout)
+            .Minus(Duration.FromSeconds(1));
+        clock.Setup(c => c.GetCurrentInstant()).Returns(afterRetryTimeout);
+
         await outboxProcessor.ProcessOutboxAsync();
         using (new AssertionScope())
         {
             outboxMessage.PublishedAt.Should().BeNull();
-            outboxMessage.ProcessingAt.Should().Be(inThePast);
+            outboxMessage.ProcessingAt.Should().Be(processingAt);
             outboxMessage.ErrorCount.Should().Be(0);
         }
 
         // => Setup clock to be "ProcessingTimeout" after the processing message, so it should be retried
-        var now = inThePast.Plus(OutboxMessage.ProcessingTimeout);
+        var now = processingAt.Plus(OutboxMessage.ProcessingTimeout);
         clock.Setup(c => c.GetCurrentInstant()).Returns(now);
 
         // => This time re-processing the outbox should cause the message to be retried
