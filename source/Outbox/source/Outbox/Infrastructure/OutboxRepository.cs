@@ -20,7 +20,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Outbox.Infrastructure;
 
-internal class OutboxRepository : IOutboxRepository
+public class OutboxRepository : IOutboxRepository
 {
     private readonly IOutboxContext _outboxContext;
     private readonly IClock _clock;

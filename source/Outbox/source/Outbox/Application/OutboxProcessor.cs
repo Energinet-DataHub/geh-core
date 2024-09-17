@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Outbox.Abstractions;
 using Energinet.DataHub.Core.Outbox.Domain;
-using Energinet.DataHub.Core.Outbox.Infrastructure;
 using Energinet.DataHub.Core.Outbox.Infrastructure.Dependencies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -44,6 +42,7 @@ public class OutboxProcessor : IOutboxProcessor
         _outboxScopeFactory = outboxScopeFactory;
     }
 
+    /// <inheritdoc />
     public async Task ProcessOutboxAsync(int limit = 1000, CancellationToken? cancellationToken = null)
     {
         cancellationToken ??= CancellationToken.None;
@@ -74,15 +73,8 @@ public class OutboxProcessor : IOutboxProcessor
         }
     }
 
-    /// <summary>
-    /// Process outbox message in a new scope, to avoid situations where one message failing stops future messages
-    /// from processing.
-    /// <remarks>
-    /// Uses CancellationToken until the outbox message has begun publishing, after processing
-    /// have begun we want to save the changes before cancelling the task.
-    /// </remarks>
-    /// </summary>
-    private async Task ProcessOutboxMessageAsync(OutboxMessageId outboxMessageId, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task ProcessOutboxMessageAsync(OutboxMessageId outboxMessageId, CancellationToken cancellationToken)
     {
         using var innerScope = _outboxScopeFactory.CreateScopedDependencies();
         var outboxContext = innerScope.OutboxContext;

@@ -18,7 +18,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Outbox.Application;
 
-internal class OutboxClient : IOutboxClient
+public class OutboxClient : IOutboxClient
 {
     private readonly IClock _clock;
     private readonly IOutboxRepository _outboxRepository;
@@ -34,6 +34,7 @@ internal class OutboxClient : IOutboxClient
         _outboxRepository = outboxRepository;
     }
 
+    /// <inheritdoc />
     public async Task AddToOutboxAsync<T>(IOutboxMessage<T> message)
     {
         var payload = await message.SerializeAsync()

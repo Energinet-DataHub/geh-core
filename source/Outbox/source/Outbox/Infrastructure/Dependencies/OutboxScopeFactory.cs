@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Outbox.Infrastructure.Dependencies;
 
-internal class OutboxScopeFactory(IServiceScopeFactory serviceScopeFactory) : IOutboxScopeFactory
+public class OutboxScopeFactory(IServiceScopeFactory serviceScopeFactory) : IOutboxScopeFactory
 {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
