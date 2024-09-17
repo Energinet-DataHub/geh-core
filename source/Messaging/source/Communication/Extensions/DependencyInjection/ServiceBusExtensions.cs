@@ -109,8 +109,33 @@ public static class ServiceBusExtensions
     /// <summary>
     /// Register services necessary for dead-letter handling in a DH3 Function App.
     /// </summary>
-    public static IServiceCollection AddDeadLetterHandlerForIsolatedWorker(this IServiceCollection services)
+    public static IServiceCollection AddDeadLetterHandlerForIsolatedWorker(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services
+            .AddOptions<BlobDeadLetterLoggerOptions>()
+            .BindConfiguration(BlobDeadLetterLoggerOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services.AddAzureClients(builder =>
+        {
+            builder.UseCredential(new DefaultAzureCredential());
+
+            var blobOptions =
+                configuration
+                    .GetRequiredSection(BlobDeadLetterLoggerOptions.SectionName)
+                    .Get<BlobDeadLetterLoggerOptions>()
+                ?? throw new InvalidOperationException("Missing Blob Dead-Letter Logger configuration.");
+
+            builder
+                .AddBlobServiceClient(new Uri(blobOptions.StorageUrl))
+                .WithName(blobOptions.ContainerName);
+        });
+
+        services.TryAddScoped<IDeadLetterLogger, BlobDeadLetterLogger>();
         services.TryAddScoped<IDeadLetterHandler, DeadLetterHandler>();
 
         return services;

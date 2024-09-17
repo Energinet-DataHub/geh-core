@@ -27,8 +27,11 @@ internal class DeadLetterHandler : IDeadLetterHandler
     /// </summary>
     public const string DeadLetterIsLoggedProperty = "DeadLetterIsLogged";
 
-    public DeadLetterHandler()
+    private readonly IDeadLetterLogger _deadLetterLogger;
+
+    public DeadLetterHandler(IDeadLetterLogger deadLetterLogger)
     {
+        _deadLetterLogger = deadLetterLogger;
     }
 
     /// <summary>
@@ -45,7 +48,7 @@ internal class DeadLetterHandler : IDeadLetterHandler
     {
         if (HasNotBeenLogged(message))
         {
-            // TODO: Log message HERE; use DeadLetterSource
+            await _deadLetterLogger.LogAsync(message).ConfigureAwait(false);
             var propertiesToModify = new Dictionary<string, object>
             {
                 [DeadLetterIsLoggedProperty] = true,

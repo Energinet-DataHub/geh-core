@@ -41,7 +41,7 @@ var host = new HostBuilder()
 
         // Configuration verified in tests:
         //  * The dead-letter handler is used in the 'IntegrationEventDeadLetterListener'
-        services.AddDeadLetterHandlerForIsolatedWorker();
+        services.AddDeadLetterHandlerForIsolatedWorker(context.Configuration);
     })
     .Build();
 

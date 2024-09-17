@@ -27,7 +27,7 @@ public class ExampleHostFixture : FunctionAppFixture
 {
     public ExampleHostFixture()
     {
-        AzuriteManager = new AzuriteManager(true);
+        AzuriteManager = new AzuriteManager(useOAuth: true);
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             TestLogger,
@@ -63,6 +63,8 @@ public class ExampleHostFixture : FunctionAppFixture
         Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
         // ServiceBus Namespace
         Environment.SetEnvironmentVariable($"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}", IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+        // Dead-letter logging
+        Environment.SetEnvironmentVariable($"{BlobDeadLetterLoggerOptions.SectionName}__{nameof(BlobDeadLetterLoggerOptions.StorageUrl)}", AzuriteManager.BlobStorageServiceUri.OriginalString);
     }
 
     protected override async Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
