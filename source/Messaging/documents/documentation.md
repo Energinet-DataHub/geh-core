@@ -150,7 +150,6 @@ Preparing a **Function App** project:
        ActorCreated.Descriptor,
        UserCreated.Descriptor,
    });
-
    services.AddDeadLetterHandlerForIsolatedWorker();
    ```
 
