@@ -71,7 +71,7 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
     }
 
     [Fact]
-    public async Task AcceptedEventHasDeadLetterContent_WhenSend_IntegrationEventHandlerShouldThrowExceptionAndEventShouldBeMovedToDeadLetterQueue()
+    public async Task AcceptedEventHasDeadLetterContent_WhenSend_IntegrationEventHandlerShouldThrowExceptionAndEventShouldBeMovedToDeadLetterQueueAndHandled()
     {
         // Arrange
         var acceptedEvent = new AcceptedV1
@@ -91,8 +91,8 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
-        Fixture.HostManager.CheckIfFunctionThrewException().Should().BeTrue();
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventDeadLetterListener));
+        Fixture.HostManager.WasMessageLogged($"Executed 'Functions.{nameof(IntegrationEventDeadLetterListener)}' (Succeeded").Should().BeTrue();
     }
 
     [Fact]
@@ -116,6 +116,7 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
 
         // Assert
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
+        Fixture.HostManager.CheckIfFunctionThrewException().Should().BeFalse();
         Fixture.HostManager.WasMessageLogged("Event was handled").Should().BeFalse();
     }
 }

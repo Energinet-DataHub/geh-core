@@ -21,9 +21,9 @@ namespace ExampleHost.FunctionApp.Functions;
 
 public class IntegrationEventDeadLetterListener
 {
-    private readonly DeadLetterHandler _deadLetterHandler;
+    private readonly IDeadLetterHandler _deadLetterHandler;
 
-    public IntegrationEventDeadLetterListener(DeadLetterHandler deadLetterHandler)
+    public IntegrationEventDeadLetterListener(IDeadLetterHandler deadLetterHandler)
     {
         _deadLetterHandler = deadLetterHandler;
     }
@@ -32,7 +32,7 @@ public class IntegrationEventDeadLetterListener
     public async Task RunAsync(
         [ServiceBusTrigger(
             $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}%",
-            $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%{DeadLetterHandler.DeadLetterQueueSuffix}",
+            $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%{DeadLetterConstants.DeadLetterQueueSuffix}",
             Connection = ServiceBusNamespaceOptions.SectionName,
             AutoCompleteMessages = false)]
         ServiceBusReceivedMessage message,

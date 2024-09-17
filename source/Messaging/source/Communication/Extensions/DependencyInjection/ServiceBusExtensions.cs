@@ -16,10 +16,13 @@ using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 
@@ -99,6 +102,16 @@ public static class ServiceBusExtensions
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddScoped<IPublisher, IntegrationEventsPublisher>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Register services necessary for dead-letter handling in a DH3 Function App.
+    /// </summary>
+    public static IServiceCollection AddDeadLetterHandlerForIsolatedWorker(this IServiceCollection services)
+    {
+        services.TryAddScoped<IDeadLetterHandler, DeadLetterHandler>();
 
         return services;
     }

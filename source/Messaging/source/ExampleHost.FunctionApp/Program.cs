@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp.IntegrationEvents;
 using ExampleHost.FunctionApp.IntegrationEvents.Contracts;
 using Microsoft.Azure.Functions.Worker;
@@ -29,6 +30,7 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
 
         // Configuration verified in tests:
+        //  * The 'ISubscriber' is used in the 'IntegrationEventListener'
         //  * Register an example implementation of 'IIntegrationEventHandler' which will process the registered events
         //  * Register the event 'AcceptedV1' for processing
         //  * Notice we DO NOT register the event 'UnknownV1' so it should not be given to the handler for processing
@@ -36,6 +38,10 @@ var host = new HostBuilder()
         {
             AcceptedV1.Descriptor,
         });
+
+        // Configuration verified in tests:
+        //  * The dead-letter handler is used in the 'IntegrationEventDeadLetterListener'
+        services.AddDeadLetterHandlerForIsolatedWorker();
     })
     .Build();
 
