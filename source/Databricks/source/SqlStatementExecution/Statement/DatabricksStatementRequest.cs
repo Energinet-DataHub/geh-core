@@ -65,12 +65,17 @@ internal class DatabricksStatementRequest
     {
         DatabricksStatementResponse? response = null;
         var fibonacci = new Fibonacci();
+        var currentDelay = 0;
+
         do
         {
             try
             {
-                var delayInMilliseconds = Math.Min(fibonacci.GetNextNumber() * 10, MaxWaitTimeForLoopInMilliseconds);
-                response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, delayInMilliseconds, cancellationToken).ConfigureAwait(false);
+                currentDelay = currentDelay < MaxWaitTimeForLoopInMilliseconds
+                    ? fibonacci.GetNextNumber() * 10
+                    : MaxWaitTimeForLoopInMilliseconds;
+
+                response = await GetResponseFromDataWarehouseAsync(client, endpoint, response, currentDelay, cancellationToken).ConfigureAwait(false);
                 if (response.IsSucceeded)
                     return response;
 

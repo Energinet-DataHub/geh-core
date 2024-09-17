@@ -170,7 +170,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     }
 
     [Theory]
-    [MemberData(nameof(GetFormats))]
+    [MemberData(nameof(GetFormats), Skip = "No longer relevant since we don't see a need for download of results of 2GB or above. If not touched by 2024-12-31, remove test.")]
     public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
     {
         // Arrange
@@ -186,7 +186,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     }
 
     [Theory]
-    [MemberData(nameof(GetFormats))]
+    [MemberData(nameof(GetFormats), Skip = "No longer relevant since we don't see a need for download of results of 2GB or above. If not touched by 2024-12-31, remove test.")]
     public async Task ExecuteStatementParallelAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
     {
         // Arrange
