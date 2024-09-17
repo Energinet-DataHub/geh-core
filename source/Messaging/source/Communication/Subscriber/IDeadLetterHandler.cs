@@ -25,5 +25,5 @@ public interface IDeadLetterHandler
     /// <summary>
     /// Handle a dead-lettered ServiceBus message.
     /// </summary>
-    Task HandleAsync(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions);
+    Task HandleAsync(string deadLetterSource, ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions);
 }

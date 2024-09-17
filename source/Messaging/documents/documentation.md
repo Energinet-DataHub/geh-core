@@ -182,11 +182,11 @@ Preparing a **Function App** project:
 
     ```csharp
     // Example implementation
-    public sealed class ServiceBusFunction
+    public class IntegrationEventListener
     {
         private readonly ISubscriber _subscriber;
 
-        public ServiceBusFunction(ISubscriber subscriber)
+        public IntegrationEventListener(ISubscriber subscriber)
         {
             _subscriber = subscriber;
         }
@@ -198,16 +198,18 @@ Preparing a **Function App** project:
         /// If the method fails to process a message, the Service Bus will automatically retry delivery of the message
         /// based on the retry policy configured for the Service Bus. After a number of retries the message will be
         /// moved to the dead-letter queue of the topic/subscription.
-        [Function("ServiceBusFunction")]
+        /// </remarks>
+        [Function(nameof(IntegrationEventListener))]
         public async Task RunAsync(
             [ServiceBusTrigger(
                 $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}%",
                 $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%",
                 Connection = ServiceBusNamespaceOptions.SectionName)]
-            byte[] message,
-            FunctionContext context)
+            ServiceBusReceivedMessage message)
         {
-            await _subscriber.HandleAsync(IntegrationEventServiceBusMessage.Create(message, context.BindingContext.BindingData!));
+            await _subscriber
+                .HandleAsync(IntegrationEventServiceBusMessage.Create(message))
+                .ConfigureAwait(false);
         }
     }
     ```
@@ -241,7 +243,7 @@ Preparing a **Function App** project:
             ServiceBusMessageActions messageActions)
         {
             await _deadLetterHandler
-                .HandleAsync(message, messageActions)
+                .HandleAsync(deadLetterSource: "integration-events", message, messageActions)
                 .ConfigureAwait(false);
         }
     }

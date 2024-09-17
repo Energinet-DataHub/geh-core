@@ -44,11 +44,15 @@ internal class DeadLetterHandler : IDeadLetterHandler
     /// The dead-letter handler is responsible for managing the message, which is why 'AutoCompleteMessages' must be set <see langword="false"/> in the 'ServiceBusTrigger'.
     /// </remarks>
     /// </summary>
-    public async Task HandleAsync(ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
+    public async Task HandleAsync(string deadLetterSource, ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(deadLetterSource);
+        ArgumentNullException.ThrowIfNull(message);
+        ArgumentNullException.ThrowIfNull(messageActions);
+
         if (HasNotBeenLogged(message))
         {
-            await _deadLetterLogger.LogAsync(message).ConfigureAwait(false);
+            await _deadLetterLogger.LogAsync(deadLetterSource, message).ConfigureAwait(false);
             var propertiesToModify = new Dictionary<string, object>
             {
                 [DeadLetterIsLoggedProperty] = true,

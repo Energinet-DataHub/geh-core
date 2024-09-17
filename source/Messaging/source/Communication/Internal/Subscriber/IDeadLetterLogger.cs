@@ -24,5 +24,5 @@ internal interface IDeadLetterLogger
     /// <summary>
     /// Log a dead-lettered ServiceBus message.
     /// </summary>
-    Task LogAsync(ServiceBusReceivedMessage message);
+    Task LogAsync(string deadLetterSource, ServiceBusReceivedMessage message);
 }
