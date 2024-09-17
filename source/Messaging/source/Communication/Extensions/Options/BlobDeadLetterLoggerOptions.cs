@@ -30,5 +30,5 @@ public class BlobDeadLetterLoggerOptions
     /// See container name constraints here: https://learn.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#container-names
     /// </summary>
     [Required]
-    public string ContainerName { get; set; } = "dead-letter-logs";
+    public string ContainerName { get; set; } = string.Empty;
 }
