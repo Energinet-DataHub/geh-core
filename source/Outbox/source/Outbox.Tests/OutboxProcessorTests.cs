@@ -15,13 +15,10 @@
 using Energinet.DataHub.Core.Outbox.Abstractions;
 using Energinet.DataHub.Core.Outbox.Application;
 using Energinet.DataHub.Core.Outbox.Domain;
-using Energinet.DataHub.Core.Outbox.Infrastructure;
 using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Energinet.DataHub.Core.Outbox.Infrastructure.Dependencies;
-using Energinet.DataHub.Core.Outbox.Tests.Fixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
