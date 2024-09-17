@@ -3,6 +3,7 @@
 ## Version 6.1.0
 
 - Deleted unused options `SubscriberWorkerOptions`.
+- Added dependency injection extensions `ServiceBusExtensions.AddDeadLetterHandlerForIsolatedWorker`.
 
 ## Version 6.0.0
 

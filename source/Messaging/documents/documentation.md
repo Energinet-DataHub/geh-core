@@ -150,6 +150,8 @@ Preparing a **Function App** project:
        ActorCreated.Descriptor,
        UserCreated.Descriptor,
    });
+
+   services.AddDeadLetterHandlerForIsolatedWorker();
    ```
 
 1) Implement an `IIntegrationEventHandler`.
@@ -173,7 +175,7 @@ Preparing a **Function App** project:
    }
    ```
 
-1) Implement a `ServiceBusTrigger`.
+1) Implement a `ServiceBusTrigger` for handling integration events.
 
    When using a `ServiceBusTrigger` to handle integration events, the `ISubscriber` dependency needs to be injected into the function and called in the manner shown below.
 
@@ -200,6 +202,35 @@ Preparing a **Function App** project:
             FunctionContext context)
         {
             await _subscriber.HandleAsync(IntegrationEventServiceBusMessage.Create(message, context.BindingContext.BindingData!));
+        }
+    }
+    ```
+
+1) Implement a `ServiceBusTrigger` for handling the dead-letter queue for the integration event subscription.
+
+    ```csharp
+    public class IntegrationEventDeadLetterListener
+    {
+        private readonly IDeadLetterHandler _deadLetterHandler;
+
+        public IntegrationEventDeadLetterListener(IDeadLetterHandler deadLetterHandler)
+        {
+            _deadLetterHandler = deadLetterHandler;
+        }
+
+        [Function(nameof(IntegrationEventDeadLetterListener))]
+        public async Task RunAsync(
+            [ServiceBusTrigger(
+                $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}%",
+                $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%{DeadLetterConstants.DeadLetterQueueSuffix}",
+                Connection = ServiceBusNamespaceOptions.SectionName,
+                AutoCompleteMessages = false)]
+            ServiceBusReceivedMessage message,
+            ServiceBusMessageActions messageActions)
+        {
+            await _deadLetterHandler
+                .HandleAsync(message, messageActions)
+                .ConfigureAwait(false);
         }
     }
     ```
