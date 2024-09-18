@@ -44,16 +44,15 @@ internal class BlobDeadLetterLogger : IDeadLetterLogger
         ArgumentException.ThrowIfNullOrWhiteSpace(deadLetterSource);
         ArgumentNullException.ThrowIfNull(message);
 
-        var containerClient = _client.GetBlobContainerClient(_options.ContainerName);
-        await containerClient.CreateIfNotExistsAsync().ConfigureAwait(false);
-
         try
         {
+            var containerClient = _client.GetBlobContainerClient(_options.ContainerName);
+            await containerClient.CreateIfNotExistsAsync().ConfigureAwait(false);
+
             var blobName = BuildBlobName(deadLetterSource, message);
             var blobClient = containerClient.GetBlobClient(blobName);
 
             await CreateBlobAsync(blobClient, message).ConfigureAwait(false);
-            await AddMetadataToBlobAsync(blobClient, message).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -67,17 +66,6 @@ internal class BlobDeadLetterLogger : IDeadLetterLogger
     {
         var bodyAsBase64 = Convert.ToBase64String(message.Body);
         await blobClient.UploadAsync(BinaryData.FromString(bodyAsBase64), overwrite: true).ConfigureAwait(false);
-    }
-
-    // TODO: Should we remove this again; e.g. if we save values into the blob name OR should we Url encode the values and implement a backup
-    private static async Task AddMetadataToBlobAsync(BlobClient blobClient, ServiceBusReceivedMessage message)
-    {
-        var metadata = new Dictionary<string, string>
-        {
-            ["MessageId"] = message.MessageId ?? string.Empty,
-            ["MessageSubject"] = message.Subject ?? string.Empty,
-        };
-        await blobClient.SetMetadataAsync(metadata).ConfigureAwait(false);
     }
 
     /// <summary>
