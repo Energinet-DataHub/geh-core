@@ -27,10 +27,6 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobFixture>, IAsyncLifet
 
     public Task InitializeAsync()
     {
-        Fixture.BlobServiceClient
-            .GetBlobContainerClient(Fixture.BlobContainerName)
-            .CreateIfNotExists();
-
         return Task.CompletedTask;
     }
 
