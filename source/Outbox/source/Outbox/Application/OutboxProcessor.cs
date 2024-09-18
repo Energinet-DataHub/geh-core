@@ -20,27 +20,21 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Outbox.Application;
 
-public class OutboxProcessor : IOutboxProcessor
+public class OutboxProcessor(
+    IOutboxScopeFactory outboxScopeFactory,
+    IClock clock,
+    ILogger<OutboxProcessor> logger)
+    : IOutboxProcessor
 {
-    private readonly IOutboxScopeFactory _outboxScopeFactory;
-    private readonly IClock _clock;
-    private readonly ILogger<OutboxProcessor> _logger;
+    private readonly IOutboxScopeFactory _outboxScopeFactory = outboxScopeFactory;
 
-    public OutboxProcessor(
-        IOutboxScopeFactory outboxScopeFactory,
-        IClock clock,
-        ILogger<OutboxProcessor> logger)
-    {
-        _clock = clock ?? throw new NullReferenceException(
-            "IClock is required when using the IOutboxProcessor. " +
-            "Has NodaTime been added to the dependency injection container?");
+    private readonly IClock _clock = clock ?? throw new ArgumentNullException(
+        nameof(clock),
+        "IClock is required when using the IOutboxProcessor. Has NodaTime been added to the dependency injection container?");
 
-        _logger = logger ?? throw new NullReferenceException(
-            "ILogger is required when using the IOutboxProcessor. " +
-            "Has ILogger been added to the dependency injection container?");
-
-        _outboxScopeFactory = outboxScopeFactory;
-    }
+    private readonly ILogger<OutboxProcessor> _logger = logger ?? throw new ArgumentNullException(
+        nameof(logger),
+        "ILogger is required when using the IOutboxProcessor. Has ILogger been added to the dependency injection container?");
 
     /// <inheritdoc />
     public async Task ProcessOutboxAsync(int limit = 1000, CancellationToken? cancellationToken = null)

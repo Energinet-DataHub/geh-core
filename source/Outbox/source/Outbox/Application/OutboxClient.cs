@@ -18,25 +18,22 @@ using NodaTime;
 
 namespace Energinet.DataHub.Core.Outbox.Application;
 
-public class OutboxClient : IOutboxClient
+public class OutboxClient(
+    IClock clock,
+    IOutboxRepository outboxRepository)
+    : IOutboxClient
 {
-    private readonly IClock _clock;
-    private readonly IOutboxRepository _outboxRepository;
+    private readonly IClock _clock = clock ?? throw new ArgumentNullException(
+        nameof(clock),
+        "IClock is required when using the IOutboxClient. Has NodaTime been added to the dependency injection container?");
 
-    public OutboxClient(
-        IClock clock,
-        IOutboxRepository outboxRepository)
-    {
-        _clock = clock ?? throw new NullReferenceException(
-            "IClock is required when using the IOutboxClient. " +
-            "Has NodaTime been added to the dependency injection container?");
-
-        _outboxRepository = outboxRepository;
-    }
+    private readonly IOutboxRepository _outboxRepository = outboxRepository;
 
     /// <inheritdoc />
     public async Task AddToOutboxAsync<T>(IOutboxMessage<T> message)
     {
+        ArgumentNullException.ThrowIfNull(message);
+
         var payload = await message.SerializeAsync()
             .ConfigureAwait(false);
 

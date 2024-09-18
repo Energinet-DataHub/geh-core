@@ -63,7 +63,4 @@ limitations under the License.
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-  </ItemGroup>
-
 </Project>

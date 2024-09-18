@@ -107,7 +107,7 @@ CREATE INDEX [IX_Outbox_PublishedAt_FailedAt_ProcessingAt_CreatedAt]
 GO
 ```
 
-The script can also be found at [Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql](https://github.com/Energinet-DataHub/geh-core/blob/main/source/Outbox/source/Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql)
+The script can also be found at [Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql](https://github.com/Energinet-DataHub/geh-core/blob/xedkn/add-outbox-package/source/Outbox/source/Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql)
 
 ### Adding a new message to the outbox
 
@@ -276,9 +276,9 @@ public class OutboxPublisher(IOutboxProcessor outboxProcessor)
 ```
 
 The `_outboxProcessor.ProcessOutboxAsync()` will process all current outbox messages in the database
-and publish them using the registered `IOutboxPublisher` implementations. Using the default values, it will
-maximum try to process 1000 messages per run, which can be overriden by using the optional `limit` parameter
-from the `IOutboxProcessor.ProcessOutboxAsync` method.
+and publish them using the registered `IOutboxPublisher` implementations. The implementation will
+maximum try to process a finite amount of messages per run. The amount of messages to process per run can be
+changed using the optional `limit` parameter in the `IOutboxProcessor.ProcessOutboxAsync` method.
 
 ```csharp
 /// <summary>
@@ -307,12 +307,8 @@ package, and should be handled individually in each application.
 ## Error handling and retries
 
 The `IOutboxProcessor` implementation will handle retries and error handling for the outbox messages.
-If an outbox message is not successfully processed, the `ErrorCount` will be incremented and
-the `FailedAt` and `ErrorMessage` columns will be updated. The `IOutboxProcessor` will retry processing
-the message with an increasing delay based on how many times it has failed.
-
-When the message has failed to be sent 10 times, the message will retry once every day, until it has been
-sent successfully. This is the maximum time between retries.
+If an outbox message is not successfully processed, the error will be written to the outbox message in the database.
+The `IOutboxProcessor` will automatically retry processing the message with an increasing delay based on how many times it has failed.
 
 ## Parallel processing
 

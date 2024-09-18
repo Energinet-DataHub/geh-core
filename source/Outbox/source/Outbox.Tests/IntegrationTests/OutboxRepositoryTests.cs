@@ -121,16 +121,16 @@ public class OutboxRepositoryTests : IClassFixture<OutboxFixture>, IAsyncLifetim
 
         // Act
 
-        // => Set clock to before "ProcessingTimeout", so the message should not be returned
+        // => Set clock to before "DurationBetweenProcessingAttempts", so the message should not be returned
         clock.Setup(c => c.GetCurrentInstant())
-            .Returns(processingAt.Plus(OutboxMessage.ProcessingTimeout).Minus(Duration.FromSeconds(1)));
+            .Returns(processingAt.Plus(OutboxMessage.DurationBetweenProcessingAttempts).Minus(Duration.FromSeconds(1)));
 
         var noExpectedResult = await outboxRepository.GetUnprocessedOutboxMessageIdsAsync(1000, CancellationToken.None);
         noExpectedResult.Should().BeEmpty();
 
-        // => Set clock to "ProcessingTimeout", so the message should be returned
+        // => Set clock to "DurationBetweenProcessingAttempts", so the message should be returned
         clock.Setup(c => c.GetCurrentInstant())
-            .Returns(processingAt.Plus(OutboxMessage.ProcessingTimeout));
+            .Returns(processingAt.Plus(OutboxMessage.DurationBetweenProcessingAttempts));
         var result = await outboxRepository.GetUnprocessedOutboxMessageIdsAsync(1000, CancellationToken.None);
 
         // Assert
@@ -161,16 +161,16 @@ public class OutboxRepositoryTests : IClassFixture<OutboxFixture>, IAsyncLifetim
         await using var outboxContext = CreateDbContext();
         var outboxRepository = new OutboxRepository(outboxContext, clock.Object);
         // Act
-        // => Set clock to before "MinimumErrorRetryTimeout", so the message should not be returned
+        // => Set clock to before "MinimumDurationBetweenFailedAttempts", so the message should not be returned
         clock.Setup(c => c.GetCurrentInstant())
-            .Returns(failedAt.Plus(OutboxMessage.MinimumErrorRetryTimeout).Minus(Duration.FromSeconds(1)));
+            .Returns(failedAt.Plus(OutboxMessage.MinimumDurationBetweenFailedAttempts).Minus(Duration.FromSeconds(1)));
 
         var noExpectedResult = await outboxRepository.GetUnprocessedOutboxMessageIdsAsync(1000, CancellationToken.None);
         noExpectedResult.Should().BeEmpty();
 
-        // => Set clock to "MinimumErrorRetryTimeout", so the message should be returned
+        // => Set clock to "MinimumDurationBetweenFailedAttempts", so the message should be returned
         clock.Setup(c => c.GetCurrentInstant())
-            .Returns(failedAt.Plus(OutboxMessage.MinimumErrorRetryTimeout));
+            .Returns(failedAt.Plus(OutboxMessage.MinimumDurationBetweenFailedAttempts));
         var result = await outboxRepository.GetUnprocessedOutboxMessageIdsAsync(1000, CancellationToken.None);
 
         // Assert

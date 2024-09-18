@@ -64,7 +64,6 @@ public static class OutboxExtensions
     public static IServiceCollection AddOutboxProcessor<TDbContext>(this IServiceCollection services)
         where TDbContext : IOutboxContext
     {
-        // services.AddTransient<IDataRetention, OutboxRetention>(); TODO: Data retention in shared package? Or how do we handle deletion of outbox messages?
         AddSharedDependencies<TDbContext>(services);
         services.AddTransient<IOutboxScopeFactory, OutboxScopeFactory>();
         services.AddTransient<IOutboxProcessor, OutboxProcessor>();

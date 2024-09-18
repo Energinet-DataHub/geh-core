@@ -21,6 +21,8 @@ namespace Energinet.DataHub.Core.Outbox.Infrastructure.Dependencies;
 
 internal sealed record ScopedOutboxDependencies : IScopedOutboxDependencies
 {
+    private readonly IServiceScope _serviceScope;
+
     public ScopedOutboxDependencies(IServiceScopeFactory factory)
     {
         _serviceScope = factory.CreateScope();
@@ -29,8 +31,6 @@ internal sealed record ScopedOutboxDependencies : IScopedOutboxDependencies
         OutboxRepository = _serviceScope.ServiceProvider.GetRequiredService<IOutboxRepository>();
         OutboxPublishers = _serviceScope.ServiceProvider.GetServices<IOutboxPublisher>();
     }
-
-    private readonly IServiceScope _serviceScope;
 
     public IOutboxContext OutboxContext { get; }
 

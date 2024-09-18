@@ -27,17 +27,19 @@ public class OutboxRepository : IOutboxRepository
 
     public OutboxRepository(IOutboxContext outboxContext, IClock clock)
     {
-        _outboxContext = outboxContext ?? throw new NullReferenceException(
-            "IOutboxContext is required when using the IOutboxClient or IOutboxProcessor. " +
-            "Has an IOutboxContext been added to the dependency injection container?");
+        _outboxContext = outboxContext ?? throw new ArgumentNullException(
+            nameof(outboxContext),
+            "IOutboxContext is required when using the IOutboxClient or IOutboxProcessor. Has an IOutboxContext been added to the dependency injection container?");
 
-        _clock = clock ?? throw new NullReferenceException(
-            "IClock is required when using the IOutboxClient or IOutboxProcessor. " +
-            "Has NodaTime been added to the dependency injection container?");
+        _clock = clock ?? throw new ArgumentNullException(
+            nameof(clock),
+            "IClock is required when using the IOutboxClient or IOutboxProcessor. Has NodaTime been added to the dependency injection container?");
     }
 
     public void Add(OutboxMessage outboxMessage)
     {
+        ArgumentNullException.ThrowIfNull(outboxMessage);
+
         _outboxContext.Outbox.Add(outboxMessage);
     }
 
@@ -45,9 +47,11 @@ public class OutboxRepository : IOutboxRepository
         int limit,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(limit);
+
         var now = _clock.GetCurrentInstant();
-        var failedBefore = now.Minus(OutboxMessage.MinimumErrorRetryTimeout);
-        var processingBefore = now.Minus(OutboxMessage.ProcessingTimeout);
+        var failedBefore = now.Minus(OutboxMessage.MinimumDurationBetweenFailedAttempts);
+        var processingBefore = now.Minus(OutboxMessage.DurationBetweenProcessingAttempts);
 
         var outboxMessageIds = await _outboxContext.Outbox
             .Where(om => om.PublishedAt == null)
@@ -64,6 +68,8 @@ public class OutboxRepository : IOutboxRepository
 
     public Task<OutboxMessage> GetAsync(OutboxMessageId outboxMessageId, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(outboxMessageId);
+
         return _outboxContext.Outbox.SingleAsync(om => om.Id == outboxMessageId, cancellationToken);
     }
 }

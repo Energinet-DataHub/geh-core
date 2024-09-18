@@ -19,12 +19,18 @@ namespace Energinet.DataHub.Core.Outbox.Domain;
 
 /// <summary>
 /// The outbox domain message
+/// The outbox message state flow is like this:
+/// 1. From "Created" to Processing
+/// 2. From Processing to either Processed or Failed
+///
+/// If the message is in Failed state, it will be retried after some time, depending on the error count (minimum <see cref="MinimumDurationBetweenFailedAttempts"/>).
+/// If the message is stuck in Processing state, it will be retried after some time (<see cref="DurationBetweenProcessingAttempts"/>).
 /// </summary>
 public sealed class OutboxMessage
 {
-    public static readonly Duration MinimumErrorRetryTimeout = Duration.FromMinutes(1);
+    public static readonly Duration MinimumDurationBetweenFailedAttempts = Duration.FromMinutes(1);
 
-    public static readonly Duration ProcessingTimeout = Duration.FromMinutes(5);
+    public static readonly Duration DurationBetweenProcessingAttempts = Duration.FromMinutes(5);
 
     public OutboxMessage(
         Instant createdAt,
@@ -71,8 +77,10 @@ public sealed class OutboxMessage
     /// </summary>
     public bool ShouldProcessNow(IClock clock)
     {
+        ArgumentNullException.ThrowIfNull(clock);
+
         if (IsProcessed)
-            throw new InvalidOperationException("Should not try to process a message that is already processed");
+            throw new InvalidOperationException($"Should not try to process a message that is already processed (Id = {Id})");
 
         var readyToProcess = IsReadyToProcess(clock);
         var readyToRetry = IsReadyToRetry(clock);
@@ -80,8 +88,13 @@ public sealed class OutboxMessage
         return readyToProcess && readyToRetry;
     }
 
+    /// <summary>
+    /// Set the outbox message as processing. Will fail if the message is already processed or not ready to be processed.
+    /// </summary>
     public void SetAsProcessing(IClock clock)
     {
+        ArgumentNullException.ThrowIfNull(clock);
+
         if (IsProcessed)
             throw new InvalidOperationException($"Cannot set outbox message as processing when already processed (Id = {Id})");
 
@@ -91,16 +104,27 @@ public sealed class OutboxMessage
         ProcessingAt = clock.GetCurrentInstant();
     }
 
+    /// <summary>
+    /// Set the outbox message as processed. Will fail if the message is already processed.
+    /// </summary>
     public void SetAsProcessed(IClock clock)
     {
+        ArgumentNullException.ThrowIfNull(clock);
+
         if (IsProcessed)
             throw new InvalidOperationException($"Cannot set outbox message as processed when already processed (Id = {Id})");
 
         PublishedAt = clock.GetCurrentInstant();
     }
 
+    /// <summary>
+    /// Set the outbox message as failed. Will fail if the message is already processed.
+    /// </summary>
     public void SetAsFailed(IClock clock, string errorMessage)
     {
+        ArgumentNullException.ThrowIfNull(clock);
+        ArgumentException.ThrowIfNullOrEmpty(errorMessage);
+
         if (IsProcessed)
             throw new InvalidOperationException($"Cannot set outbox message as failed when already processed (Id = {Id})");
 
@@ -118,7 +142,7 @@ public sealed class OutboxMessage
         if (ProcessingAt == null)
             return true;
 
-        var processAgainAt = ProcessingAt.Value.Plus(ProcessingTimeout);
+        var processAgainAt = ProcessingAt.Value.Plus(DurationBetweenProcessingAttempts);
 
         var now = clock.GetCurrentInstant();
         return now >= processAgainAt;
@@ -134,7 +158,7 @@ public sealed class OutboxMessage
 
         var errorRetryTimeout = ErrorCount switch
         {
-            < 5 => MinimumErrorRetryTimeout,
+            < 5 => MinimumDurationBetweenFailedAttempts,
             < 10 => Duration.FromHours(1),
             _ => Duration.FromDays(1),
         };

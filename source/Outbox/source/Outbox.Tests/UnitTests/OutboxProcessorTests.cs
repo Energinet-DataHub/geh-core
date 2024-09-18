@@ -183,9 +183,9 @@ public class OutboxProcessorTests
             clock.Object,
             Mock.Of<ILogger<OutboxProcessor>>());
 
-        // => Setup clock to be before "MinimumErrorRetryTimeout", so it should not be retried
+        // => Setup clock to be before "MinimumDurationBetweenFailedAttempts", so it should not be retried
         var beforeRetryTimeout = failedAt
-            .Plus(OutboxMessage.MinimumErrorRetryTimeout)
+            .Plus(OutboxMessage.MinimumDurationBetweenFailedAttempts)
             .Minus(Duration.FromSeconds(1));
         clock.Setup(c => c.GetCurrentInstant()).Returns(beforeRetryTimeout);
 
@@ -198,8 +198,8 @@ public class OutboxProcessorTests
             outboxMessage.FailedAt.Should().Be(failedAt);
         }
 
-        // => Setup clock to be "MinimumErrorRetryTimeout" after the failed message, so it should be retried
-        var afterRetryTimeout = failedAt.Plus(OutboxMessage.MinimumErrorRetryTimeout);
+        // => Setup clock to be "MinimumDurationBetweenFailedAttempts" after the failed message, so it should be retried
+        var afterRetryTimeout = failedAt.Plus(OutboxMessage.MinimumDurationBetweenFailedAttempts);
         clock.Setup(c => c.GetCurrentInstant()).Returns(afterRetryTimeout);
 
         await outboxProcessor.ProcessOutboxAsync();
@@ -240,9 +240,9 @@ public class OutboxProcessorTests
             clock.Object,
             Mock.Of<ILogger<OutboxProcessor>>());
 
-        // => Setup clock to be before "ProcessingTimeout", so it should not be retried
+        // => Setup clock to be before "DurationBetweenProcessingAttempts", so it should not be retried
         var afterRetryTimeout = processingAt
-            .Plus(OutboxMessage.ProcessingTimeout)
+            .Plus(OutboxMessage.DurationBetweenProcessingAttempts)
             .Minus(Duration.FromSeconds(1));
         clock.Setup(c => c.GetCurrentInstant()).Returns(afterRetryTimeout);
 
@@ -254,8 +254,8 @@ public class OutboxProcessorTests
             outboxMessage.ErrorCount.Should().Be(0);
         }
 
-        // => Setup clock to be "ProcessingTimeout" after the processing message, so it should be retried
-        var now = processingAt.Plus(OutboxMessage.ProcessingTimeout);
+        // => Setup clock to be "DurationBetweenProcessingAttempts" after the processing message, so it should be retried
+        var now = processingAt.Plus(OutboxMessage.DurationBetweenProcessingAttempts);
         clock.Setup(c => c.GetCurrentInstant()).Returns(now);
 
         // => This time re-processing the outbox should cause the message to be retried
