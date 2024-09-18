@@ -153,6 +153,8 @@ Preparing a **Function App** project:
    services.AddDeadLetterHandlerForIsolatedWorker();
    ```
 
+1) Add a blob storage health check with `AddAzureBlobStorage`, targeting the configured storage account.
+
 1) Implement an `IIntegrationEventHandler`.
 
    ```csharp
