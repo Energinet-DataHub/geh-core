@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ExampleHost.WebApi\ExampleHost.WebApi.csproj" />
+      <ProjectReference Include="..\Outbox.Tests\Outbox.Tests.csproj" />
     </ItemGroup>
 
 </Project>

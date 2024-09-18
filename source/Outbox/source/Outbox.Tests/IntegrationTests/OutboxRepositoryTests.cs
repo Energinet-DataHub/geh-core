@@ -14,30 +14,50 @@
 
 using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.Outbox.Infrastructure;
+using Energinet.DataHub.Core.Outbox.Tests.IntegrationTests.Fixture;
+using Energinet.DataHub.Core.Outbox.Tests.IntegrationTests.Fixture.Database;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Core.Outbox.Tests;
+namespace Energinet.DataHub.Core.Outbox.Tests.IntegrationTests;
 
-public class OutboxRepositoryTests
+public class OutboxRepositoryTests : IClassFixture<OutboxFixture>, IAsyncLifetime
 {
+    private readonly OutboxFixture _fixture;
+
+    public OutboxRepositoryTests(OutboxFixture fixture)
+    {
+        _fixture = fixture;
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _fixture.DatabaseManager.TruncateOutboxTableAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
     [Fact]
     public async Task GetUnprocessedOutboxMessageIdsAsync_WhenMessageIsUnpublished_ReturnsOutboxMessage()
     {
         // Arrange
-        await using var outboxContext = CreateInMemoryDbContext();
-
         var now = Instant.FromUtc(2024, 09, 17, 13, 37);
 
         var outboxMessage = new OutboxMessage(now, "type", "data");
         var expectedOutboxMessageId = outboxMessage.Id;
 
-        outboxContext.Add(outboxMessage);
-        await outboxContext.SaveChangesAsync();
+        await using (var arrangeOutboxContext = CreateDbContext())
+        {
+            arrangeOutboxContext.Add(outboxMessage);
+            await arrangeOutboxContext.SaveChangesAsync();
+        }
 
+        await using var outboxContext = CreateDbContext();
         var outboxRepository = new OutboxRepository(outboxContext, Mock.Of<IClock>());
 
         // Act
@@ -51,8 +71,6 @@ public class OutboxRepositoryTests
     public async Task GetUnprocessedOutboxMessageIdsAsync_WhenMessageIsPublished_DoesNotReturnMessage()
     {
         // Arrange
-        await using var outboxContext = CreateInMemoryDbContext();
-
         var publishedAt = Instant.FromUtc(2024, 09, 17, 13, 37);
         var clock = new Mock<IClock>();
         clock.Setup(c => c.GetCurrentInstant())
@@ -61,9 +79,13 @@ public class OutboxRepositoryTests
         var outboxMessage = new OutboxMessage(publishedAt, "type", "data");
         outboxMessage.SetAsProcessed(clock.Object);
 
-        outboxContext.Add(outboxMessage);
-        await outboxContext.SaveChangesAsync();
+        await using (var arrangeOutboxContext = CreateDbContext())
+        {
+            arrangeOutboxContext.Add(outboxMessage);
+            await arrangeOutboxContext.SaveChangesAsync();
+        }
 
+        await using var outboxContext = CreateDbContext();
         var outboxRepository = new OutboxRepository(outboxContext, clock.Object);
 
         // Act
@@ -77,8 +99,6 @@ public class OutboxRepositoryTests
     public async Task GetUnprocessedOutboxMessageIdsAsync_WhenMessageIsProcessing_ReturnsMessageAfterTimeout()
     {
         // Arrange
-        await using var outboxContext = CreateInMemoryDbContext();
-
         var processingAt = Instant.FromUtc(2024, 09, 17, 13, 37);
 
         var clock = new Mock<IClock>();
@@ -90,9 +110,13 @@ public class OutboxRepositoryTests
 
         var expectedOutboxMessageId = outboxMessage.Id;
 
-        outboxContext.Add(outboxMessage);
-        await outboxContext.SaveChangesAsync();
+        await using (var arrangeOutboxContext = CreateDbContext())
+        {
+            arrangeOutboxContext.Add(outboxMessage);
+            await arrangeOutboxContext.SaveChangesAsync();
+        }
 
+        await using var outboxContext = CreateDbContext();
         var outboxRepository = new OutboxRepository(outboxContext, clock.Object);
 
         // Act
@@ -117,8 +141,6 @@ public class OutboxRepositoryTests
     public async Task GetUnprocessedOutboxMessageIdsAsync_WhenMessageIsFailed_ReturnsMessageAfterTimeout()
     {
         // Arrange
-        await using var outboxContext = CreateInMemoryDbContext();
-
         var failedAt = Instant.FromUtc(2024, 09, 17, 13, 37);
 
         var clock = new Mock<IClock>();
@@ -130,13 +152,15 @@ public class OutboxRepositoryTests
 
         var expectedOutboxMessageId = outboxMessage.Id;
 
-        outboxContext.Add(outboxMessage);
-        await outboxContext.SaveChangesAsync();
+        await using (var arrangeOutboxContext = CreateDbContext())
+        {
+            arrangeOutboxContext.Add(outboxMessage);
+            await arrangeOutboxContext.SaveChangesAsync();
+        }
 
+        await using var outboxContext = CreateDbContext();
         var outboxRepository = new OutboxRepository(outboxContext, clock.Object);
-
         // Act
-
         // => Set clock to before "MinimumErrorRetryTimeout", so the message should not be returned
         clock.Setup(c => c.GetCurrentInstant())
             .Returns(failedAt.Plus(OutboxMessage.MinimumErrorRetryTimeout).Minus(Duration.FromSeconds(1)));
@@ -153,11 +177,8 @@ public class OutboxRepositoryTests
         result.Should().ContainSingle(o => o == expectedOutboxMessageId);
     }
 
-    private static TestOutboxContext CreateInMemoryDbContext()
+    private TestOutboxContext CreateDbContext()
     {
-        var options = new DbContextOptionsBuilder<TestOutboxContext>()
-            .UseInMemoryDatabase(databaseName: $"TestDatabase-{Guid.NewGuid()}")
-            .Options;
-        return new TestOutboxContext(options);
+        return _fixture.DatabaseManager.CreateDbContext();
     }
 }

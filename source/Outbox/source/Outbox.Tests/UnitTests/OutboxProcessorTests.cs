@@ -24,7 +24,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Core.Outbox.Tests;
+namespace Energinet.DataHub.Core.Outbox.Tests.UnitTests;
 
 public class OutboxProcessorTests
 {

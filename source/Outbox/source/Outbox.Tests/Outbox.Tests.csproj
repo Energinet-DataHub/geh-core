@@ -39,6 +39,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Example.DatabaseMigration\Example.DatabaseMigration.csproj" />
     <ProjectReference Include="..\Outbox.Abstractions\Outbox.Abstractions.csproj" />
     <ProjectReference Include="..\Outbox\Outbox.csproj" />
   </ItemGroup>

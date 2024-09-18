@@ -15,9 +15,8 @@
 using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
-namespace Energinet.DataHub.Core.Outbox.Tests;
+namespace Energinet.DataHub.Core.Outbox.Tests.IntegrationTests.Fixture.Database;
 
 public class TestOutboxContext : DbContext, IOutboxContext
 {
@@ -30,7 +29,7 @@ public class TestOutboxContext : DbContext, IOutboxContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // The outbox entity configuration must be added to the model builder to correctly configure the outbox table.
         modelBuilder.ApplyConfiguration(new OutboxEntityConfiguration());
-        base.OnModelCreating(modelBuilder);
     }
 }

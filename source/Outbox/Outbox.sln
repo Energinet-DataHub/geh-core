@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.WebApi", "sourc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.WebApi.Tests", "source\ExampleHost.WebApi.Tests\ExampleHost.WebApi.Tests.csproj", "{112E0315-5324-457D-A561-97D5C629045A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.DatabaseMigration", "source\Example.DatabaseMigration\Example.DatabaseMigration.csproj", "{47E56539-4632-4A36-AA5D-1BFB1985B599}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{112E0315-5324-457D-A561-97D5C629045A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{112E0315-5324-457D-A561-97D5C629045A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{112E0315-5324-457D-A561-97D5C629045A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47E56539-4632-4A36-AA5D-1BFB1985B599}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E56539-4632-4A36-AA5D-1BFB1985B599}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E56539-4632-4A36-AA5D-1BFB1985B599}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E56539-4632-4A36-AA5D-1BFB1985B599}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{D8FD50DE-B215-4A2D-B07B-7F656754DBB8} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 		{112E0315-5324-457D-A561-97D5C629045A} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
+		{47E56539-4632-4A36-AA5D-1BFB1985B599} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A1ABFD1-64AE-4D13-816A-222340ACF4F5}

@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Core.Outbox.Tests.IntegrationTests.Fixture;
+using Energinet.DataHub.Core.Outbox.Tests.IntegrationTests.Fixture.Database;
+using ExampleHost.WebApi.DbContext;
 using Xunit;
 
 namespace ExampleHost.WebApi.Tests.Fixture;
@@ -21,11 +24,11 @@ public class OutboxTestFixture : IAsyncLifetime
 {
     public OutboxTestFixture()
     {
-        DatabaseManager = new OutboxDatabaseManager();
+        DatabaseManager = new OutboxDatabaseManager<MyApplicationDbContext>();
         ExampleHostWebApiFactory = new ExampleHostWebApiFactory();
     }
 
-    public OutboxDatabaseManager DatabaseManager { get; set; }
+    public OutboxDatabaseManager<MyApplicationDbContext> DatabaseManager { get; set; }
 
     [NotNull]
     public HttpClient? WebApiClient { get; set; }
