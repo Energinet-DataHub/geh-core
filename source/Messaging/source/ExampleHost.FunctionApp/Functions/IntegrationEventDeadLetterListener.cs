@@ -16,7 +16,6 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Options;
 
 namespace ExampleHost.FunctionApp.Functions;
 
@@ -43,8 +42,7 @@ public class IntegrationEventDeadLetterListener
             Connection = ServiceBusNamespaceOptions.SectionName,
             AutoCompleteMessages = false)]
         ServiceBusReceivedMessage message,
-        ServiceBusMessageActions messageActions,
-        FunctionContext context)
+        ServiceBusMessageActions messageActions)
     {
         await _deadLetterHandler
             .HandleAsync(deadLetterSource: "integration-events", message, messageActions)
