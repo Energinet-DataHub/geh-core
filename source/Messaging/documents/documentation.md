@@ -251,6 +251,9 @@ Preparing a **Function App** project:
 
 1) Perform configuration in application settings
 
+   The `ContainerName` is used for creating a container within the storage account in which messages are saved as blobs. Beware of the following [Container name constraints](https://learn.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#container-names).
+   For the `ContainerName` it's recommende to use a combination of the subsystem name and a short name of the application host. E.g. for EDI B2BApi it could be `edi-b2bapi`.
+
    ```json
    {
      "IsEncrypted": false,
@@ -259,7 +262,10 @@ Preparing a **Function App** project:
        "ServiceBus__FullyQualifiedNamespace": "<namespace>",
        // Integration Events topic/subscription
        "IntegrationEvents__TopicName": "<topic>",
-       "IntegrationEvents__SubscriptionName": "<subscription>"
+       "IntegrationEvents__SubscriptionName": "<subscription>",
+       // Dead-letter logging
+       "DeadLetterLogging__StorageAccountUrl": "<storage account url>",
+       "DeadLetterLogging__ContainerName": "<subsystem-app>"
      }
    }
    ```
