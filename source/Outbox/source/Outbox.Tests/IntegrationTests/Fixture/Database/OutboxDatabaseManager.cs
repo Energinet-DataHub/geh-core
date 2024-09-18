@@ -61,7 +61,7 @@ public class OutboxDatabaseManager<TDbContext> : SqlServerDatabaseManager<TDbCon
     /// </summary>
     protected override bool CreateDatabaseSchema(TDbContext context)
     {
-        var result = Upgrader.DatabaseUpgrade(ConnectionString);
+        var result = DbUpgrader.DatabaseUpgrade(ConnectionString);
         if (!result.Successful)
             throw new Exception("Database migration failed", result.Error);
         return true;

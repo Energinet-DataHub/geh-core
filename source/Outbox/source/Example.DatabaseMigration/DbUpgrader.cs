@@ -18,7 +18,7 @@ using DbUp.Engine;
 
 namespace Example.DatabaseMigration;
 
-public static class Upgrader
+public static class DbUpgrader
 {
     public static DatabaseUpgradeResult DatabaseUpgrade(string? connectionString)
     {

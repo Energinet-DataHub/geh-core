@@ -13,7 +13,7 @@ internal static class Program
             ?? "Server=.;Database=outbox;Trusted_Connection=True;Encrypt=No;";
 
         Console.WriteLine($"Performing upgrade on {connectionString}");
-        var result = Upgrader.DatabaseUpgrade(connectionString);
+        var result = DbUpgrader.DatabaseUpgrade(connectionString);
 
         if (!result.Successful)
         {

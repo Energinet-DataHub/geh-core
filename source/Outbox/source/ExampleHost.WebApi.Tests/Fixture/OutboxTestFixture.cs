@@ -28,12 +28,12 @@ public class OutboxTestFixture : IAsyncLifetime
         ExampleHostWebApiFactory = new ExampleHostWebApiFactory();
     }
 
-    public OutboxDatabaseManager<MyApplicationDbContext> DatabaseManager { get; set; }
+    public OutboxDatabaseManager<MyApplicationDbContext> DatabaseManager { get; }
 
     [NotNull]
-    public HttpClient? WebApiClient { get; set; }
+    public HttpClient? WebApiClient { get; private set; }
 
-    private ExampleHostWebApiFactory ExampleHostWebApiFactory { get; set; }
+    private ExampleHostWebApiFactory ExampleHostWebApiFactory { get; }
 
     public async Task InitializeAsync()
     {
