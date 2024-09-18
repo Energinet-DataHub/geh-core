@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.Messaging.Communication;
@@ -79,9 +80,10 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
             Content = "DeadLetter",
         };
 
+        var eventId = Guid.NewGuid();
         var message = MessageFactory.Create(
             new IntegrationEvent(
-                EventIdentification: Guid.NewGuid(),
+                EventIdentification: eventId,
                 EventName: acceptedEvent.GetType().Name,
                 EventMinorVersion: 0,
                 Message: acceptedEvent));
@@ -93,6 +95,13 @@ public class IntegrationEventsSubscriptionTests : FunctionAppTestBase<ExampleHos
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventListener));
         await Fixture.HostManager.AssertFunctionWasExecutedAsync(nameof(IntegrationEventDeadLetterListener));
         Fixture.HostManager.WasMessageLogged($"Executed 'Functions.{nameof(IntegrationEventDeadLetterListener)}' (Succeeded").Should().BeTrue();
+
+        // => Verify blob was created as expected; name is a combination of 'deadLetterSource', 'EventIdentification' and 'EventName'
+        var blobName = $"integration-events_{eventId}_AcceptedV1";
+        var blobClient = Fixture.BlobServiceClient
+            .GetBlobContainerClient(Fixture.BlobContainerName)
+            .GetBlobClient(blobName);
+        blobClient.Exists().Value.Should().BeTrue();
     }
 
     [Fact]
