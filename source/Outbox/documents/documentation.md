@@ -1,6 +1,6 @@
 # Documentation
 
-This outbox bundle exists of 2 .NET NuGet packages:
+This outbox bundle consists of the following 2 .NET NuGet packages:
 
 - `Energinet.DataHub.Core.Outbox.Abstractions` contains the interfaces/abstractions needed to add messages to the outbox.
 - `Energinet.DataHub.Core.Outbox` contains the outbox processor needed to process/publish outbox messages.
@@ -88,14 +88,14 @@ CREATE TABLE [dbo].[Outbox]
     [CreatedAt]         DATETIME2 NOT NULL,
     [ProcessingAt]      DATETIME2 NULL,
     [PublishedAt]       DATETIME2 NULL,
-    [FailedAt]          DATETIME2 NULL,
+    [FailedAt]          DATETIME2 NULL,~~~~
     [ErrorMessage]      NVARCHAR(MAX) NULL,
     [ErrorCount]        INT NOT NULL,
 
     CONSTRAINT [PK_Outbox]            PRIMARY KEY NONCLUSTERED ([Id]),
     
     -- A UNIQUE CLUSTERED constraint on an INT IDENTITY column optimizes the performance of the outbox table
-    -- by ordering indexes by the sequential RecordId column instead of the UNIQUEIDENTIFIER  primary key(which is random).
+    -- by ordering indexes by the sequential RecordId column instead of the UNIQUEIDENTIFIER  primary key (which is random).
     CONSTRAINT [UX_Outbox_RecordId]   UNIQUE CLUSTERED ([RecordId] ASC),
 )
 GO
