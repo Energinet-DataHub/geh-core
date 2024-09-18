@@ -88,7 +88,7 @@ CREATE TABLE [dbo].[Outbox]
     [CreatedAt]         DATETIME2 NOT NULL,
     [ProcessingAt]      DATETIME2 NULL,
     [PublishedAt]       DATETIME2 NULL,
-    [FailedAt]          DATETIME2 NULL,~~~~
+    [FailedAt]          DATETIME2 NULL,
     [ErrorMessage]      NVARCHAR(MAX) NULL,
     [ErrorCount]        INT NOT NULL,
 
@@ -106,6 +106,8 @@ CREATE INDEX [IX_Outbox_PublishedAt_FailedAt_ProcessingAt_CreatedAt]
     INCLUDE ([Id])
 GO
 ```
+
+The script can also be found at [Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql](https://github.com/Energinet-DataHub/geh-core/blob/main/source/Outbox/source/Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql)
 
 ### Adding a new message to the outbox
 

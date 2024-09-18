@@ -22,7 +22,8 @@ namespace ExampleHost.WebApi.DbContext;
 /// The application database context must implement the interface <see cref="IOutboxContext"/> and
 /// add the <see cref="OutboxEntityConfiguration"/> in the <see cref="OnModelCreating"/> method.
 /// <remarks>
-/// An example script of creating the outbox table through dbup can be seen at: (TODO: INSERT URL TO DOCS)
+/// An example script of creating the outbox table through dbup can be found in the Example.DatabaseMigration project
+/// at Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql
 /// </remarks>
 /// </summary>
 public class MyApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, IOutboxContext
