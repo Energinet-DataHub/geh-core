@@ -4,6 +4,7 @@
 
 - Deleted unused options `SubscriberWorkerOptions`.
 - Added dependency injection extensions `ServiceBusExtensions.AddDeadLetterHandlerForIsolatedWorker`.
+- Mark method `public static IntegrationEventServiceBusMessage Create(byte[] message, IReadOnlyDictionary<string, object> bindingData)` as obsolete.
 
 ## Version 6.0.0
 
