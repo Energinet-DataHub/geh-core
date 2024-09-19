@@ -65,34 +65,26 @@ jobs:
         with:
           filters: |
             app_common:
-              - '.github/workflows/detect-changes.yml'
               - 'source/App/**'
               - '.github/workflows/app-common-bundle-publish.yml'
             databricks:
-              - '.github/workflows/detect-changes.yml'
               - 'source/Databricks/**'
               - '.github/workflows/databricks-bundle-publish.yml'
             featuremanagement:
-              - '.github/workflows/detect-changes.yml'
               - 'source/FeatureManagement/**'
               - '.github/workflows/featuremanagement-ci.yml'
             json_serialization:
-              - '.github/workflows/detect-changes.yml'
               - 'source/JsonSerialization/**'
               - '.github/workflows/json-serialization-bundle-publish.yml'
             logging:
-              - '.github/workflows/detect-changes.yml'
               - 'source/Logging/**'
               - '.github/workflows/logging-bundle-publish.yml'
             messaging:
-              - '.github/workflows/detect-changes.yml'
               - 'source/Messaging/**'
               - '.github/workflows/messaging-bundle-publish.yml'
             testcommon:
-              - '.github/workflows/detect-changes.yml'
               - 'source/TestCommon/**'
               - '.github/workflows/testcommon-bundle-publish.yml'
             outbox:
-              - '.github/workflows/detect-changes.yml'
               - 'source/Outbox/**'
               - '.github/workflows/outbox-bundle-publish.yml'
