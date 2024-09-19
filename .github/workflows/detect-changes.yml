@@ -36,6 +36,8 @@ on:
         value: ${{ jobs.changes.outputs.messaging }}
       testcommon:
         value: ${{ jobs.changes.outputs.testcommon }}
+      outbox:
+        value: ${{ jobs.changes.outputs.outbox }}
 
 jobs:
   changes:
@@ -50,6 +52,7 @@ jobs:
       logging: ${{ steps.filter.outputs.logging }}
       messaging: ${{ steps.filter.outputs.messaging }}
       testcommon: ${{ steps.filter.outputs.testcommon }}
+      outbox: ${{ steps.filter.outputs.outbox }}
     steps:
       # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
       - name: Checkout repository
@@ -62,30 +65,26 @@ jobs:
         with:
           filters: |
             app_common:
-              - '.github/workflows/detect-changes.yml'
               - 'source/App/**'
               - '.github/workflows/app-common-bundle-publish.yml'
             databricks:
-              - '.github/workflows/detect-changes.yml'
               - 'source/Databricks/**'
               - '.github/workflows/databricks-bundle-publish.yml'
             featuremanagement:
-              - '.github/workflows/detect-changes.yml'
               - 'source/FeatureManagement/**'
               - '.github/workflows/featuremanagement-ci.yml'
             json_serialization:
-              - '.github/workflows/detect-changes.yml'
               - 'source/JsonSerialization/**'
               - '.github/workflows/json-serialization-bundle-publish.yml'
             logging:
-              - '.github/workflows/detect-changes.yml'
               - 'source/Logging/**'
               - '.github/workflows/logging-bundle-publish.yml'
             messaging:
-              - '.github/workflows/detect-changes.yml'
               - 'source/Messaging/**'
               - '.github/workflows/messaging-bundle-publish.yml'
             testcommon:
-              - '.github/workflows/detect-changes.yml'
               - 'source/TestCommon/**'
               - '.github/workflows/testcommon-bundle-publish.yml'
+            outbox:
+              - 'source/Outbox/**'
+              - '.github/workflows/outbox-bundle-publish.yml'
