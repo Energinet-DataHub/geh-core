@@ -69,7 +69,7 @@ public sealed class OutboxMessage
 
     public int ErrorCount { get; set; }
 
-    private bool IsProcessed => PublishedAt != null;
+    public bool IsProcessed => PublishedAt != null;
 
     /// <summary>
     /// Check if the outbox message should process. Uses both the ProcessingAt and FailedAt properties to determine
