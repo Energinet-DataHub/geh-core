@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Azure.Messaging.ServiceBus;
-using Azure.Storage.Blobs;
-using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Fixtures;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
-using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using FluentAssertions;
-using Microsoft.Extensions.Azure;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Internal.Subscriber;
 
