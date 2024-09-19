@@ -75,24 +75,17 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobFixture>, IAsyncLifet
         var sut = serviceProvider.GetRequiredService<IDeadLetterLogger>();
 
         var deadLetterSource = "inbox-events";
-
-        var messageMock = new Mock<ServiceBusReceivedMessage>();
-        messageMock
-            .Setup(mock => mock.MessageId)
-            .Returns(Guid.NewGuid().ToString());
-        messageMock
-            .Setup(mock => mock.Subject)
-            .Returns("event-name");
-        messageMock
-            .Setup(mock => mock.Body)
-            .Returns(new BinaryData("content"));
+        var message = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            messageId: Guid.NewGuid().ToString(),
+            subject: "event-name",
+            body: new BinaryData("content"));
 
         // Act
-        await sut.LogAsync(deadLetterSource, messageMock.Object);
+        await sut.LogAsync(deadLetterSource, message);
 
         // Assert
         // => Verify blob was created as expected; name is a combination of 'deadLetterSource', 'MessageId' and 'Subject'
-        var blobName = $"{deadLetterSource}_{messageMock.Object.MessageId}_{messageMock.Object.Subject}";
+        var blobName = $"{deadLetterSource}_{message.MessageId}_{message.Subject}";
         var blobClient = Fixture.BlobServiceClient
             .GetBlobContainerClient(Fixture.BlobContainerName)
             .GetBlobClient(blobName);
