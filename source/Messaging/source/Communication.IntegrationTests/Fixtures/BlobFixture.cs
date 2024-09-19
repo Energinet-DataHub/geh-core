@@ -28,11 +28,11 @@ public class BlobFixture : IAsyncLifetime
         BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, new DefaultAzureCredential());
     }
 
+    public AzuriteManager AzuriteManager { get; }
+
     public string BlobContainerName { get; }
 
     public BlobServiceClient BlobServiceClient { get; }
-
-    private AzuriteManager AzuriteManager { get; }
 
     public Task InitializeAsync()
     {
