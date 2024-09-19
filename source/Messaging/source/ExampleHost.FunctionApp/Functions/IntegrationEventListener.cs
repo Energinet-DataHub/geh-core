@@ -20,14 +20,10 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace ExampleHost.FunctionApp.Functions;
 
-public class IntegrationEventListener
+public class IntegrationEventListener(
+    ISubscriber subscriber)
 {
-    private readonly ISubscriber _subscriber;
-
-    public IntegrationEventListener(ISubscriber subscriber)
-    {
-        _subscriber = subscriber;
-    }
+    private readonly ISubscriber _subscriber = subscriber;
 
     /// <summary>
     /// Receives messages from the integration event topic/subscription and processes them.

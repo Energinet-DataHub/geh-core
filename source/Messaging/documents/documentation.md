@@ -184,14 +184,10 @@ Preparing a **Function App** project:
 
     ```csharp
     // Example implementation
-    public class IntegrationEventListener
+    public class IntegrationEventListener(
+        ISubscriber subscriber)
     {
-        private readonly ISubscriber _subscriber;
-
-        public IntegrationEventListener(ISubscriber subscriber)
-        {
-            _subscriber = subscriber;
-        }
+        private readonly ISubscriber _subscriber = subscriber;
 
         /// <summary>
         /// Receives messages from the integration event topic/subscription and processes them.
@@ -219,14 +215,10 @@ Preparing a **Function App** project:
 1) Implement a `ServiceBusTrigger` for handling the dead-letter queue for the integration event subscription.
 
     ```csharp
-    public class IntegrationEventDeadLetterListener
+    public class IntegrationEventDeadLetterListener(
+        IDeadLetterHandler deadLetterHandler)
     {
-        private readonly IDeadLetterHandler _deadLetterHandler;
-
-        public IntegrationEventDeadLetterListener(IDeadLetterHandler deadLetterHandler)
-        {
-            _deadLetterHandler = deadLetterHandler;
-        }
+        private readonly IDeadLetterHandler _deadLetterHandler = deadLetterHandler;
 
         /// <summary>
         /// Receives messages from the dead-letter queue of the integration event topic/subscription and processes them.

@@ -19,14 +19,10 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace ExampleHost.FunctionApp.Functions;
 
-public class IntegrationEventDeadLetterListener
+public class IntegrationEventDeadLetterListener(
+    IDeadLetterHandler deadLetterHandler)
 {
-    private readonly IDeadLetterHandler _deadLetterHandler;
-
-    public IntegrationEventDeadLetterListener(IDeadLetterHandler deadLetterHandler)
-    {
-        _deadLetterHandler = deadLetterHandler;
-    }
+    private readonly IDeadLetterHandler _deadLetterHandler = deadLetterHandler;
 
     /// <summary>
     /// Receives messages from the dead-letter queue of the integration event topic/subscription and processes them.
