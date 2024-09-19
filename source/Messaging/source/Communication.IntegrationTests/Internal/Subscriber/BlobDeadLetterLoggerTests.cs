@@ -50,6 +50,7 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobFixture>, IAsyncLifet
 
     public Task DisposeAsync()
     {
+        // Clear data after each test
         Fixture.BlobServiceClient
             .GetBlobContainerClient(Fixture.BlobContainerName)
             .DeleteIfExists();
