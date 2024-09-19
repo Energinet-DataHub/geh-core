@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
@@ -28,20 +29,14 @@ using Moq;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Internal.Subscriber;
 
-public class BlobDeadLetterLoggerTests : IClassFixture<BlobFixture>, IAsyncLifetime
+public class BlobDeadLetterLoggerTests : IClassFixture<BlobDeadLetterLoggerFixture>, IAsyncLifetime
 {
-    public BlobDeadLetterLoggerTests(BlobFixture fixture)
+    public BlobDeadLetterLoggerTests(BlobDeadLetterLoggerFixture fixture)
     {
         Fixture = fixture;
-        MessageFactory = new ServiceBusMessageFactory();
-        Services = new ServiceCollection();
     }
 
-    private BlobFixture Fixture { get; }
-
-    private ServiceBusMessageFactory MessageFactory { get; }
-
-    private ServiceCollection Services { get; }
+    private BlobDeadLetterLoggerFixture Fixture { get; }
 
     public Task InitializeAsync()
     {
@@ -62,18 +57,7 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobFixture>, IAsyncLifet
     public async Task LogAsync_WhenContainerDoesNotExist_ContainerIsCreatedAndMessageSaved()
     {
         // Arrange
-        var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
-        {
-            [$"{BlobDeadLetterLoggerOptions.SectionName}:{nameof(BlobDeadLetterLoggerOptions.StorageAccountUrl)}"] = Fixture.AzuriteManager.BlobStorageServiceUri.OriginalString,
-            [$"{BlobDeadLetterLoggerOptions.SectionName}:{nameof(BlobDeadLetterLoggerOptions.ContainerName)}"] = Fixture.BlobContainerName,
-        });
-
-        Services
-            .AddLogging()
-            .AddDeadLetterHandlerForIsolatedWorker(configuration);
-
-        var serviceProvider = Services.BuildServiceProvider();
-        var sut = serviceProvider.GetRequiredService<IDeadLetterLogger>();
+        var sut = Fixture.ServiceProvider.GetRequiredService<IDeadLetterLogger>();
 
         var deadLetterSource = "inbox-events";
         var message = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -91,16 +75,5 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobFixture>, IAsyncLifet
             .GetBlobContainerClient(Fixture.BlobContainerName)
             .GetBlobClient(blobName);
         blobClient.Exists().Value.Should().BeTrue();
-    }
-
-    protected IConfiguration CreateInMemoryConfigurations(Dictionary<string, string?> configurations)
-    {
-        var configurationRoot = new ConfigurationBuilder()
-            .AddInMemoryCollection(configurations)
-            .Build();
-
-        Services.AddScoped<IConfiguration>(_ => configurationRoot);
-
-        return configurationRoot;
     }
 }
