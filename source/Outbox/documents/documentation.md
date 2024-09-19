@@ -107,7 +107,7 @@ CREATE INDEX [IX_Outbox_PublishedAt_FailedAt_ProcessingAt_CreatedAt]
 GO
 ```
 
-The script can also be found at [Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql](https://github.com/Energinet-DataHub/geh-core/blob/xedkn/add-outbox-package/source/Outbox/source/Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql)
+The script can also be found at `Example.DatabaseMigration/Scripts/202409171950_Add_Outbox_table.sql`.
 
 ### Adding a new message to the outbox
 
