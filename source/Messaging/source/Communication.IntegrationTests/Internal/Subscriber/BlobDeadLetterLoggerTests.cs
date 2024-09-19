@@ -53,7 +53,7 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobDeadLetterLoggerFixtu
     }
 
     [Fact]
-    public async Task ContainerMightExist_WhenLogAsync_MessageIsSaved()
+    public async Task ValidMessageAndDeadLetterSource_WhenLogAsync_BlobIsCreatedWithExpectedNameAndContainsBase64EncodedString()
     {
         // Arrange
         var sut = Fixture.ServiceProvider.GetRequiredService<IDeadLetterLogger>();
