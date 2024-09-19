@@ -20,7 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Internal.Subscriber;
 
-public class BlobDeadLetterLoggerTests : IClassFixture<BlobDeadLetterLoggerFixture>, IAsyncLifetime
+public class BlobDeadLetterLoggerTests : IClassFixture<BlobDeadLetterLoggerFixture>
 {
     public BlobDeadLetterLoggerTests(BlobDeadLetterLoggerFixture fixture)
     {
@@ -29,32 +29,37 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobDeadLetterLoggerFixtu
 
     private BlobDeadLetterLoggerFixture Fixture { get; }
 
-    public Task InitializeAsync()
+    [Fact]
+    public async Task ContainerDoesNotExist_WhenLogAsync_ContainerIsCreated()
     {
-        return Task.CompletedTask;
-    }
+        // Arrange
+        // => Explicit show container doesn't exist
+        await Fixture.BlobServiceClient
+            .GetBlobContainerClient(Fixture.BlobContainerName)
+            .DeleteIfExistsAsync();
 
-    public Task DisposeAsync()
-    {
-        // Clear data after each test
+        var sut = Fixture.ServiceProvider.GetRequiredService<IDeadLetterLogger>();
+
+        var deadLetterSource = "inbox-events";
+        var message = CreateMessage();
+
+        // Act
+        await sut.LogAsync(deadLetterSource, message);
+
+        // Assert
         Fixture.BlobServiceClient
             .GetBlobContainerClient(Fixture.BlobContainerName)
-            .DeleteIfExists();
-
-        return Task.CompletedTask;
+            .Exists().Value.Should().BeTrue();
     }
 
     [Fact]
-    public async Task LogAsync_WhenContainerDoesNotExist_ContainerIsCreatedAndMessageSaved()
+    public async Task ContainerMightExist_WhenLogAsync_MessageIsSaved()
     {
         // Arrange
         var sut = Fixture.ServiceProvider.GetRequiredService<IDeadLetterLogger>();
 
         var deadLetterSource = "inbox-events";
-        var message = ServiceBusModelFactory.ServiceBusReceivedMessage(
-            messageId: Guid.NewGuid().ToString(),
-            subject: "event-name",
-            body: new BinaryData("content"));
+        var message = CreateMessage();
 
         // Act
         await sut.LogAsync(deadLetterSource, message);
@@ -66,5 +71,16 @@ public class BlobDeadLetterLoggerTests : IClassFixture<BlobDeadLetterLoggerFixtu
             .GetBlobContainerClient(Fixture.BlobContainerName)
             .GetBlobClient(blobName);
         blobClient.Exists().Value.Should().BeTrue();
+
+        var content = await blobClient.DownloadContentAsync();
+        content.Value.Content.ToString().Should().Be(Convert.ToBase64String(message.Body));
+    }
+
+    private static ServiceBusReceivedMessage CreateMessage()
+    {
+        return ServiceBusModelFactory.ServiceBusReceivedMessage(
+            messageId: Guid.NewGuid().ToString(),
+            subject: "event-name",
+            body: new BinaryData("content"));
     }
 }
