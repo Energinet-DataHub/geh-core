@@ -6,18 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Energinet.DataHub.Core.Messaging.Communication.UnitTests"/>
+    <InternalsVisibleTo Include="Energinet.DataHub.Core.Messaging.Communication.UnitTests" />
+    <InternalsVisibleTo Include="Energinet.DataHub.Core.Messaging.Communication.IntegrationTests" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="8.0.1"/>
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.4"/>
-    <PackageReference Include="Google.Protobuf" Version="3.26.0"/>
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="5.14.0"/>
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1"/>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2"/>
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0"/>
+    <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="8.0.1" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.1" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.21.2" />
+    <PackageReference Include="Google.Protobuf" Version="3.28.1" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.22.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="5.16.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,7 +29,7 @@
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
-    <PackageVersion>6.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>6.1.0$(VersionSuffix)</PackageVersion>
     <Title>Messaging library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>

@@ -41,6 +41,7 @@ public sealed class IntegrationEventServiceBusMessage
     /// </summary>
     /// <param name="message">The Service Bus message body as a byte array</param>
     /// <param name="bindingData">The binding data of the Service Bus message, usually retrieved through the binding context</param>
+    [Obsolete("We should use 'Create(ServiceBusReceivedMessage message)' instead.")]
     public static IntegrationEventServiceBusMessage Create(byte[] message, IReadOnlyDictionary<string, object> bindingData)
     {
         var messageId = bindingData["MessageId"] as string ?? throw new InvalidOperationException("MessageId is null");

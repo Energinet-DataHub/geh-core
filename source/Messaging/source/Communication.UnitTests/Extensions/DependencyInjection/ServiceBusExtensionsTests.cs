@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using FluentAssertions;
@@ -179,6 +180,53 @@ public class ServiceBusExtensionsTests
         senderCreationAct.Should()
             .Throw<InvalidOperationException>()
             .WithMessage("No service for type 'Azure.Messaging.ServiceBus.ServiceBusClient' has been registered*");
+    }
+
+    #endregion
+
+    #region AddDeadLetterHandlerForIsolatedWorker
+
+    [Fact]
+    public void AddDeadLetterHandlerForIsolatedWorker_WhenCalledWithConfiguredSection_ServicesCanBeCreated()
+    {
+        // Arrange
+        var storageAccountUrl = "https://storage-account.blob.core.windows.net";
+        var containerName = "any-lowercase";
+        var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
+        {
+            [$"{BlobDeadLetterLoggerOptions.SectionName}:{nameof(BlobDeadLetterLoggerOptions.StorageAccountUrl)}"] = storageAccountUrl,
+            [$"{BlobDeadLetterLoggerOptions.SectionName}:{nameof(BlobDeadLetterLoggerOptions.ContainerName)}"] = containerName,
+        });
+
+        // Act
+        Services.AddDeadLetterHandlerForIsolatedWorker(configuration);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var actualOptions = serviceProvider.GetRequiredService<IOptions<BlobDeadLetterLoggerOptions>>();
+        actualOptions.Value.StorageAccountUrl.Should().Be(storageAccountUrl);
+        actualOptions.Value.ContainerName.Should().Be(containerName);
+
+        var actualClientFactory = serviceProvider.GetRequiredService<IAzureClientFactory<BlobServiceClient>>();
+        var actualClient = actualClientFactory.CreateClient(containerName);
+        actualClient.Uri.Should().Be(storageAccountUrl);
+    }
+
+    [Fact]
+    public void AddDeadLetterHandlerForIsolatedWorker_WhenCalledAndNoConfiguredSection_ExceptionIsThrown()
+    {
+        // Arrange
+        var configuration = CreateInMemoryConfigurations([]);
+
+        // Act
+        var act = () => Services.AddDeadLetterHandlerForIsolatedWorker(configuration);
+
+        // Assert
+        act.Should()
+            .Throw<InvalidOperationException>()
+            .WithMessage("Section 'DeadLetterLogging' not found in configuration*");
     }
 
     #endregion

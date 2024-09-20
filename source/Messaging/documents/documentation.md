@@ -150,7 +150,10 @@ Preparing a **Function App** project:
        ActorCreated.Descriptor,
        UserCreated.Descriptor,
    });
+   services.AddDeadLetterHandlerForIsolatedWorker();
    ```
+
+1) Add a blob storage health check with `AddAzureBlobStorage`, targeting the configured storage account.
 
 1) Implement an `IIntegrationEventHandler`.
 
@@ -173,7 +176,7 @@ Preparing a **Function App** project:
    }
    ```
 
-1) Implement a `ServiceBusTrigger`.
+1) Implement a `ServiceBusTrigger` for handling integration events.
 
    When using a `ServiceBusTrigger` to handle integration events, the `ISubscriber` dependency needs to be injected into the function and called in the manner shown below.
 
@@ -181,30 +184,69 @@ Preparing a **Function App** project:
 
     ```csharp
     // Example implementation
-    public sealed class ServiceBusFunction
+    public class IntegrationEventListener(
+        ISubscriber subscriber)
     {
-        private readonly ISubscriber _subscriber;
+        private readonly ISubscriber _subscriber = subscriber;
 
-        public ServiceBusFunction(ISubscriber subscriber)
-        {
-            _subscriber = subscriber;
-        }
-
-        [Function("ServiceBusFunction")]
+        /// <summary>
+        /// Receives messages from the integration event topic/subscription and processes them.
+        /// </summary>
+        /// <remarks>
+        /// If the method fails to process a message, the Service Bus will automatically retry delivery of the message
+        /// based on the retry policy configured for the Service Bus. After a number of retries the message will be
+        /// moved to the dead-letter queue of the topic/subscription.
+        /// </remarks>
+        [Function(nameof(IntegrationEventListener))]
         public async Task RunAsync(
             [ServiceBusTrigger(
                 $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}%",
                 $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%",
                 Connection = ServiceBusNamespaceOptions.SectionName)]
-            byte[] message,
-            FunctionContext context)
+            ServiceBusReceivedMessage message)
         {
-            await _subscriber.HandleAsync(IntegrationEventServiceBusMessage.Create(message, context.BindingContext.BindingData!));
+            await _subscriber
+                .HandleAsync(IntegrationEventServiceBusMessage.Create(message))
+                .ConfigureAwait(false);
+        }
+    }
+    ```
+
+1) Implement a `ServiceBusTrigger` for handling the dead-letter queue for the integration event subscription.
+
+    ```csharp
+    public class IntegrationEventDeadLetterListener(
+        IDeadLetterHandler deadLetterHandler)
+    {
+        private readonly IDeadLetterHandler _deadLetterHandler = deadLetterHandler;
+
+        /// <summary>
+        /// Receives messages from the dead-letter queue of the integration event topic/subscription and processes them.
+        /// </summary>
+        /// <remarks>
+        /// The dead-letter handler is responsible for managing the message, which is why 'AutoCompleteMessages' must be set 'false'.
+        /// </remarks>
+        [Function(nameof(IntegrationEventDeadLetterListener))]
+        public async Task RunAsync(
+            [ServiceBusTrigger(
+                $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.TopicName)}%",
+                $"%{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}%{DeadLetterConstants.DeadLetterQueueSuffix}",
+                Connection = ServiceBusNamespaceOptions.SectionName,
+                AutoCompleteMessages = false)]
+            ServiceBusReceivedMessage message,
+            ServiceBusMessageActions messageActions)
+        {
+            await _deadLetterHandler
+                .HandleAsync(deadLetterSource: "integration-events", message, messageActions)
+                .ConfigureAwait(false);
         }
     }
     ```
 
 1) Perform configuration in application settings
+
+   The `ContainerName` is used for creating a container within the storage account in which messages are saved as blobs. Beware of the following [Container name constraints](https://learn.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#container-names).
+   For the `ContainerName` it's recommende to use a combination of the subsystem name and a short name of the application host. E.g. for EDI B2BApi it could be `edi-b2bapi`.
 
    ```json
    {
@@ -214,7 +256,10 @@ Preparing a **Function App** project:
        "ServiceBus__FullyQualifiedNamespace": "<namespace>",
        // Integration Events topic/subscription
        "IntegrationEvents__TopicName": "<topic>",
-       "IntegrationEvents__SubscriptionName": "<subscription>"
+       "IntegrationEvents__SubscriptionName": "<subscription>",
+       // Dead-letter logging
+       "DeadLetterLogging__StorageAccountUrl": "<storage account url>",
+       "DeadLetterLogging__ContainerName": "<subsystem-app>"
      }
    }
    ```

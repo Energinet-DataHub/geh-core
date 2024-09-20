@@ -1,5 +1,11 @@
 # Messaging Release notes
 
+## Version 6.1.0
+
+- Deleted unused options `SubscriberWorkerOptions`.
+- Added dependency injection extensions `ServiceBusExtensions.AddDeadLetterHandlerForIsolatedWorker`.
+- Mark method `public static IntegrationEventServiceBusMessage Create(byte[] message, IReadOnlyDictionary<string, object> bindingData)` as obsolete.
+
 ## Version 6.0.0
 
 - Added dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` and related options `ServiceBusNamespaceOptions`. This registration ensures we use identity access management (IAM) for the ServiceBus namespace.

@@ -1,0 +1,15 @@
+﻿{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "<app insights connection string>",
+
+    // ServiceBus namespace
+    "ServiceBus__FullyQualifiedNamespace": "<namespace>",
+    // Integration Events topic/subscription
+    "IntegrationEvents__TopicName": "<topic>",
+    "IntegrationEvents__SubscriptionName": "<subscription>"
+  }
+}
