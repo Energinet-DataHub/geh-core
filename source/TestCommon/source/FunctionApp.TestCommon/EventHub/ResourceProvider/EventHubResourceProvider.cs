@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using System.Text.RegularExpressions;
+using Azure.Identity;
+using Azure.ResourceManager;
+using Azure.ResourceManager.EventHubs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Microsoft.Azure.Management.EventHub;
@@ -35,9 +38,12 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 /// </summary>
 public class EventHubResourceProvider : IAsyncDisposable
 {
+    private readonly string _connectionString;
+
+    [Obsolete("Use constructur with 'EventHubNamespace'.", false)]
     public EventHubResourceProvider(string connectionString, AzureResourceManagementSettings resourceManagementSettings, ITestDiagnosticsLogger testLogger)
     {
-        ConnectionString = string.IsNullOrWhiteSpace(connectionString)
+        _connectionString = string.IsNullOrWhiteSpace(connectionString)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
             : connectionString;
         ResourceManagementSettings = resourceManagementSettings
@@ -52,7 +58,33 @@ public class EventHubResourceProvider : IAsyncDisposable
         EventHubResources = new Dictionary<string, EventHubResource>();
     }
 
-    public string ConnectionString { get; }
+    public EventHubResourceProvider(ITestDiagnosticsLogger testLogger, string eventHubNamespace, AzureResourceManagementSettings resourceManagementSettings)
+    {
+        _connectionString = string.Empty;
+        TestLogger = testLogger
+            ?? throw new ArgumentNullException(nameof(testLogger));
+        EventHubNamespace = string.IsNullOrWhiteSpace(eventHubNamespace)
+            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubNamespace))
+            : eventHubNamespace;
+        ResourceManagementSettings = resourceManagementSettings
+            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
+
+        LazyManagementClient = new AsyncLazy<IEventHubManagementClient>(CreateManagementClientAsync);
+
+        RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
+        EventHubResources = new Dictionary<string, EventHubResource>();
+    }
+
+    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'EventHubNamespace' instead.", false)]
+    public string ConnectionString
+    {
+        get
+        {
+            return _connectionString == string.Empty
+                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'EventHubNamespace'.")
+                : _connectionString;
+        }
+    }
 
     public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
@@ -94,6 +126,7 @@ public class EventHubResourceProvider : IAsyncDisposable
         return new EventHubResourceBuilder(this, eventHubName, createEventHubOptions);
     }
 
+    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'EventHubNamespace' instead.", false)]
     private static string GetEventHubNamespace(string eventHubConnectionString)
     {
         // The connection string is similar to a service bus connection string.

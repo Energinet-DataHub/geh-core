@@ -34,7 +34,10 @@ public class IntegrationTestConfiguration
 
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
+#pragma warning disable CS0618 // Type or member is obsolete
         EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
+#pragma warning restore CS0618 // Type or member is obsolete
+        EventHubNamespace = Configuration.GetValue("AZURE-EVENTHUB-NAMESPACE");
 #pragma warning disable CS0618 // Type or member is obsolete
         ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -63,7 +66,13 @@ public class IntegrationTestConfiguration
     /// <summary>
     /// Connection string to the Azure Event Hub in the Integration Test environment.
     /// </summary>
+    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'EventHubNamespace' instead.", false)]
     public string EventHubConnectionString { get; }
+
+    /// <summary>
+    /// Namespace of the Azure Event Hub in the Integration Test environment.
+    /// </summary>
+    public string EventHubNamespace { get; }
 
     /// <summary>
     /// Connection string to the Azure Service Bus in the Integration Test environment.
