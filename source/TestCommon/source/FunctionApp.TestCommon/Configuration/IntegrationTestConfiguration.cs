@@ -35,7 +35,8 @@ public class IntegrationTestConfiguration
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
 
-        EventHubFullyQualifiedNamespace = $"{Configuration.GetValue("AZURE-EVENTHUB-NAMESPACE")}.servicebus.windows.net";
+        EventHubNamespaceName = Configuration.GetValue("AZURE-EVENTHUB-NAMESPACE");
+        EventHubFullyQualifiedNamespace = $"{EventHubNamespaceName}.servicebus.windows.net";
         ServiceBusFullyQualifiedNamespace = $"{Configuration.GetValue("AZURE-SERVICEBUS-NAMESPACE")}.servicebus.windows.net";
 
         ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
@@ -57,6 +58,11 @@ public class IntegrationTestConfiguration
     /// ID of the Log Analytics Workspace in the Integration Test environment.
     /// </summary>
     public string LogAnalyticsWorkspaceId { get; }
+
+    /// <summary>
+    /// Namespace name of the Azure Event Hub in the Integration Test environment.
+    /// </summary>
+    public string EventHubNamespaceName { get; }
 
     /// <summary>
     /// Fully qualified namespace of the Azure Event Hub in the Integration Test environment.
