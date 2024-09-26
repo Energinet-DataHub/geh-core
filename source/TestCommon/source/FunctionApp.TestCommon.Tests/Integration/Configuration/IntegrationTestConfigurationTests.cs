@@ -102,12 +102,12 @@ public class IntegrationTestConfigurationTests
     }
 
     [Fact]
-    public void Given_IdentityHasAccess_When_EventHubNamespace_Then_HasValue()
+    public void Given_IdentityHasAccess_When_EventHubFullyQualifiedNamespace_Then_HasValue()
     {
         // Arrange
 
         // Act
-        var actualValue = Sut.EventHubNamespace;
+        var actualValue = Sut.EventHubFullyQualifiedNamespace;
 
         // Assert
         actualValue.Should().NotBeNullOrEmpty();
