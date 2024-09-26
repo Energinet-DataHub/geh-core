@@ -34,10 +34,12 @@ public class IntegrationTestConfiguration
 
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
+
 #pragma warning disable CS0618 // Type or member is obsolete
         EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
 #pragma warning restore CS0618 // Type or member is obsolete
         EventHubNamespace = Configuration.GetValue("AZURE-EVENTHUB-NAMESPACE");
+
 #pragma warning disable CS0618 // Type or member is obsolete
         ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
 #pragma warning restore CS0618 // Type or member is obsolete
