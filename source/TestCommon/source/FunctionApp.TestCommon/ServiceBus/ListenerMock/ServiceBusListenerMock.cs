@@ -30,35 +30,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 /// </summary>
 public sealed class ServiceBusListenerMock : IAsyncDisposable
 {
-    private readonly string _connectionString;
-    private readonly string _fullyQualifiedNamespace;
-
-    [Obsolete("Use constructur with 'FullyQualifiedNamespace'.")]
-    public ServiceBusListenerMock(string connectionString, ITestDiagnosticsLogger testLogger)
-    {
-        _fullyQualifiedNamespace = string.Empty;
-        _connectionString = string.IsNullOrWhiteSpace(connectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
-            : connectionString;
-        TestLogger = testLogger
-            ?? throw new ArgumentNullException(nameof(testLogger));
-
-        AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
-        Client = new ServiceBusClient(ConnectionString);
-
-        MutableReceivedMessagesLock = new SemaphoreSlim(1, 1);
-        MessageReceivers = new Dictionary<string, ServiceBusProcessor>();
-        MessageHandlers = new ConcurrentDictionary<Func<ServiceBusReceivedMessage, bool>, Func<ServiceBusReceivedMessage, Task>>();
-
-        var mutableReceivedMessages = new BlockingCollection<ServiceBusReceivedMessage>();
-        MutableReceivedMessages = mutableReceivedMessages;
-        ReceivedMessages = mutableReceivedMessages;
-    }
-
     public ServiceBusListenerMock(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace)
     {
-        _connectionString = string.Empty;
-        _fullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
+        FullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(fullyQualifiedNamespace))
             : fullyQualifiedNamespace;
         TestLogger = testLogger
@@ -77,26 +51,7 @@ public sealed class ServiceBusListenerMock : IAsyncDisposable
         ReceivedMessages = mutableReceivedMessages;
     }
 
-    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'FullyQualifiedNamespace' instead.", false)]
-    public string ConnectionString
-    {
-        get
-        {
-            return _connectionString == string.Empty
-                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'FullyQualifiedNamespace'.")
-                : _connectionString;
-        }
-    }
-
-    public string FullyQualifiedNamespace
-    {
-        get
-        {
-            return _fullyQualifiedNamespace == string.Empty
-                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'ConnectionString'.")
-                : _fullyQualifiedNamespace;
-        }
-    }
+    public string FullyQualifiedNamespace { get; }
 
     public IReadOnlyCollection<ServiceBusReceivedMessage> ReceivedMessages { get; private set; }
 
@@ -306,9 +261,7 @@ public sealed class ServiceBusListenerMock : IAsyncDisposable
         return Task.CompletedTask;
     }
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
     private async ValueTask DisposeAsyncCore()
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
     {
         await ResetMessageReceiversAsync().ConfigureAwait(false);
         ResetMessageHandlersAndReceivedMessages();
