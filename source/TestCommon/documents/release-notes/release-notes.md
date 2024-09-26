@@ -1,5 +1,28 @@
 # TestCommon Release notes
 
+## Version 7.0.0
+
+- Refactored class `IntegrationTestConfiguration`:
+    - Deleted obsolete property `ServiceBusConnectionString`.
+    - Deleted property `EventHubConnectionString`.
+    - Added property `EventHubNamespace`.
+- Refactored class `ServiceBusResourceProvider`:
+    - Deleted obsolete constructor with `ConnectionString` parameter.
+    - Deleted obsolete property `ConnectionString`.
+- Refactored class `ServiceBusListenerMock`:
+    - Deleted obsolete constructor with `ConnectionString` parameter.
+    - Deleted obsolete property `ConnectionString`.
+- Refactored class `EventHubResourceProvider`:
+    - Deleted constructor with `ConnectionString` parameter.
+    - Deleted property `ConnectionString`.
+    - Added constructor with `EventHubNamespace` parameter.
+    - Added property `EventHubNamespace`.
+- Refactored class `EventHubListenerMock`:
+    - Deleted constructor with `ConnectionString` parameter.
+    - Deleted property `ConnectionString`.
+    - Added constructor with `EventHubNamespace` parameter.
+    - Added property `EventHubNamespace`.
+
 ## Version 6.3.0
 
 - Refactored class `IntegrationTestConfiguration`:
