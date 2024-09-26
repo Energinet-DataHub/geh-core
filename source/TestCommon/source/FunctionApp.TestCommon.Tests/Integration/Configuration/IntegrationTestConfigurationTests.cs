@@ -102,40 +102,12 @@ public class IntegrationTestConfigurationTests
     }
 
     [Fact]
-    public void Given_IdentityHasAccess_When_EventHubConnectionString_Then_HasValue()
-    {
-        // Arrange
-
-        // Act
-#pragma warning disable CS0618 // Type or member is obsolete
-        var actualValue = Sut.EventHubConnectionString;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        // Assert
-        actualValue.Should().NotBeNullOrEmpty();
-    }
-
-    [Fact]
     public void Given_IdentityHasAccess_When_EventHubNamespace_Then_HasValue()
     {
         // Arrange
 
         // Act
         var actualValue = Sut.EventHubNamespace;
-
-        // Assert
-        actualValue.Should().NotBeNullOrEmpty();
-    }
-
-    [Fact]
-    public void Given_IdentityHasAccess_When_ServiceBusConnectionString_Then_HasValue()
-    {
-        // Arrange
-
-        // Act
-#pragma warning disable CS0618 // Type or member is obsolete
-        var actualValue = Sut.ServiceBusConnectionString;
-#pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
         actualValue.Should().NotBeNullOrEmpty();
