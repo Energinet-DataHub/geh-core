@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Azure.Management.EventHub;
-using Microsoft.Azure.Management.EventHub.Models;
+using Azure.ResourceManager.EventHubs;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 
@@ -22,32 +21,32 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 /// </summary>
 public class EventHubResourceBuilder : IEventHubResourceBuilder
 {
-    internal EventHubResourceBuilder(EventHubResourceProvider resourceProvider, string eventHubName, Eventhub createEventHubOptions)
+    internal EventHubResourceBuilder(EventHubResourceProvider resourceProvider, string eventHubName, EventHubData createEventHubOptions)
     {
         ResourceProvider = resourceProvider;
         EventHubName = eventHubName;
         CreateEventHubOptions = createEventHubOptions;
         ConsumerGroupBuilders = new Dictionary<string, EventHubConsumerGroupBuilder>();
 
-        PostActions = new List<Action<Eventhub>>();
+        PostActions = [];
     }
 
     private EventHubResourceProvider ResourceProvider { get; }
 
     private string EventHubName { get; }
 
-    private Eventhub CreateEventHubOptions { get; }
+    private EventHubData CreateEventHubOptions { get; }
 
     private IDictionary<string, EventHubConsumerGroupBuilder> ConsumerGroupBuilders { get; }
 
-    private IList<Action<Eventhub>> PostActions { get; }
+    private IList<Action<EventHubData>> PostActions { get; }
 
     /// <summary>
     /// Add an action that will be called after the event hub has been created.
     /// </summary>
     /// <param name="postAction">Action to call with event hub properties when event hub has been created.</param>
     /// <returns>Event hub resouce builder.</returns>
-    public EventHubResourceBuilder Do(Action<Eventhub> postAction)
+    public EventHubResourceBuilder Do(Action<EventHubData> postAction)
     {
         PostActions.Add(postAction);
 
@@ -79,23 +78,22 @@ public class EventHubResourceBuilder : IEventHubResourceBuilder
     {
         ResourceProvider.TestLogger.WriteLine($"Creating event hub '{EventHubName}'");
 
-        var managementClient = await ResourceProvider.LazyManagementClient
-            .ConfigureAwait(false);
+        var eventHubNamespaceResource = await ResourceProvider.LazyEventHubNamespaceResource.ConfigureAwait(false);
 
-        var response = await managementClient.EventHubs
+        var response = await eventHubNamespaceResource.GetEventHubs()
             .CreateOrUpdateAsync(
-                ResourceProvider.ResourceManagementSettings.ResourceGroup,
-                ResourceProvider.EventHubNamespace,
+                Azure.WaitUntil.Completed,
                 EventHubName,
                 CreateEventHubOptions)
             .ConfigureAwait(false);
+        var resource = response.Value;
 
-        var eventHubResource = new EventHubResource(ResourceProvider, response);
-        ResourceProvider.EventHubResources.Add(response.Name, eventHubResource);
+        var eventHubResource = new EventHubResource(ResourceProvider, resource);
+        ResourceProvider.EventHubResources.Add(resource.Data.Name, eventHubResource);
 
         foreach (var postAction in PostActions)
         {
-            postAction(response);
+            postAction(resource.Data);
         }
 
         return eventHubResource;
@@ -103,27 +101,26 @@ public class EventHubResourceBuilder : IEventHubResourceBuilder
 
     private async Task CreateConsumerGroupsAsync(EventHubResource eventHubResource)
     {
-        var managementClient = await ResourceProvider.LazyManagementClient
-            .ConfigureAwait(false);
-
         foreach (var consumerGroupBuilderPair in ConsumerGroupBuilders)
         {
             var consumerGroup = consumerGroupBuilderPair.Value;
 
-            var createdConsumerGroup = await managementClient.ConsumerGroups
+            var response = await eventHubResource.InnerResource.GetEventHubsConsumerGroups()
                 .CreateOrUpdateAsync(
-                    ResourceProvider.ResourceManagementSettings.ResourceGroup,
-                    ResourceProvider.EventHubNamespace,
-                    eventHubResource.Name,
+                    Azure.WaitUntil.Completed,
                     consumerGroup.ConsumerGroupName,
-                    consumerGroup.UserMetadata)
+                    new EventHubsConsumerGroupData
+                    {
+                        UserMetadata = consumerGroup.UserMetadata,
+                    })
                 .ConfigureAwait(false);
+            var resource = response.Value;
 
-            eventHubResource.AddConsumerGroup(createdConsumerGroup);
+            eventHubResource.AddConsumerGroup(resource);
 
             foreach (var postAction in consumerGroupBuilderPair.Value.PostActions)
             {
-                postAction(createdConsumerGroup);
+                postAction(resource.Data);
             }
         }
     }

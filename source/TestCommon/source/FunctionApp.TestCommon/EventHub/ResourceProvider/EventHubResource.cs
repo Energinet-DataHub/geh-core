@@ -14,39 +14,39 @@
 
 using System.Collections.ObjectModel;
 using Azure.Messaging.EventHubs.Producer;
-using Microsoft.Azure.Management.EventHub;
-using Microsoft.Azure.Management.EventHub.Models;
+using Azure.ResourceManager.EventHubs;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 
 public class EventHubResource : IAsyncDisposable
 {
-    private readonly Eventhub _properties;
     private readonly Lazy<EventHubProducerClient> _lazyProducerClient;
-    private readonly IList<ConsumerGroup> _consumerGroups;
+    private readonly IList<EventHubsConsumerGroupResource> _consumerGroups;
 
-    internal EventHubResource(EventHubResourceProvider resourceProvider, Eventhub properties)
+    internal EventHubResource(EventHubResourceProvider resourceProvider, Azure.ResourceManager.EventHubs.EventHubResource innerResource)
     {
         ResourceProvider = resourceProvider;
+        InnerResource = innerResource;
 
-        _properties = properties;
         _lazyProducerClient = new Lazy<EventHubProducerClient>(CreateProducerClient);
-        _consumerGroups = new List<ConsumerGroup>();
+        _consumerGroups = [];
 
-        ConsumerGroups = new ReadOnlyCollection<ConsumerGroup>(_consumerGroups);
+        ConsumerGroups = new ReadOnlyCollection<EventHubsConsumerGroupResource>(_consumerGroups);
     }
 
     public string ResourceGroup => ResourceProvider.ResourceManagementSettings.ResourceGroup;
 
-    public string EventHubNamespace => ResourceProvider.EventHubNamespace;
+    public string EventHubNamespace => ResourceProvider.FullyQualifiedNamespace;
 
-    public string Name => _properties.Name;
+    public string Name => InnerResource.Data.Name;
 
     public EventHubProducerClient ProducerClient => _lazyProducerClient.Value;
 
-    public IReadOnlyCollection<ConsumerGroup>? ConsumerGroups { get; }
+    public IReadOnlyCollection<EventHubsConsumerGroupResource>? ConsumerGroups { get; }
 
     public bool IsDisposed { get; private set; }
+
+    internal Azure.ResourceManager.EventHubs.EventHubResource InnerResource { get; }
 
     private EventHubResourceProvider ResourceProvider { get; }
 
@@ -57,19 +57,17 @@ public class EventHubResource : IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
-    internal void AddConsumerGroup(ConsumerGroup consumerGroup)
+    internal void AddConsumerGroup(EventHubsConsumerGroupResource consumerGroup)
     {
         _consumerGroups.Add(consumerGroup);
     }
 
     private EventHubProducerClient CreateProducerClient()
     {
-        return new EventHubProducerClient(ResourceProvider.ConnectionString, Name);
+        return new EventHubProducerClient(ResourceProvider.FullyQualifiedNamespace, Name, ResourceProvider.Credential);
     }
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
     private async ValueTask DisposeAsyncCore()
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
     {
         if (IsDisposed)
         {
@@ -82,11 +80,7 @@ public class EventHubResource : IAsyncDisposable
                 .ConfigureAwait(false);
         }
 
-        var managementClient = await ResourceProvider.LazyManagementClient
-            .ConfigureAwait(false);
-
-        await managementClient.EventHubs.DeleteAsync(ResourceGroup, EventHubNamespace, Name)
-            .ConfigureAwait(false);
+        await InnerResource.DeleteAsync(Azure.WaitUntil.Completed).ConfigureAwait(false);
 
         IsDisposed = true;
     }

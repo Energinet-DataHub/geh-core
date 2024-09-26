@@ -12,18 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture;
+using Azure;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
-using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
-using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Azure.Management.EventHub.Models;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.EventHub.ResourceProvider;
@@ -62,13 +57,10 @@ public class EventHubResourceProviderTests
             await sut.DisposeAsync();
 
             // Assert
-            Func<Task> act = () => ResourceProviderFixture.ManagementClient.EventHubs.GetWithHttpMessagesAsync(
-                eventHub.ResourceGroup,
-                eventHub.EventHubNamespace,
-                eventHub.Name);
-            await act.Should()
-                .ThrowAsync<ErrorResponseException>()
-                .WithMessage("Operation returned an invalid status code 'NotFound'");
+            var act = () => ResourceProviderFixture.EventHubNamespaceResource.GetEventHub(eventHub.Name);
+            act.Should()
+                .Throw<RequestFailedException>()
+                .WithMessage("EventHub entity does not exist*");
 
             eventHub.ProducerClient.IsClosed.Should().BeTrue();
         }
@@ -92,9 +84,9 @@ public class EventHubResourceProviderTests
         private EventHubResourceProvider CreateSut()
         {
             return new EventHubResourceProvider(
-                ResourceProviderFixture.ConnectionString,
-                ResourceProviderFixture.ResourceManagementSettings,
-                ResourceProviderFixture.TestLogger);
+                ResourceProviderFixture.TestLogger,
+                ResourceProviderFixture.NamespaceName,
+                ResourceProviderFixture.ResourceManagementSettings);
         }
     }
 
@@ -105,31 +97,13 @@ public class EventHubResourceProviderTests
     /// A new <see cref="EventHubResourceProvider"/> is created and disposed for each test.
     /// </summary>
     [Collection(nameof(EventHubResourceProviderCollectionFixture))]
-    public class BuildEventHub : TestBase<EventHubResourceProvider>, IAsyncLifetime
+    public class BuildEventHub : EventHubResourceProviderTestsBase
     {
         private const string NamePrefix = "eventhub";
 
         public BuildEventHub(EventHubResourceProviderFixture resourceProviderFixture)
+            : base(resourceProviderFixture)
         {
-            ResourceProviderFixture = resourceProviderFixture;
-
-            // Customize auto fixture
-            Fixture.Inject<ITestDiagnosticsLogger>(resourceProviderFixture.TestLogger);
-            Fixture.Inject<AzureResourceManagementSettings>(resourceProviderFixture.ResourceManagementSettings);
-            Fixture.ForConstructorOn<EventHubResourceProvider>()
-                .SetParameter("connectionString").To(ResourceProviderFixture.ConnectionString);
-        }
-
-        private EventHubResourceProviderFixture ResourceProviderFixture { get; }
-
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public async Task DisposeAsync()
-        {
-            await Sut.DisposeAsync();
         }
 
         [Fact]
@@ -148,11 +122,8 @@ public class EventHubResourceProviderTests
             actualName.Should().EndWith(Sut.RandomSuffix);
 
             // => Validate the event hub exists
-            using var response = await ResourceProviderFixture.ManagementClient.EventHubs.GetWithHttpMessagesAsync(
-                actualResource.ResourceGroup,
-                actualResource.EventHubNamespace,
-                actualResource.Name);
-            response.Body.Name.Should().Be(actualName);
+            var actualEventHubResource = ResourceProviderFixture.EventHubNamespaceResource.GetEventHub(actualResource.Name);
+            actualEventHubResource.Value.Data.Name.Should().Be(actualName);
         }
 
         [Fact]
@@ -189,15 +160,12 @@ public class EventHubResourceProviderTests
                 .CreateAsync();
 
             // Assert
-            using var response = await ResourceProviderFixture.ManagementClient.ConsumerGroups.GetWithHttpMessagesAsync(
-                actualResource.ResourceGroup,
-                actualResource.EventHubNamespace,
-                actualResource.Name,
-                consumerGroupName);
+            var actualEventHubResource = ResourceProviderFixture.EventHubNamespaceResource.GetEventHub(actualResource.Name);
+            var actualConsumerGroupResource = actualEventHubResource.Value.GetEventHubsConsumerGroup(consumerGroupName);
 
             using var assertionScope = new AssertionScope();
-            response.Body.Name.Should().Be(consumerGroupName);
-            response.Body.UserMetadata.Should().Be(userMetadata);
+            actualConsumerGroupResource.Value.Data.Name.Should().Be(consumerGroupName);
+            actualConsumerGroupResource.Value.Data.UserMetadata.Should().Be(userMetadata);
         }
 
         [Fact]
@@ -217,6 +185,35 @@ public class EventHubResourceProviderTests
             // Assert
             var actualEnvironmentValue = Environment.GetEnvironmentVariable(environmentVariable);
             actualEnvironmentValue.Should().Be(consumerGroupName);
+        }
+    }
+
+    /// <summary>
+    /// A new <see cref="EventHubResourceProvider"/> is created and disposed for each test.
+    /// </summary>
+    public abstract class EventHubResourceProviderTestsBase : IAsyncLifetime
+    {
+        protected EventHubResourceProviderTestsBase(EventHubResourceProviderFixture resourceProviderFixture)
+        {
+            ResourceProviderFixture = resourceProviderFixture;
+            Sut = new EventHubResourceProvider(
+                ResourceProviderFixture.TestLogger,
+                ResourceProviderFixture.NamespaceName,
+                ResourceProviderFixture.ResourceManagementSettings);
+        }
+
+        protected EventHubResourceProviderFixture ResourceProviderFixture { get; }
+
+        protected EventHubResourceProvider Sut { get; }
+
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task DisposeAsync()
+        {
+            await Sut.DisposeAsync();
         }
     }
 }

@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.RegularExpressions;
+using Azure.Core;
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.EventHubs;
+using Azure.ResourceManager.Resources;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Microsoft.Azure.Management.EventHub;
-using Microsoft.Azure.Management.EventHub.Models;
-using Microsoft.Identity.Client;
-using Microsoft.Rest;
 using Nito.AsyncEx;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
@@ -38,57 +35,30 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 /// </summary>
 public class EventHubResourceProvider : IAsyncDisposable
 {
-    private readonly string _connectionString;
-
-    [Obsolete("Use constructur with 'EventHubNamespace'.", false)]
-    public EventHubResourceProvider(string connectionString, AzureResourceManagementSettings resourceManagementSettings, ITestDiagnosticsLogger testLogger)
+    public EventHubResourceProvider(ITestDiagnosticsLogger testLogger, string namespaceName, AzureResourceManagementSettings resourceManagementSettings)
     {
-        _connectionString = string.IsNullOrWhiteSpace(connectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
-            : connectionString;
-        ResourceManagementSettings = resourceManagementSettings
-            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
+        NamespaceName = string.IsNullOrWhiteSpace(namespaceName)
+            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(namespaceName))
+            : namespaceName;
+        ResourceManagementSettings = resourceManagementSettings
+            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
 
-        EventHubNamespace = GetEventHubNamespace(ConnectionString);
-        LazyManagementClient = new AsyncLazy<IEventHubManagementClient>(CreateManagementClientAsync);
+        FullyQualifiedNamespace = $"{NamespaceName}.servicebus.windows.net";
+
+        Credential = new DefaultAzureCredential();
+        LazyEventHubNamespaceResource = new AsyncLazy<EventHubsNamespaceResource>(CreateEventHubNamespaceResourceAsync);
 
         RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
         EventHubResources = new Dictionary<string, EventHubResource>();
     }
 
-    public EventHubResourceProvider(ITestDiagnosticsLogger testLogger, string eventHubNamespace, AzureResourceManagementSettings resourceManagementSettings)
-    {
-        _connectionString = string.Empty;
-        TestLogger = testLogger
-            ?? throw new ArgumentNullException(nameof(testLogger));
-        EventHubNamespace = string.IsNullOrWhiteSpace(eventHubNamespace)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubNamespace))
-            : eventHubNamespace;
-        ResourceManagementSettings = resourceManagementSettings
-            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
-
-        LazyManagementClient = new AsyncLazy<IEventHubManagementClient>(CreateManagementClientAsync);
-
-        RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
-        EventHubResources = new Dictionary<string, EventHubResource>();
-    }
-
-    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'EventHubNamespace' instead.", false)]
-    public string ConnectionString
-    {
-        get
-        {
-            return _connectionString == string.Empty
-                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'EventHubNamespace'.")
-                : _connectionString;
-        }
-    }
+    public string NamespaceName { get; }
 
     public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
-    public string EventHubNamespace { get; }
+    public string FullyQualifiedNamespace { get; }
 
     /// <summary>
     /// Is used as part of the resource names.
@@ -98,9 +68,11 @@ public class EventHubResourceProvider : IAsyncDisposable
 
     internal ITestDiagnosticsLogger TestLogger { get; }
 
-    internal IDictionary<string, EventHubResource> EventHubResources { get; }
+    internal TokenCredential Credential { get; }
 
-    internal AsyncLazy<IEventHubManagementClient> LazyManagementClient { get; }
+    internal AsyncLazy<EventHubsNamespaceResource> LazyEventHubNamespaceResource { get; }
+
+    internal IDictionary<string, EventHubResource> EventHubResources { get; }
 
     public async ValueTask DisposeAsync()
     {
@@ -117,48 +89,23 @@ public class EventHubResourceProvider : IAsyncDisposable
     public EventHubResourceBuilder BuildEventHub(string eventHubNamePrefix)
     {
         var eventHubName = BuildResourceName(eventHubNamePrefix);
-        var createEventHubOptions = new Eventhub()
+        var createEventHubOptions = new EventHubData()
         {
-            MessageRetentionInDays = 1,
             PartitionCount = 1,
         };
 
         return new EventHubResourceBuilder(this, eventHubName, createEventHubOptions);
     }
 
-    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'EventHubNamespace' instead.", false)]
-    private static string GetEventHubNamespace(string eventHubConnectionString)
+    private async Task<EventHubsNamespaceResource> CreateEventHubNamespaceResourceAsync()
     {
-        // The connection string is similar to a service bus connection string.
-        // Example connection string: 'Endpoint=sb://xxx.servicebus.windows.net/;'
-        var namespaceMatchPattern = @"Endpoint=sb://(.*?).servicebus.windows.net/";
-        var match = Regex.Match(eventHubConnectionString, namespaceMatchPattern, RegexOptions.IgnoreCase);
-        var eventHubNamespace = match.Groups[1].Value;
+        var armClient = new ArmClient(Credential, ResourceManagementSettings.SubscriptionId);
+        var resourceGroup = armClient.GetResourceGroupResource(
+            ResourceGroupResource.CreateResourceIdentifier(
+                ResourceManagementSettings.SubscriptionId,
+                ResourceManagementSettings.ResourceGroup));
 
-        return eventHubNamespace;
-    }
-
-    private async Task<IEventHubManagementClient> CreateManagementClientAsync()
-    {
-        var authenticationResult = await GetTokenAsync().ConfigureAwait(false);
-        var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken);
-        return new EventHubManagementClient(tokenCredentials)
-        {
-            SubscriptionId = ResourceManagementSettings.SubscriptionId,
-        };
-    }
-
-    private Task<AuthenticationResult> GetTokenAsync()
-    {
-        var confidentialClientApp = ConfidentialClientApplicationBuilder
-            .Create(ResourceManagementSettings.ClientId)
-            .WithClientSecret(ResourceManagementSettings.ClientSecret)
-            .WithAuthority($"https://login.microsoftonline.com/{ResourceManagementSettings.TenantId}")
-            .Build();
-
-        return confidentialClientApp
-            .AcquireTokenForClient(new[] { $"https://management.core.windows.net/.default" })
-            .ExecuteAsync();
+        return await resourceGroup.GetEventHubsNamespaceAsync(NamespaceName).ConfigureAwait(false);
     }
 
     private string BuildResourceName(string namePrefix)
@@ -168,9 +115,7 @@ public class EventHubResourceProvider : IAsyncDisposable
             : $"{namePrefix}-{RandomSuffix}";
     }
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
     private async ValueTask DisposeAsyncCore()
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
     {
         foreach (var eventHubResource in EventHubResources)
         {
@@ -178,9 +123,5 @@ public class EventHubResourceProvider : IAsyncDisposable
             await eventHubResource.Value.DisposeAsync()
                 .ConfigureAwait(false);
         }
-
-        var managementClient = await LazyManagementClient
-            .ConfigureAwait(false);
-        managementClient.Dispose();
     }
 }

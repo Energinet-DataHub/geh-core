@@ -13,17 +13,18 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Azure.Identity;
+using Azure.ResourceManager;
+using Azure.ResourceManager.EventHubs;
+using Azure.ResourceManager.Resources;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Microsoft.Azure.Management.EventHub;
-using Microsoft.Identity.Client;
-using Microsoft.Rest;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 
 /// <summary>
-/// This fixtures ensures we reuse <see cref="ConnectionString"/> and
+/// This fixtures ensures we reuse <see cref="FullyQualifiedNamespace"/> and
 /// relevant instances, so we only have to retrieve an access token
 /// and values in Key Vault one time.
 /// </summary>
@@ -32,52 +33,41 @@ public class EventHubResourceProviderFixture : IAsyncLifetime
     public EventHubResourceProviderFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
-
-        ConnectionString = SingletonIntegrationTestConfiguration.Instance.EventHubConnectionString;
+        NamespaceName = SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
+        FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
         ResourceManagementSettings = SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public string ConnectionString { get; }
+    public string NamespaceName { get; }
+
+    public string FullyQualifiedNamespace { get; }
 
     public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
     [NotNull]
-    public IEventHubManagementClient? ManagementClient { get; private set; }
+    public EventHubsNamespaceResource? EventHubNamespaceResource { get; private set; }
 
     public async Task InitializeAsync()
     {
-        ManagementClient = await CreateManagementClientAsync();
+        EventHubNamespaceResource = await CreateEventHubNamespaceResourceAsync();
     }
 
     public Task DisposeAsync()
     {
-        ManagementClient.Dispose();
-
         return Task.CompletedTask;
     }
 
-    private async Task<IEventHubManagementClient> CreateManagementClientAsync()
+    private async Task<EventHubsNamespaceResource> CreateEventHubNamespaceResourceAsync()
     {
-        var authenticationResult = await GetTokenAsync();
-        var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken);
-        return new EventHubManagementClient(tokenCredentials)
-        {
-            SubscriptionId = ResourceManagementSettings.SubscriptionId,
-        };
-    }
+        var credential = new DefaultAzureCredential();
+        var armClient = new ArmClient(credential, ResourceManagementSettings.SubscriptionId);
+        var resourceGroup = armClient.GetResourceGroupResource(
+            ResourceGroupResource.CreateResourceIdentifier(
+                ResourceManagementSettings.SubscriptionId,
+                ResourceManagementSettings.ResourceGroup));
 
-    private Task<AuthenticationResult> GetTokenAsync()
-    {
-        var confidentialClientApp = ConfidentialClientApplicationBuilder
-            .Create(ResourceManagementSettings.ClientId)
-            .WithClientSecret(ResourceManagementSettings.ClientSecret)
-            .WithAuthority($"https://login.microsoftonline.com/{ResourceManagementSettings.TenantId}")
-            .Build();
-
-        return confidentialClientApp
-            .AcquireTokenForClient(new[] { $"https://management.core.windows.net/.default" })
-            .ExecuteAsync();
+        return await resourceGroup.GetEventHubsNamespaceAsync(NamespaceName).ConfigureAwait(false);
     }
 }
