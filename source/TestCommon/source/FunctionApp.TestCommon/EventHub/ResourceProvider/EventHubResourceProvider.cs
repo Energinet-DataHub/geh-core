@@ -48,7 +48,7 @@ public class EventHubResourceProvider : IAsyncDisposable
         FullyQualifiedNamespace = $"{NamespaceName}.servicebus.windows.net";
 
         Credential = new DefaultAzureCredential();
-        LazyEventHubNamespaceResource = new AsyncLazy<EventHubsNamespaceResource>(CreateEventHubNamespaceResourceAsync);
+        EventHubNamespaceResource = CreateEventHubNamespaceResource();
 
         RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
         EventHubResources = new Dictionary<string, EventHubResource>();
@@ -60,6 +60,9 @@ public class EventHubResourceProvider : IAsyncDisposable
     /// </summary>
     public string NamespaceName { get; }
 
+    /// <summary>
+    /// Settings used to retrieve and create resources at the Azure Control Plane level.
+    /// </summary>
     public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
     /// <summary>
@@ -78,7 +81,7 @@ public class EventHubResourceProvider : IAsyncDisposable
 
     internal TokenCredential Credential { get; }
 
-    internal AsyncLazy<EventHubsNamespaceResource> LazyEventHubNamespaceResource { get; }
+    internal EventHubsNamespaceResource EventHubNamespaceResource { get; }
 
     internal IDictionary<string, EventHubResource> EventHubResources { get; }
 
@@ -105,15 +108,14 @@ public class EventHubResourceProvider : IAsyncDisposable
         return new EventHubResourceBuilder(this, eventHubName, createEventHubOptions);
     }
 
-    private async Task<EventHubsNamespaceResource> CreateEventHubNamespaceResourceAsync()
+    private EventHubsNamespaceResource CreateEventHubNamespaceResource()
     {
-        var armClient = new ArmClient(Credential, ResourceManagementSettings.SubscriptionId);
-        var resourceGroup = armClient.GetResourceGroupResource(
-            ResourceGroupResource.CreateResourceIdentifier(
-                ResourceManagementSettings.SubscriptionId,
-                ResourceManagementSettings.ResourceGroup));
-
-        return await resourceGroup.GetEventHubsNamespaceAsync(NamespaceName).ConfigureAwait(false);
+        return new ArmClient(Credential)
+            .GetEventHubsNamespaceResource(
+                EventHubsNamespaceResource.CreateResourceIdentifier(
+                    ResourceManagementSettings.SubscriptionId,
+                    ResourceManagementSettings.ResourceGroup,
+                    NamespaceName));
     }
 
     private string BuildResourceName(string namePrefix)

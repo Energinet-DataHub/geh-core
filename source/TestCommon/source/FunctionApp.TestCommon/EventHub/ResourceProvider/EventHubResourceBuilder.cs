@@ -78,9 +78,8 @@ public class EventHubResourceBuilder : IEventHubResourceBuilder
     {
         ResourceProvider.TestLogger.WriteLine($"Creating event hub '{EventHubName}'");
 
-        var eventHubNamespaceResource = await ResourceProvider.LazyEventHubNamespaceResource.ConfigureAwait(false);
-
-        var response = await eventHubNamespaceResource.GetEventHubs()
+        var response = await ResourceProvider.EventHubNamespaceResource
+            .GetEventHubs()
             .CreateOrUpdateAsync(
                 Azure.WaitUntil.Completed,
                 EventHubName,
@@ -105,7 +104,8 @@ public class EventHubResourceBuilder : IEventHubResourceBuilder
         {
             var consumerGroup = consumerGroupBuilderPair.Value;
 
-            var response = await eventHubResource.InnerResource.GetEventHubsConsumerGroups()
+            var response = await eventHubResource.InnerResource
+                .GetEventHubsConsumerGroups()
                 .CreateOrUpdateAsync(
                     Azure.WaitUntil.Completed,
                     consumerGroup.ConsumerGroupName,
@@ -118,7 +118,7 @@ public class EventHubResourceBuilder : IEventHubResourceBuilder
 
             eventHubResource.AddConsumerGroup(resource);
 
-            foreach (var postAction in consumerGroupBuilderPair.Value.PostActions)
+            foreach (var postAction in consumerGroup.PostActions)
             {
                 postAction(resource.Data);
             }
