@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -28,9 +29,9 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 /// </summary>
 public class IntegrationTestConfiguration
 {
-    public IntegrationTestConfiguration(DefaultAzureCredential? defaultAzureCredential = null)
+    public IntegrationTestConfiguration(TokenCredential? credential = null)
     {
-        Configuration = BuildKeyVaultConfigurationRoot(defaultAzureCredential);
+        Configuration = BuildKeyVaultConfigurationRoot(credential);
 
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
@@ -89,7 +90,7 @@ public class IntegrationTestConfiguration
     /// </summary>
     public DatabricksSettings DatabricksSettings { get; }
 
-    private static IConfigurationRoot BuildKeyVaultConfigurationRoot(DefaultAzureCredential? defaultAzureCredential)
+    private static IConfigurationRoot BuildKeyVaultConfigurationRoot(TokenCredential? credential = null)
     {
         var integrationtestConfiguration = new ConfigurationBuilder()
             .AddJsonFile("integrationtest.local.settings.json", optional: true)
@@ -100,7 +101,7 @@ public class IntegrationTestConfiguration
         GuardKeyVaultUrl(keyVaultUrl);
 
         return new ConfigurationBuilder()
-            .AddAuthenticatedAzureKeyVault(keyVaultUrl, defaultAzureCredential)
+            .AddAuthenticatedAzureKeyVault(keyVaultUrl, credential)
             .Build();
     }
 

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
+using Azure.Identity;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -20,7 +22,7 @@ using Xunit;
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 
 /// <summary>
-/// This fixtures ensures we reuse <see cref="EventHubConnectionString"/> and
+/// This fixtures ensures we reuse retrieved configuration and
 /// relevant instances, so we only have to retrieve an access token
 /// and values in Key Vault one time.
 /// It also ensures we use the local storage emulator for our blob container.
@@ -34,17 +36,24 @@ public class EventHubListenerMockFixture : IAsyncLifetime
         AzuriteManager = new AzuriteManager();
         StorageConnectionString = "UseDevelopmentStorage=true";
 
-        EventHubConnectionString = SingletonIntegrationTestConfiguration.Instance.EventHubConnectionString;
+        NamespaceName = SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
+        FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
         ResourceManagementSettings = SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
+
+        Credential = new DefaultAzureCredential();
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
     public string StorageConnectionString { get; }
 
-    public string EventHubConnectionString { get; }
+    public string NamespaceName { get; }
+
+    public string FullyQualifiedNamespace { get; }
 
     public AzureResourceManagementSettings ResourceManagementSettings { get; }
+
+    public TokenCredential Credential { get; }
 
     private AzuriteManager AzuriteManager { get; }
 

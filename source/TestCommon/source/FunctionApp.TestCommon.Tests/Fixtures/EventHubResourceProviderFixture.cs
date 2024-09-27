@@ -24,7 +24,7 @@ using Xunit;
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 
 /// <summary>
-/// This fixtures ensures we reuse <see cref="FullyQualifiedNamespace"/> and
+/// This fixtures ensures we reuse retrieved configuration and
 /// relevant instances, so we only have to retrieve an access token
 /// and values in Key Vault one time.
 /// </summary>

@@ -35,7 +35,11 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 /// </summary>
 public class EventHubResourceProvider : IAsyncDisposable
 {
-    public EventHubResourceProvider(ITestDiagnosticsLogger testLogger, string namespaceName, AzureResourceManagementSettings resourceManagementSettings)
+    public EventHubResourceProvider(
+        ITestDiagnosticsLogger testLogger,
+        string namespaceName,
+        AzureResourceManagementSettings resourceManagementSettings,
+        TokenCredential? credential = null)
     {
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
@@ -47,7 +51,7 @@ public class EventHubResourceProvider : IAsyncDisposable
 
         FullyQualifiedNamespace = $"{NamespaceName}.servicebus.windows.net";
 
-        Credential = new DefaultAzureCredential();
+        Credential = credential ?? new DefaultAzureCredential();
         EventHubNamespaceResource = CreateEventHubNamespaceResource();
 
         RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";

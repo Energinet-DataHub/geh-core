@@ -13,15 +13,12 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using AutoFixture;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
-using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using FluentAssertions;
 using Xunit;
 
@@ -45,8 +42,7 @@ public class EventHubListenerMockTests
                 .BuildEventHub("evh-01")
                 .CreateAsync();
 
-            EventHubName = eventHub.Name;
-            BlobContainerName = "container-01";
+            Sut = CreateSut(eventHub.Name, "container-01");
 
             // Act
             await Sut.InitializeAsync();
@@ -78,16 +74,15 @@ public class EventHubListenerMockTests
         public async Task When_EventHubNameDoesNotExist_Then_InvalidOperationExceptionIsThrown()
         {
             // Arrange
-            EventHubName = "evh-02";
-            BlobContainerName = "container-02";
+            Sut = CreateSut("evh-02", "container-02");
 
             // Act
-            Func<Task> act = () => Sut.InitializeAsync();
+            Func<Task> act = Sut.InitializeAsync;
 
             // Assert
             await act.Should()
                 .ThrowAsync<EventHubsException>()
-                .WithMessage($"*{EventHubName}' could not be found*");
+                .WithMessage($"*{Sut.EventHubName}' could not be found*");
         }
     }
 
@@ -107,26 +102,25 @@ public class EventHubListenerMockTests
                 .BuildEventHub("evh")
                 .CreateAsync();
 
-            EventHubName = eventHub.Name;
-            BlobContainerName = "container";
+            Sut = CreateSut(eventHub.Name, "container");
 
             await Sut.InitializeAsync();
-            await AssertOneEventIsSendAndReceivedAsync(eventHub.ProducerClient);
+            await AssertOneEventIsSendAndReceivedAsync(Sut, eventHub.ProducerClient);
 
             // Act
             Sut.Reset();
 
             // Assert
-            await AssertOneEventIsSendAndReceivedAsync(eventHub.ProducerClient);
+            await AssertOneEventIsSendAndReceivedAsync(Sut, eventHub.ProducerClient);
         }
 
-        private async Task AssertOneEventIsSendAndReceivedAsync(EventHubProducerClient producerClient)
+        private async Task AssertOneEventIsSendAndReceivedAsync(EventHubListenerMock sut, EventHubProducerClient producerClient)
         {
             using var eventBatch = await CreateEventBatchAsync(producerClient, numberOfEvents: 1);
             await producerClient.SendAsync(eventBatch);
 
             using var resetEvent = new ManualResetEventSlim(false);
-            await Sut.AddEventHandlerAsync(
+            await sut.AddEventHandlerAsync(
                 _ =>
                 {
                     return true;
@@ -140,7 +134,7 @@ public class EventHubListenerMockTests
             var isReceived = resetEvent.Wait(DefaultTimeout);
             isReceived.Should().BeTrue();
 
-            Sut.ReceivedEvents.Count.Should().Be(1);
+            sut.ReceivedEvents.Count.Should().Be(1);
         }
     }
 
@@ -369,45 +363,36 @@ public class EventHubListenerMockTests
                 .BuildEventHub("evh")
                 .CreateAsync();
 
-            EventHubName = EventHub.Name;
-            BlobContainerName = "container";
-
+            Sut = CreateSut(EventHub.Name, "container");
             await Sut.InitializeAsync();
         }
     }
 
     /// <summary>
     /// A new <see cref="EventHubListenerMock"/> is created and disposed for each test.
-    /// Similar we create a new event hub for each test.
+    /// Similar we create a new <see cref="EventHubResourceProvider"/> for each test,
+    /// so we can delete any created resources (Event Hubs) between tests.
     /// </summary>
-    public abstract class EventHubListenerMockTestsBase : TestBase<EventHubListenerMock>, IAsyncLifetime
+    public abstract class EventHubListenerMockTestsBase : IAsyncLifetime
     {
         protected EventHubListenerMockTestsBase(EventHubListenerMockFixture listenerMockFixture)
         {
             ListenerMockFixture = listenerMockFixture;
             ResourceProvider = new EventHubResourceProvider(
-                ListenerMockFixture.EventHubConnectionString,
+                ListenerMockFixture.TestLogger,
+                ListenerMockFixture.NamespaceName,
                 ListenerMockFixture.ResourceManagementSettings,
-                ListenerMockFixture.TestLogger);
+                ListenerMockFixture.Credential);
         }
+
+        [NotNull]
+        protected EventHubListenerMock? Sut { get; set; }
 
         protected EventHubListenerMockFixture ListenerMockFixture { get; }
 
         protected EventHubResourceProvider ResourceProvider { get; }
 
         protected TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(10);
-
-        /// <summary>
-        /// Set within test method to control creation of Sut.
-        /// </summary>
-        protected string EventHubName { get; set; }
-            = string.Empty;
-
-        /// <summary>
-        /// Set within test method to control creation of Sut.
-        /// </summary>
-        protected string BlobContainerName { get; set; }
-            = string.Empty;
 
         public Task InitializeAsync()
         {
@@ -416,25 +401,28 @@ public class EventHubListenerMockTests
 
         public async Task DisposeAsync()
         {
-            await Sut.DisposeAsync();
+            if (Sut != null)
+            {
+                await Sut.DisposeAsync();
+            }
+
             await ResourceProvider.DisposeAsync();
+        }
+
+        protected EventHubListenerMock CreateSut(string eventHubName, string blobContainerName)
+        {
+            return new EventHubListenerMock(
+                ListenerMockFixture.TestLogger,
+                ListenerMockFixture.FullyQualifiedNamespace,
+                eventHubName,
+                ListenerMockFixture.StorageConnectionString,
+                blobContainerName,
+                ListenerMockFixture.Credential);
         }
 
         protected virtual Task OnInitializeAsync()
         {
             return Task.CompletedTask;
-        }
-
-        protected override EventHubListenerMock CreateSut()
-        {
-            Fixture.Inject<ITestDiagnosticsLogger>(ListenerMockFixture.TestLogger);
-            Fixture.ForConstructorOn<EventHubListenerMock>()
-                .SetParameter("eventHubConnectionString").To(ListenerMockFixture.EventHubConnectionString)
-                .SetParameter("eventHubName").To(EventHubName)
-                .SetParameter("storageConnectionString").To(ListenerMockFixture.StorageConnectionString)
-                .SetParameter("blobContainerName").To(BlobContainerName);
-
-            return base.CreateSut();
         }
 
         protected static async Task<EventDataBatch> CreateEventBatchAsync(EventHubProducerClient producerClient, int numberOfEvents = 3)

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -28,16 +29,17 @@ public static class ConfigurationBuilderExtensions
     /// </summary>
     /// <param name="builder">The configuration builder.</param>
     /// <param name="keyVaultUrl">KeyVault URL eg. https://myexamplekeyvault.vault.azure.net/</param>
-    /// <param name="defaultAzureCredential"><see cref="DefaultAzureCredential"/> used for key vault authentication, if not supplied, a new <see cref="DefaultAzureCredential"/> will be created and used</param>
-    public static IConfigurationBuilder AddAuthenticatedAzureKeyVault(this IConfigurationBuilder builder, string keyVaultUrl, DefaultAzureCredential? defaultAzureCredential = null)
+    /// <param name="credential"><see cref="TokenCredential"/> used for key vault authentication, if not supplied, a <see cref="DefaultAzureCredential"/> will be created and used</param>
+    public static IConfigurationBuilder AddAuthenticatedAzureKeyVault(this IConfigurationBuilder builder, string keyVaultUrl, TokenCredential? credential = null)
     {
         if (string.IsNullOrEmpty(keyVaultUrl))
         {
             throw new ArgumentException("Value cannot be null or empty.", nameof(keyVaultUrl));
         }
 
-        var credential = defaultAzureCredential ?? new DefaultAzureCredential();
-        builder.AddAzureKeyVault(new Uri(keyVaultUrl), credential);
+        builder.AddAzureKeyVault(
+            new Uri(keyVaultUrl),
+            credential ?? new DefaultAzureCredential());
 
         return builder;
     }

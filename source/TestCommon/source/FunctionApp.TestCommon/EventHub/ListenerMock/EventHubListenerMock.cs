@@ -13,10 +13,13 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
+using Azure.Core;
+using Azure.Identity;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
 
@@ -32,11 +35,19 @@ public sealed class EventHubListenerMock : IAsyncDisposable
 {
     public const string DefaultConsumerGroupName = "$Default";
 
-    public EventHubListenerMock(string eventHubConnectionString, string eventHubName, string storageConnectionString, string blobContainerName, ITestDiagnosticsLogger testLogger)
+    public EventHubListenerMock(
+        ITestDiagnosticsLogger testLogger,
+        string eventHubFullyQualifiedNamespace,
+        string eventHubName,
+        string storageConnectionString,
+        string blobContainerName,
+        TokenCredential? credential = null)
     {
-        EventHubConnectionString = string.IsNullOrWhiteSpace(eventHubConnectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubConnectionString))
-            : eventHubConnectionString;
+        TestLogger = testLogger
+            ?? throw new ArgumentNullException(nameof(testLogger));
+        EventHubFullyQualifiedNamespace = string.IsNullOrWhiteSpace(eventHubFullyQualifiedNamespace)
+            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubFullyQualifiedNamespace))
+            : eventHubFullyQualifiedNamespace;
         EventHubName = string.IsNullOrWhiteSpace(eventHubName)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubName))
             : eventHubName;
@@ -46,11 +57,14 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         BlobContainerName = string.IsNullOrWhiteSpace(blobContainerName)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(blobContainerName))
             : blobContainerName;
-        TestLogger = testLogger
-            ?? throw new ArgumentNullException(nameof(testLogger));
 
         StorageClient = new BlobContainerClient(StorageConnectionString, BlobContainerName);
-        ProcessorClient = new EventProcessorClient(StorageClient, DefaultConsumerGroupName, EventHubConnectionString, EventHubName);
+        ProcessorClient = new EventProcessorClient(
+            StorageClient,
+            DefaultConsumerGroupName,
+            EventHubFullyQualifiedNamespace,
+            EventHubName,
+            credential ?? new DefaultAzureCredential());
 
         EventHandlers = new ConcurrentDictionary<Func<EventData, bool>, Func<EventData, Task>>();
 
@@ -60,7 +74,7 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         ReceivedEvents = mutableReceivedEvents;
     }
 
-    public string EventHubConnectionString { get; }
+    public string EventHubFullyQualifiedNamespace { get; }
 
     public string EventHubName { get; }
 
