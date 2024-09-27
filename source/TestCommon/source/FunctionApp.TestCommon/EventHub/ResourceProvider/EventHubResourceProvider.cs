@@ -54,10 +54,18 @@ public class EventHubResourceProvider : IAsyncDisposable
         EventHubResources = new Dictionary<string, EventHubResource>();
     }
 
+    /// <summary>
+    /// The name of the Event Hub Namespace under which Event Hubs are created.
+    /// It is used to retrieve and create resources at the Azure Control Plane level.
+    /// </summary>
     public string NamespaceName { get; }
 
     public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
+    /// <summary>
+    /// The fully qualified namespace of the Event Hub Namespace under which Event Hubs are created.
+    /// It is used when creating clients which communicates with the Event Hubs.
+    /// </summary>
     public string FullyQualifiedNamespace { get; }
 
     /// <summary>
