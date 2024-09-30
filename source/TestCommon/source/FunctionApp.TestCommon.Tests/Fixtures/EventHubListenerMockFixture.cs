@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Core;
-using Azure.Identity;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
