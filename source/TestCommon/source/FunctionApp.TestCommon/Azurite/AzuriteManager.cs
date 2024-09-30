@@ -15,7 +15,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Management;
-using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.TestCertificate;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;

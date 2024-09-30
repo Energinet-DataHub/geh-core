@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Data.Tables;
-using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
