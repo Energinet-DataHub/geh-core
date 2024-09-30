@@ -36,7 +36,21 @@ public class IntegrationTestConfiguration
     /// If not supplied, a <see cref="DefaultAzureCredential"/> will be created and used</param>
     public IntegrationTestConfiguration(TokenCredential? credential = null)
     {
-        Credential = credential ?? new DefaultAzureCredential();
+        Credential = credential
+            ?? new DefaultAzureCredential(new DefaultAzureCredentialOptions
+            {
+                // Here we disable authentication mechanisms that is not used for Integration Test environment
+                // See also: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#defaultazurecredential
+                ExcludeEnvironmentCredential = false,
+                ExcludeWorkloadIdentityCredential = true,
+                ExcludeManagedIdentityCredential = true,
+                ExcludeVisualStudioCredential = false,
+                ExcludeVisualStudioCodeCredential = true,
+                ExcludeAzureCliCredential = false,
+                ExcludeAzurePowerShellCredential = true,
+                ExcludeAzureDeveloperCliCredential = true,
+                ExcludeInteractiveBrowserCredential = true,
+            });
         Configuration = BuildKeyVaultConfigurationRoot(Credential);
 
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
