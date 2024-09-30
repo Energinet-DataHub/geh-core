@@ -31,14 +31,13 @@ public class EventHubListenerMockFixture : IAsyncLifetime
     public EventHubListenerMockFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
-
         AzuriteManager = new AzuriteManager(useOAuth: true);
-        BlobStorageServiceUri = AzuriteManager.BlobStorageServiceUri;
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public Uri BlobStorageServiceUri { get; }
+    public Uri BlobStorageServiceUri =>
+        AzuriteManager.BlobStorageServiceUri;
 
     public string NamespaceName =>
         SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
