@@ -5,24 +5,29 @@
 - Refactored class `IntegrationTestConfiguration`:
     - Deleted obsolete property `ServiceBusConnectionString`.
     - Deleted property `EventHubConnectionString`.
+    - Added property `Credential`.
     - Added property `EventHubNamespaceName`.
     - Added property `EventHubFullyQualifiedNamespace`.
 - Refactored class `ServiceBusResourceProvider`:
     - Deleted obsolete constructor with `ConnectionString` parameter.
     - Deleted obsolete property `ConnectionString`.
+    - Require `Credential` in constructor; use the new property on `IntegrationTestConfiguration`.
 - Refactored class `ServiceBusListenerMock`:
     - Deleted obsolete constructor with `ConnectionString` parameter.
     - Deleted obsolete property `ConnectionString`.
+    - Require `Credential` in constructor; use the new property on `IntegrationTestConfiguration`.
 - Refactored class `EventHubResourceProvider`:
     - Deleted constructor with `ConnectionString` parameter.
     - Deleted property `ConnectionString`.
     - Added constructor with `NamespaceName`.
+    - Require `Credential` in constructor; use the new property on `IntegrationTestConfiguration`.
     - Added property `NamespaceName`.
     - Added property `FullyQualifiedNamespace`.
 - Refactored class `EventHubListenerMock`:
     - Deleted constructor with `ConnectionString` parameter.
     - Deleted property `ConnectionString`.
     - Added constructor with `FullyQualifiedNamespace` parameter.
+    - Require `Credential` in constructor; use the new property on `IntegrationTestConfiguration`.
     - Added property `FullyQualifiedNamespace`.
 
 ## Version 6.3.0

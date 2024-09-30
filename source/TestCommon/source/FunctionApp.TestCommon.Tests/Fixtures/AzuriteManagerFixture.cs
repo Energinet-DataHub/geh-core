@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
@@ -27,6 +28,9 @@ public sealed class AzuriteManagerFixture : IDisposable
     }
 
     public AzuriteManager? AzuriteManager { get; private set; }
+
+    public TokenCredential Credential =>
+        SingletonIntegrationTestConfiguration.Instance.Credential;
 
     public void Dispose()
     {

@@ -86,7 +86,8 @@ public class EventHubResourceProviderTests
             return new EventHubResourceProvider(
                 ResourceProviderFixture.TestLogger,
                 ResourceProviderFixture.NamespaceName,
-                ResourceProviderFixture.ResourceManagementSettings);
+                ResourceProviderFixture.ResourceManagementSettings,
+                ResourceProviderFixture.Credential);
         }
     }
 
@@ -199,7 +200,8 @@ public class EventHubResourceProviderTests
             Sut = new EventHubResourceProvider(
                 ResourceProviderFixture.TestLogger,
                 ResourceProviderFixture.NamespaceName,
-                ResourceProviderFixture.ResourceManagementSettings);
+                ResourceProviderFixture.ResourceManagementSettings,
+                ResourceProviderFixture.Credential);
         }
 
         protected EventHubResourceProviderFixture ResourceProviderFixture { get; }

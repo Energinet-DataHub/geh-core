@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
@@ -30,10 +31,13 @@ public class ServiceBusListenerMockFixture
     public ServiceBusListenerMockFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
-        FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.ServiceBusFullyQualifiedNamespace;
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public string FullyQualifiedNamespace { get; }
+    public string FullyQualifiedNamespace =>
+        SingletonIntegrationTestConfiguration.Instance.ServiceBusFullyQualifiedNamespace;
+
+    public TokenCredential Credential =>
+        SingletonIntegrationTestConfiguration.Instance.Credential;
 }

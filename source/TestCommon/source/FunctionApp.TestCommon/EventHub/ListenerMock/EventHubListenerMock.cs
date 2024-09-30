@@ -14,7 +14,6 @@
 
 using System.Collections.Concurrent;
 using Azure.Core;
-using Azure.Identity;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
@@ -40,7 +39,7 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         string eventHubName,
         Uri blobStorageServiceUri,
         string blobContainerName,
-        TokenCredential? credential = null)
+        TokenCredential credential)
     {
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
@@ -51,16 +50,15 @@ public sealed class EventHubListenerMock : IAsyncDisposable
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubName))
             : eventHubName;
         BlobContainerUri = BuildBlobContainerUri(blobStorageServiceUri, blobContainerName);
+        ArgumentNullException.ThrowIfNull(credential);
 
-        var innerCredential = credential ?? new DefaultAzureCredential();
-
-        StorageClient = new BlobContainerClient(BlobContainerUri, innerCredential);
+        StorageClient = new BlobContainerClient(BlobContainerUri, credential);
         ProcessorClient = new EventProcessorClient(
             StorageClient,
             DefaultConsumerGroupName,
             EventHubFullyQualifiedNamespace,
             EventHubName,
-            innerCredential);
+            credential);
 
         EventHandlers = new ConcurrentDictionary<Func<EventData, bool>, Func<EventData, Task>>();
 

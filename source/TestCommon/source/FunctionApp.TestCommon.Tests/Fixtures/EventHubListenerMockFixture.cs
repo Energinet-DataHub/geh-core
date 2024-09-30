@@ -35,25 +35,23 @@ public class EventHubListenerMockFixture : IAsyncLifetime
 
         AzuriteManager = new AzuriteManager(useOAuth: true);
         BlobStorageServiceUri = AzuriteManager.BlobStorageServiceUri;
-
-        NamespaceName = SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
-        FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
-        ResourceManagementSettings = SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
-
-        Credential = new DefaultAzureCredential();
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
     public Uri BlobStorageServiceUri { get; }
 
-    public string NamespaceName { get; }
+    public string NamespaceName =>
+        SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
 
-    public string FullyQualifiedNamespace { get; }
+    public string FullyQualifiedNamespace =>
+        SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
 
-    public AzureResourceManagementSettings ResourceManagementSettings { get; }
+    public AzureResourceManagementSettings ResourceManagementSettings =>
+        SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
 
-    public TokenCredential Credential { get; }
+    public TokenCredential Credential =>
+        SingletonIntegrationTestConfiguration.Instance.Credential;
 
     private AzuriteManager AzuriteManager { get; }
 

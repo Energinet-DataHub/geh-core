@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Azure.Identity;
+using Azure.Core;
 using Azure.ResourceManager;
 using Azure.ResourceManager.EventHubs;
 using Azure.ResourceManager.Resources;
@@ -33,18 +33,21 @@ public class EventHubResourceProviderFixture : IAsyncLifetime
     public EventHubResourceProviderFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
-        NamespaceName = SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
-        FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
-        ResourceManagementSettings = SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public string NamespaceName { get; }
+    public string NamespaceName =>
+        SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
 
-    public string FullyQualifiedNamespace { get; }
+    public string FullyQualifiedNamespace =>
+        SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
 
-    public AzureResourceManagementSettings ResourceManagementSettings { get; }
+    public AzureResourceManagementSettings ResourceManagementSettings =>
+        SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
+
+    public TokenCredential Credential =>
+        SingletonIntegrationTestConfiguration.Instance.Credential;
 
     [NotNull]
     public EventHubsNamespaceResource? EventHubNamespaceResource { get; private set; }
@@ -61,8 +64,9 @@ public class EventHubResourceProviderFixture : IAsyncLifetime
 
     private async Task<EventHubsNamespaceResource> CreateEventHubNamespaceResourceAsync()
     {
-        var credential = new DefaultAzureCredential();
-        var armClient = new ArmClient(credential, ResourceManagementSettings.SubscriptionId);
+        var armClient = new ArmClient(
+            Credential,
+            ResourceManagementSettings.SubscriptionId);
         var resourceGroup = armClient.GetResourceGroupResource(
             ResourceGroupResource.CreateResourceIdentifier(
                 ResourceManagementSettings.SubscriptionId,

@@ -13,13 +13,10 @@
 // limitations under the License.
 
 using Azure.Core;
-using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.EventHubs;
-using Azure.ResourceManager.Resources;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Nito.AsyncEx;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 
@@ -39,7 +36,7 @@ public class EventHubResourceProvider : IAsyncDisposable
         ITestDiagnosticsLogger testLogger,
         string namespaceName,
         AzureResourceManagementSettings resourceManagementSettings,
-        TokenCredential? credential = null)
+        TokenCredential credential)
     {
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
@@ -48,10 +45,11 @@ public class EventHubResourceProvider : IAsyncDisposable
             : namespaceName;
         ResourceManagementSettings = resourceManagementSettings
             ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
+        Credential = credential
+            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
 
         FullyQualifiedNamespace = $"{NamespaceName}.servicebus.windows.net";
 
-        Credential = credential ?? new DefaultAzureCredential();
         EventHubNamespaceResource = CreateEventHubNamespaceResource();
 
         RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";

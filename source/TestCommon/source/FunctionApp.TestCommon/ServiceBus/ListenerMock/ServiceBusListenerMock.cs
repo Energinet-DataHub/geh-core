@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
-using Azure.Identity;
+using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -30,15 +30,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 /// </summary>
 public sealed class ServiceBusListenerMock : IAsyncDisposable
 {
-    public ServiceBusListenerMock(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace)
+    public ServiceBusListenerMock(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace, TokenCredential credential)
     {
         FullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(fullyQualifiedNamespace))
             : fullyQualifiedNamespace;
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
+        ArgumentNullException.ThrowIfNull(credential);
 
-        var credential = new DefaultAzureCredential();
         AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, credential);
         Client = new ServiceBusClient(FullyQualifiedNamespace, credential);
 

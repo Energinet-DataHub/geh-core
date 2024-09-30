@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
+using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -36,15 +36,15 @@ public class ServiceBusResourceProvider : IAsyncDisposable
     /// </summary>
     private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(15);
 
-    public ServiceBusResourceProvider(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace)
+    public ServiceBusResourceProvider(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace, TokenCredential credential)
     {
         FullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(fullyQualifiedNamespace))
             : fullyQualifiedNamespace;
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
+        ArgumentNullException.ThrowIfNull(credential);
 
-        var credential = new DefaultAzureCredential();
         AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, credential);
         Client = new ServiceBusClient(FullyQualifiedNamespace, credential);
 

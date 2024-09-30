@@ -29,9 +29,15 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 /// </summary>
 public class IntegrationTestConfiguration
 {
+    /// <summary>
+    /// Create instance.
+    /// </summary>
+    /// <param name="credential"><see cref="TokenCredential"/> used for key vault authentication and exposed as property.
+    /// If not supplied, a <see cref="DefaultAzureCredential"/> will be created and used</param>
     public IntegrationTestConfiguration(TokenCredential? credential = null)
     {
-        Configuration = BuildKeyVaultConfigurationRoot(credential);
+        Credential = credential ?? new DefaultAzureCredential();
+        Configuration = BuildKeyVaultConfigurationRoot(Credential);
 
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
@@ -44,6 +50,13 @@ public class IntegrationTestConfiguration
         B2CSettings = CreateB2CSettings(Configuration);
         DatabricksSettings = CreateDatabricksSettings(Configuration);
     }
+
+    /// <summary>
+    /// Token credential for token-based authentication.
+    /// Should be used in Integration Tests when creating instances of classes that supports token-based authentication
+    /// (sometimes called IAM or identity access management).
+    /// </summary>
+    public TokenCredential Credential { get; }
 
     /// <summary>
     /// Can be used to extract secrets from the Key Vault in the Integration Test environment.
@@ -90,7 +103,7 @@ public class IntegrationTestConfiguration
     /// </summary>
     public DatabricksSettings DatabricksSettings { get; }
 
-    private static IConfigurationRoot BuildKeyVaultConfigurationRoot(TokenCredential? credential = null)
+    private static IConfigurationRoot BuildKeyVaultConfigurationRoot(TokenCredential credential)
     {
         var integrationtestConfiguration = new ConfigurationBuilder()
             .AddJsonFile("integrationtest.local.settings.json", optional: true)
