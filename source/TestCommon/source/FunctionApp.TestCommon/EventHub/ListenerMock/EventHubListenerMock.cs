@@ -19,7 +19,6 @@ using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
 
@@ -244,9 +243,7 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         return Task.CompletedTask;
     }
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
     private async ValueTask DisposeAsyncCore()
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
     {
         await ProcessorClient.StopProcessingAsync()
             .ConfigureAwait(false);
