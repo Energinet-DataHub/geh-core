@@ -70,8 +70,14 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         ReceivedEvents = mutableReceivedEvents;
     }
 
+    /// <summary>
+    /// The fully qualified namespace of the Event Hub Namespace under which the Event Hub exists.
+    /// </summary>
     public string EventHubFullyQualifiedNamespace { get; }
 
+    /// <summary>
+    /// The name of the Event Hub for which the processor is created.
+    /// </summary>
     public string EventHubName { get; }
 
     /// <summary>
@@ -82,6 +88,9 @@ public sealed class EventHubListenerMock : IAsyncDisposable
     /// </summary>
     public Uri BlobContainerUri { get; }
 
+    /// <summary>
+    /// Collection of all received events.
+    /// </summary>
     public IReadOnlyCollection<EventData> ReceivedEvents { get; private set; }
 
     private ITestDiagnosticsLogger TestLogger { get; }
