@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Azure.Identity;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
@@ -415,7 +417,7 @@ public class EventHubListenerMockTests
                 ListenerMockFixture.TestLogger,
                 ListenerMockFixture.FullyQualifiedNamespace,
                 eventHubName,
-                ListenerMockFixture.StorageConnectionString,
+                ListenerMockFixture.BlobStorageServiceUri,
                 blobContainerName,
                 ListenerMockFixture.Credential);
         }

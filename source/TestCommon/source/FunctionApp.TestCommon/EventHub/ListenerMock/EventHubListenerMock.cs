@@ -38,7 +38,7 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         ITestDiagnosticsLogger testLogger,
         string eventHubFullyQualifiedNamespace,
         string eventHubName,
-        string storageConnectionString,
+        Uri blobStorageServiceUri,
         string blobContainerName,
         TokenCredential? credential = null)
     {
@@ -50,20 +50,17 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         EventHubName = string.IsNullOrWhiteSpace(eventHubName)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubName))
             : eventHubName;
-        StorageConnectionString = string.IsNullOrWhiteSpace(storageConnectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(storageConnectionString))
-            : storageConnectionString;
-        BlobContainerName = string.IsNullOrWhiteSpace(blobContainerName)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(blobContainerName))
-            : blobContainerName;
+        BlobContainerUri = BuildBlobContainerUri(blobStorageServiceUri, blobContainerName);
 
-        StorageClient = new BlobContainerClient(StorageConnectionString, BlobContainerName);
+        var innerCredential = credential ?? new DefaultAzureCredential();
+
+        StorageClient = new BlobContainerClient(BlobContainerUri, innerCredential);
         ProcessorClient = new EventProcessorClient(
             StorageClient,
             DefaultConsumerGroupName,
             EventHubFullyQualifiedNamespace,
             EventHubName,
-            credential ?? new DefaultAzureCredential());
+            innerCredential);
 
         EventHandlers = new ConcurrentDictionary<Func<EventData, bool>, Func<EventData, Task>>();
 
@@ -78,12 +75,12 @@ public sealed class EventHubListenerMock : IAsyncDisposable
     public string EventHubName { get; }
 
     /// <summary>
-    /// Connection string to storage used for checkpointing.
+    /// Uri referencing the blob container used for checkpointing.
+    /// It includes the name of the account and the name of the container. This is likely to be similar to
+    /// "https://{account_name}.blob.core.windows.net/{container_name}".
     /// For checkpointing, see: https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-features#checkpointing
     /// </summary>
-    public string StorageConnectionString { get; }
-
-    public string BlobContainerName { get; }
+    public Uri BlobContainerUri { get; }
 
     public IReadOnlyCollection<EventData> ReceivedEvents { get; private set; }
 
@@ -165,6 +162,14 @@ public sealed class EventHubListenerMock : IAsyncDisposable
     {
         EventHandlers.Clear();
         ClearReceivedEvents();
+    }
+
+    private static Uri BuildBlobContainerUri(Uri blobStorageServiceUri, string blobContainerName)
+    {
+        ArgumentNullException.ThrowIfNull(blobContainerName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(blobContainerName);
+
+        return new Uri($"{blobStorageServiceUri.AbsoluteUri}/{blobContainerName}");
     }
 
     private static bool IsDefaultEventHandler(KeyValuePair<Func<EventData, bool>, Func<EventData, Task>> eventHandler)

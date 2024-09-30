@@ -33,8 +33,8 @@ public class EventHubListenerMockFixture : IAsyncLifetime
     {
         TestLogger = new TestDiagnosticsLogger();
 
-        AzuriteManager = new AzuriteManager();
-        StorageConnectionString = "UseDevelopmentStorage=true";
+        AzuriteManager = new AzuriteManager(useOAuth: true);
+        BlobStorageServiceUri = AzuriteManager.BlobStorageServiceUri;
 
         NamespaceName = SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
         FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
@@ -45,7 +45,7 @@ public class EventHubListenerMockFixture : IAsyncLifetime
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public string StorageConnectionString { get; }
+    public Uri BlobStorageServiceUri { get; }
 
     public string NamespaceName { get; }
 
