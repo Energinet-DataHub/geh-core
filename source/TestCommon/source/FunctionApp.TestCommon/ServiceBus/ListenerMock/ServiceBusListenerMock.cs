@@ -32,11 +32,11 @@ public sealed class ServiceBusListenerMock : IAsyncDisposable
 {
     public ServiceBusListenerMock(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace, TokenCredential credential)
     {
+        TestLogger = testLogger
+            ?? throw new ArgumentNullException(nameof(testLogger));
         FullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(fullyQualifiedNamespace))
             : fullyQualifiedNamespace;
-        TestLogger = testLogger
-            ?? throw new ArgumentNullException(nameof(testLogger));
         ArgumentNullException.ThrowIfNull(credential);
 
         AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, credential);
