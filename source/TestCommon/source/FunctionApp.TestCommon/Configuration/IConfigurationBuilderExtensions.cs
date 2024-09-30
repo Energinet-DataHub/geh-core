@@ -23,7 +23,7 @@ public static class ConfigurationBuilderExtensions
     /// <summary>
     /// Adds an <see cref="IConfigurationProvider"/> that reads configuration values from the Azure KeyVault.
     ///
-    /// Using <see cref="DefaultAzureCredential"/> it automatically requests access tokens for reading
+    /// Using <see cref="TokenCredential"/> it automatically requests access tokens for reading
     /// from the Key Vault. For this to work the identity under which the tests are executied, must have
     /// Get and List permissions to secrets in the Key Vault.
     /// </summary>
