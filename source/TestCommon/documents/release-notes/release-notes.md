@@ -5,7 +5,7 @@
 - Refactored class `IntegrationTestConfiguration`:
     - Deleted obsolete property `ServiceBusConnectionString`.
     - Deleted property `EventHubConnectionString`.
-    - Added property `Credential`.
+    - Added property `Credential` and changed the `DefaultAzureCredentialOptions` used when creating `DefaultAzureCredential`.
     - Added property `EventHubNamespaceName`.
     - Added property `EventHubFullyQualifiedNamespace`.
 - Refactored class `ServiceBusResourceProvider`:
@@ -16,19 +16,19 @@
     - Deleted obsolete constructor with `ConnectionString` parameter.
     - Deleted obsolete property `ConnectionString`.
     - Require `Credential` in constructor; use the new property on `IntegrationTestConfiguration`.
-- Refactored class `EventHubResourceProvider`:
+- Refactored class `EventHubResourceProvider` to use token-based authentication for accessing Event Hub resources:
     - Deleted constructor with `ConnectionString` parameter.
     - Deleted property `ConnectionString`.
     - Added constructor with `NamespaceName`.
     - Require `Credential` in constructor; use the new property on `IntegrationTestConfiguration`.
     - Added property `NamespaceName`.
     - Added property `FullyQualifiedNamespace`.
-- Refactored class `EventHubListenerMock`:
-    - Deleted constructor with `ConnectionString` parameter.
-    - Deleted property `ConnectionString`.
-    - Added constructor with `FullyQualifiedNamespace` parameter.
+- Refactored class `EventHubListenerMock` to use token-based authentication for accessing Event Hub and Storage Account resources:
+    - Deleted constructor with `EventHubConnectionString` and `StorageConnectionString` parameters.
+    - Deleted properties `EventHubConnectionString` and `StorageConnectionString`.
+    - Added constructor with `FullyQualifiedNamespace` and `BlobStorageServiceUri` parameters.
     - Require `Credential` in constructor; use the new property on `IntegrationTestConfiguration`.
-    - Added property `FullyQualifiedNamespace`.
+    - Added properties `FullyQualifiedNamespace` and `BlobContainerUri`.
 
 ## Version 6.3.0
 
