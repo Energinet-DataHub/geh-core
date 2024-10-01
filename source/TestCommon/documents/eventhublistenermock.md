@@ -64,7 +64,16 @@ Prepare event hub listener mock:
 
 ```csharp
 // Remember to Dispose() the mock to shutdown the listener and close connections.
-await using var eventHubListenerMock = new EventHubListenerMock(eventHubConnectionString, eventHubName, storageConnectionString, blobContainerName, testDiagnosticsLogger);
+// Also AzuriteManager must be started/disposed accordingly.
+var azuriteManager = new AzuriteManager(useOAuth: true);
+var integrationTestConfiguration = new IntegrationTestConfiguration();
+await using var eventHubListenerMock = new EventHubListenerMock(
+    new TestDiagnosticsLogger(),
+    integrationTestConfiguration.EventHubFullyQualifiedNamespace,
+    eventHubName: "evh-01",
+    azuriteManager.BlobStorageServiceUri,
+    blobContainerName: "container-01",
+    integrationTestConfiguration.Credential);
 
 // Initialize listener.
 await eventHubListenerMock.InitializeAsync();
