@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
+using Azure.Core;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 
@@ -28,13 +28,18 @@ public class ServiceBusResourceProviderFixture
     public ServiceBusResourceProviderFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
-        FullyQualifiedNamespace = SingletonIntegrationTestConfiguration.Instance.ServiceBusFullyQualifiedNamespace;
-        AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, new DefaultAzureCredential());
+        AdministrationClient = new ServiceBusAdministrationClient(
+            FullyQualifiedNamespace,
+            Credential);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public string FullyQualifiedNamespace { get; }
+    public string FullyQualifiedNamespace =>
+        SingletonIntegrationTestConfiguration.Instance.ServiceBusFullyQualifiedNamespace;
+
+    public TokenCredential Credential =>
+        SingletonIntegrationTestConfiguration.Instance.Credential;
 
     public ServiceBusAdministrationClient AdministrationClient { get; }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -20,7 +21,7 @@ using Xunit;
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 
 /// <summary>
-/// This fixtures ensures we reuse <see cref="EventHubConnectionString"/> and
+/// This fixtures ensures we reuse retrieved configuration and
 /// relevant instances, so we only have to retrieve an access token
 /// and values in Key Vault one time.
 /// It also ensures we use the local storage emulator for our blob container.
@@ -30,21 +31,25 @@ public class EventHubListenerMockFixture : IAsyncLifetime
     public EventHubListenerMockFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
-
-        AzuriteManager = new AzuriteManager();
-        StorageConnectionString = "UseDevelopmentStorage=true";
-
-        EventHubConnectionString = SingletonIntegrationTestConfiguration.Instance.EventHubConnectionString;
-        ResourceManagementSettings = SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
+        AzuriteManager = new AzuriteManager(useOAuth: true);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public string StorageConnectionString { get; }
+    public Uri BlobStorageServiceUri =>
+        AzuriteManager.BlobStorageServiceUri;
 
-    public string EventHubConnectionString { get; }
+    public string NamespaceName =>
+        SingletonIntegrationTestConfiguration.Instance.EventHubNamespaceName;
 
-    public AzureResourceManagementSettings ResourceManagementSettings { get; }
+    public string FullyQualifiedNamespace =>
+        SingletonIntegrationTestConfiguration.Instance.EventHubFullyQualifiedNamespace;
+
+    public AzureResourceManagementSettings ResourceManagementSettings =>
+        SingletonIntegrationTestConfiguration.Instance.ResourceManagementSettings;
+
+    public TokenCredential Credential =>
+        SingletonIntegrationTestConfiguration.Instance.Credential;
 
     private AzuriteManager AzuriteManager { get; }
 

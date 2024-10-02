@@ -72,7 +72,10 @@ Prepare service bus listener mock:
 ```csharp
 // Remember to Dispose() the mock to shutdown listeners and close connections.
 var integrationTestConfiguration = new IntegrationTestConfiguration();
-await using var serviceBusListenerMock = new ServiceBusListenerMock(new TestDiagnosticsLogger(), integrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+await using var serviceBusListenerMock = new ServiceBusListenerMock(
+    new TestDiagnosticsLogger(),
+    integrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+    integrationTestConfiguration.Credential);
 
 // Add a listener.
 // Here we use a queue listener, but a topic/subscription listener is also supported.

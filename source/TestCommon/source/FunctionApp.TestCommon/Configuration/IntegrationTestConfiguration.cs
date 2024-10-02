@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -28,22 +29,48 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 /// </summary>
 public class IntegrationTestConfiguration
 {
-    public IntegrationTestConfiguration(DefaultAzureCredential? defaultAzureCredential = null)
+    /// <summary>
+    /// Create instance.
+    /// </summary>
+    /// <param name="credential"><see cref="TokenCredential"/> used for key vault authentication and exposed as property.
+    /// If not supplied, a <see cref="DefaultAzureCredential"/> will be created and used</param>
+    public IntegrationTestConfiguration(TokenCredential? credential = null)
     {
-        Configuration = BuildKeyVaultConfigurationRoot(defaultAzureCredential);
+        Credential = credential
+            ?? new DefaultAzureCredential(new DefaultAzureCredentialOptions
+            {
+                // Here we disable authentication mechanisms that is not used for Integration Test environment
+                // See also: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#defaultazurecredential
+                ExcludeEnvironmentCredential = false,
+                ExcludeWorkloadIdentityCredential = true,
+                ExcludeManagedIdentityCredential = true,
+                ExcludeVisualStudioCredential = false,
+                ExcludeVisualStudioCodeCredential = true,
+                ExcludeAzureCliCredential = false,
+                ExcludeAzurePowerShellCredential = true,
+                ExcludeAzureDeveloperCliCredential = true,
+                ExcludeInteractiveBrowserCredential = true,
+            });
+        Configuration = BuildKeyVaultConfigurationRoot(Credential);
 
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
-        EventHubConnectionString = Configuration.GetValue("AZURE-EVENTHUB-CONNECTIONSTRING");
-#pragma warning disable CS0618 // Type or member is obsolete
-        ServiceBusConnectionString = Configuration.GetValue("AZURE-SERVICEBUS-CONNECTIONSTRING");
-#pragma warning restore CS0618 // Type or member is obsolete
-        ServiceBusFullyQualifiedNamespace = Configuration.GetValue("AZURE-SERVICEBUS-ENDPOINT");
+
+        EventHubNamespaceName = Configuration.GetValue("AZURE-EVENTHUB-NAMESPACE");
+        EventHubFullyQualifiedNamespace = $"{EventHubNamespaceName}.servicebus.windows.net";
+        ServiceBusFullyQualifiedNamespace = $"{Configuration.GetValue("AZURE-SERVICEBUS-NAMESPACE")}.servicebus.windows.net";
 
         ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
         B2CSettings = CreateB2CSettings(Configuration);
         DatabricksSettings = CreateDatabricksSettings(Configuration);
     }
+
+    /// <summary>
+    /// Token credential for token-based authentication.
+    /// Should be used in Integration Tests when creating instances of classes that supports token-based authentication
+    /// (sometimes called IAM or identity access management).
+    /// </summary>
+    public TokenCredential Credential { get; }
 
     /// <summary>
     /// Can be used to extract secrets from the Key Vault in the Integration Test environment.
@@ -61,15 +88,14 @@ public class IntegrationTestConfiguration
     public string LogAnalyticsWorkspaceId { get; }
 
     /// <summary>
-    /// Connection string to the Azure Event Hub in the Integration Test environment.
+    /// Namespace name of the Azure Event Hub in the Integration Test environment.
     /// </summary>
-    public string EventHubConnectionString { get; }
+    public string EventHubNamespaceName { get; }
 
     /// <summary>
-    /// Connection string to the Azure Service Bus in the Integration Test environment.
+    /// Fully qualified namespace of the Azure Event Hub in the Integration Test environment.
     /// </summary>
-    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'ServiceBusFullyQualifiedNamespace' instead.", false)]
-    public string ServiceBusConnectionString { get; }
+    public string EventHubFullyQualifiedNamespace { get; }
 
     /// <summary>
     /// Fully qualified namespace of the Azure Service Bus in the Integration Test environment.
@@ -91,7 +117,7 @@ public class IntegrationTestConfiguration
     /// </summary>
     public DatabricksSettings DatabricksSettings { get; }
 
-    private static IConfigurationRoot BuildKeyVaultConfigurationRoot(DefaultAzureCredential? defaultAzureCredential)
+    private static IConfigurationRoot BuildKeyVaultConfigurationRoot(TokenCredential credential)
     {
         var integrationtestConfiguration = new ConfigurationBuilder()
             .AddJsonFile("integrationtest.local.settings.json", optional: true)
@@ -102,7 +128,7 @@ public class IntegrationTestConfiguration
         GuardKeyVaultUrl(keyVaultUrl);
 
         return new ConfigurationBuilder()
-            .AddAuthenticatedAzureKeyVault(keyVaultUrl, defaultAzureCredential)
+            .AddAuthenticatedAzureKeyVault(keyVaultUrl, credential)
             .Build();
     }
 

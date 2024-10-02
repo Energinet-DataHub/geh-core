@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Data.Tables;
-using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -171,7 +170,7 @@ public class AzuriteManagerTests
             // Arrange
             var client = new BlobServiceClient(
                 serviceUri: Fixture.AzuriteManager!.BlobStorageServiceUri,
-                credential: new DefaultAzureCredential(),
+                credential: Fixture.Credential,
                 CreateBlobNoRetryOptions());
 
             // Act
@@ -217,7 +216,7 @@ public class AzuriteManagerTests
             // Arrange
             var client = new QueueServiceClient(
                 serviceUri: Fixture.AzuriteManager!.QueueStorageServiceUri,
-                credential: new DefaultAzureCredential(),
+                credential: Fixture.Credential,
                 CreateQueueNoRetryOptions());
 
             // Act
@@ -263,7 +262,7 @@ public class AzuriteManagerTests
             // Arrange
             var client = new TableServiceClient(
                 endpoint: Fixture.AzuriteManager!.TableStorageServiceUri,
-                tokenCredential: new DefaultAzureCredential(),
+                tokenCredential: Fixture.Credential,
                 CreateTableNoRetryOptions());
 
             // Act

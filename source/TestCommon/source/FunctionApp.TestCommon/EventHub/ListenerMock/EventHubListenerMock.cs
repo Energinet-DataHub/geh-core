@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
+using Azure.Core;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
@@ -32,25 +33,32 @@ public sealed class EventHubListenerMock : IAsyncDisposable
 {
     public const string DefaultConsumerGroupName = "$Default";
 
-    public EventHubListenerMock(string eventHubConnectionString, string eventHubName, string storageConnectionString, string blobContainerName, ITestDiagnosticsLogger testLogger)
+    public EventHubListenerMock(
+        ITestDiagnosticsLogger testLogger,
+        string eventHubFullyQualifiedNamespace,
+        string eventHubName,
+        Uri blobStorageServiceUri,
+        string blobContainerName,
+        TokenCredential credential)
     {
-        EventHubConnectionString = string.IsNullOrWhiteSpace(eventHubConnectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubConnectionString))
-            : eventHubConnectionString;
+        TestLogger = testLogger
+            ?? throw new ArgumentNullException(nameof(testLogger));
+        EventHubFullyQualifiedNamespace = string.IsNullOrWhiteSpace(eventHubFullyQualifiedNamespace)
+            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubFullyQualifiedNamespace))
+            : eventHubFullyQualifiedNamespace;
         EventHubName = string.IsNullOrWhiteSpace(eventHubName)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(eventHubName))
             : eventHubName;
-        StorageConnectionString = string.IsNullOrWhiteSpace(storageConnectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(storageConnectionString))
-            : storageConnectionString;
-        BlobContainerName = string.IsNullOrWhiteSpace(blobContainerName)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(blobContainerName))
-            : blobContainerName;
-        TestLogger = testLogger
-            ?? throw new ArgumentNullException(nameof(testLogger));
+        BlobContainerUri = BuildBlobContainerUri(blobStorageServiceUri, blobContainerName);
+        ArgumentNullException.ThrowIfNull(credential);
 
-        StorageClient = new BlobContainerClient(StorageConnectionString, BlobContainerName);
-        ProcessorClient = new EventProcessorClient(StorageClient, DefaultConsumerGroupName, EventHubConnectionString, EventHubName);
+        StorageClient = new BlobContainerClient(BlobContainerUri, credential);
+        ProcessorClient = new EventProcessorClient(
+            StorageClient,
+            DefaultConsumerGroupName,
+            EventHubFullyQualifiedNamespace,
+            EventHubName,
+            credential);
 
         EventHandlers = new ConcurrentDictionary<Func<EventData, bool>, Func<EventData, Task>>();
 
@@ -60,18 +68,27 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         ReceivedEvents = mutableReceivedEvents;
     }
 
-    public string EventHubConnectionString { get; }
+    /// <summary>
+    /// The fully qualified namespace of the Event Hub Namespace under which the Event Hub exists.
+    /// </summary>
+    public string EventHubFullyQualifiedNamespace { get; }
 
+    /// <summary>
+    /// The name of the Event Hub for which the processor is created.
+    /// </summary>
     public string EventHubName { get; }
 
     /// <summary>
-    /// Connection string to storage used for checkpointing.
+    /// Uri referencing the blob container used for checkpointing.
+    /// It includes the name of the account and the name of the container. This is likely to be similar to
+    /// "https://{account_name}.blob.core.windows.net/{container_name}".
     /// For checkpointing, see: https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-features#checkpointing
     /// </summary>
-    public string StorageConnectionString { get; }
+    public Uri BlobContainerUri { get; }
 
-    public string BlobContainerName { get; }
-
+    /// <summary>
+    /// Collection of all received events.
+    /// </summary>
     public IReadOnlyCollection<EventData> ReceivedEvents { get; private set; }
 
     private ITestDiagnosticsLogger TestLogger { get; }
@@ -154,6 +171,14 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         ClearReceivedEvents();
     }
 
+    private static Uri BuildBlobContainerUri(Uri blobStorageServiceUri, string blobContainerName)
+    {
+        ArgumentNullException.ThrowIfNull(blobContainerName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(blobContainerName);
+
+        return new Uri($"{blobStorageServiceUri.AbsoluteUri}/{blobContainerName}");
+    }
+
     private static bool IsDefaultEventHandler(KeyValuePair<Func<EventData, bool>, Func<EventData, Task>> eventHandler)
     {
         return eventHandler.Equals(default(KeyValuePair<Func<EventData, bool>, Func<EventData, Task>>));
@@ -230,9 +255,7 @@ public sealed class EventHubListenerMock : IAsyncDisposable
         return Task.CompletedTask;
     }
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
     private async ValueTask DisposeAsyncCore()
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
     {
         await ProcessorClient.StopProcessingAsync()
             .ConfigureAwait(false);
