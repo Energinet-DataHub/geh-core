@@ -9,19 +9,19 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
-name: "CodeQL Advanced"
+name: CodeQL Advanced
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
   schedule:
-    - cron: '44 10 * * 1'
+    - cron: 44 10 * * 1
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
+    name: Analyze (${{ matrix.solution }})
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
     #   - https://gh.io/supported-runners-and-hardware-resources
@@ -43,9 +43,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - language: csharp
-          build-mode: manual
-        solution: [./source/Outbox/Outbox.sln,./source/JsonSerialization/JsonSerialization.sln,./source/FeatureManagement/FeatureManagement.sln,./source/App/App.sln,./source/Databricks/Databricks.sln,./source/TestCommon/TestCommon.sln,./source/Messaging/Messaging.sln,./source/Logging/Logging.sln]
+          - language: csharp
+            build-mode: manual
+            solution: [./source/Outbox/Outbox.sln, ./source/JsonSerialization/JsonSerialization.sln, ./source/FeatureManagement/FeatureManagement.sln, ./source/App/App.sln, ./source/Databricks/Databricks.sln, ./source/TestCommon/TestCommon.sln, ./source/Messaging/Messaging.sln, ./source/Logging/Logging.sln]
 
         # CodeQL supports the following values keywords for 'language': 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
