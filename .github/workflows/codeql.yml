@@ -42,10 +42,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - language: csharp
-            build-mode: manual
-            solution: [./source/Outbox/Outbox.sln, ./source/JsonSerialization/JsonSerialization.sln, ./source/FeatureManagement/FeatureManagement.sln, ./source/App/App.sln, ./source/Databricks/Databricks.sln, ./source/TestCommon/TestCommon.sln, ./source/Messaging/Messaging.sln, ./source/Logging/Logging.sln]
+        language: [csharp]
+        build-mode: [manual]
+        solution: [./source/Outbox/Outbox.sln, ./source/JsonSerialization/JsonSerialization.sln, ./source/FeatureManagement/FeatureManagement.sln, ./source/App/App.sln, ./source/Databricks/Databricks.sln, ./source/TestCommon/TestCommon.sln, ./source/Messaging/Messaging.sln, ./source/Logging/Logging.sln]
 
             # CodeQL supports the following values keywords for 'language': 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
             # Use `c-cpp` to analyze code written in C, C++ or both
