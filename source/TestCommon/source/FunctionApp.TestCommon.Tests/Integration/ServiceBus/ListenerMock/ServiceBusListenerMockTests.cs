@@ -531,8 +531,14 @@ public class ServiceBusListenerMockTests
         protected ServiceBusListenerMockTestsBase(ServiceBusListenerMockFixture listenerMockFixture)
         {
             ListenerMockFixture = listenerMockFixture;
-            Sut = new ServiceBusListenerMock(ListenerMockFixture.TestLogger, ListenerMockFixture.FullyQualifiedNamespace);
-            ResourceProvider = new ServiceBusResourceProvider(ListenerMockFixture.TestLogger, ListenerMockFixture.FullyQualifiedNamespace);
+            Sut = new ServiceBusListenerMock(
+                ListenerMockFixture.TestLogger,
+                ListenerMockFixture.FullyQualifiedNamespace,
+                ListenerMockFixture.Credential);
+            ResourceProvider = new ServiceBusResourceProvider(
+                ListenerMockFixture.TestLogger,
+                ListenerMockFixture.FullyQualifiedNamespace,
+                ListenerMockFixture.Credential);
 
             // Customize auto fixture
             Fixture = new Fixture();

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
+using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -36,37 +36,15 @@ public class ServiceBusResourceProvider : IAsyncDisposable
     /// </summary>
     private static readonly TimeSpan AutoDeleteOnIdleTimeout = TimeSpan.FromMinutes(15);
 
-    private readonly string _connectionString;
-    private readonly string _fullyQualifiedNamespace;
-
-    [Obsolete("Use constructur with 'FullyQualifiedNamespace'.")]
-    public ServiceBusResourceProvider(string connectionString, ITestDiagnosticsLogger testLogger)
+    public ServiceBusResourceProvider(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace, TokenCredential credential)
     {
-        _fullyQualifiedNamespace = string.Empty;
-        _connectionString = string.IsNullOrWhiteSpace(connectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
-            : connectionString;
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
-
-        AdministrationClient = new ServiceBusAdministrationClient(ConnectionString);
-        Client = new ServiceBusClient(ConnectionString);
-
-        RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
-        QueueResources = new Dictionary<string, QueueResource>();
-        TopicResources = new Dictionary<string, TopicResource>();
-    }
-
-    public ServiceBusResourceProvider(ITestDiagnosticsLogger testLogger, string fullyQualifiedNamespace)
-    {
-        _connectionString = string.Empty;
-        _fullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
+        FullyQualifiedNamespace = string.IsNullOrWhiteSpace(fullyQualifiedNamespace)
             ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(fullyQualifiedNamespace))
             : fullyQualifiedNamespace;
-        TestLogger = testLogger
-            ?? throw new ArgumentNullException(nameof(testLogger));
+        ArgumentNullException.ThrowIfNull(credential);
 
-        var credential = new DefaultAzureCredential();
         AdministrationClient = new ServiceBusAdministrationClient(FullyQualifiedNamespace, credential);
         Client = new ServiceBusClient(FullyQualifiedNamespace, credential);
 
@@ -75,26 +53,7 @@ public class ServiceBusResourceProvider : IAsyncDisposable
         TopicResources = new Dictionary<string, TopicResource>();
     }
 
-    [Obsolete("Use role-based access control (RBAC) instead of shared access policies. Use 'FullyQualifiedNamespace' instead.", false)]
-    public string ConnectionString
-    {
-        get
-        {
-            return _connectionString == string.Empty
-                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'FullyQualifiedNamespace'.")
-                : _connectionString;
-        }
-    }
-
-    public string FullyQualifiedNamespace
-    {
-        get
-        {
-            return _fullyQualifiedNamespace == string.Empty
-                ? throw new InvalidOperationException("Property cannot be used when instance was created with 'ConnectionString'.")
-                : _fullyQualifiedNamespace;
-        }
-    }
+    public string FullyQualifiedNamespace { get; }
 
     /// <summary>
     /// Is used as part of the resource names.
@@ -173,9 +132,7 @@ public class ServiceBusResourceProvider : IAsyncDisposable
             : $"{namePrefix}-{RandomSuffix}";
     }
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
     private async ValueTask DisposeAsyncCore()
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
     {
         foreach (var queueResource in QueueResources)
         {

@@ -39,9 +39,10 @@ Prepare resource provider:
 // Remember to call DisposeAsync() on the resource provider to delete resources and close producer client connections.
 var integrationTestConfiguration = new IntegrationTestConfiguration();
 var resourceProvider = new EventHubResourceProvider(
-    integrationTestConfiguration.EventHubConnectionString,
+    new TestDiagnosticsLogger()
+    integrationTestConfiguration.EventHubNamespaceName,
     integrationTestConfiguration.ResourceManagementSettings,
-    new TestDiagnosticsLogger());
+    integrationTestConfiguration.Credential);
 ```
 
 Example 1 - creating an event hub:

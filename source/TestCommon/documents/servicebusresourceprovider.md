@@ -53,8 +53,10 @@ Prepare resource provider:
 ```csharp
 // Remember to call DisposeAsync() on the resource provider to delete resources and close sender client connections.
 var integrationTestConfiguration = new IntegrationTestConfiguration();
-await using var resourceProvider = new ServiceBusResourceProvider(new TestDiagnosticsLogger(), 
-    integrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+await using var resourceProvider = new ServiceBusResourceProvider(
+    new TestDiagnosticsLogger(),
+    integrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+    integrationTestConfiguration.Credential);
 ```
 
 Example 1 - creating a topic with two subscriptions:

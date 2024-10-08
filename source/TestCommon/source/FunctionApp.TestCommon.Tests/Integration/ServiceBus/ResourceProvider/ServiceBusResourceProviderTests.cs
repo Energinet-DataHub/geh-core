@@ -115,7 +115,8 @@ public class ServiceBusResourceProviderTests
         {
             return new ServiceBusResourceProvider(
                 ResourceProviderFixture.TestLogger,
-                ResourceProviderFixture.FullyQualifiedNamespace);
+                ResourceProviderFixture.FullyQualifiedNamespace,
+                ResourceProviderFixture.Credential);
         }
     }
 
@@ -422,7 +423,8 @@ public class ServiceBusResourceProviderTests
             ResourceProviderFixture = resourceProviderFixture;
             Sut = new ServiceBusResourceProvider(
                 ResourceProviderFixture.TestLogger,
-                ResourceProviderFixture.FullyQualifiedNamespace);
+                ResourceProviderFixture.FullyQualifiedNamespace,
+                ResourceProviderFixture.Credential);
         }
 
         protected ServiceBusResourceProviderFixture ResourceProviderFixture { get; }

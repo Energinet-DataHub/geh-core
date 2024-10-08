@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Azure.Management.EventHub.Models;
+using Azure.ResourceManager.EventHubs;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 
@@ -24,14 +24,14 @@ public class EventHubConsumerGroupBuilder : IEventHubResourceBuilder
         ConsumerGroupName = consumerGroupName;
         UserMetadata = userMetadata;
 
-        PostActions = new List<Action<ConsumerGroup>>();
+        PostActions = new List<Action<EventHubsConsumerGroupData>>();
     }
 
     internal string ConsumerGroupName { get; }
 
     internal string? UserMetadata { get; }
 
-    internal IList<Action<ConsumerGroup>> PostActions { get; }
+    internal IList<Action<EventHubsConsumerGroupData>> PostActions { get; }
 
     private EventHubResourceBuilder EventHubResourceBuilder { get; }
 
@@ -40,7 +40,7 @@ public class EventHubConsumerGroupBuilder : IEventHubResourceBuilder
     /// </summary>
     /// <param name="postAction">Action to call with consumer group name and metadata when it has been created.</param>
     /// <returns>Consumer group builder.</returns>
-    public EventHubConsumerGroupBuilder Do(Action<ConsumerGroup> postAction)
+    public EventHubConsumerGroupBuilder Do(Action<EventHubsConsumerGroupData> postAction)
     {
         PostActions.Add(postAction);
 

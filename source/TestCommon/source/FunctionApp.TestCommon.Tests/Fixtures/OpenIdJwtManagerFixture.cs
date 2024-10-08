@@ -23,11 +23,6 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 /// </summary>
 public sealed class OpenIdJwtManagerFixture
 {
-    public OpenIdJwtManagerFixture()
-    {
-        var integrationTestConfiguration = new IntegrationTestConfiguration();
-        AzureB2CSettings = integrationTestConfiguration.B2CSettings;
-    }
-
-    public AzureB2CSettings AzureB2CSettings { get; }
+    public AzureB2CSettings AzureB2CSettings =>
+        SingletonIntegrationTestConfiguration.Instance.B2CSettings;
 }

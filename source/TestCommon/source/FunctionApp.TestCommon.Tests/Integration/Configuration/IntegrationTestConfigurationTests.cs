@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
@@ -21,7 +22,8 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.Config
 
 public class IntegrationTestConfigurationTests
 {
-    private IntegrationTestConfiguration Sut { get; } = new();
+    private IntegrationTestConfiguration Sut =>
+        SingletonIntegrationTestConfiguration.Instance;
 
     [Fact]
     public void Given_IdentityHasAccess_When_DatabricksSettings_Then_EachPropertyHasValue()
@@ -102,26 +104,24 @@ public class IntegrationTestConfigurationTests
     }
 
     [Fact]
-    public void Given_IdentityHasAccess_When_EventHubConnectionString_Then_HasValue()
+    public void Given_IdentityHasAccess_When_EventHubNamespaceName_Then_HasValue()
     {
         // Arrange
 
         // Act
-        var actualValue = Sut.EventHubConnectionString;
+        var actualValue = Sut.EventHubNamespaceName;
 
         // Assert
         actualValue.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
-    public void Given_IdentityHasAccess_When_ServiceBusConnectionString_Then_HasValue()
+    public void Given_IdentityHasAccess_When_EventHubFullyQualifiedNamespace_Then_HasValue()
     {
         // Arrange
 
         // Act
-#pragma warning disable CS0618 // Type or member is obsolete
-        var actualValue = Sut.ServiceBusConnectionString;
-#pragma warning restore CS0618 // Type or member is obsolete
+        var actualValue = Sut.EventHubFullyQualifiedNamespace;
 
         // Assert
         actualValue.Should().NotBeNullOrEmpty();

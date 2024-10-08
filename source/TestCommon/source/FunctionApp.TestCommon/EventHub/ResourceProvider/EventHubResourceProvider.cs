@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.RegularExpressions;
+using Azure.Core;
+using Azure.ResourceManager;
+using Azure.ResourceManager.EventHubs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Microsoft.Azure.Management.EventHub;
-using Microsoft.Azure.Management.EventHub.Models;
-using Microsoft.Identity.Client;
-using Microsoft.Rest;
-using Nito.AsyncEx;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 
@@ -35,28 +32,46 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvide
 /// </summary>
 public class EventHubResourceProvider : IAsyncDisposable
 {
-    public EventHubResourceProvider(string connectionString, AzureResourceManagementSettings resourceManagementSettings, ITestDiagnosticsLogger testLogger)
+    public EventHubResourceProvider(
+        ITestDiagnosticsLogger testLogger,
+        string namespaceName,
+        AzureResourceManagementSettings resourceManagementSettings,
+        TokenCredential credential)
     {
-        ConnectionString = string.IsNullOrWhiteSpace(connectionString)
-            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString))
-            : connectionString;
-        ResourceManagementSettings = resourceManagementSettings
-            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
         TestLogger = testLogger
             ?? throw new ArgumentNullException(nameof(testLogger));
+        NamespaceName = string.IsNullOrWhiteSpace(namespaceName)
+            ? throw new ArgumentException("Value cannot be null or whitespace.", nameof(namespaceName))
+            : namespaceName;
+        ResourceManagementSettings = resourceManagementSettings
+            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
+        Credential = credential
+            ?? throw new ArgumentNullException(nameof(resourceManagementSettings));
 
-        EventHubNamespace = GetEventHubNamespace(ConnectionString);
-        LazyManagementClient = new AsyncLazy<IEventHubManagementClient>(CreateManagementClientAsync);
+        FullyQualifiedNamespace = $"{NamespaceName}.servicebus.windows.net";
+
+        EventHubNamespaceResource = CreateEventHubNamespaceResource();
 
         RandomSuffix = $"{DateTimeOffset.UtcNow:yyyy.MM.ddTHH.mm.ss}-{Guid.NewGuid()}";
         EventHubResources = new Dictionary<string, EventHubResource>();
     }
 
-    public string ConnectionString { get; }
+    /// <summary>
+    /// The name of the Event Hub Namespace under which Event Hubs are created.
+    /// It is used to retrieve and create resources at the Azure Control Plane level.
+    /// </summary>
+    public string NamespaceName { get; }
 
+    /// <summary>
+    /// Settings used to retrieve and create resources at the Azure Control Plane level.
+    /// </summary>
     public AzureResourceManagementSettings ResourceManagementSettings { get; }
 
-    public string EventHubNamespace { get; }
+    /// <summary>
+    /// The fully qualified namespace of the Event Hub Namespace under which Event Hubs are created.
+    /// It is used when creating clients which communicates with the Event Hubs.
+    /// </summary>
+    public string FullyQualifiedNamespace { get; }
 
     /// <summary>
     /// Is used as part of the resource names.
@@ -66,9 +81,11 @@ public class EventHubResourceProvider : IAsyncDisposable
 
     internal ITestDiagnosticsLogger TestLogger { get; }
 
-    internal IDictionary<string, EventHubResource> EventHubResources { get; }
+    internal TokenCredential Credential { get; }
 
-    internal AsyncLazy<IEventHubManagementClient> LazyManagementClient { get; }
+    internal EventHubsNamespaceResource EventHubNamespaceResource { get; }
+
+    internal IDictionary<string, EventHubResource> EventHubResources { get; }
 
     public async ValueTask DisposeAsync()
     {
@@ -85,47 +102,22 @@ public class EventHubResourceProvider : IAsyncDisposable
     public EventHubResourceBuilder BuildEventHub(string eventHubNamePrefix)
     {
         var eventHubName = BuildResourceName(eventHubNamePrefix);
-        var createEventHubOptions = new Eventhub()
+        var createEventHubOptions = new EventHubData()
         {
-            MessageRetentionInDays = 1,
             PartitionCount = 1,
         };
 
         return new EventHubResourceBuilder(this, eventHubName, createEventHubOptions);
     }
 
-    private static string GetEventHubNamespace(string eventHubConnectionString)
+    private EventHubsNamespaceResource CreateEventHubNamespaceResource()
     {
-        // The connection string is similar to a service bus connection string.
-        // Example connection string: 'Endpoint=sb://xxx.servicebus.windows.net/;'
-        var namespaceMatchPattern = @"Endpoint=sb://(.*?).servicebus.windows.net/";
-        var match = Regex.Match(eventHubConnectionString, namespaceMatchPattern, RegexOptions.IgnoreCase);
-        var eventHubNamespace = match.Groups[1].Value;
-
-        return eventHubNamespace;
-    }
-
-    private async Task<IEventHubManagementClient> CreateManagementClientAsync()
-    {
-        var authenticationResult = await GetTokenAsync().ConfigureAwait(false);
-        var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken);
-        return new EventHubManagementClient(tokenCredentials)
-        {
-            SubscriptionId = ResourceManagementSettings.SubscriptionId,
-        };
-    }
-
-    private Task<AuthenticationResult> GetTokenAsync()
-    {
-        var confidentialClientApp = ConfidentialClientApplicationBuilder
-            .Create(ResourceManagementSettings.ClientId)
-            .WithClientSecret(ResourceManagementSettings.ClientSecret)
-            .WithAuthority($"https://login.microsoftonline.com/{ResourceManagementSettings.TenantId}")
-            .Build();
-
-        return confidentialClientApp
-            .AcquireTokenForClient(new[] { $"https://management.core.windows.net/.default" })
-            .ExecuteAsync();
+        return new ArmClient(Credential)
+            .GetEventHubsNamespaceResource(
+                EventHubsNamespaceResource.CreateResourceIdentifier(
+                    ResourceManagementSettings.SubscriptionId,
+                    ResourceManagementSettings.ResourceGroup,
+                    NamespaceName));
     }
 
     private string BuildResourceName(string namePrefix)
@@ -135,9 +127,7 @@ public class EventHubResourceProvider : IAsyncDisposable
             : $"{namePrefix}-{RandomSuffix}";
     }
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods; Recommendation for async dispose pattern is to use the method name "DisposeAsyncCore": https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#the-disposeasynccore-method
     private async ValueTask DisposeAsyncCore()
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
     {
         foreach (var eventHubResource in EventHubResources)
         {
@@ -145,9 +135,5 @@ public class EventHubResourceProvider : IAsyncDisposable
             await eventHubResource.Value.DisposeAsync()
                 .ConfigureAwait(false);
         }
-
-        var managementClient = await LazyManagementClient
-            .ConfigureAwait(false);
-        managementClient.Dispose();
     }
 }
