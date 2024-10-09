@@ -6,16 +6,24 @@ Request and response stream should be seekable for the middleware to read stream
 
 Implementation example:
 
-    builder.UseMiddleware<RequestResponseLoggingMiddleware>();
+```c#
+builder.UseMiddleware<RequestResponseLoggingMiddleware>();
+```
+
 ---
 
-    Container.Register<RequestResponseLoggingMiddleware>(Lifestyle.Scoped);
+``` c#
+Container.Register<RequestResponseLoggingMiddleware>(Lifestyle.Scoped);
+```
+
 ---
 
-    serviceCollection.AddScoped<IRequestResponseLogging>(
+``` c#
+serviceCollection.AddScoped<IRequestResponseLogging>(
     _ => new RequestResponseLoggingBlobStorage(connectionString,
                                                 containerName,
                                                 ILogger<RequestResponseLoggingBlobStorage>));
+```
 
 ## App Release notes
 
@@ -35,43 +43,43 @@ Install `Energinet.DataHub.Core.Logging.LoggingMiddleware` package.
 
 **Registration for Function app:**
 
-    ```c#
-    public static IHost ConfigureApplication()
-    {
-        var host = new HostBuilder()
-            .ConfigureFunctionsWorkerDefaults(ConfigureWorker)
-            .ConfigureServices(ConfigureServices)
-            .ConfigureLogging(ConfigureLogging)
-            .Build();
-        return host;
-    }
+```c#
+public static IHost ConfigureApplication()
+{
+    var host = new HostBuilder()
+        .ConfigureFunctionsWorkerDefaults(ConfigureWorker)
+        .ConfigureServices(ConfigureServices)
+        .ConfigureLogging(ConfigureLogging)
+        .Build();
+    return host;
+}
 
-    private static void ConfigureWorker(IFunctionsWorkerApplicationBuilder builder)
-    {
-        builder.UseLoggingScope();
-    }
+private static void ConfigureWorker(IFunctionsWorkerApplicationBuilder builder)
+{
+    builder.UseLoggingScope();
+}
 
-    private static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddFunctionLoggingScope("domain-name");
-    }
+private static void ConfigureServices(HostBuilderContext context, IServiceCollection serviceCollection)
+{
+    serviceCollection.AddFunctionLoggingScope("domain-name");
+}
 
-    private static void ConfigureLogging(ILoggingBuilder builder)
-    {
-        builder.SetApplicationInsightLogLevel();
-    }
-    ```
+private static void ConfigureLogging(ILoggingBuilder builder)
+{
+    builder.SetApplicationInsightLogLevel();
+}
+```
 
 **Registration for Web app:**
 
-    ```c#
-    public void ConfigureServices(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddHttpLoggingScope("domain-name");
-    }
-    
-    public void Configure(IApplicationBuilder app)
-    {
-        app.UseLoggingScope();
-    }
-    ```
+``` c#
+public void ConfigureServices(IServiceCollection serviceCollection)
+{
+    serviceCollection.AddHttpLoggingScope("domain-name");
+}
+
+public void Configure(IApplicationBuilder app)
+{
+    app.UseLoggingScope();
+}
+```
