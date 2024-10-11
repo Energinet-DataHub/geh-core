@@ -1,5 +1,10 @@
 # JsonSerialization Release Notes
 
+## Version 2.2.12
+
+- Bump System.Text.Json
+- No functional change.
+
 ## Version 2.2.11
 
 - No functional change.
