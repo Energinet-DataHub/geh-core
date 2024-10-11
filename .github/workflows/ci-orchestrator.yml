@@ -18,6 +18,15 @@ on:
     branches:
       - main
 
+permissions:
+  pull-requests: write
+  contents: write
+  id-token: write
+  actions: write
+  security-events: write
+  checks: write
+  issues: read
+
 jobs:
   #
   # License and Markdown Check

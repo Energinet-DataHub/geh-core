@@ -29,7 +29,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.JsonSerialization</PackageId>
-    <PackageVersion>2.2.11$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.2.12$(VersionSuffix)</PackageVersion>
     <Title>JsonSerialization library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -71,7 +71,7 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.0.0" />
-    <PackageReference Include="System.Text.Json" Version="6.0.2" />
+    <PackageReference Include="System.Text.Json" Version="6.0.10" />
   </ItemGroup>
 
 </Project>
