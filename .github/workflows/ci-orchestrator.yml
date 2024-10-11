@@ -24,6 +24,8 @@ permissions:
   id-token: write
   actions: write
   security-events: write
+  checks: write
+  issues: read
 
 jobs:
   #
