@@ -17,8 +17,11 @@ using System.ComponentModel.DataAnnotations;
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 
 // ReSharper disable once InconsistentNaming
-public class SwaggerUITitleOptions
+public class SwaggerUIOptions
 {
     [Required]
     public string Title { get; set; } = string.Empty;
+
+    [Required]
+    public string? Description { get; set; } = string.Empty;
 }

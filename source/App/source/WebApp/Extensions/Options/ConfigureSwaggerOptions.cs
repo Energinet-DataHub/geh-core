@@ -27,14 +27,14 @@ public class ConfigureSwaggerOptions
     : IConfigureNamedOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _provider;
-    private readonly SwaggerUITitleOptions _swaggerUITitleOptions;
+    private readonly SwaggerUIOptions _swaggerUIOptions;
 
     public ConfigureSwaggerOptions(
         IApiVersionDescriptionProvider provider,
-        IOptions<SwaggerUITitleOptions> swaggerUITitleOptions)
+        IOptions<SwaggerUIOptions> swaggerUIOptions)
     {
         _provider = provider;
-        _swaggerUITitleOptions = swaggerUITitleOptions.Value;
+        _swaggerUIOptions = swaggerUIOptions.Value;
     }
 
     /// <summary>
@@ -72,12 +72,13 @@ public class ConfigureSwaggerOptions
     {
         var info = new OpenApiInfo()
         {
-            Title = _swaggerUITitleOptions.Title,
+            Title = _swaggerUIOptions.Title,
+            Description = _swaggerUIOptions.Description,
             Version = description.ApiVersion.ToString(),
         };
 
         if (description.IsDeprecated)
-            info.Description += " This API version has been deprecated. Please use one of the new APIs available from the explorer.";
+            info.Description += "\r\n This API version has been deprecated. Please use one of the new APIs available from the explorer.";
 
         return info;
     }

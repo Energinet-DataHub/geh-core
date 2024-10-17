@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 13.3.0
+
+- Added support for optional SwaggerUI description
+
 ## WebaApp, Common, Common.Abstractions, FunctionApp Version 13.2.0
 
 - Added support for x-enumNames in OpenApiExtensions, which allows for the use of Enum names in the OpenAPI documentation.
