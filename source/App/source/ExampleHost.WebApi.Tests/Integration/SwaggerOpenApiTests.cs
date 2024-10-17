@@ -54,13 +54,16 @@ public class SwaggerOpenApiTests
     }
 
     [Theory]
-    [InlineData("v1", "ExampleHost.WebApi")]
-    [InlineData("v2", "ExampleHost.WebApi")]
-    public async Task UrlIsApiVersionSwaggerJson_WhenGet_ResponseIsOKAndContainsJsonAndCorrespondingVersion(string apiVersion, string title)
+    [InlineData("v1")]
+    [InlineData("v2")]
+    public async Task UrlIsApiVersionSwaggerJson_WhenGet_ResponseIsOKAndContainsJsonAndCorrespondingVersion(
+        string apiVersion)
     {
         // Arrange
         var majorVersion = int.Parse(Regex.Replace(apiVersion, "[a-zA-Z]", string.Empty));
         var url = $"swagger/{apiVersion}/swagger.json";
+        const string expectedSwaggerUITitle = "ExampleHost.WebApi";
+        const string expectedSwaggerUIDescription = "This is the API for ExampleHost.WebApi";
 
         // Act
         var actualResponse = await Fixture.Web01HttpClient.GetAsync(url);
@@ -70,7 +73,7 @@ public class SwaggerOpenApiTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Contain($"\"info\": {{\n    \"title\": \"{title}\",\n ");
+        content.Should().Contain($"\"info\": {{\n    \"title\": \"{expectedSwaggerUITitle}\",\n    \"description\": \"{expectedSwaggerUIDescription}");
         content.Should().Contain($"\"version\": \"{majorVersion}.");
     }
 

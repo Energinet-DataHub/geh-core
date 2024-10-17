@@ -36,16 +36,18 @@ public static class OpenApiExtensions
     /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection instance.</param>
     /// <param name="executingAssembly">Typically the web app assembly.</param>
     /// <param name="swaggerUITitle">The title which will be display in the swagger UI, independent of the apiVersion</param>
+    /// <param name="swaggerUIDescription">The API description to be displayed in the swagger UI, independent of the apiVersion</param>
     public static IServiceCollection AddSwaggerForWebApp(
         this IServiceCollection services,
         Assembly executingAssembly,
-        string swaggerUITitle)
+        string swaggerUITitle,
+        string? swaggerUIDescription = null)
     {
         ArgumentNullException.ThrowIfNull(executingAssembly);
         ArgumentException.ThrowIfNullOrWhiteSpace(swaggerUITitle);
 
         var xmlFile = $"{executingAssembly.GetName().Name}.xml";
-        services.AddSwaggerForWebApp(xmlFile, swaggerUITitle);
+        services.AddSwaggerForWebApp(xmlFile, swaggerUITitle, swaggerUIDescription);
 
         return services;
     }
@@ -59,16 +61,22 @@ public static class OpenApiExtensions
     /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection instance.</param>
     /// <param name="xmlCommentsFilename">Filename (with extension) of the XML file containing C# documentation comments.</param>
     /// <param name="swaggerUITitle">The title which will be display in the swagger UI, independent of the apiVersion</param>
+    /// <param name="swaggerUIDescription">The API description to be displayed in the swagger UI, independent of the apiVersion</param>
     public static IServiceCollection AddSwaggerForWebApp(
         this IServiceCollection services,
         string xmlCommentsFilename,
-        string swaggerUITitle)
+        string swaggerUITitle,
+        string? swaggerUIDescription = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(xmlCommentsFilename);
         ArgumentException.ThrowIfNullOrWhiteSpace(swaggerUITitle);
 
-        services.AddOptions<SwaggerUITitleOptions>()
-            .Configure(options => options.Title = swaggerUITitle);
+        services.AddOptions<SwaggerUIOptions>()
+            .Configure(options =>
+            {
+                options.Title = swaggerUITitle;
+                options.Description = swaggerUIDescription;
+            });
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
         services.AddSwaggerGen(options =>
