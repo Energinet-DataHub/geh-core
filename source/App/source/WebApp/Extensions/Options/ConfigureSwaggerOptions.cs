@@ -78,7 +78,7 @@ public class ConfigureSwaggerOptions
         };
 
         if (description.IsDeprecated)
-            info.Description += "\r\n This API version has been deprecated. Please use one of the new APIs available from the explorer.";
+            info.Description += " This API version has been deprecated. Please use one of the new APIs available from the explorer.";
 
         return info;
     }
