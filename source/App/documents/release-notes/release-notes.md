@@ -2,7 +2,7 @@
 
 ## Version 13.3.0
 
-- Added support for optional SwaggerUI description
+- Added support for optional SwaggerUI description in WebApi
 
 ## WebaApp, Common, Common.Abstractions, FunctionApp Version 13.2.0
 
