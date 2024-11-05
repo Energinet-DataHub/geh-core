@@ -64,7 +64,7 @@ internal static class TestCertificateProvider
             storeLocation = StoreLocation.LocalMachine;
         }
 
-        using var certificateStore = new X509Store(StoreName.Root, storeLocation);
+        using var certificateStore = new X509Store(StoreName.My, storeLocation);
         certificateStore.Open(OpenFlags.ReadWrite);
 
         using var testCertificate = new X509Certificate2(FilePath, Password);
