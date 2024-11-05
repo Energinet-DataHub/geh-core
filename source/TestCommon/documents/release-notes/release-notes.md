@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 7.1.0
+
+- Use My store instead of Root store in AzuriteManager for TestCommon.
+
 ## Version 7.0.0
 
 - Refactored class `IntegrationTestConfiguration`:
