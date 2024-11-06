@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 7.0.1
+
+- Update test common certificate
+
 ## Version 7.0.0
 
 - Refactored class `IntegrationTestConfiguration`:
