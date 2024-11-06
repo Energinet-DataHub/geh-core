@@ -7,7 +7,7 @@ When using this certificate together with Azurite the uri used from clients must
 See [Generate PFX certificate](https://github.com/Azure/Azurite/blob/main/README.md#generate-pfx-certificate)
 
 It is possible to check a certificate (eg. NotBefore/NotAfter) with command like this:
-`certutil -p azurite -dump .\test-common-cert.pfx`
+`certutil -p test-common -dump .\test-common-cert.pfx`
 
 Use the following command to generate a new certificate:
 `dotnet dev-certs https --trust -ep test-common-cert.pfx -p test-common`
