@@ -1,9 +1,13 @@
 # TestCommon Release notes
 
-## Version 7.0.1
+## Version 7.0.2
 
 - Bump Azure.Storage.Blobs
 - No functional change.
+
+## Version 7.0.1
+
+- Update test common certificate
 
 ## Version 7.0.0
 
