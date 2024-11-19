@@ -20,7 +20,6 @@ limitations under the License.
     <AssemblyName>Energinet.DataHub.Core.FunctionApp.TestCommon.Tests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.FunctionApp.TestCommon.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
-    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
