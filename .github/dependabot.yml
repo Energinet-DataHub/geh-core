@@ -4,4 +4,4 @@ updates:
     directory: source/Outbox
     schedule:
       interval: weekly
-      time: '10:00'
+      time: "10:00"
