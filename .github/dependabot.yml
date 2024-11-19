@@ -1,4 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: nuget
-    directory: /
+    directory: source/Outbox
+    schedule:
+      interval: weekly
+      time: '10:00'
