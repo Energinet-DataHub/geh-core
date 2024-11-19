@@ -69,6 +69,7 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@madu/dump-dotnet-version
         with:
+          dotnet_version: "8.0.403"
           solution_file_path: ./source/TestCommon/TestCommon.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
           azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
