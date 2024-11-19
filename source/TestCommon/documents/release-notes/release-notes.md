@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 7.0.1
+
+- Bump Azure.Storage.Blobs
+- No functional change.
+
 ## Version 7.0.0
 
 - Refactored class `IntegrationTestConfiguration`:
