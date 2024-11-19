@@ -21,6 +21,7 @@ limitations under the License.
     <RootNamespace>Energinet.DataHub.Core.TestCommon</RootNamespace>
     <IsPackable>true</IsPackable>
     <IsTestProject>false</IsTestProject>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
