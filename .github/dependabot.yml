@@ -5,19 +5,59 @@
 
 version: 2
 updates:
-  - package-ecosystem: "nuget"
-    directories:
-      - /source/App
-      - /source/Databricks
-      - /source/FeatureManagement
-      - /source/JsonSerialization
-      - /source/Logging
-      - /source/Messaging
-      - /source/Outbox
-      - /source/TestCommon
-    schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: "Microsoft.*"
-        versions: ["999.*"]
-        
+- package-ecosystem: "nuget"
+  directory: /source/App
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
+- package-ecosystem: "nuget"
+  directory: /source/Databricks
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
+- package-ecosystem: "nuget"
+  directory: /source/FeatureManagement
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
+- package-ecosystem: "nuget"
+  directory: /source/JsonSerialization
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
+- package-ecosystem: "nuget"
+  directory: /source/Logging
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
+- package-ecosystem: "nuget"
+  directory: /source/Messaging
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
+- package-ecosystem: "nuget"
+  directory: /source/Outbox
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
+- package-ecosystem: "nuget"
+  directory: /source/TestCommon
+  schedule:
+    interval: "weekly"
+  ignore:
+  - dependency-name: "Microsoft.*"
+    versions: [ "999.*" ]
