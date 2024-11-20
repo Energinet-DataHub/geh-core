@@ -12,6 +12,7 @@ updates:
   ignore:
   - dependency-name: "Microsoft.*"
     versions: [ "999.*" ]
+
 - package-ecosystem: "nuget"
   directory: /source/Databricks
   schedule:
@@ -19,6 +20,7 @@ updates:
   ignore:
   - dependency-name: "Microsoft.*"
     versions: [ "999.*" ]
+
 - package-ecosystem: "nuget"
   directory: /source/FeatureManagement
   schedule:
@@ -26,6 +28,7 @@ updates:
   ignore:
   - dependency-name: "Microsoft.*"
     versions: [ "999.*" ]
+
 - package-ecosystem: "nuget"
   directory: /source/JsonSerialization
   schedule:
@@ -33,6 +36,7 @@ updates:
   ignore:
   - dependency-name: "Microsoft.*"
     versions: [ "999.*" ]
+
 - package-ecosystem: "nuget"
   directory: /source/Logging
   schedule:
@@ -40,6 +44,7 @@ updates:
   ignore:
   - dependency-name: "Microsoft.*"
     versions: [ "999.*" ]
+
 - package-ecosystem: "nuget"
   directory: /source/Messaging
   schedule:
@@ -47,6 +52,7 @@ updates:
   ignore:
   - dependency-name: "Microsoft.*"
     versions: [ "999.*" ]
+
 - package-ecosystem: "nuget"
   directory: /source/Outbox
   schedule:
@@ -54,6 +60,7 @@ updates:
   ignore:
   - dependency-name: "Microsoft.*"
     versions: [ "999.*" ]
+
 - package-ecosystem: "nuget"
   directory: /source/TestCommon
   schedule:
