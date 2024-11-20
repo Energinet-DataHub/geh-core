@@ -12,3 +12,10 @@ updates:
     ignore:
       - dependency-name: "Microsoft.*"
         versions: ["9.*"]
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "/source/App" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "Microsoft.*"
+        versions: ["9.*"]
