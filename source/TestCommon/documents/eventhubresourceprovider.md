@@ -76,6 +76,6 @@ Clean up:
 await resourceProvider.DisposeAsync();
 ```
 
-If the code does not complete and the resources are not deleted, 
-you may encounter this error: "The maximum number of resources of type EventHub has been reached or exceeded." 
+If the code does not complete and the resources are not deleted,
+you may encounter this error: "The maximum number of resources of type EventHub has been reached or exceeded."
 In this case, you will need to manually delete the resources in Azure.
