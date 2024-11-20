@@ -14,12 +14,12 @@ updates:
     security:
       applies-to: security-updates
       patterns:
-        - "*"
-          
-- package-ecosystem: "nuget"
+      - "*"
+
+- package-ecosystem: nuget
   directory: /source/App
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     app-package-minor-and-patch:
       applies-to: version-updates
@@ -31,15 +31,15 @@ updates:
       patterns:
       - "*" # Applies to all security updates
   ignore:
-  - dependency-name: "Microsoft.Extensions.*"
+  - dependency-name: Microsoft.Extensions.*
     versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
+  - dependency-name: Microsoft.EntityFrameworkCore.*
     versions: [ "9.*" ]
 
-- package-ecosystem: "nuget"
+- package-ecosystem: nuget
   directory: /source/Databricks
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     databricks-package-minor-and-patch:
       applies-to: version-updates
@@ -51,15 +51,13 @@ updates:
       patterns:
       - "*" # Applies to all security updates
   ignore:
-  - dependency-name: "Microsoft.Extensions.*"
-    versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
+  - dependency-name: Microsoft.Extensions.*
     versions: [ "9.*" ]
 
-- package-ecosystem: "nuget"
+- package-ecosystem: nuget
   directory: /source/FeatureManagement
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     feature-management-package-minor-and-patch:
       applies-to: version-updates
@@ -70,16 +68,11 @@ updates:
       applies-to: security-updates
       patterns:
       - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: "Microsoft.Extensions.*"
-    versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
-    versions: [ "9.*" ]
 
-- package-ecosystem: "nuget"
+- package-ecosystem: nuget
   directory: /source/JsonSerialization
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     json-serialization-package-minor-and-patch:
       applies-to: version-updates
@@ -90,16 +83,11 @@ updates:
       applies-to: security-updates
       patterns:
       - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: "Microsoft.Extensions.*"
-    versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
-    versions: [ "9.*" ]
 
-- package-ecosystem: "nuget"
+- package-ecosystem: nuget
   directory: /source/Logging
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     logging-package-minor-and-patch:
       applies-to: version-updates
@@ -111,15 +99,13 @@ updates:
       patterns:
       - "*" # Applies to all security updates
   ignore:
-  - dependency-name: "Microsoft.Extensions.*"
-    versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
+  - dependency-name: Microsoft.Extensions.*
     versions: [ "9.*" ]
 
-- package-ecosystem: "nuget"
+- package-ecosystem: nuget
   directory: /source/Messaging
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     messaging-package-minor-and-patch:
       applies-to: version-updates
@@ -131,15 +117,13 @@ updates:
       patterns:
       - "*" # Applies to all security updates
   ignore:
-  - dependency-name: "Microsoft.Extensions.*"
-    versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
+  - dependency-name: Microsoft.Extensions.*
     versions: [ "9.*" ]
 
-- package-ecosystem: "nuget"
+- package-ecosystem: nuget
   directory: /source/Outbox
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     outbox-package-minor-and-patch:
       applies-to: version-updates
@@ -151,15 +135,13 @@ updates:
       patterns:
       - "*" # Applies to all security updates
   ignore:
-  - dependency-name: "Microsoft.Extensions.*"
-    versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
+  - dependency-name: Microsoft.EntityFrameworkCore.*
     versions: [ "9.*" ]
 
-- package-ecosystem: "nuget"
+- package-ecosystem: nuget
   directory: /source/TestCommon
   schedule:
-    interval: "weekly"
+    interval: weekly
   groups:
     test-common-package-minor-and-patch:
       applies-to: version-updates
@@ -171,7 +153,7 @@ updates:
       patterns:
       - "*" # Applies to all security updates
   ignore:
-  - dependency-name: "Microsoft.Extensions.*"
+  - dependency-name: Microsoft.Extensions.*
     versions: [ "9.*" ]
-  - dependency-name: "Microsoft.EntityFrameworkCore.*"
+  - dependency-name: Microsoft.EntityFrameworkCore.*
     versions: [ "9.*" ]
