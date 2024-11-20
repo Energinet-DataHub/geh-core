@@ -32,9 +32,9 @@ updates:
       - "*" # Applies to all security updates
   ignore:
   - dependency-name: Microsoft.Extensions.*
-    versions: [ "9.*" ]
+    versions: [9.*]
   - dependency-name: Microsoft.EntityFrameworkCore.*
-    versions: [ "9.*" ]
+    versions: [9.*]
 
 - package-ecosystem: nuget
   directory: /source/Databricks
@@ -52,7 +52,7 @@ updates:
       - "*" # Applies to all security updates
   ignore:
   - dependency-name: Microsoft.Extensions.*
-    versions: [ "9.*" ]
+    versions: [9.*]
 
 - package-ecosystem: nuget
   directory: /source/FeatureManagement
@@ -100,7 +100,7 @@ updates:
       - "*" # Applies to all security updates
   ignore:
   - dependency-name: Microsoft.Extensions.*
-    versions: [ "9.*" ]
+    versions: [9.*]
 
 - package-ecosystem: nuget
   directory: /source/Messaging
@@ -118,7 +118,7 @@ updates:
       - "*" # Applies to all security updates
   ignore:
   - dependency-name: Microsoft.Extensions.*
-    versions: [ "9.*" ]
+    versions: [9.*]
 
 - package-ecosystem: nuget
   directory: /source/Outbox
@@ -136,7 +136,7 @@ updates:
       - "*" # Applies to all security updates
   ignore:
   - dependency-name: Microsoft.EntityFrameworkCore.*
-    versions: [ "9.*" ]
+    versions: [9.*]
 
 - package-ecosystem: nuget
   directory: /source/TestCommon
@@ -154,6 +154,6 @@ updates:
       - "*" # Applies to all security updates
   ignore:
   - dependency-name: Microsoft.Extensions.*
-    versions: [ "9.*" ]
+    versions: [9.*]
   - dependency-name: Microsoft.EntityFrameworkCore.*
-    versions: [ "9.*" ]
+    versions: [9.*]
