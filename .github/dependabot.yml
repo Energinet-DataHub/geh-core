@@ -5,17 +5,19 @@
 
 version: 2
 updates:
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/source/Outbox" # Location of package manifests
+  - package-ecosystem: "nuget"
+    directories:
+      - /source/App
+      - /source/Databricks
+      - /source/FeatureManagement
+      - /source/JsonSerialization
+      - /source/Logging
+      - /source/Messaging
+      - /source/Outbox
+      - /source/TestCommon
     schedule:
       interval: "weekly"
     ignore:
       - dependency-name: "Microsoft.*"
-        versions: ["9.*"]
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/source/App" # Location of package manifests
-    schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: "Microsoft.*"
-        versions: ["9.*"]
+        versions: ["999.*"]
+        
