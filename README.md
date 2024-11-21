@@ -31,6 +31,7 @@ Artifacts should be organized in the following folder structure:
 ├── .editorconfig
 ├── .gitignore
 ├── .licenserc.json
+├── .global.json
 ├── LICENSE
 └── README.md
 ```
@@ -78,8 +79,18 @@ Contains:
 - `.editorconfig` file for configuration of Formatting, Code Style and Analyzers (including StyleCop). Some [NuGet package bundles](./docs/development.md#nuget-package-bundle) have their own because we needed to migrate to another set of rules, which we didn't want to do for all at once.
 - `.gitignore` file that defines which files should be ignored (not checked in) by Git.
 - `.licenserc.json` file that defines the expected license header of certain file types.
+- `.global.json` file that defines the .net sdk for all solutions within the repository.
 - `LICENSE` License information for all code within this repository.
 - `README.md` file that gives an introduction to this repository.
+
+#### File: .global.json
+
+All solutions within this repository share the same `global.json` configuration.
+
+If the SDK version needs to be controlled for individual solutions, a `global.json` configuration file must be placed next to the `.sln` file. Additionally, all GitHub Actions runners' working directories must be updated to point to the directory containing both the `.sln` and `global.json` files in order to use the global.json.
+
+> **⚠️ Warning:**  
+> This functionality is not yet supported by our github custom actions.
 
 ## Development
 
