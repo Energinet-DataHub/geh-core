@@ -29,7 +29,7 @@
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Messaging</PackageId>
-    <PackageVersion>6.1.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>6.1.0$(VersionSuffix)</PackageVersion>
     <Title>Messaging library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>

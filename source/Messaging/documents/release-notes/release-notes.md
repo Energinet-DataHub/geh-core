@@ -1,9 +1,5 @@
 # Messaging Release notes
 
-## Version 6.1.1
-
-- Update test common certificate
-
 ## Version 6.1.0
 
 - Deleted unused options `SubscriberWorkerOptions`.
