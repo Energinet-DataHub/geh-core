@@ -67,7 +67,7 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@madu/optional-global-json-path
         with:
           use_azure_functions_tools: "true"
-          global_json_path: /Databricks/global.json
+          global_json_path: ./source/Databricks/global.json
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@madu/optional-global-json-path
