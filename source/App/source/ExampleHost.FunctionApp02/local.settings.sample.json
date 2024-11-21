@@ -6,7 +6,8 @@
 
     "APPLICATIONINSIGHTS_CONNECTION_STRING": "<app insights connection string>",
 
-    "INTEGRATIONEVENT_CONNECTION_STRING": "<connection string>",
+    "INTEGRATIONEVENT_SETTING_PREFIX": "INTEGRATIONEVENT",
+    "INTEGRATIONEVENT__fullyQualifiedNamespace": "<fully qualified namespace>",
     "INTEGRATIONEVENT_TOPIC_NAME": "<topic name>",
     "INTEGRATIONEVENT_SUBSCRIPTION_NAME": "<subscription name>"
   }

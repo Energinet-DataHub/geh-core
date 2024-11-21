@@ -39,7 +39,7 @@ public class ExampleHostsFixture : IAsyncLifetime
 
         AzuriteManager = new AzuriteManager();
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
-        ServiceBusResourceProvider = new ServiceBusResourceProvider(IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
+        ServiceBusResourceProvider = new ServiceBusResourceProvider(TestLogger, IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace, IntegrationTestConfiguration.Credential);
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
@@ -94,8 +94,13 @@ public class ExampleHostsFixture : IAsyncLifetime
             $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.InternalMetadataAddress);
 
         // => Integration events
-        app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
-        app02HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_CONNECTION_STRING", ServiceBusResourceProvider.ConnectionString);
+        app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_FULLY_QUALIFIED_NAMESPACE", ServiceBusResourceProvider.FullyQualifiedNamespace);
+
+        // Using Identity-based connections to establish a connection to the Service Bus for the ServiceBusTrigger
+        // https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv5&pivots=programming-language-csharp#identity-based-connections
+        var integrationEventSettingPrefix = "INTEGRATIONEVENT";
+        app02HostSettings.ProcessEnvironmentVariables.Add($"{integrationEventSettingPrefix}_SETTING_PREFIX", integrationEventSettingPrefix);
+        app02HostSettings.ProcessEnvironmentVariables.Add($"{integrationEventSettingPrefix}:fullyQualifiedNamespace", ServiceBusResourceProvider.FullyQualifiedNamespace);
 
         await ServiceBusResourceProvider
             .BuildTopic("integrationevent-topic")

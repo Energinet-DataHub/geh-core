@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 13.3.1
+
+- Bump Energinet.DataHub.Core.TestCommon
+- No functional change.
+
 ## Version 13.3.0
 
 - Added support for optional SwaggerUI description in WebApi

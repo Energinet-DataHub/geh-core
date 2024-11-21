@@ -32,7 +32,7 @@ public class IntegrationEventExampleFunction
         [ServiceBusTrigger(
             $"%{EnvironmentSettingNames.IntegrationEventTopicName}%",
             $"%{EnvironmentSettingNames.IntegrationEventSubscriptionName}%",
-            Connection = EnvironmentSettingNames.IntegrationEventConnectionString)]
+            Connection = $"%{EnvironmentSettingNames.IntegrationEventSettingPrefix}%")]
         string serviceBusMessage)
     {
         _logger.LogInformation($"ExampleHost {nameof(ReceiveMessage)}: We should be able to find this log message by following the trace of the request.");

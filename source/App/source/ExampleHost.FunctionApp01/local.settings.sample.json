@@ -6,7 +6,7 @@
 
     "APPLICATIONINSIGHTS_CONNECTION_STRING": "<app insights connection string>",
 
-    "INTEGRATIONEVENT_CONNECTION_STRING": "<connection string>",
+    "INTEGRATIONEVENT_FULLY_QUALIFIED_NAMESPACE": "<fully qualified namespace>",
     "INTEGRATIONEVENT_TOPIC_NAME": "<topic name>"
   }
 }

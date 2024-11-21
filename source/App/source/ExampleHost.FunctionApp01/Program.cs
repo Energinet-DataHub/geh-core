@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Reflection.Metadata.Ecma335;
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.Common.Extensions.Builder;
@@ -53,8 +54,8 @@ var host = new HostBuilder()
         // Configure ServiceBusSender for calling FunctionApp02
         services.AddSingleton(_ =>
         {
-            var connectionString = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionString);
-            return new ServiceBusClient(connectionString);
+            var serviceBusFullyQualifiedNamespace = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventFullyQualifiedNamespace);
+            return new ServiceBusClient(serviceBusFullyQualifiedNamespace, new DefaultAzureCredential());
         });
         services.AddSingleton<ServiceBusSender>(sp =>
         {
