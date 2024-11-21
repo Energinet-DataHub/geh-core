@@ -66,9 +66,10 @@ jobs:
           use_azure_functions_tools: "true"
           azure_functions_core_tools_version: 4.0.5455
           azurite_version: 3.31.0
+          global_json_path: ./source/Messaging/global.json
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@madu/optional-global-json-path
         with:
           solution_file_path: ./source/Messaging/Messaging.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
