@@ -72,7 +72,7 @@ jobs:
           azure_functions_core_tools_version: 4.0.5455
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@madu/dump-dotnet-version
         with:
           solution_file_path: ./source/App/App.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
