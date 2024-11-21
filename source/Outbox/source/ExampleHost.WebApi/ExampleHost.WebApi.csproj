@@ -6,8 +6,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="13.2.0" />
-      <PackageReference Include="NodaTime" Version="3.1.12" />
+      <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="13.3.0" />
+      <PackageReference Include="NodaTime" Version="3.2.0" />
       <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.1" />
     </ItemGroup>
 
