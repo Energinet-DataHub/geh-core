@@ -51,7 +51,7 @@ jobs:
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@madu/optional-global-json-path
         with:
-          global_json_path: ./source/JsonSerialization/global.json
+          global_json_path: JsonSerialization/global.json
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@madu/optional-global-json-path
