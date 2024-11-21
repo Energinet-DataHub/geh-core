@@ -53,12 +53,10 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@madu/optional-global-json-path
-        with:
-          global_json_path: ./source/Outbox/global.json
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@madu/optional-global-json-path
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
         with:
           solution_file_path: ./source/Outbox/Outbox.sln
           publish_test_report: "true"
