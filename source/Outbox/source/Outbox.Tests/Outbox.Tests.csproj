@@ -23,7 +23,7 @@ limitations under the License.
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="6.3.0" />
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="6.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.11" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.1" />
     <PackageReference Include="xunit" Version="2.9.0" />
