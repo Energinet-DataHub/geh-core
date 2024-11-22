@@ -55,6 +55,7 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
             hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\SampleApp\\bin\\{buildConfiguration}\\net6.0";
 
             hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.FunctionWorkerRuntime, "dotnet-isolated");
 
             // => Feature flags
             hostSettings.ProcessEnvironmentVariables.Add(UseGuidMessageSettingName, "false");
