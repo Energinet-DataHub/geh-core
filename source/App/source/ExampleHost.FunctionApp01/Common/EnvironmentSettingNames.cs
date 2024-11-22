@@ -19,6 +19,6 @@ namespace ExampleHost.FunctionApp01.Common;
 /// </summary>
 public static class EnvironmentSettingNames
 {
-    public const string IntegrationEventConnectionString = "INTEGRATIONEVENT_CONNECTION_STRING";
+    public const string IntegrationEventFullyQualifiedNamespace = "INTEGRATIONEVENT_FULLY_QUALIFIED_NAMESPACE";
     public const string IntegrationEventTopicName = "INTEGRATIONEVENT_TOPIC_NAME";
 }

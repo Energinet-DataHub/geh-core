@@ -19,7 +19,7 @@ namespace ExampleHost.FunctionApp02.Common;
 /// </summary>
 public static class EnvironmentSettingNames
 {
-    public const string IntegrationEventConnectionString = "INTEGRATIONEVENT_CONNECTION_STRING";
+    public const string IntegrationEventSettingPrefix = "INTEGRATIONEVENT_SETTING_PREFIX";
     public const string IntegrationEventTopicName = "INTEGRATIONEVENT_TOPIC_NAME";
     public const string IntegrationEventSubscriptionName = "INTEGRATIONEVENT_SUBSCRIPTION_NAME";
 }
