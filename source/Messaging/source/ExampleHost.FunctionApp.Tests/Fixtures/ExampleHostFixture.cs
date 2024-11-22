@@ -34,7 +34,8 @@ public class ExampleHostFixture : FunctionAppFixture
         IntegrationTestConfiguration = new IntegrationTestConfiguration(credentials);
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             TestLogger,
-            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            credentials);
 
         BlobContainerName = "examplehost";
         BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, credentials);

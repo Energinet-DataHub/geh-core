@@ -1,5 +1,10 @@
 # Messaging Release notes
 
+## Version 6.1.1
+
+- Bumped various NuGet packages to the latest versions.
+- No functional changes.
+
 ## Version 6.1.0
 
 - Deleted unused options `SubscriberWorkerOptions`.
