@@ -1,5 +1,10 @@
 # Databricks Release Notes
 
+## Version 11.2.5
+
+- Bump various NuGet packages to latest versions.
+- No functional change.
+
 ## Version 11.2.4
 
 - Fix overflow of backoff value.
