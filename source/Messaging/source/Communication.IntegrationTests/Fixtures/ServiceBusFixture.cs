@@ -24,7 +24,8 @@ public sealed class ServiceBusFixture : IAsyncLifetime
 {
     public ServiceBusResourceProvider ServiceBusResourceProvider { get; } = new(
         new TestDiagnosticsLogger(),
-        new IntegrationTestConfiguration().ServiceBusFullyQualifiedNamespace);
+        new IntegrationTestConfiguration().ServiceBusFullyQualifiedNamespace,
+        new DefaultAzureCredential());
 
     public DefaultAzureCredential AzureCredential { get; } = new();
 
