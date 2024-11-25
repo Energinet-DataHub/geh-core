@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 13.3.2
+
+- Bump various NuGet packages to latest versions.
+- No functional change.
+
 ## Version 13.3.1
 
 - Bump Energinet.DataHub.Core.TestCommon
