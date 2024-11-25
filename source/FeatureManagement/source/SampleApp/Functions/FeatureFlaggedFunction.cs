@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Net;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FeatureManagement.SampleApp.Common;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
