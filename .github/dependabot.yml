@@ -6,154 +6,156 @@
 version: 2
 
 updates:
-- package-ecosystem: github-actions
-  directory: /
-  schedule:
-    interval: daily
-  groups:
-    security:
-      applies-to: security-updates
-      patterns:
-      - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
 
-- package-ecosystem: nuget
-  directory: /source/App
-  schedule:
-    interval: weekly
-  groups:
-    app-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    app-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: Microsoft.Extensions.*
-    versions: [9.*]
-  - dependency-name: Microsoft.EntityFrameworkCore.*
-    versions: [9.*]
+  - package-ecosystem: nuget
+    directory: /source/App
+    schedule:
+      interval: weekly
+    groups:
+      app-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      app-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
+    ignore:
+      - dependency-name: Microsoft.Extensions.*
+        versions: [9.*]
+      - dependency-name: Microsoft.EntityFrameworkCore.*
+        versions: [9.*]
 
-- package-ecosystem: nuget
-  directory: /source/Databricks
-  schedule:
-    interval: weekly
-  groups:
-    databricks-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    databricks-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: Microsoft.Extensions.*
-    versions: [9.*]
+  - package-ecosystem: nuget
+    directory: /source/Databricks
+    schedule:
+      interval: weekly
+    groups:
+      databricks-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      databricks-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
+    ignore:
+      - dependency-name: Microsoft.Extensions.*
+        versions: [9.*]
 
-- package-ecosystem: nuget
-  directory: /source/FeatureManagement
-  schedule:
-    interval: weekly
-  groups:
-    feature-management-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    feature-management-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
+  - package-ecosystem: nuget
+    directory: /source/FeatureManagement
+    schedule:
+      interval: weekly
+    groups:
+      feature-management-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      feature-management-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
 
-- package-ecosystem: nuget
-  directory: /source/JsonSerialization
-  schedule:
-    interval: weekly
-  groups:
-    json-serialization-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    json-serialization-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
+  - package-ecosystem: nuget
+    directory: /source/JsonSerialization
+    schedule:
+      interval: weekly
+    groups:
+      json-serialization-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      json-serialization-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
 
-- package-ecosystem: nuget
-  directory: /source/Logging
-  schedule:
-    interval: weekly
-  groups:
-    logging-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    logging-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: Microsoft.Extensions.*
-    versions: [9.*]
+  - package-ecosystem: nuget
+    directory: /source/Logging
+    schedule:
+      interval: weekly
+    groups:
+      logging-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      logging-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
+    ignore:
+      - dependency-name: Microsoft.Extensions.*
+        versions: [9.*]
 
-- package-ecosystem: nuget
-  directory: /source/Messaging
-  schedule:
-    interval: weekly
-  groups:
-    messaging-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    messaging-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: Microsoft.Extensions.*
-    versions: [9.*]
+  - package-ecosystem: nuget
+    directory: /source/Messaging
+    schedule:
+      interval: weekly
+    groups:
+      messaging-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      messaging-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
+    ignore:
+      - dependency-name: Microsoft.Extensions.*
+        versions: [9.*]
 
-- package-ecosystem: nuget
-  directory: /source/Outbox
-  schedule:
-    interval: weekly
-  groups:
-    outbox-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    outbox-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: Microsoft.EntityFrameworkCore.*
-    versions: [9.*]
+  - package-ecosystem: nuget
+    directory: /source/Outbox
+    schedule:
+      interval: weekly
+    groups:
+      outbox-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      outbox-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
+    ignore:
+      - dependency-name: Microsoft.EntityFrameworkCore.*
+        versions: [9.*]
 
-- package-ecosystem: nuget
-  directory: /source/TestCommon
-  schedule:
-    interval: weekly
-  groups:
-    test-common-package-minor-and-patch:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
-    test-common-package-security:
-      applies-to: security-updates
-      patterns:
-      - "*" # Applies to all security updates
-  ignore:
-  - dependency-name: Microsoft.Extensions.*
-    versions: [9.*]
-  - dependency-name: Microsoft.EntityFrameworkCore.*
-    versions: [9.*]
+  - package-ecosystem: nuget
+    directory: /source/TestCommon
+    schedule:
+      interval: weekly
+    groups:
+      test-common-package-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+      test-common-package-security:
+        applies-to: security-updates
+        patterns:
+          - "*" # Applies to all security updates
+    ignore:
+      - dependency-name: Microsoft.Extensions.*
+        versions: [9.*]
+      - dependency-name: Microsoft.EntityFrameworkCore.*
+        versions: [9.*]
+      - dependency-name: System.Management.*
+        versions: [9.*]
