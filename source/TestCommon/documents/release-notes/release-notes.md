@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 7.0.3
+
+- Bumped various NuGet packages to the latest versions.
+- No functional changes.
+
 ## Version 7.0.2
 
 - Bump Azure.Storage.Blobs
