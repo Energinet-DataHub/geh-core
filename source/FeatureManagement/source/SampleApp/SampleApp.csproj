@@ -15,8 +15,8 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
-    <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
     <AssemblyName>Energinet.DataHub.Core.FeatureManagement.SampleApp</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.FeatureManagement.SampleApp</RootNamespace>
     <IsPackable>false</IsPackable>
