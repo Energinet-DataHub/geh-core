@@ -14,7 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
+
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Core.JsonSerialization.Tests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.JsonSerialization.Tests</RootNamespace>
+  </PropertyGroup>
+
+    <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.0.4" />
     <PackageReference Include="FluentAssertions" Version="6.12.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
