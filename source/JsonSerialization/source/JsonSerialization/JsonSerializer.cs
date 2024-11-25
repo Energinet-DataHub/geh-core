@@ -32,6 +32,13 @@ namespace Energinet.DataHub.Core.JsonSerialization
             _options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
         }
 
+        public JsonSerializer()
+        {
+            _options = new JsonSerializerOptions();
+            _options.Converters.Add(NodaConverters.InstantConverter);
+            _options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+        }
+
         public async ValueTask<object> DeserializeAsync(Stream utf8Json, Type returnType)
         {
             ArgumentNullException.ThrowIfNull(utf8Json);
