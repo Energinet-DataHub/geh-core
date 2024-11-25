@@ -1,16 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <RootNamespace>Energinet.DataHub.Core.Logging.LoggingMiddleware</RootNamespace>
     <AssemblyName>Energinet.DataHub.Core.Logging.LoggingMiddleware</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Logging.LoggingMiddleware</PackageId>
-    <PackageVersion>3.2.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>4.0.0$(VersionSuffix)</PackageVersion>
     <Title>Logging Middleware</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -58,7 +55,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.22.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
