@@ -54,9 +54,6 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
             hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
             hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.FunctionWorkerRuntime, "dotnet-isolated");
 
-            // The default endpoint for Azure Functions when using the HTTP trigger
-            hostSettings.Port = 7071;
-
             // => Feature flags
             hostSettings.ProcessEnvironmentVariables.Add(UseGuidMessageSettingName, "false");
 
