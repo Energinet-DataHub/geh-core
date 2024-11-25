@@ -19,13 +19,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Outbox", "source\Outbox\Out
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Outbox.Tests", "source\Outbox.Tests\Outbox.Tests.csproj", "{CFA908F1-A9E9-465F-8EF2-393D456E1209}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox.Abstractions", "source\Outbox.Abstractions\Outbox.Abstractions.csproj", "{D8FD50DE-B215-4A2D-B07B-7F656754DBB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Outbox.Abstractions", "source\Outbox.Abstractions\Outbox.Abstractions.csproj", "{D8FD50DE-B215-4A2D-B07B-7F656754DBB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.WebApi", "source\ExampleHost.WebApi\ExampleHost.WebApi.csproj", "{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.WebApi", "source\ExampleHost.WebApi\ExampleHost.WebApi.csproj", "{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleHost.WebApi.Tests", "source\ExampleHost.WebApi.Tests\ExampleHost.WebApi.Tests.csproj", "{112E0315-5324-457D-A561-97D5C629045A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleHost.WebApi.Tests", "source\ExampleHost.WebApi.Tests\ExampleHost.WebApi.Tests.csproj", "{112E0315-5324-457D-A561-97D5C629045A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.DatabaseMigration", "source\Example.DatabaseMigration\Example.DatabaseMigration.csproj", "{47E56539-4632-4A36-AA5D-1BFB1985B599}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.DatabaseMigration", "source\Example.DatabaseMigration\Example.DatabaseMigration.csproj", "{47E56539-4632-4A36-AA5D-1BFB1985B599}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_ConfigurationFiles", "{59210D5C-A099-4910-8484-0D9081C41F7E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{1E9D8DA2-6B11-41E6-B5E8-FB9B5163E9F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,9 +74,10 @@ Global
 		{FCD50BA2-F5BC-4D4B-9120-C0EE87E6D5BC} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 		{CFA908F1-A9E9-465F-8EF2-393D456E1209} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 		{D8FD50DE-B215-4A2D-B07B-7F656754DBB8} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
-		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
-		{112E0315-5324-457D-A561-97D5C629045A} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
-		{47E56539-4632-4A36-AA5D-1BFB1985B599} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
+		{B626649C-4CA8-42DF-9CD4-A9354DA8E6E4} = {1E9D8DA2-6B11-41E6-B5E8-FB9B5163E9F4}
+		{112E0315-5324-457D-A561-97D5C629045A} = {1E9D8DA2-6B11-41E6-B5E8-FB9B5163E9F4}
+		{47E56539-4632-4A36-AA5D-1BFB1985B599} = {1E9D8DA2-6B11-41E6-B5E8-FB9B5163E9F4}
+		{1E9D8DA2-6B11-41E6-B5E8-FB9B5163E9F4} = {3FFC2678-AFBE-4A7A-A09B-EF83C8A860A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A1ABFD1-64AE-4D13-816A-222340ACF4F5}
