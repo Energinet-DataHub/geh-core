@@ -65,17 +65,6 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
             hostSettings.ProcessEnvironmentVariables.Add(CreateMessageDisabledSettingName, "false");
         }
 
-        protected override Task OnFunctionAppHostStartedAsync(IReadOnlyList<string> hostLogSnapshot)
-        {
-            foreach (var logEntry in hostLogSnapshot)
-            {
-                TestLogger.WriteLine(logEntry);
-                TestLogger.TestOutputHelper?.WriteLine(logEntry);
-            }
-
-            return base.OnFunctionAppHostStartedAsync(hostLogSnapshot);
-        }
-
         /// <inheritdoc/>
         protected override Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
@@ -87,12 +76,6 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
         /// <inheritdoc/>
         protected override Task OnFunctionAppHostFailedAsync(IReadOnlyList<string> hostLogSnapshot, Exception exception)
         {
-            foreach (var logEntry in hostLogSnapshot)
-            {
-                ConsoleOutput.Instance.WriteLine(logEntry, OutputLevel.Error);
-                TestLogger.WriteLine(logEntry);
-            }
-
             if (Debugger.IsAttached)
             {
                 Debugger.Break();
