@@ -1,5 +1,10 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 3.2.1
+
+- Bumped various NuGet packages to the latest versions.
+- No functional changes.
+
 ## Version 3.2.0
 
 - Mark Azure Function related dependency injection extensions `AddFunctionLoggingScope` and `UseLoggingScope` as obsolete.
