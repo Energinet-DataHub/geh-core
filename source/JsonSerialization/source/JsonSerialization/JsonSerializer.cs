@@ -43,12 +43,8 @@ namespace Energinet.DataHub.Core.JsonSerialization
         {
             ArgumentNullException.ThrowIfNull(utf8Json);
 
-            var result = await System.Text.Json.JsonSerializer.DeserializeAsync(utf8Json, returnType, _options).ConfigureAwait(false);
-
-            if (result == null)
-            {
-                throw new NullReferenceException($"Deserialization the stream of type {nameof(returnType)} returned null");
-            }
+            var result = await System.Text.Json.JsonSerializer.DeserializeAsync(utf8Json, returnType, _options).ConfigureAwait(false)
+                ?? throw new NullReferenceException($"Deserialization the stream of type {nameof(returnType)} returned null");
 
             return result;
         }
@@ -57,12 +53,8 @@ namespace Energinet.DataHub.Core.JsonSerialization
         {
             ArgumentNullException.ThrowIfNull(json);
 
-            var result = System.Text.Json.JsonSerializer.Deserialize<TValue>(json, _options);
-
-            if (result == null)
-            {
-                throw new NullReferenceException("Deserialization of the string returned null");
-            }
+            var result = System.Text.Json.JsonSerializer.Deserialize<TValue>(json, _options)
+                ?? throw new NullReferenceException("Deserialization of the string returned null");
 
             return result;
         }
@@ -71,12 +63,8 @@ namespace Energinet.DataHub.Core.JsonSerialization
         {
             ArgumentNullException.ThrowIfNull(json);
 
-            var result = System.Text.Json.JsonSerializer.Deserialize(json, returnType, _options);
-
-            if (result == null)
-            {
-                throw new NullReferenceException($"Deserialization the string of type {nameof(returnType)} returned null");
-            }
+            var result = System.Text.Json.JsonSerializer.Deserialize(json, returnType, _options)
+                ?? throw new NullReferenceException($"Deserialization the string of type {nameof(returnType)} returned null");
 
             return result;
         }

@@ -14,12 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="1.4.1" />
     <PackageReference Include="FluentAssertions" Version="6.12.2" />
