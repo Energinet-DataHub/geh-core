@@ -21,5 +21,6 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Common
     {
         // Function
         public const string AzureWebJobsStorage = "AzureWebJobsStorage";
+        public const string FunctionWorkerRuntime = "FUNCTIONS_WORKER_RUNTIME";
     }
 }

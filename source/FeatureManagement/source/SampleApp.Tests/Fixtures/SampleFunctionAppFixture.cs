@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FeatureManagement.SampleApp.Common;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -52,9 +49,10 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
             }
 
             var buildConfiguration = GetBuildConfiguration();
-            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\SampleApp\\bin\\{buildConfiguration}\\net6.0";
+            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\SampleApp\\bin\\{buildConfiguration}\\net8.0";
 
             hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.FunctionWorkerRuntime, "dotnet-isolated");
 
             // => Feature flags
             hostSettings.ProcessEnvironmentVariables.Add(UseGuidMessageSettingName, "false");
