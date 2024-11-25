@@ -17,13 +17,7 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <LangVersion>12</LangVersion>
     <IsPackable>true</IsPackable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Energinet.DataHub.Core.Databricks.SqlStatementExecution</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Databricks.SqlStatementExecution</RootNamespace>
   </PropertyGroup>

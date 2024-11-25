@@ -17,12 +17,6 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>12</LangVersion>
-    <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Databricks.Jobs.IntegrationTests</RootNamespace>
     <IsPackable>false</IsPackable>
