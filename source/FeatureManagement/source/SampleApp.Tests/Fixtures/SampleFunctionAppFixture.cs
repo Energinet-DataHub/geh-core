@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.FeatureManagement.SampleApp.Common;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 
 namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
 {
