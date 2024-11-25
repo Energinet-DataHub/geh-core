@@ -69,6 +69,7 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
             foreach (var logEntry in hostLogSnapshot)
             {
                 TestLogger.WriteLine(logEntry);
+                TestLogger.TestOutputHelper?.WriteLine(logEntry);
             }
 
             return base.OnFunctionAppHostStartedAsync(hostLogSnapshot);
