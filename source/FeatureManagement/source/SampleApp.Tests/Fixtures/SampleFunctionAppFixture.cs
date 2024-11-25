@@ -21,6 +21,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 
 namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
 {
@@ -88,6 +89,7 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
         {
             foreach (var logEntry in hostLogSnapshot)
             {
+                ConsoleOutput.Instance.WriteLine(logEntry, OutputLevel.Error);
                 TestLogger.WriteLine(logEntry);
             }
 
