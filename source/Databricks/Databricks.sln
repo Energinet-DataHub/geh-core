@@ -23,11 +23,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.UnitT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlStatementExecution.IntegrationTests", "source\SqlStatementExecution.IntegrationTests\SqlStatementExecution.IntegrationTests.csproj", "{E8A56710-1EB2-4ED1-8E93-E3653F815983}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs", "source\Jobs\Jobs.csproj", "{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jobs", "source\Jobs\Jobs.csproj", "{D13CCA95-0E2F-47E1-9266-F2020BB7E1A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.UnitTests", "source\Jobs.UnitTests\Jobs.UnitTests.csproj", "{390C1889-635B-4B3E-A754-051E31A30110}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jobs.UnitTests", "source\Jobs.UnitTests\Jobs.UnitTests.csproj", "{390C1889-635B-4B3E-A754-051E31A30110}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.IntegrationTests", "source\Jobs.IntegrationTests\Jobs.IntegrationTests.csproj", "{2E3F08FC-523F-4150-828B-07D6304DDF9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jobs.IntegrationTests", "source\Jobs.IntegrationTests\Jobs.IntegrationTests.csproj", "{2E3F08FC-523F-4150-828B-07D6304DDF9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_ConfigurationFiles", "{2EDADDAC-03A0-4AFB-AE32-184699B5A5CC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,4 +82,3 @@ Global
 		SolutionGuid = {66C69E01-8F6F-4E17-BA99-F00F5E65D57E}
 	EndGlobalSection
 EndGlobal
-
