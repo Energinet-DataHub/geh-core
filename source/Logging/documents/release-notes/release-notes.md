@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 4.0.0
+
+- Bumped to .NET 8
+
 ## Version 3.2.1
 
 - Bumped various NuGet packages to the latest versions.

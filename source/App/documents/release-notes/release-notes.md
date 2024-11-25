@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 14.0.0
+
+- Bump various NuGet packages to latest versions.
+
 ## Version 13.3.2
 
 - Bump various NuGet packages to latest versions.
