@@ -16,9 +16,9 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ProjectGuid>{06B44BDA-BE24-4828-B415-9676B744D9B1}</ProjectGuid>
-    <AssemblyName>Energinet.DataHub.Core.FunctionApp.TestCommon</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Core.FunctionApp.TestCommon</RootNamespace>
+    <ProjectGuid>{1228827D-5151-4682-8C74-A43857294161}</ProjectGuid>
+    <AssemblyName>Energinet.DataHub.Core.DurableFunctionApp.TestCommon</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Core.DurableFunctionApp.TestCommon</RootNamespace>
     <IsPackable>true</IsPackable>
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
@@ -30,9 +30,9 @@ limitations under the License.
   </ItemGroup>
 
   <PropertyGroup>
-    <PackageId>Energinet.DataHub.Core.FunctionApp.TestCommon</PackageId>
+    <PackageId>Energinet.DataHub.Core.DurableFunctionApp.TestCommon</PackageId>
     <PackageVersion>7.0.5$(VersionSuffix)</PackageVersion>
-    <Title>FunctionApp TestCommon library</Title>
+    <Title>DurableFunctionApp TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
     <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
@@ -52,7 +52,7 @@ limitations under the License.
       [Release Notes](https://github.com/Energinet-DataHub/geh-core/blob/master/source/TestCommon/documents/release-notes/release-notes.md)
       [Documentation](https://github.com/Energinet-DataHub/geh-core/blob/master/source/TestCommon/documents/documentation.md)
     </PackageDescription>
-    <Description>Library to support the implementation of xUnit tests of Energinet DataHub Azure Functions.</Description>
+    <Description>Library to support the implementation of xUnit tests of Energinet DataHub Azure Durable Functions.</Description>
     <PackageTags>energinet;datahub;testing</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -72,38 +72,9 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="TestCertificate\test-common-cert.pfx">
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.2" />
-    <PackageReference Include="Azure.Identity" Version="1.13.1" />
-    <PackageReference Include="Azure.Messaging.EventHubs.Processor" Version="5.11.5" />
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.2" />
-    <PackageReference Include="Azure.Messaging.EventHubs" Version="5.11.5" />
-    <PackageReference Include="Azure.ResourceManager.EventHubs" Version="1.1.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
-    <PackageReference Include="CsvHelper" Version="33.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
-    <PackageReference Include="Polly" Version="8.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
-    <PackageReference Include="System.Management" Version="8.0.0" />
-    <PackageReference Include="WireMock.Net" Version="1.6.8" />
-    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.13.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

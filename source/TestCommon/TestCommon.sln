@@ -36,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_Con
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DurableFunctionApp.TestCommon", "source\DurableFunctionApp.TestCommon\DurableFunctionApp.TestCommon.csproj", "{FD086C2D-A290-49BD-ABFD-266589A72C3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{68F3FA93-576F-4B43-939D-EC5CFA1A5E06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68F3FA93-576F-4B43-939D-EC5CFA1A5E06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68F3FA93-576F-4B43-939D-EC5CFA1A5E06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD086C2D-A290-49BD-ABFD-266589A72C3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD086C2D-A290-49BD-ABFD-266589A72C3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD086C2D-A290-49BD-ABFD-266589A72C3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD086C2D-A290-49BD-ABFD-266589A72C3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{06B44BDA-BE24-4828-B415-9676B744D9B1} = {A07C3AD4-FD2D-4020-9D25-F49E92463C4F}
 		{68F3FA93-576F-4B43-939D-EC5CFA1A5E06} = {A07C3AD4-FD2D-4020-9D25-F49E92463C4F}
 		{1A45D1B9-D8D4-47A4-A201-D2D585089F68} = {3596B88D-1C47-4D10-AFE8-0EE81AD6B968}
+		{FD086C2D-A290-49BD-ABFD-266589A72C3F} = {A07C3AD4-FD2D-4020-9D25-F49E92463C4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E7A777FC-C55F-4337-B266-CC1FE179D489}
