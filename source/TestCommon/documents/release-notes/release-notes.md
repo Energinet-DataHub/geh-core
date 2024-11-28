@@ -2,7 +2,11 @@
 
 ## Version 7.0.5
 
-- Bumped various NuGet packages to the latest versions.
+- Added project `DurableFunctionApp.TestCommon`.
+    - Added class `DurableClientExtensions`.
+    - Added class `DurableTaskManager`.
+- Refactored class `AzuriteManager`
+    - Added static method `CleanupAzuriteStorage`
 
 ## Version 7.0.4
 
