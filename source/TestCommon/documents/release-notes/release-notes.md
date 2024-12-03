@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 7.0.5
+
+- Bumped various NuGet packages to the latest versions.
+
 ## Version 7.0.4
 
 - Bumped various NuGet packages to the latest versions.
