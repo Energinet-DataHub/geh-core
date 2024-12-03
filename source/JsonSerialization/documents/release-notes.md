@@ -1,5 +1,10 @@
 # JsonSerialization Release Notes
 
+## Version 3.0.1
+
+- Bumped various NuGet packages to the latest versions.
+- No functional changes.
+
 ## Version 3.0.0
 
 - Bumped to .NET 8
