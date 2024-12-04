@@ -1,5 +1,10 @@
 # Databricks Release Notes
 
+## Version 12.0.1
+
+- Bump various NuGet packages to latest versions.
+- No functional change.
+
 ## Version 12.0.0
 
 - Bump various NuGet packages to latest versions.
