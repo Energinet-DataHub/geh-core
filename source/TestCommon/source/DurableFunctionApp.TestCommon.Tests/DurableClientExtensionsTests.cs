@@ -22,15 +22,15 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests;
 
-[Collection(nameof(DurableTaskMockCollectionFixture))]
-public class DurableClientTests(DurableTaskFixture fixture)
+[Collection(nameof(DurableTaskCollectionFixture))]
+public class DurableClientExtensionsTests(DurableTaskFixture fixture)
 {
     [Fact]
     public async Task Given_WaitForInstanceCompletedAsyncIsCalled_When_OrchestrationFails_Then_ThrowException()
     {
         // Arrange
         var instanceId = "testInstanceId";
-        var mockClient = Mock.Get(fixture.MockDurableClient);
+        var mockClient = Mock.Get(fixture.DurableClientMock);
 
         mockClient.Setup(client => client.GetStatusAsync(instanceId, false, false, true))
             .ReturnsAsync(new DurableOrchestrationStatus
@@ -39,7 +39,7 @@ public class DurableClientTests(DurableTaskFixture fixture)
             });
 
         // Act
-        Func<Task> act = () => fixture.MockDurableClient.WaitForInstanceCompletedAsync(instanceId);
+        var act = () => fixture.DurableClientMock.WaitForInstanceCompletedAsync(instanceId);
 
         // Assert
         await act.Should().ThrowAsync<Exception>();
@@ -51,7 +51,7 @@ public class DurableClientTests(DurableTaskFixture fixture)
         // Arrange
         var instanceId = "testInstanceId";
         var expectedCustomStatus = new { State = "Ready" };
-        var mockClient = Mock.Get(fixture.MockDurableClient);
+        var mockClient = Mock.Get(fixture.DurableClientMock);
 
         mockClient.Setup(client => client.GetStatusAsync(instanceId, false, false, true))
             .ReturnsAsync(new DurableOrchestrationStatus
@@ -68,7 +68,7 @@ public class DurableClientTests(DurableTaskFixture fixture)
             });
 
         // Act
-        var result = await fixture.MockDurableClient.WaitForCustomStatusAsync<JObject>(
+        var result = await fixture.DurableClientMock.WaitForCustomStatusAsync<JObject>(
             instanceId,
             customStatus => customStatus["State"]?.ToString() == "Ready");
 

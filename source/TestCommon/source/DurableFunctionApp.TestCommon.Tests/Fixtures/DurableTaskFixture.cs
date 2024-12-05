@@ -20,31 +20,34 @@ namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests.Fixtures;
 
 public class DurableTaskFixture
 {
-    public IDurableClient MockDurableClient { get; }
-
-    public DurableTaskManager TaskManager { get; }
-
     public DurableTaskFixture()
     {
-        // Setup mocked IDurableClient
-        var mockClient = new Mock<IDurableClient>();
+        DurableClientMock = SetupDurableClientMock();
+        DurableTaskManager = new DurableTaskManager(
+            "StorageConnectionString",
+            "UseDevelopmentStorage=true");
+    }
 
-        mockClient.Setup(client => client.ListInstancesAsync(It.IsAny<OrchestrationStatusQueryCondition>(), It.IsAny<CancellationToken>()))
+    public IDurableClient DurableClientMock { get; }
+
+    public DurableTaskManager DurableTaskManager { get; }
+
+    public void Dispose()
+    {
+        DurableTaskManager?.Dispose();
+    }
+
+    private static IDurableClient SetupDurableClientMock()
+    {
+        var durableClientMock = new Mock<IDurableClient>();
+
+        durableClientMock
+            .Setup(client => client.ListInstancesAsync(It.IsAny<OrchestrationStatusQueryCondition>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new OrchestrationStatusQueryResult
             {
                 DurableOrchestrationState = [],
             });
 
-        MockDurableClient = mockClient.Object;
-
-        // Setup DurableTaskManager
-        TaskManager = new DurableTaskManager(
-            "StorageConnectionString",
-            "UseDevelopmentStorage=true");
-    }
-
-    public void Dispose()
-    {
-        TaskManager?.Dispose();
+        return durableClientMock.Object;
     }
 }
