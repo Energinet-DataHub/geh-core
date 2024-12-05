@@ -20,6 +20,9 @@ namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.DurableTask;
 
 public static class DurableClientExtensions
 {
+    private const int WaitTimeLimit = 60;
+    private const int DelayLimit = 5;
+
     /// <summary>
     /// Wait for an orchestration that is either running or completed,
     /// and which was started at, or later, than given <paramref name="createdTimeFrom"/>.
@@ -28,13 +31,11 @@ public static class DurableClientExtensions
     /// </summary>
     /// <param name="client"></param>
     /// <param name="createdTimeFrom"></param>
-    /// <param name="name"></param>
     /// <param name="waitTimeLimit">Max time to wait for orchestration. If not specified it defaults to 30 seconds.</param>
     /// <returns>If started within given <paramref name="waitTimeLimit"/> it returns the orchestration status; otherwise it throws an exception.</returns>
-    public static async Task<DurableOrchestrationStatus> WaitForOrchestrationStatusAsync(
+    public static async Task<DurableOrchestrationStatus> WaitForOrchestationStartedAsync(
         this IDurableClient client,
         DateTime createdTimeFrom,
-        string? name = null,
         TimeSpan? waitTimeLimit = null)
     {
         var filter = new OrchestrationStatusQueryCondition()
@@ -42,14 +43,12 @@ public static class DurableClientExtensions
             CreatedTimeFrom = createdTimeFrom,
             RuntimeStatus =
             [
-                OrchestrationRuntimeStatus.Pending,
                 OrchestrationRuntimeStatus.Running,
                 OrchestrationRuntimeStatus.Completed,
-                OrchestrationRuntimeStatus.Failed,
             ],
         };
 
-        IEnumerable<DurableOrchestrationStatus> durableOrchestrationState = [];
+        IReadOnlyCollection<DurableOrchestrationStatus> durableOrchestrationState = [];
         var isAvailable = await Awaiter.TryWaitUntilConditionAsync(
             async () =>
             {
@@ -58,49 +57,16 @@ public static class DurableClientExtensions
                 if (queryResult == null)
                     return false;
 
-                durableOrchestrationState = queryResult.DurableOrchestrationState
-                    .Where(o => name == null || o.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                durableOrchestrationState = queryResult.DurableOrchestrationState.ToList();
 
-                return durableOrchestrationState.Any();
+                return durableOrchestrationState.Count > 0;
             },
-            waitTimeLimit ?? TimeSpan.FromSeconds(60),
-            delay: TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
+            delay: TimeSpan.FromSeconds(DelayLimit)).ConfigureAwait(false);
 
         return isAvailable
             ? durableOrchestrationState.Single()
             : throw new Exception($"Orchestration did not start within configured wait time limit.");
-    }
-
-    /// <summary>
-    /// Search for an orchestration that is either running or completed,
-    /// and which was started at, or later, than given <paramref name="createdTimeFrom"/>.
-    ///
-    /// If more than one orchestration exists an exception is thrown.
-    /// </summary>
-    public static async Task<DurableOrchestrationStatus> WaitForOrchestationStartedAsync(
-        this IDurableClient client,
-        DateTime createdTimeFrom,
-        TimeSpan? waitTimeLimit = null)
-    {
-        IReadOnlyCollection<DurableOrchestrationStatus> orchestrationInstances = [];
-        var orchestrationFound = await Awaiter.TryWaitUntilConditionAsync(
-            async () =>
-            {
-                var orchestrationsQueryResult = await GetOrchestrationInstancesAsync(client, createdTimeFrom).ConfigureAwait(false);
-                orchestrationInstances = orchestrationsQueryResult.DurableOrchestrationState.ToList();
-
-                return orchestrationInstances.Count > 0;
-            },
-            timeLimit: waitTimeLimit ?? TimeSpan.FromSeconds(60),
-            delay: TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-
-        if (!orchestrationFound)
-            throw new Exception($"No orchestration instance found within configured wait time limit.");
-
-        if (orchestrationInstances.Count > 1)
-            throw new Exception($"More than one orchestration instance found. Expected 1, but found {orchestrationInstances.Count}");
-
-        return orchestrationInstances.Single();
     }
 
     /// <summary>
@@ -123,13 +89,11 @@ public static class DurableClientExtensions
                 // Do not retrieve history here as it could be expensive
                 var completeOrchestrationStatus = await client.GetStatusAsync(instanceId).ConfigureAwait(false);
 
-                if (completeOrchestrationStatus.RuntimeStatus == OrchestrationRuntimeStatus.Failed)
-                    throw new Exception($"Orchestration instance '{instanceId}' was status 'failed'.");
-
-                return completeOrchestrationStatus.RuntimeStatus == OrchestrationRuntimeStatus.Completed;
+                return completeOrchestrationStatus.RuntimeStatus != OrchestrationRuntimeStatus.Failed
+                    && completeOrchestrationStatus.RuntimeStatus == OrchestrationRuntimeStatus.Completed;
             },
-            waitTimeLimit ?? TimeSpan.FromSeconds(30),
-            delay: TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
+            delay: TimeSpan.FromSeconds(DelayLimit)).ConfigureAwait(false);
 
         return isCompleted
             ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true).ConfigureAwait(false)
@@ -159,27 +123,12 @@ public static class DurableClientExtensions
 
                 return isMatch;
             },
-            waitTimeLimit ?? TimeSpan.FromSeconds(30),
-            delay: TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
+            delay: TimeSpan.FromSeconds(DelayLimit)).ConfigureAwait(false);
 
         var actualStatus = await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true).ConfigureAwait(false);
         return matchesCustomStatus
             ? actualStatus
             : throw new Exception($"Orchestration instance '{instanceId}' did not match custom status within configured wait time limit. Actual status: {actualStatus.CustomStatus.ToString(Formatting.Indented)}");
-    }
-
-    private static async Task<OrchestrationStatusQueryResult> GetOrchestrationInstancesAsync(IDurableClient client, DateTime createdTimeFrom)
-    {
-        var filter = new OrchestrationStatusQueryCondition()
-        {
-            CreatedTimeFrom = createdTimeFrom,
-            RuntimeStatus =
-            [
-                OrchestrationRuntimeStatus.Running,
-                OrchestrationRuntimeStatus.Completed,
-            ],
-        };
-        var queryResult = await client.ListInstancesAsync(filter, CancellationToken.None).ConfigureAwait(false);
-        return queryResult;
     }
 }

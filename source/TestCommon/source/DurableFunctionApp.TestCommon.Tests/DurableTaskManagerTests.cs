@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.DurableTask;
 using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests.Fixtures;
+using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests;
@@ -25,9 +26,9 @@ public class DurableTaskManagerTests(DurableTaskFixture fixture)
     public void When_TaskManagerIsInitialized_Then_ItShouldInitializeCorrectly()
     {
         // Assert
-        Assert.NotNull(fixture.TaskManager);
-        Assert.Equal("StorageConnectionString", fixture.TaskManager.ConnectionStringName);
-        Assert.Equal("UseDevelopmentStorage=true", fixture.TaskManager.ConnectionString);
+        fixture.TaskManager.Should().NotBeNull();
+        fixture.TaskManager.ConnectionStringName.Should().Be("StorageConnectionString");
+        fixture.TaskManager.ConnectionString.Should().Be("UseDevelopmentStorage=true");
     }
 
     [Fact]
@@ -40,7 +41,7 @@ public class DurableTaskManagerTests(DurableTaskFixture fixture)
         var client = fixture.TaskManager.CreateClient(taskHubName);
 
         // Assert
-        Assert.NotNull(client);
+        client.Should().NotBeNull();
     }
 
     [Fact]
@@ -53,6 +54,7 @@ public class DurableTaskManagerTests(DurableTaskFixture fixture)
         await manager.DisposeAsync();
 
         // Assert
-        Assert.Throws<ObjectDisposedException>(() => manager.CreateClient("TestHub"));
+        Action act = () => manager.CreateClient("TestHub");
+        act.Should().Throw<ObjectDisposedException>();
     }
 }

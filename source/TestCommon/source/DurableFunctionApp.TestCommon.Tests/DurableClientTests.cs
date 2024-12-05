@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.DurableTask;
 using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests.Fixtures;
+using FluentAssertions;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -24,35 +25,6 @@ namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests;
 [Collection(nameof(DurableTaskMockCollectionFixture))]
 public class DurableClientTests(DurableTaskFixture fixture)
 {
-    [Fact]
-    public async Task Given_WaitForOrchestrationStatusAsyncIsCalled_When_OrchestrationExists_Then_ReturnOrchestrationStatus()
-    {
-        // Arrange
-        var createdTimeFrom = DateTime.UtcNow.AddMinutes(-5);
-        var orchestrationName = "TestOrchestration";
-
-        var mockStatus = new DurableOrchestrationStatus
-        {
-            Name = orchestrationName,
-            RuntimeStatus = OrchestrationRuntimeStatus.Completed,
-        };
-
-        var mockClient = Mock.Get(fixture.MockDurableClient);
-        mockClient.Setup(client => client.ListInstancesAsync(It.IsAny<OrchestrationStatusQueryCondition>(), CancellationToken.None))
-            .ReturnsAsync(new OrchestrationStatusQueryResult
-            {
-                DurableOrchestrationState = [mockStatus],
-            });
-
-        // Act
-        var result = await fixture.MockDurableClient.WaitForOrchestrationStatusAsync(createdTimeFrom, orchestrationName);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(orchestrationName, result.Name);
-        Assert.Equal(OrchestrationRuntimeStatus.Completed, result.RuntimeStatus);
-    }
-
     [Fact]
     public async Task Given_WaitForInstanceCompletedAsyncIsCalled_When_OrchestrationFails_Then_ThrowException()
     {
@@ -66,9 +38,11 @@ public class DurableClientTests(DurableTaskFixture fixture)
                 RuntimeStatus = OrchestrationRuntimeStatus.Failed,
             });
 
-        // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() =>
-            fixture.MockDurableClient.WaitForInstanceCompletedAsync(instanceId));
+        // Act
+        Func<Task> act = () => fixture.MockDurableClient.WaitForInstanceCompletedAsync(instanceId);
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>();
     }
 
     [Fact]
@@ -94,10 +68,12 @@ public class DurableClientTests(DurableTaskFixture fixture)
             });
 
         // Act
-        var result = await fixture.MockDurableClient.WaitForCustomStatusAsync<JObject>(instanceId, customStatus => customStatus["State"]?.ToString() == "Ready");
+        var result = await fixture.MockDurableClient.WaitForCustomStatusAsync<JObject>(
+            instanceId,
+            customStatus => customStatus["State"]?.ToString() == "Ready");
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(expectedCustomStatus.State, result.CustomStatus["State"]?.ToString());
+        result.Should().NotBeNull();
+        result.CustomStatus["State"]?.ToString().Should().Be(expectedCustomStatus.State);
     }
 }

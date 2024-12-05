@@ -131,7 +131,7 @@ public class AzuriteManager : IDisposable
     /// <summary>
     /// Cleanup Azurite storage.
     /// </summary>
-    public static void CleanupAzuriteStorage()
+    public void CleanupAzuriteStorage()
     {
         if (Directory.Exists("__blobstorage__"))
             Directory.Delete("__blobstorage__", true);

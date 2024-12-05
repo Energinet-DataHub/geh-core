@@ -82,14 +82,7 @@ public sealed class DurableTaskManager : IDisposable, IAsyncDisposable
         if (_disposed)
             return;
 
-        if (ServiceProvider is IAsyncDisposable asyncDisposable)
-        {
-            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            ServiceProvider.Dispose();
-        }
+        await ServiceProvider.DisposeAsync().ConfigureAwait(false);
 
         _disposed = true;
     }

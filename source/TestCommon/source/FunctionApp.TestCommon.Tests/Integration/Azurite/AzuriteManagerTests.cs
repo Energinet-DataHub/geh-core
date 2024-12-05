@@ -271,6 +271,53 @@ public class AzuriteManagerTests
             // Assert
             exception.Should().BeNull();
         }
+
+        [Fact]
+        public void Given_FilesAndDirectoriesExist_When_CleanupAzuriteStorageIsCalled_Then_TheyShouldBeDeleted()
+        {
+            // Arrange
+            var directoriesToCreate = new[] { "__blobstorage__", "__queuestorage__", "__tablestorage__" };
+            var filesToCreate = new[]
+            {
+                "__azurite_db_blob__.json",
+                "__azurite_db_blob_extent__.json",
+                "__azurite_db_queue__.json",
+                "__azurite_db_queue_extent__.json",
+                "__azurite_db_table__.json",
+                "__azurite_db_table_extent__.json",
+            };
+
+            // Create directories and files to simulate existing storage
+            foreach (var directory in directoriesToCreate)
+            {
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+            }
+
+            foreach (var file in filesToCreate)
+            {
+                if (!File.Exists(file))
+                {
+                    File.WriteAllText(file, "test content");
+                }
+            }
+
+            // Act
+            Fixture.AzuriteManager!.CleanupAzuriteStorage();
+
+            // Assert
+            foreach (var directory in directoriesToCreate)
+            {
+                Directory.Exists(directory).Should().BeFalse($"{directory} should be deleted by CleanupAzuriteStorage.");
+            }
+
+            foreach (var file in filesToCreate)
+            {
+                File.Exists(file).Should().BeFalse($"{file} should be deleted by CleanupAzuriteStorage.");
+            }
+        }
     }
 
     /// <summary>

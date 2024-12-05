@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{
 	ProjectSection(SolutionItems) = preProject
 		documents\development.md = documents\development.md
 		documents\documentation.md = documents\documentation.md
+		documents\durablefunctionapp-testcommon.md = documents\durablefunctionapp-testcommon.md
 		documents\eventhublistenermock.md = documents\eventhublistenermock.md
 		documents\eventhubresourceprovider.md = documents\eventhubresourceprovider.md
 		documents\functionapp-testcommon.md = documents\functionapp-testcommon.md
