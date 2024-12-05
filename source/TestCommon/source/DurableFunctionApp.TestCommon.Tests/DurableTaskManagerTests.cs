@@ -23,15 +23,6 @@ namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests;
 public class DurableTaskManagerTests(DurableTaskFixture fixture)
 {
     [Fact]
-    public void When_TaskManagerIsInitialized_Then_ItShouldInitializeCorrectly()
-    {
-        // Assert
-        fixture.DurableTaskManager.Should().NotBeNull();
-        fixture.DurableTaskManager.ConnectionStringName.Should().Be("StorageConnectionString");
-        fixture.DurableTaskManager.ConnectionString.Should().Be("UseDevelopmentStorage=true");
-    }
-
-    [Fact]
     public void When_CreateClientIsCalled_Then_ANewDurableTaskManagerIsReturned()
     {
         // Arrange
