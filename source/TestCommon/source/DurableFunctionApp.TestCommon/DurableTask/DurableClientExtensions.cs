@@ -31,7 +31,7 @@ public static class DurableClientExtensions
     /// </summary>
     /// <param name="client"></param>
     /// <param name="createdTimeFrom"></param>
-    /// <param name="waitTimeLimit">Max time to wait for orchestration. If not specified it defaults to 30 seconds.</param>
+    /// <param name="waitTimeLimit">Max time to wait for orchestration. If not specified it defaults to the value of<see cref="WaitTimeLimit"/> in seconds.</param>
     /// <returns>If started within given <paramref name="waitTimeLimit"/> it returns the orchestration status; otherwise it throws an exception.</returns>
     public static async Task<DurableOrchestrationStatus> WaitForOrchestationStartedAsync(
         this IDurableClient client,
@@ -74,7 +74,7 @@ public static class DurableClientExtensions
     /// </summary>
     /// <param name="client"></param>
     /// <param name="instanceId"></param>
-    /// <param name="waitTimeLimit">Max time to wait for completion. If not specified it defaults to 30 seconds.</param>
+    /// <param name="waitTimeLimit">Max time to wait for completion. If not specified it defaults to the value of <see cref="WaitTimeLimit"/> in seconds.</param>
     /// <returns>If completed within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
     public static async Task<DurableOrchestrationStatus> WaitForInstanceCompletedAsync(
         this IDurableClient client,
