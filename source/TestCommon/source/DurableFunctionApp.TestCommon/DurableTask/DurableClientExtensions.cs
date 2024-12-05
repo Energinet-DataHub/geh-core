@@ -45,6 +45,7 @@ public static class DurableClientExtensions
             [
                 OrchestrationRuntimeStatus.Running,
                 OrchestrationRuntimeStatus.Completed,
+                OrchestrationRuntimeStatus.Failed,
             ],
         };
 
@@ -59,7 +60,11 @@ public static class DurableClientExtensions
 
                 durableOrchestrationState = queryResult.DurableOrchestrationState.ToList();
 
-                return durableOrchestrationState.Count > 0;
+                return durableOrchestrationState.Count != 1
+                    ? throw new Exception($"Unexpected amount of orchestration instances found. Expected 1, but found {durableOrchestrationState.Count}")
+                    : durableOrchestrationState.Single().RuntimeStatus == OrchestrationRuntimeStatus.Failed
+                    ? throw new Exception($"Orchestration has failed.")
+                    : true;
             },
             waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
             delay: TimeSpan.FromSeconds(DelayLimit)).ConfigureAwait(false);
@@ -89,8 +94,16 @@ public static class DurableClientExtensions
                 // Do not retrieve history here as it could be expensive
                 var completeOrchestrationStatus = await client.GetStatusAsync(instanceId).ConfigureAwait(false);
 
-                return completeOrchestrationStatus.RuntimeStatus != OrchestrationRuntimeStatus.Failed
-                    && completeOrchestrationStatus.RuntimeStatus == OrchestrationRuntimeStatus.Completed;
+                return completeOrchestrationStatus.RuntimeStatus switch
+                {
+                    OrchestrationRuntimeStatus.Failed or
+                    OrchestrationRuntimeStatus.Suspended or
+                    OrchestrationRuntimeStatus.Canceled or
+                    OrchestrationRuntimeStatus.Terminated
+                        => throw new Exception($"Orchestration with instanceId `{instanceId}` has an invalid state. State: `{completeOrchestrationStatus.RuntimeStatus}`"),
+                    OrchestrationRuntimeStatus.Completed => true,
+                    _ => false,
+                };
             },
             waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
             delay: TimeSpan.FromSeconds(DelayLimit)).ConfigureAwait(false);
