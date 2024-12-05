@@ -20,10 +20,6 @@ namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests.Fixtures;
 
 public class DurableTaskFixture
 {
-    public IDurableClient MockDurableClient { get; }
-
-    public DurableTaskManager TaskManager { get; }
-
     public DurableTaskFixture()
     {
         // Setup mocked IDurableClient
@@ -37,11 +33,17 @@ public class DurableTaskFixture
 
         MockDurableClient = mockClient.Object;
 
+        // Test
+
         // Setup DurableTaskManager
         TaskManager = new DurableTaskManager(
             "StorageConnectionString",
             "UseDevelopmentStorage=true");
     }
+
+    public IDurableClient MockDurableClient { get; }
+
+    public DurableTaskManager TaskManager { get; }
 
     public void Dispose()
     {
