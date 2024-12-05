@@ -22,7 +22,7 @@ public class DurableTaskFixture
 {
     public DurableTaskFixture()
     {
-        DurableClientMock = SetupDurableClientMock().Object;
+        DurableClientMock = SetupDurableClientMock();
         DurableTaskManager = new DurableTaskManager(
             "StorageConnectionString",
             "UseDevelopmentStorage=true");
@@ -37,7 +37,7 @@ public class DurableTaskFixture
         DurableTaskManager?.Dispose();
     }
 
-    private static Mock<IDurableClient> SetupDurableClientMock()
+    private static IDurableClient SetupDurableClientMock()
     {
         var durableClientMock = new Mock<IDurableClient>();
 
@@ -48,6 +48,6 @@ public class DurableTaskFixture
                 DurableOrchestrationState = [],
             });
 
-        return durableClientMock;
+        return durableClientMock.Object;
     }
 }
