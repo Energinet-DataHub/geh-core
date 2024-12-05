@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests.Fixtures;
 
-[CollectionDefinition(nameof(DurableTaskMockCollectionFixture))]
-public class DurableTaskMockCollectionFixture : ICollectionFixture<DurableTaskFixture>
+[CollectionDefinition(nameof(DurableTaskCollectionFixture))]
+public class DurableTaskCollectionFixture : ICollectionFixture<DurableTaskFixture>
 {
 }

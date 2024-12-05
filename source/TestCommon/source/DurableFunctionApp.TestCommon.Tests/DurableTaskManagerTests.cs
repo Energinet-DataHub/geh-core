@@ -19,16 +19,16 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests;
 
-[Collection(nameof(DurableTaskMockCollectionFixture))]
+[Collection(nameof(DurableTaskCollectionFixture))]
 public class DurableTaskManagerTests(DurableTaskFixture fixture)
 {
     [Fact]
     public void When_TaskManagerIsInitialized_Then_ItShouldInitializeCorrectly()
     {
         // Assert
-        fixture.TaskManager.Should().NotBeNull();
-        fixture.TaskManager.ConnectionStringName.Should().Be("StorageConnectionString");
-        fixture.TaskManager.ConnectionString.Should().Be("UseDevelopmentStorage=true");
+        fixture.DurableTaskManager.Should().NotBeNull();
+        fixture.DurableTaskManager.ConnectionStringName.Should().Be("StorageConnectionString");
+        fixture.DurableTaskManager.ConnectionString.Should().Be("UseDevelopmentStorage=true");
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class DurableTaskManagerTests(DurableTaskFixture fixture)
         var taskHubName = "TestHub";
 
         // Act
-        var client = fixture.TaskManager.CreateClient(taskHubName);
+        var client = fixture.DurableTaskManager.CreateClient(taskHubName);
 
         // Assert
         client.Should().NotBeNull();

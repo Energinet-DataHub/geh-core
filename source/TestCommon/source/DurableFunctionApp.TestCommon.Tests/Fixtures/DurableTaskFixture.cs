@@ -22,31 +22,32 @@ public class DurableTaskFixture
 {
     public DurableTaskFixture()
     {
-        // Setup mocked IDurableClient
-        var mockClient = new Mock<IDurableClient>();
+        DurableClientMock = SetupDurableClientMock().Object;
+        DurableTaskManager = new DurableTaskManager(
+            "StorageConnectionString",
+            "UseDevelopmentStorage=true");
+    }
 
-        mockClient.Setup(client => client.ListInstancesAsync(It.IsAny<OrchestrationStatusQueryCondition>(), It.IsAny<CancellationToken>()))
+    public IDurableClient DurableClientMock { get; }
+
+    public DurableTaskManager DurableTaskManager { get; }
+
+    public void Dispose()
+    {
+        DurableTaskManager?.Dispose();
+    }
+
+    private static Mock<IDurableClient> SetupDurableClientMock()
+    {
+        var durableClientMock = new Mock<IDurableClient>();
+
+        durableClientMock
+            .Setup(client => client.ListInstancesAsync(It.IsAny<OrchestrationStatusQueryCondition>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new OrchestrationStatusQueryResult
             {
                 DurableOrchestrationState = [],
             });
 
-        MockDurableClient = mockClient.Object;
-
-        // Test
-
-        // Setup DurableTaskManager
-        TaskManager = new DurableTaskManager(
-            "StorageConnectionString",
-            "UseDevelopmentStorage=true");
-    }
-
-    public IDurableClient MockDurableClient { get; }
-
-    public DurableTaskManager TaskManager { get; }
-
-    public void Dispose()
-    {
-        TaskManager?.Dispose();
+        return durableClientMock;
     }
 }
