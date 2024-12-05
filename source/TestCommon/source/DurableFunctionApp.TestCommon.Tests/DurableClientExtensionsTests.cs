@@ -23,7 +23,7 @@ using Xunit;
 namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests;
 
 [Collection(nameof(DurableTaskCollectionFixture))]
-public class DurableClientTests(DurableTaskFixture fixture)
+public class DurableClientExtensionsTests(DurableTaskFixture fixture)
 {
     [Fact]
     public async Task Given_WaitForInstanceCompletedAsyncIsCalled_When_OrchestrationFails_Then_ThrowException()
@@ -39,7 +39,7 @@ public class DurableClientTests(DurableTaskFixture fixture)
             });
 
         // Act
-        Func<Task> act = () => fixture.DurableClientMock.WaitForInstanceCompletedAsync(instanceId);
+        var act = () => fixture.DurableClientMock.WaitForInstanceCompletedAsync(instanceId);
 
         // Assert
         await act.Should().ThrowAsync<Exception>();
