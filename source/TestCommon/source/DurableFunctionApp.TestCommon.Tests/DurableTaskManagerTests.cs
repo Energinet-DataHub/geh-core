@@ -54,7 +54,7 @@ public class DurableTaskManagerTests(DurableTaskFixture fixture)
         await manager.DisposeAsync();
 
         // Assert
-        Action act = () => manager.CreateClient("TestHub");
+        var act = () => manager.CreateClient("TestHub");
         act.Should().Throw<ObjectDisposedException>();
     }
 }
