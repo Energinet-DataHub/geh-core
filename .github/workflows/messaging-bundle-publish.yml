@@ -58,17 +58,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v14
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v14
         with:
           use_azure_functions_tools: "true"
           azure_functions_core_tools_version: 4.0.5455
           azurite_version: 3.33.0
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v14
         with:
           solution_file_path: ./source/Messaging/Messaging.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
@@ -77,7 +77,7 @@ jobs:
           publish_test_report: "true"
 
       - name: Pack Communication project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v14
         with:
           project_path: ./source/Messaging/source/Communication/Communication.csproj
 
@@ -90,7 +90,7 @@ jobs:
             .github/workflows/messaging-bundle-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v13
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v14
         with:
           push_packages: ${{ env.PUSH_PACKAGES }}
           content_changed: ${{ steps.changed-content.outputs.any_changed }}
