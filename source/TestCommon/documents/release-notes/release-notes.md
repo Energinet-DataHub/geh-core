@@ -1,5 +1,13 @@
 # TestCommon Release notes
 
+## Version 7.1.0
+
+- Added project `DurableFunctionApp.TestCommon`.
+    - Added class `DurableClientExtensions`.
+    - Added class `DurableTaskManager`.
+- Refactored class `AzuriteManager`
+    - Added method `CleanupAzuriteStorage`
+
 ## Version 7.0.5
 
 - Bumped various NuGet packages to the latest versions.

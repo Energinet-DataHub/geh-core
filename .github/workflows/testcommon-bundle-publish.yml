@@ -22,6 +22,7 @@ on:
       - main
     paths:
       - source/TestCommon/source/FunctionApp.TestCommon/**
+      - source/TestCommon/source/DurableFunctionApp.TestCommon/**
       - source/TestCommon/source/TestCommon/**
       - .github/workflows/testcommon-bundle-publish.yml
   # Build, test, pack
@@ -85,12 +86,18 @@ jobs:
         with:
           project_path: ./source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj
 
+      - name: Pack DurableFunctionApp.TestCommon project
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
+        with:
+          project_path: ./source/TestCommon/source/DurableFunctionApp.TestCommon/DurableFunctionApp.TestCommon.csproj
+
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v41
         with:
           files: |
             source/TestCommon/source/FunctionApp.TestCommon/**/*.*
+            source/TestCommon/source/DurableFunctionApp.TestCommon/**/*.*
             source/TestCommon/source/TestCommon/**/*.*
             .github/workflows/testcommon-bundle-publish.yml
 
