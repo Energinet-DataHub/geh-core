@@ -39,7 +39,7 @@ public class DurableClientExtensionsTests(DurableTaskFixture fixture)
             });
 
         // Act
-        var act = () => fixture.DurableClientMock.WaitForInstanceCompletedAsync(instanceId);
+        var act = () => fixture.DurableClientMock.WaitForOrchestrationCompletedAsync(instanceId);
 
         // Assert
         await act.Should().ThrowAsync<Exception>();
