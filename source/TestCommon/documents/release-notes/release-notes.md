@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 7.1.1
+
+- Fix `DurableFunctionApp.TestCommon` method returning exception too early when waiting for an orchestration to start.
+
 ## Version 7.1.0
 
 - Added project `DurableFunctionApp.TestCommon`.
