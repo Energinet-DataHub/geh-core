@@ -30,12 +30,14 @@ public static class DurableClientExtensions
     /// If more than one orchestration exists an exception is thrown.
     /// </summary>
     /// <param name="client"></param>
-    /// <param name="createdTimeFrom"></param>
+    /// <param name="createdTimeFrom">The orchestration must be started after this datetime (in UTC)</param>
+    /// <param name="name">If provided, the orchestration name must be equal to this value (case insensitive)</param>
     /// <param name="waitTimeLimit">Max time to wait for orchestration. If not specified it defaults to the value of<see cref="WaitTimeLimit"/> in seconds.</param>
     /// <returns>If started within given <paramref name="waitTimeLimit"/> it returns the orchestration status; otherwise it throws an exception.</returns>
     public static async Task<DurableOrchestrationStatus> WaitForOrchestationStartedAsync(
         this IDurableClient client,
         DateTime createdTimeFrom,
+        string? name = null,
         TimeSpan? waitTimeLimit = null)
     {
         var filter = new OrchestrationStatusQueryCondition()
@@ -59,7 +61,9 @@ public static class DurableClientExtensions
                 if (queryResult == null || !queryResult.DurableOrchestrationState.Any())
                     return false;
 
-                durableOrchestrationState = queryResult.DurableOrchestrationState.ToList();
+                durableOrchestrationState = queryResult.DurableOrchestrationState
+                    .Where(o => name == null || o.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
                 if (durableOrchestrationState.Count > 1)
                     throw new Exception($"Unexpected amount of orchestration instances found. Expected 1, but found {durableOrchestrationState.Count}");
