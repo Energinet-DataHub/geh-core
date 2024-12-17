@@ -91,21 +91,6 @@ jobs:
       - name: Checkout repository
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v14
 
-      - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v14
-        with:
-          use_azure_functions_tools: "true"
-          azure_functions_core_tools_version: 4.0.5455
-
-      # - name: Build and test
-      #   uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v14
-      #   with:
-      #     solution_file_path: ./source/ProcessManager.NuGet.Filtered.slnf
-      #     azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
-      #     azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      #     azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
-      #     publish_test_report: "true"
-
       - name: Pack ${{ inputs.project_file}} project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v14
         with:
