@@ -66,9 +66,7 @@ jobs:
       affected_changes_testcommon: ${{ steps.filter_dotnetaffected_testcommon.outputs.affected_changes }}
       job_context_testcommon: ${{ steps.filter_dotnetaffected_testcommon.outputs.job_context }}
     steps:
-      # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
       - name: Checkout repository
-        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history so that we can determine the base commit
