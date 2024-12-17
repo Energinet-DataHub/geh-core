@@ -114,8 +114,8 @@ jobs:
           to_sha: ${{ steps.set_shas.outputs.head }}
           host_names: "
             {
-              'testcommon': 'TestCommon.csproj',
-              'testcommon_functionapp': 'FunctionApp.TestCommon.csproj',
-              'testcommon_durablefunctionapp': 'DurableFunctionApp.TestCommon.csproj'
+              'testcommon': 'TestCommon/TestCommon.csproj',
+              'testcommon_functionapp': 'FunctionApp.TestCommon/FunctionApp.TestCommon.csproj',
+              'testcommon_durablefunctionapp': 'DurableFunctionApp.TestCommon/DurableFunctionApp.TestCommon.csproj'
             }"
           print_debug_output: ${{ inputs.print_debug_output }}

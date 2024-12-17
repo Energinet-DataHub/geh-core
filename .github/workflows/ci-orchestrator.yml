@@ -43,6 +43,8 @@ jobs:
   #
   changes:
     uses: ./.github/workflows/detect-changes.yml
+    with:
+      print_debug_output: 'true'
 
   testcommon:
     needs: changes
