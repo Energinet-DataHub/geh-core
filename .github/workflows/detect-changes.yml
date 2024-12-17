@@ -52,7 +52,7 @@ on:
 jobs:
   changes:
     name: Determine relevant jobs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     # Set job outputs to values from filter step
     outputs:
       app_common: ${{ steps.filter.outputs.app_common }}
