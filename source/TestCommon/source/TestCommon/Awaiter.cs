@@ -21,7 +21,7 @@ public static class Awaiter
 {
     /// <summary>
     /// Completes when the "condition" returns true or
-    /// when the time limit is exceeded and a XUnitException is thrown.
+    /// when the time limit is exceeded and a XUnitException is thrown
     /// </summary>
     /// <param name="condition">Boolean condition that is checked.</param>
     /// <param name="timeLimit">Time limit until exception is thrown</param>
