@@ -42,53 +42,83 @@ jobs:
   changes:
     uses: ./.github/workflows/detect-changes.yml
 
-  app_common:
-    needs: changes
-    if: ${{ needs.changes.outputs.app_common == 'true' }}
-    uses: ./.github/workflows/app-common-bundle-publish.yml
-    secrets: inherit
-
-  featuremanagement:
-    needs: changes
-    if: ${{ needs.changes.outputs.featuremanagement == 'true' }}
-    uses: ./.github/workflows/featuremanagement-ci.yml
-    secrets: inherit
-
-  json_serialization:
-    needs: changes
-    if: ${{ needs.changes.outputs.json_serialization == 'true' }}
-    uses: ./.github/workflows/json-serialization-bundle-publish.yml
-    secrets: inherit
-
-  logging:
-    needs: changes
-    if: ${{ needs.changes.outputs.logging == 'true' }}
-    uses: ./.github/workflows/logging-bundle-publish.yml
-    secrets: inherit
-
-  messaging:
-    needs: changes
-    if: ${{ needs.changes.outputs.messaging == 'true' }}
-    uses: ./.github/workflows/messaging-bundle-publish.yml
-    secrets: inherit
-
   testcommon:
     needs: changes
-    if: ${{ needs.changes.outputs.testcommon == 'true' }}
-    uses: ./.github/workflows/testcommon-bundle-publish.yml
+    if: ${{ fromJson(needs.changes.outputs.job_context_testcommon).testcommon == 'true' }}
+    name: Pack TestCommon project
+    uses: ./.github/workflows/ci-dotnet-nuget.yml
+    with:
+      project_file: source/TestCommon/source/TestCommon/TestCommon.csproj
+      nupkg_recurse_path: source/TestCommon/source
     secrets: inherit
 
-  databricks:
+  testcommon_functionapp:
     needs: changes
-    if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: ./.github/workflows/databricks-bundle-publish.yml
+    if: ${{ fromJson(needs.changes.outputs.job_context_testcommon).testcommon_functionapp == 'true' }}
+    name: Pack FunctionApp.TestCommon project
+    uses: ./.github/workflows/ci-dotnet-nuget.yml
+    with:
+      project_file: source/TestCommon/source/FunctionApp.TestCommon/FunctionApp.TestCommon.csproj
+      nupkg_recurse_path: source/TestCommon/source/FunctionApp.TestCommon
     secrets: inherit
 
-  outbox:
+  testcommon_durable_functionapp:
     needs: changes
-    if: ${{ needs.changes.outputs.outbox == 'true' }}
-    uses: ./.github/workflows/outbox-bundle-publish.yml
+    if: ${{ fromJson(needs.changes.outputs.job_context_testcommon).testcommon_durablefunctionapp == 'true' }}
+    name: Pack DurableFunctionApp.TestCommon project
+    uses: ./.github/workflows/ci-dotnet-nuget.yml
+    with:
+      project_file: ./source/TestCommon/source/DurableFunctionApp.TestCommon/DurableFunctionApp.TestCommon.csproj
+      nupkg_recurse_path: source/TestCommon/source/DurableFunctionApp.TestCommon
     secrets: inherit
+
+  # app_common:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.app_common == 'true' }}
+  #   uses: ./.github/workflows/app-common-bundle-publish.yml
+  #   secrets: inherit
+
+  # featuremanagement:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.featuremanagement == 'true' }}
+  #   uses: ./.github/workflows/featuremanagement-ci.yml
+  #   secrets: inherit
+
+  # json_serialization:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.json_serialization == 'true' }}
+  #   uses: ./.github/workflows/json-serialization-bundle-publish.yml
+  #   secrets: inherit
+
+  # logging:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.logging == 'true' }}
+  #   uses: ./.github/workflows/logging-bundle-publish.yml
+  #   secrets: inherit
+
+  # messaging:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.messaging == 'true' }}
+  #   uses: ./.github/workflows/messaging-bundle-publish.yml
+  #   secrets: inherit
+
+  # testcommon:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.testcommon == 'true' }}
+  #   uses: ./.github/workflows/testcommon-bundle-publish.yml
+  #   secrets: inherit
+
+  # databricks:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.databricks == 'true' }}
+  #   uses: ./.github/workflows/databricks-bundle-publish.yml
+  #   secrets: inherit
+
+  # outbox:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.outbox == 'true' }}
+  #   uses: ./.github/workflows/outbox-bundle-publish.yml
+  #   secrets: inherit
 
   #
   # Branch policy status check
@@ -99,13 +129,15 @@ jobs:
     needs:
       [
         ci_base,
-        app_common,
-        featuremanagement,
-        json_serialization,
-        logging,
-        messaging,
+        # app_common,
+        # featuremanagement,
+        # json_serialization,
+        # logging,
+        # messaging,
         testcommon,
-        databricks,
+        testcommon_functionapp,
+        testcommon_durable_functionapp,
+        # databricks,
       ]
     if: |
       always()

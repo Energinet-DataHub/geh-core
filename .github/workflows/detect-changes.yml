@@ -21,6 +21,12 @@ name: Detect changes
 
 on:
   workflow_call:
+    inputs:
+      print_debug_output:
+        description: 'Print debug output'
+        type: string
+        required: false
+        default: 'false'
     outputs:
       app_common:
         value: ${{ jobs.changes.outputs.app_common }}
@@ -38,6 +44,10 @@ on:
         value: ${{ jobs.changes.outputs.testcommon }}
       outbox:
         value: ${{ jobs.changes.outputs.outbox }}
+      affected_changes_testcommon:
+        value: ${{ jobs.changes.outputs.affected_changes_testcommon }}
+      job_context_testcommon:
+        value: ${{ jobs.changes.outputs.job_context_testcommon }}
 
 jobs:
   changes:
@@ -53,11 +63,15 @@ jobs:
       messaging: ${{ steps.filter.outputs.messaging }}
       testcommon: ${{ steps.filter.outputs.testcommon }}
       outbox: ${{ steps.filter.outputs.outbox }}
+      affected_changes_testcommon: ${{ steps.filter_dotnetaffected_testcommon.outputs.affected_changes }}
+      job_context_testcommon: ${{ steps.filter_dotnetaffected_testcommon.outputs.job_context }}
     steps:
       # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request' }}
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history so that we can determine the base commit
 
       - name: Detect file changes
         uses: dorny/paths-filter@v3
@@ -88,3 +102,22 @@ jobs:
             outbox:
               - 'source/Outbox/**'
               - '.github/workflows/outbox-bundle-publish.yml'
+
+      - uses: nrwl/nx-set-shas@v4
+        id: set_shas
+      
+      - name: Run dotnet-affected - TestCommon
+        uses: ./.github/actions/dotnet-affected
+        id: filter_dotnetaffected_testcommon
+        with:
+          solution_file: source/TestCommon/TestCommon.sln
+          workspace_path: ${{ github.workspace }}
+          from_sha: ${{ steps.set_shas.outputs.base }}
+          to_sha: ${{ steps.set_shas.outputs.head }}
+          host_names: "
+            {
+              'testcommon': 'TestCommon.csproj',
+              'testcommon_functionapp': 'FunctionApp.TestCommon.csproj',
+              'testcommon_durablefunctionapp': 'DurableFunctionApp.TestCommon.csproj'
+            }"
+          print_debug_output: ${{ inputs.print_debug_output }}

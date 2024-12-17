@@ -1,0 +1,151 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: CI dotnet tests
+
+on:
+  workflow_call:
+    inputs:
+      affected_changes:
+        description: Affected projects
+        required: true
+        type: string
+      print_debug_output:
+        description: Enable debug logging
+        required: false
+        type: string
+      nuget_cache_key_prefix:
+        description: Cache key prefix
+        required: false
+        type: string
+        default: nuget-pr${{ github.event.pull_request.number }}
+      dotnet_version:
+        description: The version of dotnet to use
+        required: false
+        type: string
+        default: net8.0
+
+jobs:
+  build_matrix:
+    name: Build matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix_builds: ${{ steps.set-matrix.outputs.matrix_builds }}
+      matrix_tests: ${{ steps.set-matrix.outputs.matrix_tests }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Find testprojects in affected projects
+        id: set-matrix
+        shell: pwsh
+        run: |
+          $affectedProjects = '${{ inputs.affected_changes || '[]' }}' | ConvertFrom-Json
+
+          # I couldn't find a better way to lowercase keys in a hashtable
+          $matrixBuilds = @()
+
+          foreach ($project in $affectedProjects) {
+            if ($project.Name -like '*Tests*') {
+              $matrixBuilds += [PSCustomObject]@{
+                name           = $project.Name
+                filepath       = $project.FilePath
+                assembly_name  = "Energinet.DataHub.$($project.Name).dll"
+                dotnet_version = "${{ inputs.dotnet_version }}"
+              }
+            }
+          }
+
+          if ($matrixBuilds.Count -eq 1) {
+            $matrixBuildsJson = $matrixBuilds | ConvertTo-Json -Compress -AsArray
+          } else {
+            $matrixBuildsJson = $matrixBuilds | ConvertTo-Json -Compress
+          }
+
+          if ($null -eq $matrixBuildsJson) {
+            $matrixBuildsJson = '[]'
+          }
+          "matrix_builds=$matrixBuildsJson" >> $env:GITHUB_OUTPUT
+
+      - name: Print matrix output
+        if: ${{ inputs.print_debug_output == 'true' }}
+        shell: pwsh
+        run: |
+          Write-Host 'Print matrix'
+          $matrixBuilds = '${{steps.set-matrix.outputs.matrix_builds}}' | ConvertFrom-Json | ConvertTo-Json
+          Write-Host $matrixBuilds
+
+  # build_tests_in_project:
+  #   name: Build ${{ matrix.project.name }}
+  #   runs-on: ubuntu-24.04  # Build on pinned version of ubuntu
+  #   needs: build_matrix
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       project: ${{fromJson(needs.build_matrix.outputs.matrix_builds)}}
+  #   env:
+  #     OUTPUT_PATH: ${{ github.workspace }}/source/${{ matrix.project.name}}/bin/Release/${{matrix.project.dotnet_version}}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - uses: actions/cache@v4
+  #       with:
+  #         path: ~/.nuget/packages
+  #         key: ${{ inputs.nuget_cache_key_prefix }}-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+
+  #     - name: Build ${{ matrix.project.name }}
+  #       run: |
+  #         dotnet publish \
+  #           '${{ matrix.project.filepath }}' \
+  #           --configuration Release \
+  #           --output '${{ env.OUTPUT_PATH }}' \
+  #           -p:ErrorOnDuplicatePublishOutputFiles=false  # To avoid the error "Found multiple publish output files with the same relative path"
+
+  #         # ls ${{ env.OUTPUT_PATH}}
+
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         retention-days: 2
+  #         name: pm-tests-${{ matrix.project.name }}-${{ github.event.pull_request.number }}
+  #         path: ${{ env.OUTPUT_PATH }}/*
+
+  integration_tests:
+    if: ${{ needs.build_matrix.outputs.matrix_builds != '[]' }}
+    needs: [
+      build_matrix
+    ]
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{fromJson(needs.build_matrix.outputs.matrix_builds)}}
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test-monorepo.yml@v14
+    with:
+      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+      environment: AzureAuth
+      run_integration_tests: true
+      tests_filter_expression: empty # Means skip.
+      use_azure_functions_tools: true
+      aspnetcore_test_contentroot_variable_name: empty
+      aspnetcore_test_contentroot_variable_value: empty
+      solution_file_path: source\ProcessManager.sln
+      nuget_cache_key_prefix: ${{ inputs.nuget_cache_key_prefix }}
+
+      # Matrix parameters
+      testproject_artifact_name: pm-tests-${{ matrix.project.name }}-${{ github.event.pull_request.number }}
+      testproject_name: ${{ matrix.project.name }}
+      tests_dll_file_path: \source\${{ matrix.project.name}}\bin\Release\${{matrix.project.dotnet_version}}\${{ matrix.project.assembly_name }}

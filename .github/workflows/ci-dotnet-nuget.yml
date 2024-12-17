@@ -1,0 +1,120 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Publish ProcessManager NuGet bundle(s)
+
+# DESCRIPTION:
+#
+# - ProcessManager.Client depends on ProcessManager.Abstractions
+# - ProcessManager.Orchestrations.Abstractions depends on ProcessManager.Abstractions
+#
+# To ensure the version of ProcessManager.Abstractions is the same for both when changed
+# in the same PR, we must build all using the same workflow.
+#
+# We consider ProcessManager.Client and ProcessManager.Abstractions as a bundle, which means
+# they must use the same version numbers. ProcessManager.Orchestrations.Abstractions is
+# considered its own bundle and can be versioned in isolation.
+#
+# If ProcessManager.Abstractions has changed then both its consumers must have their
+# versions updated.
+
+on:
+  # Build, test, pack and publish release packages
+  # Only executed if any NuGet packages content or build scripts has changed;
+  # not if solution file, documentation or tests has changed
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - source/ProcessManager.Client/**
+  #     - source/ProcessManager.Abstractions/**
+  #     - source/ProcessManager.Orchestrations.Abstractions/**
+  #     - .github/workflows/processmanager-client-bundle-publish.yml
+  # Build, test, pack
+  # Executed if any NuGet package folder or build scripts has changed;
+  # including if documentation or tests has changed
+  workflow_call:
+    inputs:
+      project_file:
+        description: The project file to build
+        required: true
+        type: string
+      nupkg_recurse_path:
+        description: The path to the nupkg files to push
+        required: true
+        type: string
+  
+  # Build, test, pack and publish prerelease packages
+  # Executed if manually triggered
+  workflow_dispatch: {}
+
+env:
+  # Conditions
+  PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
+  # Necessary to manage Azure resources from automated tests
+  AZURE_KEYVAULT_URL: ${{ vars.integration_test_azure_keyvault_url }}
+  # Set value used by 'AzuriteManager'
+  #  Use 'AzuriteBlobFolderPath' for TestCommon version 4.2.0 and lower
+  AzuriteBlobFolderPath: ${{ github.workspace }}\node_modules\.bin\
+  #  Use 'AzuriteFolderPath' for TestCommon version 4.3.0 and higher
+  AzuriteFolderPath: ${{ github.workspace }}\node_modules\.bin\
+  # Overrides settings in 'functionhost.settings.json'
+  FunctionAppHostPath: ${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll
+
+jobs:
+  build_and_publish:
+    runs-on: windows-2022
+    name: Publish bundle to NuGet.org
+
+    environment: AzureAuth
+
+    # We need to have permissions here to be able to support manually triggering this workflow for releasing a pre-release.
+    permissions:
+      id-token: write # Needed by 'dotnet-solution-build-and-test' to login to Azure
+      contents: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+      issues: read # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+      checks: write # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+      pull-requests: write # Needed by https://github.com/EnricoMi/publish-unit-test-result-action
+
+    steps:
+      - name: Checkout repository
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v14
+
+      - name: Setup dotnet and tools
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v14
+        with:
+          use_azure_functions_tools: "true"
+          azure_functions_core_tools_version: 4.0.5455
+
+      # - name: Build and test
+      #   uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v14
+      #   with:
+      #     solution_file_path: ./source/ProcessManager.NuGet.Filtered.slnf
+      #     azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      #     azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      #     azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      #     publish_test_report: "true"
+
+      - name: Pack ${{ inputs.project_file}} project
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v14
+        with:
+          project_path: ${{ inputs.project_file}}
+
+      - name: Assert version and push to NuGet.org
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v14
+        with:
+          push_packages: ${{ env.PUSH_PACKAGES }}
+          content_changed: true
+          nuget_token: ${{ secrets.nuget_token }}
+          nupkg_recurse_path: ${{ inputs.nupkg_recurse_path }}
