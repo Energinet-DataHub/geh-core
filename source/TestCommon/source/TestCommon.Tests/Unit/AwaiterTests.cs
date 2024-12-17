@@ -25,7 +25,7 @@ public class AwaiterTests
         [Fact]
         public async Task When_FuncConditionIsMet_Then_MethodReturn()
         {
-            // Arrange
+            // Arrange.
             var condition = 0;
 
             // Act

@@ -1,0 +1,85 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Find affected .NET projects
+description: Find affected .NET projects in a solution
+
+inputs:
+  solution_file:
+    description: The path to the solution file
+    required: true
+  workspace_path:
+    description: The path to the workspace
+    required: true
+  from_sha:
+    description: The commit SHA to compare from
+    required: true
+  to_sha:
+    description: The commit SHA to compare to
+    required: true
+  host_names:
+    description: Host names mapped to project names
+    required: true
+  print_debug_output:
+    description: Enable debug logging
+    required: false
+    default: "false"
+outputs:
+  affected_changes:
+    description: The affected projects, if any
+    value: ${{ steps.filter.outputs.affected_changes }}
+  job_context:
+    description: The job context output, if any
+    value: ${{ steps.filter.outputs.job_context }}
+
+runs:
+  using: composite
+  steps:
+    - name: Find affected projects
+      shell: pwsh
+      id: filter
+      run: |
+        . ${{ github.action_path }}/Find-AffectedProjects.ps1
+
+        $hostNamesJson = "${{ inputs.host_names }}"
+        $solutionPath = "${{github.workspace}}/${{inputs.solution_file}}"
+        $workspacePath = "${{github.workspace}}"
+        $fromSha = "${{ inputs.from_sha }}"
+        $toSha = "${{ inputs.to_sha}}"
+        $affectedProjectsFile = 'affected.json'
+
+        # Install and run dotnet-affected, outputs a json file with affected projects
+        Write-AffectedProjectsFile -SolutionPath $solutionPath -WorkspacePath $workspacePath -FromSha $fromSha -ToSha $toSha
+
+        $affectedJson = '[]'
+        if (Test-Path $AffectedProjectsFile) {
+          $affectedJson = Get-Content $AffectedProjectsFile
+        }
+        "affected_changes=$affectedJson" >> $env:GITHUB_OUTPUT
+
+        $job_context_output = Find-AffectedHosts -AffectedProjects $affectedJson -HostNames $hostNamesJson
+        "job_context=$job_context_output" >> $env:GITHUB_OUTPUT
+
+        # See https://github.com/leonardochaia/dotnet-affected?tab=readme-ov-file#dont-buildtestdeploy-when-no-projects-have-changed for details
+        if ($LASTEXITCODE -eq 166) {
+          exit 0
+        }
+
+    - name: Print debug output
+      shell: bash
+      if: ${{ inputs.print_debug_output == 'true' }}
+      run: |
+        echo "Debug output enabled"
+        echo Affected projects: '${{ steps.filter.outputs.affected_changes }}'
+        echo Job context: '${{ steps.filter.outputs.job_context }}'

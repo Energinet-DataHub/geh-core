@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.DurableTask;
 /// typically from integration tests.
 /// See https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-instance-management?tabs=csharp
 ///
-/// IMPORTANT: This class is purely intended to be used from tests.
+/// IMPORTANT: This class is purely intended to be used from tests
 ///
 /// For production scenarious it is recommended to manage instances using
 /// the Durable Functions orchestration client binding.
