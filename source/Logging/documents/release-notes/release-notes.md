@@ -1,5 +1,10 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 4.0.2
+
+- Update .github referencess to v14
+- No functional change.
+
 ## Version 4.0.1
 
 - Bumped various NuGet packages to the latest versions.

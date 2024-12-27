@@ -1,5 +1,10 @@
 # Messaging Release notes
 
+## Version 6.1.3
+
+- Update .github referencess to v14
+- No functional change.
+
 ## Version 6.1.2
 
 - Bumped various NuGet packages to the latest versions.
