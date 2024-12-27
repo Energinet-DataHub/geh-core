@@ -83,7 +83,7 @@ jobs:
 
       - name: Package content or build has changed
         id: changed-content
-        uses: tj-actions/changed-files@v41
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             source/Messaging/source/Communication/**/*.*
