@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 7.1.2
+
+- Update .github referencess to v14
+- No functional change.
+
 ## Version 7.1.1
 
 - Fix `DurableFunctionApp.TestCommon` method returning exception too early when waiting for an orchestration to start.

@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Logging.LoggingMiddleware</PackageId>
-    <PackageVersion>4.0.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>4.0.2$(VersionSuffix)</PackageVersion>
     <Title>Logging Middleware</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
