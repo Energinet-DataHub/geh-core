@@ -85,4 +85,9 @@ public class FunctionAppHostSettings
     /// </summary>
     public string HostStartedEvent { get; set; }
         = string.Empty;
+
+    /// <summary>
+    /// The environment to use when starting the host.
+    /// </summary>
+    public string? Environment { get; set; }
 }

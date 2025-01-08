@@ -172,13 +172,16 @@ public class FunctionAppHostManager : IDisposable
         var dotnetExePath = GuardFilePathIsValid(settings.DotnetExecutablePath);
         var functionAppHostPath = GuardFunctionAppHostPathIsValid(settings);
         var functionAppFolder = GuardRelativeFolderPathIsValid(settings.FunctionApplicationPath);
+        var environmentFlag = settings.Environment is not null
+            ? $"--environment {settings.Environment}"
+            : string.Empty;
 
         var process = new Process
         {
             StartInfo =
             {
                 FileName = dotnetExePath,
-                Arguments = $"\"{functionAppHostPath}\" start -p {settings.Port} --csharp {BuildFunctionsArgument(settings.Functions)}",
+                Arguments = $"\"{functionAppHostPath}\" start -p {settings.Port} {environmentFlag} --csharp {BuildFunctionsArgument(settings.Functions)}",
                 WorkingDirectory = functionAppFolder,
                 UseShellExecute = settings.UseShellExecute,
             },
