@@ -1,6 +1,7 @@
 # TestCommon Release notes
 
 ## Version 7.2.0
+
 - Add `Environment` property to `FunctionAppHostSettings` to allow for setting the environment of the function app host.
 
 ## Version 7.1.2
