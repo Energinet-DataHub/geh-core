@@ -102,8 +102,8 @@ limitations under the License.
     <PackageReference Include="Polly" Version="8.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
-    <PackageReference Include="WireMock.Net" Version="1.6.8" />
-    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="WireMock.Net" Version="1.6.11" />
+    <PackageReference Include="xunit" Version="2.9.3" />
   </ItemGroup>
 
   <ItemGroup>
