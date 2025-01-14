@@ -50,6 +50,31 @@ public class DurableClientExtensionsTests(DurableTaskFixture fixture)
     }
 
     [Fact]
+    public async Task Given_WaitForOrchestrationCompletedAsyncIsCalled_When_OrchestrationPendingForEver_Then_ThrowException()
+    {
+        // Arrange
+        var instanceId = Guid.NewGuid().ToString();
+        var mockClient = Mock.Get(fixture.DurableClientMock);
+
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, false, false, true))
+            .ReturnsAsync(new DurableOrchestrationStatus
+            {
+                RuntimeStatus = OrchestrationRuntimeStatus.Pending,
+            });
+
+        // Act
+        var act = () => fixture.DurableClientMock.WaitForOrchestrationCompletedAsync(
+            instanceId,
+            waitTimeLimit: TimeSpan.FromSeconds(1));
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<Exception>()
+            .WithMessage("*did not reach expected state within configured wait time limit. Actual state=`Pending`*");
+    }
+
+    [Fact]
     public async Task Given_WaitForOrchestrationCompletedAsyncIsCalled_When_OrchestrationCompleted_Then_OrchestrationStatusIsReturned()
     {
         // Arrange
