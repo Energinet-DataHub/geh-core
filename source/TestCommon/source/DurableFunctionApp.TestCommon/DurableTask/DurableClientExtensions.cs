@@ -30,8 +30,8 @@ public static class DurableClientExtensions
     /// If more than one orchestration exists an exception is thrown.
     /// </summary>
     /// <param name="client"></param>
-    /// <param name="createdTimeFrom">The orchestration must be started after this datetime (in UTC)</param>
-    /// <param name="name">If provided, the orchestration name must be equal to this value (case insensitive)</param>
+    /// <param name="createdTimeFrom">The orchestration must be started after this datetime (in UTC).</param>
+    /// <param name="name">If provided, the orchestration name must be equal to this value (case insensitive).</param>
     /// <param name="waitTimeLimit">Max time to wait for orchestration. If not specified it defaults to the value of<see cref="WaitTimeLimit"/> in seconds.</param>
     /// <returns>If started within given <paramref name="waitTimeLimit"/> it returns the orchestration status; otherwise it throws an exception.</returns>
     public static async Task<DurableOrchestrationStatus> WaitForOrchestationStartedAsync(
@@ -81,10 +81,10 @@ public static class DurableClientExtensions
     }
 
     /// <summary>
-    /// Wait for orchestration instance to be completed within given <paramref name="waitTimeLimit"/>.
+    /// Wait for an orchestration instance to be completed within given <paramref name="waitTimeLimit"/>.
     /// </summary>
     /// <param name="client"></param>
-    /// <param name="instanceId"></param>
+    /// <param name="instanceId">The instance id of the orchestration to wait for.</param>
     /// <param name="waitTimeLimit">Max time to wait for completion. If not specified it defaults to the value of <see cref="WaitTimeLimit"/> in seconds.</param>
     /// <returns>If completed within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
     public static async Task<DurableOrchestrationStatus> WaitForOrchestrationCompletedAsync(
@@ -123,6 +123,11 @@ public static class DurableClientExtensions
     /// <summary>
     /// Wait for orchestration instance to have a custom status where the given <paramref name="matchFunction"/> returns true
     /// </summary>
+    /// <param name="client"></param>
+    /// <param name="instanceId">The instance id of the orchestration to wait for.</param>
+    /// <param name="matchFunction">Predicate to determine if custom status is a match.</param>
+    /// <param name="waitTimeLimit">Max time to wait for custom status. If not specified it defaults to the value of <see cref="WaitTimeLimit"/> in seconds.</param>
+    /// <returns>If completed within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
     /// <exception cref="InvalidCastException">Throws InvalidCastException if CustomStatus property cannot be parsed to given type</exception>
     public static async Task<DurableOrchestrationStatus> WaitForCustomStatusAsync<TCustomStatus>(
         this IDurableClient client,
