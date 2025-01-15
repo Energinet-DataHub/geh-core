@@ -58,12 +58,15 @@ public static class DurableClientExtensions
             {
                 var queryResult = await client.ListInstancesAsync(filter, CancellationToken.None).ConfigureAwait(false);
 
-                if (queryResult == null || !queryResult.DurableOrchestrationState.Any())
+                if (queryResult == null)
                     return false;
 
                 durableOrchestrationState = queryResult.DurableOrchestrationState
                     .Where(o => name == null || o.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                     .ToList();
+
+                if (durableOrchestrationState.Count == 0)
+                    return false;
 
                 if (durableOrchestrationState.Count > 1)
                     throw new Exception($"Unexpected amount of orchestration instances found. Expected 1, but found {durableOrchestrationState.Count}");

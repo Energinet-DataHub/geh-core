@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 7.2.1
+
+- Fix bug in class `DurableClientExtensions` method `WaitForOrchestationStartedAsync` where an exception can be thrown if an orchestration with another name exists.
+
 ## Version 7.2.0
 
 - Extended class `DurableClientExtensions` with method `WaitForOrchestrationRunningAsync`.
