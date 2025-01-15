@@ -172,18 +172,17 @@ public static class DurableClientExtensions
                 // Do not retrieve history here as it could be expensive
                 orchestrationStatus = await client.GetStatusAsync(instanceId).ConfigureAwait(false);
 
-                return (orchestrationStatus.RuntimeStatus == expectedState) switch
+                if (orchestrationStatus.RuntimeStatus == expectedState)
+                    return true;
+
+                return orchestrationStatus.RuntimeStatus switch
                 {
-                    true => true,
-                    false => orchestrationStatus.RuntimeStatus switch
-                    {
                         OrchestrationRuntimeStatus.Failed or
                         OrchestrationRuntimeStatus.Suspended or
                         OrchestrationRuntimeStatus.Canceled or
                         OrchestrationRuntimeStatus.Terminated
                             => throw new Exception($"Orchestration with instanceId `{instanceId}` has an unexpected state. Actual state=`{orchestrationStatus.RuntimeStatus}`"),
                         _ => false,
-                    },
                 };
             },
             waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
