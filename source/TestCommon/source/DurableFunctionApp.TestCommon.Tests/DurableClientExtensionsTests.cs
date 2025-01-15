@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.DurableTask;
 using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests.Fixtures;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -26,13 +27,14 @@ namespace Energinet.DataHub.Core.DurableFunctionApp.TestCommon.Tests;
 public class DurableClientExtensionsTests(DurableTaskFixture fixture)
 {
     [Fact]
-    public async Task Given_WaitForInstanceCompletedAsyncIsCalled_When_OrchestrationFails_Then_ThrowException()
+    public async Task Given_WaitForOrchestrationCompletedAsyncIsCalled_When_OrchestrationFails_Then_ThrowException()
     {
         // Arrange
-        var instanceId = "testInstanceId";
+        var instanceId = Guid.NewGuid().ToString();
         var mockClient = Mock.Get(fixture.DurableClientMock);
 
-        mockClient.Setup(client => client.GetStatusAsync(instanceId, false, false, true))
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, false, false, true))
             .ReturnsAsync(new DurableOrchestrationStatus
             {
                 RuntimeStatus = OrchestrationRuntimeStatus.Failed,
@@ -42,25 +44,140 @@ public class DurableClientExtensionsTests(DurableTaskFixture fixture)
         var act = () => fixture.DurableClientMock.WaitForOrchestrationCompletedAsync(instanceId);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>();
+        await act.Should()
+            .ThrowAsync<Exception>()
+            .WithMessage("*has an unexpected state. Actual state=`Failed`*");
+    }
+
+    [Fact]
+    public async Task Given_WaitForOrchestrationCompletedAsyncIsCalled_When_OrchestrationPendingForEver_Then_ThrowException()
+    {
+        // Arrange
+        var instanceId = Guid.NewGuid().ToString();
+        var mockClient = Mock.Get(fixture.DurableClientMock);
+
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, false, false, true))
+            .ReturnsAsync(new DurableOrchestrationStatus
+            {
+                RuntimeStatus = OrchestrationRuntimeStatus.Pending,
+            });
+
+        // Act
+        var act = () => fixture.DurableClientMock.WaitForOrchestrationCompletedAsync(
+            instanceId,
+            waitTimeLimit: TimeSpan.FromSeconds(1));
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<Exception>()
+            .WithMessage("*did not reach expected state within configured wait time limit. Actual state=`Pending`*");
+    }
+
+    [Fact]
+    public async Task Given_WaitForOrchestrationCompletedAsyncIsCalled_When_OrchestrationCompleted_Then_OrchestrationStatusIsReturned()
+    {
+        // Arrange
+        var instanceId = Guid.NewGuid().ToString();
+        var mockClient = Mock.Get(fixture.DurableClientMock);
+
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, false, false, true))
+            .ReturnsAsync(new DurableOrchestrationStatus
+            {
+                RuntimeStatus = OrchestrationRuntimeStatus.Completed,
+            });
+
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, true, true, true))
+            .ReturnsAsync(new DurableOrchestrationStatus
+            {
+                InstanceId = instanceId,
+                RuntimeStatus = OrchestrationRuntimeStatus.Completed,
+            });
+
+        // Act
+        var actual = await fixture.DurableClientMock.WaitForOrchestrationCompletedAsync(instanceId);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().NotBeNull();
+        actual.InstanceId.Should().Be(instanceId);
+        actual.RuntimeStatus.Should().Be(OrchestrationRuntimeStatus.Completed);
+    }
+
+    [Fact]
+    public async Task Given_WaitForOrchestrationRunningAsyncIsCalled_When_OrchestrationTerminated_Then_ThrowException()
+    {
+        // Arrange
+        var instanceId = Guid.NewGuid().ToString();
+        var mockClient = Mock.Get(fixture.DurableClientMock);
+
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, false, false, true))
+            .ReturnsAsync(new DurableOrchestrationStatus
+            {
+                RuntimeStatus = OrchestrationRuntimeStatus.Terminated,
+            });
+
+        // Act
+        var act = () => fixture.DurableClientMock.WaitForOrchestrationRunningAsync(instanceId);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<Exception>()
+            .WithMessage("*has an unexpected state. Actual state=`Terminated`*");
+    }
+
+    [Fact]
+    public async Task Given_WaitForOrchestrationRunningAsyncIsCalled_When_OrchestrationRunning_Then_OrchestrationStatusIsReturned()
+    {
+        // Arrange
+        var instanceId = Guid.NewGuid().ToString();
+        var mockClient = Mock.Get(fixture.DurableClientMock);
+
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, false, false, true))
+            .ReturnsAsync(new DurableOrchestrationStatus
+            {
+                RuntimeStatus = OrchestrationRuntimeStatus.Running,
+            });
+
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, true, true, true))
+            .ReturnsAsync(new DurableOrchestrationStatus
+            {
+                InstanceId = instanceId,
+                RuntimeStatus = OrchestrationRuntimeStatus.Running,
+            });
+
+        // Act
+        var actual = await fixture.DurableClientMock.WaitForOrchestrationRunningAsync(instanceId);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.InstanceId.Should().Be(instanceId);
+        actual.RuntimeStatus.Should().Be(OrchestrationRuntimeStatus.Running);
     }
 
     [Fact]
     public async Task Given_WaitForCustomStatusAsyncIsCalled_When_WhenCustomStatusMatches_Then_CustomStatusIsReturned()
     {
         // Arrange
-        var instanceId = "testInstanceId";
+        var instanceId = Guid.NewGuid().ToString();
         var expectedCustomStatus = new { State = "Ready" };
         var mockClient = Mock.Get(fixture.DurableClientMock);
 
-        mockClient.Setup(client => client.GetStatusAsync(instanceId, false, false, true))
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, false, false, true))
             .ReturnsAsync(new DurableOrchestrationStatus
             {
                 CustomStatus = JObject.FromObject(expectedCustomStatus),
                 RuntimeStatus = OrchestrationRuntimeStatus.Running,
             });
 
-        mockClient.Setup(client => client.GetStatusAsync(instanceId, true, true, true))
+        mockClient
+            .Setup(client => client.GetStatusAsync(instanceId, true, true, true))
             .ReturnsAsync(new DurableOrchestrationStatus
             {
                 CustomStatus = JObject.FromObject(expectedCustomStatus),

@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 7.2.0
+
+- Extended class `DurableClientExtensions` with method `WaitForOrchestrationRunningAsync`.
+
 ## Version 7.1.2
 
 - Update .github referencess to v14

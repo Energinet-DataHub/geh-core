@@ -30,8 +30,8 @@ public static class DurableClientExtensions
     /// If more than one orchestration exists an exception is thrown.
     /// </summary>
     /// <param name="client"></param>
-    /// <param name="createdTimeFrom">The orchestration must be started after this datetime (in UTC)</param>
-    /// <param name="name">If provided, the orchestration name must be equal to this value (case insensitive)</param>
+    /// <param name="createdTimeFrom">The orchestration must be started after this datetime (in UTC).</param>
+    /// <param name="name">If provided, the orchestration name must be equal to this value (case insensitive).</param>
     /// <param name="waitTimeLimit">Max time to wait for orchestration. If not specified it defaults to the value of<see cref="WaitTimeLimit"/> in seconds.</param>
     /// <returns>If started within given <paramref name="waitTimeLimit"/> it returns the orchestration status; otherwise it throws an exception.</returns>
     public static async Task<DurableOrchestrationStatus> WaitForOrchestationStartedAsync(
@@ -81,48 +81,55 @@ public static class DurableClientExtensions
     }
 
     /// <summary>
-    /// Wait for orchestration instance to be completed within given <paramref name="waitTimeLimit"/>.
+    /// Wait for an orchestration instance to reach state <see cref="OrchestrationRuntimeStatus.Completed"/> within given <paramref name="waitTimeLimit"/>.
     /// </summary>
     /// <param name="client"></param>
-    /// <param name="instanceId"></param>
-    /// <param name="waitTimeLimit">Max time to wait for completion. If not specified it defaults to the value of <see cref="WaitTimeLimit"/> in seconds.</param>
-    /// <returns>If completed within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
-    public static async Task<DurableOrchestrationStatus> WaitForOrchestrationCompletedAsync(
+    /// <param name="instanceId">The instance id of the orchestration to wait for.</param>
+    /// <param name="waitTimeLimit">Max time to wait for the state. If not specified it defaults to the value of <see cref="WaitTimeLimit"/> in seconds.</param>
+    /// <returns>If state is reached within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
+    public static Task<DurableOrchestrationStatus> WaitForOrchestrationCompletedAsync(
         this IDurableClient client,
         string instanceId,
         TimeSpan? waitTimeLimit = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
-        DurableOrchestrationStatus? completeOrchestrationStatus = null;
-        var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
-            async () =>
-            {
-                // Do not retrieve history here as it could be expensive
-                completeOrchestrationStatus = await client.GetStatusAsync(instanceId).ConfigureAwait(false);
+        return WaitForOrchestrationStateAsync(
+            client,
+            instanceId,
+            waitTimeLimit,
+            expectedState: OrchestrationRuntimeStatus.Completed);
+    }
 
-                return completeOrchestrationStatus.RuntimeStatus switch
-                {
-                    OrchestrationRuntimeStatus.Completed => true,
-                    OrchestrationRuntimeStatus.Failed or
-                    OrchestrationRuntimeStatus.Suspended or
-                    OrchestrationRuntimeStatus.Canceled or
-                    OrchestrationRuntimeStatus.Terminated
-                        => throw new Exception($"Orchestration with instanceId `{instanceId}` has an invalid state. Actual state=`{completeOrchestrationStatus.RuntimeStatus}`"),
-                    _ => false,
-                };
-            },
-            waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
-            delay: TimeSpan.FromSeconds(DelayLimit)).ConfigureAwait(false);
+    /// <summary>
+    /// Wait for an orchestration instance to reach state <see cref="OrchestrationRuntimeStatus.Running"/> within given <paramref name="waitTimeLimit"/>.
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="instanceId">The instance id of the orchestration to wait for.</param>
+    /// <param name="waitTimeLimit">Max time to wait for the state. If not specified it defaults to the value of <see cref="WaitTimeLimit"/> in seconds.</param>
+    /// <returns>If state is reached within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
+    public static Task<DurableOrchestrationStatus> WaitForOrchestrationRunningAsync(
+        this IDurableClient client,
+        string instanceId,
+        TimeSpan? waitTimeLimit = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
-        return isCompleted
-            ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true).ConfigureAwait(false)
-            : throw new Exception($"Orchestration instance '{instanceId}' did not complete within configured wait time limit. Actual state=`{completeOrchestrationStatus?.RuntimeStatus}`");
+        return WaitForOrchestrationStateAsync(
+            client,
+            instanceId,
+            waitTimeLimit,
+            expectedState: OrchestrationRuntimeStatus.Running);
     }
 
     /// <summary>
     /// Wait for orchestration instance to have a custom status where the given <paramref name="matchFunction"/> returns true
     /// </summary>
+    /// <param name="client"></param>
+    /// <param name="instanceId">The instance id of the orchestration to wait for.</param>
+    /// <param name="matchFunction">Predicate to determine if custom status is a match.</param>
+    /// <param name="waitTimeLimit">Max time to wait for custom status. If not specified it defaults to the value of <see cref="WaitTimeLimit"/> in seconds.</param>
+    /// <returns>If completed within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
     /// <exception cref="InvalidCastException">Throws InvalidCastException if CustomStatus property cannot be parsed to given type</exception>
     public static async Task<DurableOrchestrationStatus> WaitForCustomStatusAsync<TCustomStatus>(
         this IDurableClient client,
@@ -150,5 +157,39 @@ public static class DurableClientExtensions
         return matchesCustomStatus
             ? actualStatus
             : throw new Exception($"Orchestration instance '{instanceId}' did not match custom status within configured wait time limit. Actual status: {actualStatus.CustomStatus.ToString(Formatting.Indented)}");
+    }
+
+    private static async Task<DurableOrchestrationStatus> WaitForOrchestrationStateAsync(
+        IDurableClient client,
+        string instanceId,
+        TimeSpan? waitTimeLimit,
+        OrchestrationRuntimeStatus expectedState)
+    {
+        DurableOrchestrationStatus? orchestrationStatus = null;
+        var isExpectedState = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                // Do not retrieve history here as it could be expensive
+                orchestrationStatus = await client.GetStatusAsync(instanceId).ConfigureAwait(false);
+
+                if (orchestrationStatus.RuntimeStatus == expectedState)
+                    return true;
+
+                return orchestrationStatus.RuntimeStatus switch
+                {
+                        OrchestrationRuntimeStatus.Failed or
+                        OrchestrationRuntimeStatus.Suspended or
+                        OrchestrationRuntimeStatus.Canceled or
+                        OrchestrationRuntimeStatus.Terminated
+                            => throw new Exception($"Orchestration with instanceId `{instanceId}` has an unexpected state. Actual state=`{orchestrationStatus.RuntimeStatus}`"),
+                        _ => false,
+                };
+            },
+            waitTimeLimit ?? TimeSpan.FromSeconds(WaitTimeLimit),
+            delay: TimeSpan.FromSeconds(DelayLimit)).ConfigureAwait(false);
+
+        return isExpectedState
+            ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true).ConfigureAwait(false)
+            : throw new Exception($"Orchestration instance '{instanceId}' did not reach expected state within configured wait time limit. Actual state=`{orchestrationStatus?.RuntimeStatus}`");
     }
 }
