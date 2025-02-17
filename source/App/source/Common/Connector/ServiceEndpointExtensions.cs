@@ -64,6 +64,7 @@ public static class ServiceEndpointExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
         ArgumentNullException.ThrowIfNull(configurationSection, nameof(configurationSection));
+        if (!configurationSection.Exists()) throw new InvalidOperationException("Configuration section is missing.");
 
         var namedHttpClient = GetNamedHttpClient<TService>();
         services.Configure<TService>(configurationSection);
