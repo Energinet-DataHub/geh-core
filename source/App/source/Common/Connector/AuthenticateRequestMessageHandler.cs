@@ -54,7 +54,7 @@ internal class AuthenticateRequestMessageHandler<TService>
     }
 
     private Task<HttpResponseMessage> PassthroughRequest(HttpRequestMessage request, CancellationToken cancellationToken)
-        => SendAsync(request, cancellationToken);
+        => base.SendAsync(request, cancellationToken);
 
     private static string GetCacheKey() => typeof(TService).Name;
 
