@@ -29,29 +29,6 @@ namespace Energinet.DataHub.Core.App.Common.Connector;
 public static class ServiceEndpointExtensions
 {
     /// <summary>
-    /// Adds a service endpoint to the service collection using the specified configuration root.
-    /// </summary>
-    /// <typeparam name="TService">The type of the service endpoint.</typeparam>
-    /// <param name="services">The service collection to add the service endpoint to.</param>
-    /// <param name="root">The configuration root containing the service endpoint settings.</param>
-    /// <returns>The updated service collection.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if services or root is null.</exception>
-    public static IServiceCollection AddServiceEndpoint<TService>(
-        this IServiceCollection services,
-        IConfigurationRoot root)
-        where TService : ServiceEndpoint
-    {
-        ArgumentNullException.ThrowIfNull(services, nameof(services));
-        ArgumentNullException.ThrowIfNull(root, nameof(root));
-        var serviceName = typeof(TService).Name;
-
-        var section = root.GetSection(serviceName);
-        return !section.Exists()
-            ? throw new InvalidOperationException($"Configuration section '{serviceName}' is missing.")
-            : AddServiceEndpoint<TService>(services, section);
-    }
-
-    /// <summary>
     /// Adds a service endpoint to the service collection using the specified configuration section.
     /// </summary>
     /// <typeparam name="TService">The type of the service endpoint.</typeparam>
@@ -59,7 +36,21 @@ public static class ServiceEndpointExtensions
     /// <param name="configurationSection">The configuration containing the service endpoint settings.</param>
     /// <returns>The updated service collection.</returns>
     /// <exception cref="ArgumentNullException">Thrown if services, configuration, or sectionName is null or empty.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if configuration does not exist</exception>
     public static IServiceCollection AddServiceEndpoint<TService>(this IServiceCollection services, IConfigurationSection configurationSection)
+        where TService : ServiceEndpoint => AddServiceEndpoint<TService>(services, configurationSection, _ => { });
+
+    /// <summary>
+    /// Adds a service endpoint to the service collection using the specified configuration section.
+    /// </summary>
+    /// <typeparam name="TService">The type of the service endpoint.</typeparam>
+    /// <param name="services">The service collection to add the service endpoint to.</param>
+    /// <param name="configurationSection">The configuration containing the service endpoint settings.</param>
+    /// <param name="httpClientConfiguration">Additional configuration of <see cref="HttpClient"/></param>
+    /// <returns>The updated service collection.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if services, configuration, or sectionName is null or empty.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if configuration does not exist</exception>
+    public static IServiceCollection AddServiceEndpoint<TService>(this IServiceCollection services, IConfigurationSection configurationSection, Action<IHttpClientBuilder> httpClientConfiguration)
         where TService : ServiceEndpoint
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
@@ -72,7 +63,7 @@ public static class ServiceEndpointExtensions
         if (services.All(s => s.ServiceType != typeof(IMemoryCache))) services.AddMemoryCache();
 
         services.AddTransient<AuthenticateRequestMessageHandler<TService>>();
-        services.AddHttpClient(namedHttpClient)
+        var httpClientBuilder = services.AddHttpClient(namedHttpClient)
             .ConfigureHttpClient(
                 (sp, client) =>
             {
@@ -80,7 +71,10 @@ public static class ServiceEndpointExtensions
                 client.BaseAddress = service.BaseAddress;
             })
             .AddHttpMessageHandler<AuthenticateRequestMessageHandler<TService>>()
-            .AddPolicyHandler(RetryPolicy());
+            .AddPolicyHandler(RetryPolicy())
+            ;
+
+        httpClientConfiguration(httpClientBuilder);
 
         services.AddTransient(
             sp =>
