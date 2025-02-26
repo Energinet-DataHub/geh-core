@@ -46,7 +46,7 @@ public sealed class AzuriteManagerFixture : IDisposable
     {
         if (AzuriteManager == null)
         {
-            AzuriteManager = new AzuriteManager(useOAuth);
+            AzuriteManager = new AzuriteManager(useOAuth, useSilentMode: false);
             AzuriteManager.StartAzurite();
         }
     }
