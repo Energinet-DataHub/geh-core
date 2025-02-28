@@ -41,57 +41,68 @@ public class ObjectCreationTests : IClassFixture<DatabricksSqlWarehouseFixture>
         _sqlWarehouseFixture = sqlWarehouseFixture;
     }
 
-    [Fact]
-    public async Task CanMapToRecord()
+    [Theory]
+    [MemberData(nameof(ReflectionTypes))]
+    public async Task CanMapToRecord(ReflectionStrategy reflectionStrategy)
     {
         // Arrange
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
 
         // Act
-        var result = client.ExecuteStatementAsync<Person>(PersonsStatement);
+        var result = client.ExecuteStatementAsync<Person>(PersonsStatement, reflectionStrategy);
         var persons = await result.ToListAsync();
 
         // Assert
         persons.Should().Contain(new Person("John A", 18));
     }
 
-    [Fact]
-    public async Task GivenAClassWithMultipleConstructors_WhenConstructingObject_ThenExceptionIsThrown()
+    [Theory]
+    [MemberData(nameof(ReflectionTypes))]
+    public async Task GivenAClassWithMultipleConstructors_WhenConstructingObject_ThenExceptionIsThrown(ReflectionStrategy reflectionStrategy)
     {
         // Arrange
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
 
         // Act
-        var result = client.ExecuteStatementAsync<BadPerson>(PersonsStatement);
+        var result = client.ExecuteStatementAsync<BadPerson>(PersonsStatement, reflectionStrategy);
         Func<Task> act = async () => await result.ToListAsync();
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
-    [Fact]
-    public async Task GivenAClassWithTwoParameters_WhenOnlyOneIsMapped_ThenExceptionIsThrown()
+    [Theory]
+    [MemberData(nameof(ReflectionTypes))]
+    public async Task GivenAClassWithTwoParameters_WhenOnlyOneIsMapped_ThenExceptionIsThrown(ReflectionStrategy reflectionStrategy)
     {
         // Arrange
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
 
         // Act
-        var result = client.ExecuteStatementAsync<ReallyBadPerson>(PersonsStatement);
+        var result = client.ExecuteStatementAsync<ReallyBadPerson>(PersonsStatement, reflectionStrategy);
         Func<Task> act = async () => await result.ToListAsync();
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>();
     }
 
-    [Fact]
-    public async Task AResponseWithNullValues_WhenMappedToANullableProperty_ThenTheObjectIsCreated()
+    [Theory]
+    [MemberData(nameof(ReflectionTypes))]
+    public async Task AResponseWithNullValues_WhenMappedToANullableProperty_ThenTheObjectIsCreated(ReflectionStrategy reflectionStrategy)
     {
         var client = _sqlWarehouseFixture.CreateSqlStatementClient();
 
-        var result = client.ExecuteStatementAsync<PersonWithTitle>(NullStatement);
+        var result = client.ExecuteStatementAsync<PersonWithTitle>(NullStatement, reflectionStrategy);
         var persons = await result.ToListAsync();
 
         persons.Count.Should().Be(2);
+    }
+
+    public static IEnumerable<object[]> ReflectionTypes()
+    {
+        yield return [ReflectionStrategy.Default];
+        yield return [ReflectionStrategy.Cache];
+        yield return [ReflectionStrategy.Lambda];
     }
 
     public class ReallyBadPerson
