@@ -18,11 +18,36 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
 internal static class RecordBatchExtensions
 {
-    public static T ReadRecord<T>(this RecordBatch batch, int row)
+    public static T ReadRecord<T>(this RecordBatch batch, int row, ReflectionStrategy reflectionStrategy)
         where T : class
+    {
+        return reflectionStrategy switch
+        {
+            ReflectionStrategy.Default => Standard<T>(batch, row),
+            ReflectionStrategy.Cache => Cache<T>(batch, row),
+            ReflectionStrategy.Lambda => Lambda<T>(batch, row),
+            _ => throw new ArgumentOutOfRangeException(nameof(reflectionStrategy), reflectionStrategy, null),
+        };
+    }
+
+    private static T Standard<T>(RecordBatch batch, int row)
     {
         var fieldNames = Reflections.GetArrowFieldNames<T>();
         var values = fieldNames.Select(field => batch.Column(field).GetValue(row)).ToArray();
         return Reflections.CreateInstance<T>(values);
+    }
+
+    private static T Cache<T>(RecordBatch batch, int row)
+    {
+        var fieldNames = ReflectionsCache.GetArrowFieldNames<T>();
+        var values = fieldNames.Select(field => batch.Column(field).GetValue(row)).ToArray();
+        return ReflectionsCache.CreateInstance<T>(values);
+    }
+
+    private static T Lambda<T>(RecordBatch batch, int row)
+    {
+        var fieldNames = ReflectionsLambda.GetArrowFieldNames<T>();
+        var values = fieldNames.Select(field => batch.Column(field).GetValue(row)).ToArray();
+        return ReflectionsLambda.CreateInstance<T>(values);
     }
 }

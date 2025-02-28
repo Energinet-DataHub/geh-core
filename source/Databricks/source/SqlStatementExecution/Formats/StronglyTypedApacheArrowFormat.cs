@@ -17,7 +17,7 @@ using Apache.Arrow.Ipc;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
-internal class StronglyTypedApacheArrowFormat(DatabricksSqlStatementOptions options) : ApacheArrowFormat(options)
+internal class StronglyTypedApacheArrowFormat(DatabricksSqlStatementOptions options, ReflectionStrategy reflectionStrategy) : ApacheArrowFormat(options)
 {
     public async IAsyncEnumerable<T> ExecuteAsync<T>(
         Stream content,
@@ -31,7 +31,7 @@ internal class StronglyTypedApacheArrowFormat(DatabricksSqlStatementOptions opti
         {
             for (var i = 0; i < batch.Length; i++)
             {
-                yield return batch.ReadRecord<T>(i);
+                yield return batch.ReadRecord<T>(i, reflectionStrategy);
             }
 
             batch = await reader.ReadNextRecordBatchAsync(cancellationToken).ConfigureAwait(false);

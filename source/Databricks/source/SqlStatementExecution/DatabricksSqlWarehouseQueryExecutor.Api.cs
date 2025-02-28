@@ -107,6 +107,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
     /// Asynchronously executes a parameterized SQL query on Databricks and streams the result back as a collection of strongly typed objects.
     /// </summary>
     /// <param name="statement">The SQL query to be executed, with collection of <see cref="QueryParameter"/> parameters.</param>
+    /// <param name="reflectionStrategy">Type of reflection model to use</param>
     /// <param name="cancellationToken">
     /// A cancellation token that can be used by other object or threads to receive notice of cancellation.
     /// The cancellation token can be used to implement time out as well.</param>
@@ -123,10 +124,11 @@ public partial class DatabricksSqlWarehouseQueryExecutor
     /// </remarks>
     public virtual async IAsyncEnumerable<T> ExecuteStatementAsync<T>(
         DatabricksStatement statement,
+        ReflectionStrategy reflectionStrategy = ReflectionStrategy.Default,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
         where T : class
     {
-        var strategy = new StronglyTypedApacheArrowFormat(_options);
+        var strategy = new StronglyTypedApacheArrowFormat(_options, reflectionStrategy);
         var request = strategy.GetStatementRequest(statement);
         var response = await request.WaitForSqlWarehouseResultAsync(_httpClient, StatementsEndpointPath, cancellationToken).ConfigureAwait(false);
 
