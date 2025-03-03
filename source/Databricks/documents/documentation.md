@@ -193,6 +193,14 @@ await foreach (var person in result)
     Console.WriteLine(person);
 ```
 
+#### Reflection strategies
+
+It's possible to add an additional parameter to ExecuteStatementAsync to control the reflection strategy. The reflection strategy is used to create objects from the result of a query. The following reflection strategies are available:
+
+- `ReflectionStrategy.Default` - The default reflection strategy. This uses the existing reflection strategy.
+- `ReflectionStrategy.Cache` - This reflection strategy uses a cache for the expensive operations.
+- `ReflectionStrategy.Lambda` - This reflection strategy uses a lambda expression and expression trees to create objects.
+
 ### Health checks
 
 The package contains functionality to do health checks of the status of the Databricks Sql Statement Execution API.

@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 12.1.0
+
+- Add support for different reflection strategies in `DatabricksSqlWarehouseQueryExecutor` to improve performance when using Apache Arrow format.
+
 ## Version 12.0.2
 
 - Update .github referencess to v14

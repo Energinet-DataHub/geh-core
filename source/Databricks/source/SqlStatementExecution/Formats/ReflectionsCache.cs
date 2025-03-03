@@ -12,29 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
-internal static class Reflections
+internal static class ReflectionsCache
 {
-    public static string[] GetArrowFieldNames<T>()
-        => ArrowFieldNamesFromProperties<T>._names;
+    private static readonly ConcurrentDictionary<Type, string[]> _arrowFieldNamesCache = new();
+    private static readonly ConcurrentDictionary<Type, Func<object?[], object>> _constructorCache = new();
+    private static readonly ConcurrentDictionary<Type, Func<object?[], bool>> _validateValuesCache = new();
+    private static readonly ConcurrentDictionary<Type, bool> _constructorValidatorCache = new();
 
-    /// <summary>
-    /// Creates an instance of <typeparamref name="T" /> using the constructor
-    /// </summary>
-    /// <param name="values">Values for the constructor</param>
-    /// <typeparam name="T">Object type to create</typeparam>
-    /// <returns>Hydrated object</returns>
-    /// <exception cref="InvalidOperationException">If there is less or more then one constructor</exception>
-    /// <exception cref="ArgumentException">The supplied values does not match</exception>
+    public static string[] GetArrowFieldNames<T>()
+        => _arrowFieldNamesCache.GetOrAdd(typeof(T), _ => ArrowFieldNamesFromProperties<T>._names);
+
     public static T CreateInstance<T>(params object?[] values)
     {
-        DebugInfo.IncrementCounter("Reflections.CreateInstance");
-        var isConstructorValid = Activator<T>.ValidateConstructor();
-        var valuesMatchConstructor = Activator<T>.ValidateValues(values);
+        DebugInfo.IncrementCounter("ReflectionsCache.CreateInstance");
+        var type = typeof(T);
+        var isConstructorValid = _constructorValidatorCache.GetOrAdd(type, _ => Activator<T>.ValidateConstructor());
+        var valuesMatchConstructor = _validateValuesCache.GetOrAdd(type, _ => Activator<T>.ValidateValues)(values);
 
         if (!isConstructorValid) throw new InvalidOperationException("Invalid constructor - only one constructor must be found.");
         if (!valuesMatchConstructor) throw new ArgumentException("Invalid values for constructor.");
@@ -48,18 +49,14 @@ internal static class Reflections
 
         private static string[] GetNamesByConstructorOrder(Type type)
         {
-            DebugInfo.IncrementCounter(nameof(ArrowFieldNamesFromProperties<T>.GetNamesByConstructorOrder));
+            DebugInfo.IncrementCounter(nameof(GetNamesByConstructorOrder));
             var fields = type.GetProperties().SelectMany(p => p.GetCustomAttributes<ArrowFieldAttribute>());
-
             return fields.OrderBy(f => f.ConstructorOrder).Select(f => f.Name).ToArray();
         }
     }
 
     private static class Activator<T>
     {
-        /// <summary>
-        /// Validates that the type has a single constructor
-        /// </summary>
         public static readonly Func<bool> ValidateConstructor = ValidateConstructorForType();
 
         private static Func<bool> ValidateConstructorForType()
@@ -67,27 +64,18 @@ internal static class Reflections
             DebugInfo.IncrementCounter(nameof(Activator<T>.ValidateConstructorForType));
             var type = typeof(T);
             var ctor = type.GetConstructors();
-
-            var ctorCount = Expression.Constant(ctor.Length);
-            var expectedCtorCount = Expression.Constant(1);
-            var isEqual = Expression.Equal(ctorCount, expectedCtorCount);
-
-            var lambda = Expression.Lambda<Func<bool>>(isEqual);
-            return lambda.Compile();
+            return () => ctor.Length == 1;
         }
 
-        /// <summary>
-        /// Validates that the values matches the constructor
-        /// </summary>
         public static readonly Func<object?[], bool> ValidateValues = ValidateValuesForConstructor();
 
         private static Func<object?[], bool> ValidateValuesForConstructor()
         {
-            DebugInfo.IncrementCounter(nameof(Activator<T>.ValidateValuesForConstructor));
+            DebugInfo.IncrementCounter(nameof(ValidateValuesForConstructor));
             var type = typeof(T);
             var ctor = type.GetConstructors().First();
             var parameters = ctor.GetParameters();
-            if (parameters.Length == 0) return _ => false; // No parameters to validate - false
+            if (parameters.Length == 0) return _ => false;
 
             var param = Expression.Parameter(typeof(object?[]), "args");
             var checks = new Expression[parameters.Length];
@@ -98,7 +86,6 @@ internal static class Reflections
                 var parameterType = parameters[i].ParameterType;
                 var accessor = Expression.ArrayIndex(param, index);
 
-                // Check if the parameter type is nullable
                 if (parameterType.IsValueType && Nullable.GetUnderlyingType(parameterType) == null)
                 {
                     checks[i] = Expression.TypeIs(accessor, parameterType);
@@ -112,23 +99,15 @@ internal static class Reflections
             }
 
             var allChecks = checks.Aggregate(Expression.AndAlso);
-
             var lambda = Expression.Lambda<Func<object?[], bool>>(allChecks, param);
             return lambda.Compile();
         }
 
-        /// <summary>
-        ///  Creates an instance of <typeparamref name="T" /> using the constructor
-        /// </summary>
-        /// <exception cref="InvalidOperationException">is thrown if <typeparamref name="T"/> contains more then one constructor</exception>
         public static readonly Func<object?[], T> CreateWithValues = BuildExpressionForObjectCreation();
 
-        /// <summary>
-        ///  Builds an expression that creates an instance of <typeparamref name="T" /> using the constructor
-        /// </summary>
         private static Func<object?[], T> BuildExpressionForObjectCreation()
         {
-            DebugInfo.IncrementCounter(nameof(Activator<T>.BuildExpressionForObjectCreation));
+            DebugInfo.IncrementCounter(nameof(BuildExpressionForObjectCreation));
             var type = typeof(T);
             var ctor = type.GetConstructors().First();
             var parameters = ctor.GetParameters();
