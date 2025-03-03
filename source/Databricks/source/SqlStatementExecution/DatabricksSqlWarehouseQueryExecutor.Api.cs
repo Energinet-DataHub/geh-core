@@ -150,13 +150,9 @@ public partial class DatabricksSqlWarehouseQueryExecutor
             var stream = await _externalHttpClient.GetStreamAsync(
                 chunkResponse.external_links[0].external_link,
                 cancellationToken).ConfigureAwait(false);
+
             await using (stream.ConfigureAwait(false))
-            {
-                await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken).ConfigureAwait(false))
-                {
-                    yield return row;
-                }
-            }
+                await foreach (var row in strategy.ExecuteAsync<T>(stream, cancellationToken).ConfigureAwait(false)) yield return row;
         }
     }
 }

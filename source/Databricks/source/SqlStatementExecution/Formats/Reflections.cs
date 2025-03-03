@@ -32,6 +32,7 @@ internal static class Reflections
     /// <exception cref="ArgumentException">The supplied values does not match</exception>
     public static T CreateInstance<T>(params object?[] values)
     {
+        DebugInfo.IncrementCounter("Reflections.CreateInstance");
         var isConstructorValid = Activator<T>.ValidateConstructor();
         var valuesMatchConstructor = Activator<T>.ValidateValues(values);
 
@@ -47,6 +48,7 @@ internal static class Reflections
 
         private static string[] GetNamesByConstructorOrder(Type type)
         {
+            DebugInfo.IncrementCounter(nameof(ArrowFieldNamesFromProperties<T>.GetNamesByConstructorOrder));
             var fields = type.GetProperties().SelectMany(p => p.GetCustomAttributes<ArrowFieldAttribute>());
 
             return fields.OrderBy(f => f.ConstructorOrder).Select(f => f.Name).ToArray();
@@ -62,6 +64,7 @@ internal static class Reflections
 
         private static Func<bool> ValidateConstructorForType()
         {
+            DebugInfo.IncrementCounter(nameof(Activator<T>.ValidateConstructorForType));
             var type = typeof(T);
             var ctor = type.GetConstructors();
 
@@ -80,6 +83,7 @@ internal static class Reflections
 
         private static Func<object?[], bool> ValidateValuesForConstructor()
         {
+            DebugInfo.IncrementCounter(nameof(Activator<T>.ValidateValuesForConstructor));
             var type = typeof(T);
             var ctor = type.GetConstructors().First();
             var parameters = ctor.GetParameters();
@@ -124,6 +128,7 @@ internal static class Reflections
         /// </summary>
         private static Func<object?[], T> BuildExpressionForObjectCreation()
         {
+            DebugInfo.IncrementCounter(nameof(Activator<T>.BuildExpressionForObjectCreation));
             var type = typeof(T);
             var ctor = type.GetConstructors().First();
             var parameters = ctor.GetParameters();

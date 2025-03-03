@@ -13,34 +13,34 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 
 internal static class ReflectionsCache
 {
-    private static readonly ConcurrentDictionary<Type, string[]> ArrowFieldNamesCache = new();
-    private static readonly ConcurrentDictionary<Type, Func<object?[], object>> ConstructorCache = new();
-    private static readonly ConcurrentDictionary<Type, Func<object?[], bool>> ValidateValuesCache = new();
+    private static readonly ConcurrentDictionary<Type, string[]> _arrowFieldNamesCache = new();
+    private static readonly ConcurrentDictionary<Type, Func<object?[], object>> _constructorCache = new();
+    private static readonly ConcurrentDictionary<Type, Func<object?[], bool>> _validateValuesCache = new();
+    private static readonly ConcurrentDictionary<Type, bool> _constructorValidatorCache = new();
 
     public static string[] GetArrowFieldNames<T>()
-        => ArrowFieldNamesCache.GetOrAdd(typeof(T), _ => ArrowFieldNamesFromProperties<T>._names);
+        => _arrowFieldNamesCache.GetOrAdd(typeof(T), _ => ArrowFieldNamesFromProperties<T>._names);
 
     public static T CreateInstance<T>(params object?[] values)
     {
+        DebugInfo.IncrementCounter("ReflectionsCache.CreateInstance");
         var type = typeof(T);
-        var isConstructorValid = Activator<T>.ValidateConstructor();
-        var valuesMatchConstructor = ValidateValuesCache.GetOrAdd(type, _ => Activator<T>.ValidateValues)(values);
+        var isConstructorValid = _constructorValidatorCache.GetOrAdd(type, _ => Activator<T>.ValidateConstructor());
+        var valuesMatchConstructor = _validateValuesCache.GetOrAdd(type, _ => Activator<T>.ValidateValues)(values);
 
         if (!isConstructorValid) throw new InvalidOperationException("Invalid constructor - only one constructor must be found.");
         if (!valuesMatchConstructor) throw new ArgumentException("Invalid values for constructor.");
 
-        var obj = ConstructorCache.GetOrAdd(type, _ => Activator<T>.CreateWithValues);
-
-        var objectInstance = (Func<object?[], T>)obj(values);
-
-        return objectInstance.Invoke(values);
+        return Activator<T>.CreateWithValues(values);
     }
 
     private static class ArrowFieldNamesFromProperties<T>
@@ -49,6 +49,7 @@ internal static class ReflectionsCache
 
         private static string[] GetNamesByConstructorOrder(Type type)
         {
+            DebugInfo.IncrementCounter(nameof(GetNamesByConstructorOrder));
             var fields = type.GetProperties().SelectMany(p => p.GetCustomAttributes<ArrowFieldAttribute>());
             return fields.OrderBy(f => f.ConstructorOrder).Select(f => f.Name).ToArray();
         }
@@ -60,6 +61,7 @@ internal static class ReflectionsCache
 
         private static Func<bool> ValidateConstructorForType()
         {
+            DebugInfo.IncrementCounter(nameof(Activator<T>.ValidateConstructorForType));
             var type = typeof(T);
             var ctor = type.GetConstructors();
             return () => ctor.Length == 1;
@@ -69,6 +71,7 @@ internal static class ReflectionsCache
 
         private static Func<object?[], bool> ValidateValuesForConstructor()
         {
+            DebugInfo.IncrementCounter(nameof(ValidateValuesForConstructor));
             var type = typeof(T);
             var ctor = type.GetConstructors().First();
             var parameters = ctor.GetParameters();
@@ -104,6 +107,7 @@ internal static class ReflectionsCache
 
         private static Func<object?[], T> BuildExpressionForObjectCreation()
         {
+            DebugInfo.IncrementCounter(nameof(BuildExpressionForObjectCreation));
             var type = typeof(T);
             var ctor = type.GetConstructors().First();
             var parameters = ctor.GetParameters();

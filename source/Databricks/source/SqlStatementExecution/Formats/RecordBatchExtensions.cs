@@ -21,6 +21,14 @@ internal static class RecordBatchExtensions
     public static T ReadRecord<T>(this RecordBatch batch, int row, ReflectionStrategy reflectionStrategy)
         where T : class
     {
+        return DebugInfo.Measure(
+            "RecordBatchExtensions.ReadRecord",
+            () => CreateObject<T>(batch, row, reflectionStrategy));
+    }
+
+    private static T CreateObject<T>(RecordBatch batch, int row, ReflectionStrategy reflectionStrategy)
+        where T : class
+    {
         return reflectionStrategy switch
         {
             ReflectionStrategy.Default => Standard<T>(batch, row),

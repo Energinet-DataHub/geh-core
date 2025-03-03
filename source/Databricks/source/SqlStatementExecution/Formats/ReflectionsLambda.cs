@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -36,36 +37,34 @@ internal static class ReflectionsLambda
     /// <exception cref="ArgumentException">The supplied values does not match</exception>
     public static T CreateInstance<T>(params object?[] args)
     {
+        DebugInfo.IncrementCounter("ReflectionsLambda.CreateInstance");
         var type = typeof(T);
-        if (!ConstructorCache.TryGetValue(type, out var cachedDelegate))
-        {
-            var constructor = type.GetConstructors().Single();
-            var ctorParams = constructor.GetParameters();
-            var argsParam = Expression.Parameter(typeof(object[]), "args");
-            var parameters = ctorParams
-                .Select((p, i) => Expression.Convert(Expression.ArrayIndex(argsParam, Expression.Constant(i)), p.ParameterType))
-                .ToArray();
-
-            var constructorCall = Expression.New(constructor, parameters);
-
-            var argCountCheck = Expression.IfThen(
-                Expression.NotEqual(Expression.ArrayLength(argsParam), Expression.Constant(ctorParams.Length)),
-                Expression.Throw(Expression.New(typeof(ArgumentException).GetConstructor(new[] { typeof(string) })!, Expression.Constant($"Expected {ctorParams.Length} arguments but got {args.Length}"))));
-
-            var block = Expression.Block(argCountCheck, constructorCall);
-            var lambda = Expression.Lambda<Func<object?[], T>>(block, argsParam).Compile();
-            ConstructorCache[type] = lambda;
-            cachedDelegate = lambda;
-        }
-
-        if (cachedDelegate == null)
-        {
-            throw new InvalidOperationException($"No constructor found for type {type.Name}");
-        }
+        var cachedDelegate = ConstructorCache.GetOrAdd(type, _ => CreatorLambda<T>(args, type));
 
         var obj = ((Func<object?[], T>)cachedDelegate)(args) ?? throw new InvalidOperationException($"Failed to create instance of type {type.Name}");
 
         return (T)obj;
+    }
+
+    private static Func<object?[], T> CreatorLambda<T>(object?[] args, Type type)
+    {
+        DebugInfo.IncrementCounter("ReflectionsLambda.CreatorLambda");
+        var constructor = type.GetConstructors().Single();
+        var ctorParams = constructor.GetParameters();
+        var argsParam = Expression.Parameter(typeof(object[]), "args");
+        var parameters = ctorParams
+            .Select((p, i) => Expression.Convert(Expression.ArrayIndex(argsParam, Expression.Constant(i)), p.ParameterType))
+            .ToArray();
+
+        var constructorCall = Expression.New(constructor, parameters);
+
+        var argCountCheck = Expression.IfThen(
+            Expression.NotEqual(Expression.ArrayLength(argsParam), Expression.Constant(ctorParams.Length)),
+            Expression.Throw(Expression.New(typeof(ArgumentException).GetConstructor(new[] { typeof(string) })!, Expression.Constant($"Expected {ctorParams.Length} arguments but got {args.Length}"))));
+
+        var block = Expression.Block(argCountCheck, constructorCall);
+        var lambda = Expression.Lambda<Func<object?[], T>>(block, argsParam).Compile();
+        return lambda;
     }
 
     private static class ArrowFieldNamesFromProperties<T>
@@ -74,6 +73,7 @@ internal static class ReflectionsLambda
 
         private static string[] GetNamesByConstructorOrder()
         {
+            DebugInfo.IncrementCounter(nameof(GetNamesByConstructorOrder));
             // Restrict the search to public instance properties
             var properties = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
