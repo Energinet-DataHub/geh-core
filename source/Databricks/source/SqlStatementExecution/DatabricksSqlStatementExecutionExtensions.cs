@@ -45,7 +45,7 @@ public static class DatabricksSqlStatementExecutionExtensions
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-                });
+                }).AddHttpMessageHandler<AuthenticateRequestWithToken>();
 
         serviceCollection.AddSingleton(sp =>
             new DatabricksSqlWarehouseQueryExecutor(
