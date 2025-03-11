@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net.Http.Headers;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
