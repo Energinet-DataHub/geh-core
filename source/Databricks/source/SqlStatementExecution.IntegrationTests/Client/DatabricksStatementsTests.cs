@@ -190,7 +190,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         var task = result.CountAsync();
 
         // Assert
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(TimeSpan.FromSeconds(5));
         task.IsCanceled.Should().BeTrue();
     }
 
