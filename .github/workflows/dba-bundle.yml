@@ -16,12 +16,6 @@ name: Build and test - fast track
 
 on:
   push:
-    branches:
-      - sondergaard/add-entra-id-token
-    paths:
-      - source/Databricks/source/SqlStatementExecution/**
-      - source/Databricks/source/Jobs/**
-      - .github/workflows/databricks-bundle-publish.yml
   # Build, test, pack
   # Executed if Databricks folder or build scripts has changed; including if documentation or tests has changed
   workflow_call: {}
