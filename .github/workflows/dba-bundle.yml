@@ -28,7 +28,7 @@ env:
 
 jobs:
   fast_track:
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     name: Build and test - fast track
 
     environment: AzureAuth
