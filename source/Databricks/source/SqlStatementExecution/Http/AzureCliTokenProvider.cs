@@ -14,16 +14,14 @@
 
 using Azure.Core;
 using Azure.Identity;
-using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution.Http;
 
-/// <inheritdoc cref="ITokenProvider"/>
-public class ServicePrincipalTokenProvider : ITokenProvider
+public class AzureCliTokenProvider : ITokenProvider
 {
     public async Task<string> GetTokenAsync(CancellationToken cancellationToken = default)
     {
-        var credential = new ManagedIdentityCredential();
+        var credential = new AzureCliCredential();
 
         // The scope is a fixed value for Databricks in Azure
         var tokenRequestContext = new TokenRequestContext(["2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default"]);

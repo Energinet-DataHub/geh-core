@@ -43,6 +43,7 @@ public static class DatabricksSqlStatementExecutionExtensions
         Action<IServiceCollection> config = tokenProvider switch {
             TokenProvider.WorkspaceTokenProvider => s => s.AddSingleton<ITokenProvider, WorkspaceTokenProvider>(),
             TokenProvider.ServicePrincipalTokenProvider => s => s.AddSingleton<ITokenProvider, ServicePrincipalTokenProvider>(),
+            TokenProvider.AzureCliTokenProvider => s => s.AddSingleton<ITokenProvider, AzureCliTokenProvider>(),
             _ => throw new ArgumentOutOfRangeException(nameof(tokenProvider), tokenProvider, null),
         };
 
@@ -84,6 +85,18 @@ public static class DatabricksSqlStatementExecutionExtensions
 
 public enum TokenProvider
 {
+    /// <summary>
+    /// This is the legacy token provider. Reading a token from configuration.
+    /// </summary>
     WorkspaceTokenProvider,
+
+    /// <summary>
+    /// Using a service principal to authenticate requests.
+    /// </summary>
     ServicePrincipalTokenProvider,
+
+    /// <summary>
+    /// Using Azure CLI to authenticate requests when running integration tests.
+    /// </summary>
+    AzureCliTokenProvider,
 }
