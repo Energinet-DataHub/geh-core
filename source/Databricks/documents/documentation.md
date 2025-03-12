@@ -22,6 +22,9 @@ private static void AddDatabricksSqlStatementExecution(IServiceCollection servic
 }
 ```
 
+Default configuration is using WorkspaceTokenProvider. If you want to use a different token provider you can do so by using the overload method and change the token provider.
+The overload accept a value from the enum `TokenProvider` (WorkspaceTokenProvider | ServicePrincipalTokenProvider | AzureCliTokenProvider).
+
 #### DatabricksSqlWarehouseQueryExecutor
 
 `DatabricksSqlWarehouseQueryExecutor` is built around streaming of data from Databricks SQL Warehouse.
