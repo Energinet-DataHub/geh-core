@@ -52,7 +52,7 @@ public static class DatabricksJobsExtensions
         Action<IServiceCollection> config = tokenProvider switch {
             TokenProvider.WorkspaceTokenProvider => s => s.AddSingleton<ITokenProvider, WorkspaceTokenProvider>(),
             TokenProvider.ServicePrincipalTokenProvider => s => s.AddSingleton<ITokenProvider, ServicePrincipalTokenProvider>(),
-            TokenProvider.AzureCliTokenProvider => s => s.AddSingleton<ITokenProvider, AzureCliTokenProvider>(),
+            TokenProvider.IntegrationTestingEnvironmentTokenProvider => s => s.AddSingleton<ITokenProvider, IntegrationTestingEnvironmentTokenProvider>(),
             _ => throw new ArgumentOutOfRangeException(nameof(tokenProvider), tokenProvider, null),
         };
 
@@ -110,7 +110,7 @@ public enum TokenProvider
     ServicePrincipalTokenProvider,
 
     /// <summary>
-    /// Using Azure CLI to authenticate requests when running integration tests.
+    /// Using ChainedTokenCredentials to match our testing environment to authenticate requests when running integration tests.
     /// </summary>
-    AzureCliTokenProvider,
+    IntegrationTestingEnvironmentTokenProvider,
 }

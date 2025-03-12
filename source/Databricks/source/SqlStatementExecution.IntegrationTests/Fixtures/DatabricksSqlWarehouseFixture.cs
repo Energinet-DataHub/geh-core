@@ -56,7 +56,7 @@ public sealed class DatabricksSqlWarehouseFixture
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddHttpClient();
-        services.AddDatabricksSqlStatementExecution(configuration.GetSection(DatabricksSqlStatementOptions.DatabricksOptions), TokenProvider.AzureCliTokenProvider);
+        services.AddDatabricksSqlStatementExecution(configuration.GetSection(DatabricksSqlStatementOptions.DatabricksOptions), TokenProvider.IntegrationTestingEnvironmentTokenProvider);
         return services;
     }
 }
