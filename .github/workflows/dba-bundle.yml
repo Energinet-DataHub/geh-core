@@ -51,3 +51,14 @@ jobs:
 
       - name: Who am i
         run: az account show
+
+      - name: Obtain token
+        run: |
+          TOKEN=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query accessToken -o tsv)
+          echo "::set-output name=access_token::$TOKEN"
+        id: get_token
+
+      - name: Use the token in a curl call
+        run: |
+          JSON_DATA='{"statement":"SELECT * FROM VALUES\n              (\u0027Zen Hui\u0027, 25),\n              (\u0027Anil B\u0027 , 18),\n              (\u0027Shone S\u0027, 16),\n              (\u0027Mike A\u0027 , 25),\n              (\u0027John A\u0027 , 18),\n              (\u0027Jack N\u0027 , 16) AS data(name, age);","warehouse_id":"7ca81a471ee1a834","wait_timeout":"50s"}'
+          curl -X POST -H "Authorization: Bearer ${{ steps.get_token.outputs.access_token }}" -H "Content-Type: application/json" -d "$JSON_DATA" https://adb-2961912374378235.15.azuredatabricks.net/api/2.0/sql/statements
