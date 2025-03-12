@@ -24,15 +24,42 @@ public static class DatabricksSqlStatementExecutionExtensions
 {
     /// <summary>
     /// Adds the <see cref="DatabricksSqlWarehouseQueryExecutor"/> and related services to the service collection.
+    /// The <see cref="WorkspaceTokenProvider"/> is used to authenticate requests.
     /// </summary>
     /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
     public static IServiceCollection AddDatabricksSqlStatementExecution(this IServiceCollection serviceCollection, IConfiguration configuration)
+        => AddDatabricksSqlStatementExecution(serviceCollection, configuration, TokenProvider.WorkspaceTokenProvider);
+
+    /// <summary>
+    /// Adds the <see cref="DatabricksSqlWarehouseQueryExecutor"/> and related services to the service collection.
+    /// </summary>
+    /// <returns>IServiceCollection containing elements needed to request Databricks SQL Statement Execution API</returns>
+    /// <exception cref="ArgumentOutOfRangeException">If <see cref="TokenProvider"/> is not a known value</exception>
+    public static IServiceCollection AddDatabricksSqlStatementExecution(
+        this IServiceCollection serviceCollection,
+        IConfiguration configuration,
+        TokenProvider tokenProvider)
+    {
+        Action<IServiceCollection> config = tokenProvider switch {
+            TokenProvider.WorkspaceTokenProvider => s => s.AddSingleton<ITokenProvider, WorkspaceTokenProvider>(),
+            TokenProvider.ServicePrincipalTokenProvider => s => s.AddSingleton<ITokenProvider, ServicePrincipalTokenProvider>(),
+            _ => throw new ArgumentOutOfRangeException(nameof(tokenProvider), tokenProvider, null),
+        };
+
+        config(serviceCollection);
+
+        return ConfigureDatabricksSqlStatementExecutionDependencies(serviceCollection, configuration);
+    }
+
+    private static IServiceCollection ConfigureDatabricksSqlStatementExecutionDependencies(
+        IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection
             .AddOptions<DatabricksSqlStatementOptions>()
             .Bind(configuration)
             .ValidateDataAnnotations();
 
+        serviceCollection.AddTransient<AuthenticateRequestWithToken>();
         serviceCollection
             .AddHttpClient(
                 HttpClientNameConstants.Databricks,
@@ -41,7 +68,6 @@ public static class DatabricksSqlStatementExecutionExtensions
                     var options = serviceProvider.GetRequiredService<IOptions<DatabricksSqlStatementOptions>>().Value;
 
                     client.BaseAddress = new Uri(options.WorkspaceUrl);
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.WorkspaceToken);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
@@ -54,4 +80,10 @@ public static class DatabricksSqlStatementExecutionExtensions
 
         return serviceCollection;
     }
+}
+
+public enum TokenProvider
+{
+    WorkspaceTokenProvider,
+    ServicePrincipalTokenProvider,
 }
