@@ -1,5 +1,10 @@
 # Messaging Release notes
 
+## Version 6.1.4
+
+- Update tj-actions to v46.0.1
+- No functional change.
+
 ## Version 6.1.3
 
 - Update .github referencess to v14
