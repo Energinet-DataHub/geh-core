@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 7.2.2
+
+- Update tj-actions to v46.0.1
+- No functional change.
+
 ## Version 7.2.1
 
 - Fix bug in class `DurableClientExtensions` method `WaitForOrchestationStartedAsync` where an exception can be thrown if an orchestration with another name exists.

@@ -1,5 +1,10 @@
 # Databricks Release Notes
 
+## Version 12.0.3
+
+- Update tj-actions to v46.0.1
+- No functional change.
+
 ## Version 12.0.2
 
 - Update .github referencess to v14

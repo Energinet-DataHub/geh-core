@@ -23,7 +23,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.JsonSerialization</PackageId>
-    <PackageVersion>3.0.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>3.0.3$(VersionSuffix)</PackageVersion>
     <Title>JsonSerialization library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
