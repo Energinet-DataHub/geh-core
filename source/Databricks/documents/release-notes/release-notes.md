@@ -4,6 +4,11 @@
 
 - Add support for using different token providers. Default configuration is to use workspace token as is the current standard. Other options provide either ManagedIdentity or AzureCli as a token provider.
 
+## Version 12.0.3
+
+- Update tj-actions to v46.0.1
+- No functional change.
+
 ## Version 12.0.2
 
 - Update .github referencess to v14
