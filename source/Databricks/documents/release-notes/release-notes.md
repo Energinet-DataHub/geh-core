@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 12.1.0
+
+- Add support for using different token providers. Default configuration is to use workspace token as is the current standard. Other options provide either ManagedIdentity or AzureCli as a token provider.
+
 ## Version 12.0.3
 
 - Update tj-actions to v46.0.1

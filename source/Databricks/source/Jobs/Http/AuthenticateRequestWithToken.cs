@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using System.Net.Http.Headers;
 
-/// <summary>
-/// Constants used for naming <see cref="HttpClient"/> instances.
-///     Databricks: Used for communicating with the Databricks API.
-///     External: Used for communicating with external services without authorization.
-/// </summary>
-internal static class HttpClientNameConstants
+namespace Energinet.DataHub.Core.Databricks.Jobs.Http;
+
+public class AuthenticateRequestWithToken(ITokenProvider tokenProvider) : DelegatingHandler
 {
-    public const string Databricks = "Databricks";
-    public const string External = "External";
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var token = await tokenProvider.GetTokenAsync(cancellationToken).ConfigureAwait(false);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+    }
 }

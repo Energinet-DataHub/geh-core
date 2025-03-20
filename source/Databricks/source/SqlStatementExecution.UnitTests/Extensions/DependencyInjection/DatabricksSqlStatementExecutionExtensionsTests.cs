@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -44,20 +45,16 @@ public class DatabricksSqlStatementExecutionExtensionsTests
 
         // Assert
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        AssertHttpClient(serviceProvider, WorkspaceUrl, WorkspaceToken);
+        AssertHttpClient(serviceProvider, WorkspaceUrl);
     }
 
     private static void AssertHttpClient(
         ServiceProvider serviceProvider,
-        string workspaceUri,
-        string workspaceToken)
+        string workspaceUri)
     {
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var httpClient = httpClientFactory.CreateClient(HttpClientNameConstants.Databricks);
 
         httpClient.BaseAddress.Should().Be(new Uri(workspaceUri));
-        httpClient.DefaultRequestHeaders.Authorization.Should().NotBeNull();
-        httpClient.DefaultRequestHeaders.Authorization!.Scheme.Should().Be("Bearer");
-        httpClient.DefaultRequestHeaders.Authorization!.Parameter.Should().Be(workspaceToken);
     }
 }

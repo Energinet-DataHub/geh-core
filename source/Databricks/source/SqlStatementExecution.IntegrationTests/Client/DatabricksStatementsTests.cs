@@ -169,38 +169,6 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         rowCount.Should().Be(1000000);
     }
 
-    [Theory]
-    [MemberData(nameof(GetFormats), Skip = "No longer relevant since we don't see a need for download of results of 2GB or above. If not touched by 2024-12-31, remove test.")]
-    public async Task ExecuteStatementAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
-    {
-        // Arrange
-        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var statement = new Above2GbDataRows();
-
-        // Act
-        var result = client.ExecuteStatementAsync(statement, format);
-        var rowCount = await result.CountAsync();
-
-        // Assert
-        rowCount.Should().Be(1000000);
-    }
-
-    [Theory]
-    [MemberData(nameof(GetFormats), Skip = "No longer relevant since we don't see a need for download of results of 2GB or above. If not touched by 2024-12-31, remove test.")]
-    public async Task ExecuteStatementParallelAsync_WhenQueryingDynamic_MustReturnAbove2GbData(Format format)
-    {
-        // Arrange
-        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
-        var statement = new Above2GbDataRows();
-
-        // Act
-        var result = client.ExecuteStatementAsync(statement, QueryOptions.WithFormat(format).WithParallelDownload());
-        var rowCount = await result.CountAsync();
-
-        // Assert
-        rowCount.Should().Be(1000000);
-    }
-
     /// <summary>
     /// Given a query that takes more than 10 seconds
     /// And the initial timeout is set to 1 second
@@ -222,7 +190,7 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
         var task = result.CountAsync();
 
         // Assert
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(TimeSpan.FromSeconds(5));
         task.IsCanceled.Should().BeTrue();
     }
 

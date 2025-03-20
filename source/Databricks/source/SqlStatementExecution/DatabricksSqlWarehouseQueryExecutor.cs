@@ -14,6 +14,7 @@
 
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Http;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Statement;
 using Microsoft.Extensions.Options;
 
