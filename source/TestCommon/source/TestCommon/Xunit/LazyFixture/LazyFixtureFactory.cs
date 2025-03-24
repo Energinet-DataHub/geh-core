@@ -22,8 +22,8 @@ namespace Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 /// <summary>
 /// Factory that creates and initialize a xUnit fixture using lazy async initialization.
 ///
-/// The factory should be used as a xUnit collection or class fixture. This ensure the factory instance
-/// are shared between tests.
+/// The factory should be used as a xUnit collection or class fixture. This ensures that the factory instance
+/// is shared between tests.
 ///
 /// During the test setup phase the <see cref="LazyFixture"/> property should be accessed. Doing so will
 /// create and initialize the <typeparamref name="TLazyFixture"/>, but only once.
@@ -31,6 +31,8 @@ namespace Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 /// During the test cleanup phase the factory will only call Dispose of the <typeparamref name="TLazyFixture"/> if it was actually created.
 /// </summary>
 /// <typeparam name="TLazyFixture">A xUnit fixture that inherits from <see cref="LazyFixtureBase"/>.</typeparam>
+// TODO: Do we suppress?
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2007", Justification = "Test methods should not call ConfigureAwait(), as it may bypass parallelization limits")]
 public sealed class LazyFixtureFactory<TLazyFixture> : IAsyncLifetime
     where TLazyFixture : LazyFixtureBase
 {
@@ -74,7 +76,9 @@ public sealed class LazyFixtureFactory<TLazyFixture> : IAsyncLifetime
         diagnosticMessageSink.WriteDiagnosticMessage($"Creating lazy fixture of type '{lazyFixtureType.FullName}'.");
 
         if (Activator.CreateInstance(lazyFixtureType, diagnosticMessageSink) is not TLazyFixture lazyFixture)
+        {
             throw new InvalidOperationException($"Could not create lazy fixture of type '{lazyFixtureType.FullName}'.");
+        }
 
         await lazyFixture.InitializeAsync();
 

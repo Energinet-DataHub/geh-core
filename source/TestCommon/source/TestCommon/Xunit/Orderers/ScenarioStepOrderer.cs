@@ -30,13 +30,20 @@ public class ScenarioStepOrderer : ITestCaseOrderer
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : ITestCase
     {
-        var stepGrouping = GroupByStepNumber(testCases);
+        // This
+        var assembly = typeof(ScenarioStepAttribute).AssemblyQualifiedName!;
+        var sortedTestCases = testCases
+            .OrderBy(testCase => GetStepNumber(testCase, assembly))
+            .ThenBy(testCase => testCase.TestMethod.Method.Name);
 
-        var stepNumbersLowestToHighest = stepGrouping.Keys.Order();
-
-        var sortedTestCases = stepNumbersLowestToHighest
-            .SelectMany(stepNumber => stepGrouping[stepNumber]
-                .OrderBy(testCase => testCase.TestMethod.Method.Name)); // TODO: Do we want to sort by name?
+        // Or this?
+        // var stepGrouping = GroupByStepNumber(testCases);
+        //
+        // var stepNumbersLowestToHighest = stepGrouping.Keys.Order();
+        //
+        // var sortedTestCases = stepNumbersLowestToHighest
+        //     .SelectMany(stepNumber => stepGrouping[stepNumber]
+        //         .OrderBy(testCase => testCase.TestMethod.Method.Name)); // TODO: Do we want to sort by name?
         foreach (var testcase in sortedTestCases)
         {
             yield return testcase;
@@ -52,10 +59,7 @@ public class ScenarioStepOrderer : ITestCaseOrderer
         var sortedMethods = new SortedDictionary<int, List<TTestCase>>();
         foreach (var testCase in testCases)
         {
-            var stepNumber = testCase.TestMethod.Method
-                .GetCustomAttributes(assemblyName)
-                .FirstOrDefault()
-                ?.GetNamedArgument<int>(nameof(ScenarioStepAttribute.Number)) ?? 0;
+            var stepNumber = GetStepNumber(testCase, assemblyName);
 
             GetOrCreate(sortedMethods, stepNumber).Add(testCase);
         }
@@ -70,5 +74,14 @@ public class ScenarioStepOrderer : ITestCaseOrderer
         return dictionary.TryGetValue(key, out var result)
             ? result
             : dictionary[key] = new TValue();
+    }
+
+    private static int GetStepNumber<TTestCase>(TTestCase testCase, string assemblyName)
+        where TTestCase : ITestCase
+    {
+        return testCase.TestMethod.Method
+            .GetCustomAttributes(assemblyName)
+            .FirstOrDefault()
+            ?.GetNamedArgument<int>(nameof(ScenarioStepAttribute.Number)) ?? 0;
     }
 }
