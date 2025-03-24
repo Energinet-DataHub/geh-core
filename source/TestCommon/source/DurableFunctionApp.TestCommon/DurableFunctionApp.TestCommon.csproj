@@ -31,7 +31,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.DurableFunctionApp.TestCommon</PackageId>
-    <PackageVersion>7.2.2$(VersionSuffix)</PackageVersion>
+    <PackageVersion>7.2.3$(VersionSuffix)</PackageVersion>
     <Title>DurableFunctionApp TestCommon library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
