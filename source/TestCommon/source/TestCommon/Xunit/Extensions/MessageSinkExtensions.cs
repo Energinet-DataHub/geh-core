@@ -26,6 +26,6 @@ public static class MessageSinkExtensions
 
     private static DiagnosticMessage CreateDiagnosticMessage(string message)
     {
-        return new DiagnosticMessage($"Mandalorian: {message}"); // TODO: What do we write here?
+        return new DiagnosticMessage($"Diagnostic: {message}");
     }
 }

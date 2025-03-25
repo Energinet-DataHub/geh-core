@@ -31,8 +31,6 @@ namespace Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 /// During the test cleanup phase the factory will only call Dispose of the <typeparamref name="TLazyFixture"/> if it was actually created.
 /// </summary>
 /// <typeparam name="TLazyFixture">A xUnit fixture that inherits from <see cref="LazyFixtureBase"/>.</typeparam>
-// TODO: Do we suppress?
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2007", Justification = "Test methods should not call ConfigureAwait(), as it may bypass parallelization limits")]
 public sealed class LazyFixtureFactory<TLazyFixture> : IAsyncLifetime
     where TLazyFixture : LazyFixtureBase
 {
@@ -66,7 +64,7 @@ public sealed class LazyFixtureFactory<TLazyFixture> : IAsyncLifetime
         if (LazyFixture.IsStarted)
         {
             var fixture = await LazyFixture;
-            await fixture.DisposeAsync();
+            await fixture.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -80,7 +78,7 @@ public sealed class LazyFixtureFactory<TLazyFixture> : IAsyncLifetime
             throw new InvalidOperationException($"Could not create lazy fixture of type '{lazyFixtureType.FullName}'.");
         }
 
-        await lazyFixture.InitializeAsync();
+        await lazyFixture.InitializeAsync().ConfigureAwait(false);
 
         return lazyFixture;
     }
