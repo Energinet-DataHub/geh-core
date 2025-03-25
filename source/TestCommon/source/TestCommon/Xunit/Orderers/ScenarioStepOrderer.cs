@@ -30,9 +30,9 @@ public class ScenarioStepOrderer : ITestCaseOrderer
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : ITestCase
     {
-        var assembly = typeof(ScenarioStepAttribute).AssemblyQualifiedName!;
+        var assemblyName = typeof(ScenarioStepAttribute).AssemblyQualifiedName!;
         var sortedTestCases = testCases
-            .OrderBy(testCase => GetStepNumber(testCase, assembly))
+            .OrderBy(testCase => GetStepNumber(testCase, assemblyName))
             .ThenBy(testCase => testCase.TestMethod.Method.Name);
 
         foreach (var testcase in sortedTestCases)

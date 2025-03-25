@@ -32,7 +32,7 @@ public sealed class SystemFactAttribute : FactAttribute
     {
         if (_shouldSkip.Value)
         {
-            Skip = "Subsystem fact was configured to be skipped.";
+            Skip = "System fact was configured to be skipped.";
         }
     }
 

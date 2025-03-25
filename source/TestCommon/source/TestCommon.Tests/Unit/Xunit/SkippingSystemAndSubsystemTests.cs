@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
     ordererAssemblyName: "Energinet.DataHub.Core.TestCommon")]
 public class SkippingSystemAndSubsystemTests
 {
-    private static bool _subSystemTestWasExecuted;
+    private static bool _subsystemTestWasExecuted;
     private static bool _systemTestWasExecuted;
 
     public SkippingSystemAndSubsystemTests()
@@ -33,9 +33,9 @@ public class SkippingSystemAndSubsystemTests
 
     [SubsystemFact]
     [ScenarioStep(1)]
-    public void When_SubSystemTestAreSkipped_ThisTestIsSkipped()
+    public void When_SubsystemTestAreSkipped_ThisTestIsSkipped()
     {
-        _subSystemTestWasExecuted = true;
+        _subsystemTestWasExecuted = true;
     }
 
     [SystemFact]
@@ -49,7 +49,7 @@ public class SkippingSystemAndSubsystemTests
     [ScenarioStep(2)]
     public void When_SubsystemTestsAreSkippedInConfiguration_Then_AllSubSystemTestAreSkipped()
     {
-        Assert.False(_subSystemTestWasExecuted);
+        Assert.False(_subsystemTestWasExecuted);
     }
 
     [Fact]
