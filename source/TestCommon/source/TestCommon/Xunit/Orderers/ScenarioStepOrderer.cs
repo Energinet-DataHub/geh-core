@@ -30,50 +30,15 @@ public class ScenarioStepOrderer : ITestCaseOrderer
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : ITestCase
     {
-        // This
         var assembly = typeof(ScenarioStepAttribute).AssemblyQualifiedName!;
         var sortedTestCases = testCases
             .OrderBy(testCase => GetStepNumber(testCase, assembly))
             .ThenBy(testCase => testCase.TestMethod.Method.Name);
 
-        // Or this?
-        // var stepGrouping = GroupByStepNumber(testCases);
-        //
-        // var stepNumbersLowestToHighest = stepGrouping.Keys.Order();
-        //
-        // var sortedTestCases = stepNumbersLowestToHighest
-        //     .SelectMany(stepNumber => stepGrouping[stepNumber]
-        //         .OrderBy(testCase => testCase.TestMethod.Method.Name)); // TODO: Do we want to sort by name?
         foreach (var testcase in sortedTestCases)
         {
             yield return testcase;
         }
-    }
-
-    private SortedDictionary<int, List<TTestCase>> GroupByStepNumber<TTestCase>(
-        IEnumerable<TTestCase> testCases)
-        where TTestCase : ITestCase
-    {
-        var assemblyName = typeof(ScenarioStepAttribute).AssemblyQualifiedName!;
-
-        var sortedMethods = new SortedDictionary<int, List<TTestCase>>();
-        foreach (var testCase in testCases)
-        {
-            var stepNumber = GetStepNumber(testCase, assemblyName);
-
-            GetOrCreate(sortedMethods, stepNumber).Add(testCase);
-        }
-
-        return sortedMethods;
-    }
-
-    private static TValue GetOrCreate<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key)
-        where TKey : struct
-        where TValue : new()
-    {
-        return dictionary.TryGetValue(key, out var result)
-            ? result
-            : dictionary[key] = new TValue();
     }
 
     private static int GetStepNumber<TTestCase>(TTestCase testCase, string assemblyName)

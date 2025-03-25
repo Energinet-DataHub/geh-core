@@ -2,9 +2,9 @@
 
 ## Version 7.2.3
 
-- Add attributes to xUnit test methods `ScenarioStepAttribute` to control execution order
-- Add attributes to xUnit test methods `SubsystemFactAttribute`, `SystemFactAttribute`
-to control if a test is being run 
+- Add attributes to xUnit test methods: `ScenarioStepAttribute` to control execution order
+- Add attributes to xUnit test methods: `SubsystemFactAttribute`, `SystemFactAttribute`
+to control if a test is being run
 - Add LazyFixture to support lazy initialization of test fixtures
 
 ## Version 7.2.2
