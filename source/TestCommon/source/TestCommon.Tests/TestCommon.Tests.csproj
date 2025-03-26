@@ -41,14 +41,4 @@ limitations under the License.
     <ProjectReference Include="..\FunctionApp.TestCommon\FunctionApp.TestCommon.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="systemtest.local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <None Remove="subsystemtest.local.settings.json" />
-    <EmbeddedResource Include="subsystemtest.local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
