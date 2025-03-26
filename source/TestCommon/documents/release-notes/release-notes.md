@@ -1,6 +1,6 @@
 # TestCommon Release notes
 
-## Version 7.3.2
+## Version 7.3.0
 
 - Add attributes to xUnit test methods: `ScenarioStepAttribute` to control execution order
 
