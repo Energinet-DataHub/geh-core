@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
 using Xunit;
 
 namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
 
 [TestCaseOrderer(
-    ordererTypeName: "Energinet.DataHub.Core.TestCommon.Xunit.Orderers.ScenarioStepOrderer",
-    ordererAssemblyName: "Energinet.DataHub.Core.TestCommon")]
+    ordererTypeName: TestCaseOrdererValues.OrdererTypeName,
+    ordererAssemblyName: TestCaseOrdererValues.OrdererAssemblyName)]
 public class SkippingSystemAndSubsystemTests
 {
     private static bool _subsystemTestWasExecuted;
