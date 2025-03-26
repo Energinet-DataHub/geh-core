@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+using Energinet.DataHub.Core.TestCommon.Xunit.Configuration;
 using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
@@ -23,24 +25,15 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
     ordererAssemblyName: TestCaseOrdererValues.OrdererAssemblyName)]
 public class SystemTests
 {
-#pragma warning disable CS0414 // Field is assigned but its value is never used
-    private static bool _systemTestShouldBeSkipped = false;
-#pragma warning restore CS0414 // Field is assigned but its value is never used
     private static bool _systemFactWasSkipped = true;
-
-    public SystemTests()
-    {
-        Environment.SetEnvironmentVariable(
-            "SYSTEMFACT_SKIP",
-            "false");
-        //_systemTestShouldBeSkipped.ToString().ToLower());
-    }
 
     [Fact]
     [ScenarioStep(1)]
     public void Given_SystemFactIsSkipped()
     {
-        _systemTestShouldBeSkipped = false;
+        var configuration = new SystemTestConfiguration();
+        var shouldSkipSystemTest = configuration.Root.GetValue("SYSTEMFACT_SKIP", defaultValue: false);
+        Assert.True(shouldSkipSystemTest);
     }
 
     [SystemFact]
@@ -54,6 +47,6 @@ public class SystemTests
     [ScenarioStep(3)]
     public void Then_TestMethodWithSystemFactIsNotExecuted()
     {
-        Assert.False(_systemFactWasSkipped);
+        Assert.True(_systemFactWasSkipped);
     }
 }

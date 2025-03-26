@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+using Energinet.DataHub.Core.TestCommon.Xunit.Configuration;
 using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
@@ -23,24 +25,15 @@ namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
     ordererAssemblyName: TestCaseOrdererValues.OrdererAssemblyName)]
 public class SubsystemTests
 {
-#pragma warning disable CS0414 // Field is assigned but its value is never used
-    private static bool _subsystemTestShouldBeSkipped = false;
-#pragma warning restore CS0414 // Field is assigned but its value is never used
     private static bool _subsystemFactWasSkipped = true;
-
-    public SubsystemTests()
-    {
-        Environment.SetEnvironmentVariable(
-            "SUBSYSTEMFACT_SKIP",
-            "false");
-        //_subsystemTestShouldBeSkipped.ToString().ToLower());
-    }
 
     [Fact]
     [ScenarioStep(1)]
     public void Given_SubsystemFactIsSkipped()
     {
-        _subsystemTestShouldBeSkipped = false;
+        var configuration = new SubsystemTestConfiguration();
+        var shouldSkipSubsystemTest = configuration.Root.GetValue("SUBSYSTEMFACT_SKIP", defaultValue: false);
+        Assert.True(shouldSkipSubsystemTest);
     }
 
     [SubsystemFact]
@@ -54,6 +47,6 @@ public class SubsystemTests
     [ScenarioStep(3)]
     public void Then_TestMethodWithSubsystemFactIsNotExecuted()
     {
-        Assert.False(_subsystemFactWasSkipped);
+        Assert.True(_subsystemFactWasSkipped);
     }
 }
