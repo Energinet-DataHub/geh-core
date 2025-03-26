@@ -1,5 +1,17 @@
 # TestCommon Release notes
 
+## Version 7.3.0
+
+- Add attributes to xUnit test methods: `ScenarioStepAttribute` to control execution order
+
+- Add attributes to xUnit test methods: `SubsystemFactAttribute`, `SystemFactAttribute`
+to control if a test is being run
+
+- Add attributes to xUnit test methods: `ExecutionContextAttribute`
+to control which environments and when the test should run
+
+- Add `LazyFixtureFactory` to support lazy initialization of test fixtures
+
 ## Version 7.2.2
 
 - Update tj-actions to v46.0.1
