@@ -10,7 +10,7 @@ to control if a test is being run
 - Add attributes to xUnit test methods: `ExecutionContextAttribute`
 to control which environments and when the test should run
 
-- Add LazyFixture to support lazy initialization of test fixtures
+- Add `LazyFixtureFactory` to support lazy initialization of test fixtures
 
 ## Version 7.2.2
 
