@@ -21,8 +21,8 @@ using Xunit;
 namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
 
 [TestCaseOrderer(
-    ordererTypeName: TestCaseOrdererValues.OrdererTypeName,
-    ordererAssemblyName: TestCaseOrdererValues.OrdererAssemblyName)]
+    ordererTypeName: TestCaseOrdererLocation.OrdererTypeName,
+    ordererAssemblyName: TestCaseOrdererLocation.OrdererAssemblyName)]
 public class SubsystemTests
 {
     private static bool _subsystemFactWasSkipped = true;
@@ -32,8 +32,8 @@ public class SubsystemTests
     public void Given_SubsystemFactIsSkipped()
     {
         var configuration = new SubsystemTestConfiguration();
-        var shouldSkipSubsystemTest = configuration.Root.GetValue("SUBSYSTEMFACT_SKIP", defaultValue: false);
-        Assert.True(shouldSkipSubsystemTest);
+        var shouldSkipSubsystemTests = configuration.Root.GetValue("SUBSYSTEMFACT_SKIP", defaultValue: false);
+        Assert.True(shouldSkipSubsystemTests);
     }
 
     [SubsystemFact]

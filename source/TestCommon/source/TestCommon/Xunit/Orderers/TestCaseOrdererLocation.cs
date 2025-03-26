@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
 /// <cref name="OrdererAssemblyName"/> contains the name of the assembly containing the orderer
 /// If these get out of sync, the tests will not run in the correct order. Since xUnit can not find the orderer
 /// </summary>
-public static class TestCaseOrdererValues
+public static class TestCaseOrdererLocation
 {
     public const string OrdererTypeName = "Energinet.DataHub.Core.TestCommon.Xunit.Orderers.ScenarioStepOrderer";
     public const string OrdererAssemblyName = "Energinet.DataHub.Core.TestCommon";

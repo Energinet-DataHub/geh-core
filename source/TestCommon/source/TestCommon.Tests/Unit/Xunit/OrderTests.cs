@@ -19,8 +19,8 @@ using Xunit;
 namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
 
 [TestCaseOrderer(
-    ordererTypeName: TestCaseOrdererValues.OrdererTypeName,
-    ordererAssemblyName: TestCaseOrdererValues.OrdererAssemblyName)]
+    ordererTypeName: TestCaseOrdererLocation.OrdererTypeName,
+    ordererAssemblyName: TestCaseOrdererLocation.OrdererAssemblyName)]
 public class OrderTests
 {
     private static bool _testCase1WasExecuted;

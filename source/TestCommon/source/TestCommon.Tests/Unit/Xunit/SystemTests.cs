@@ -21,8 +21,8 @@ using Xunit;
 namespace Energinet.DataHub.Core.TestCommon.Tests.Unit.Xunit;
 
 [TestCaseOrderer(
-    ordererTypeName: TestCaseOrdererValues.OrdererTypeName,
-    ordererAssemblyName: TestCaseOrdererValues.OrdererAssemblyName)]
+    ordererTypeName: TestCaseOrdererLocation.OrdererTypeName,
+    ordererAssemblyName: TestCaseOrdererLocation.OrdererAssemblyName)]
 public class SystemTests
 {
     private static bool _systemFactWasSkipped = true;
@@ -32,8 +32,8 @@ public class SystemTests
     public void Given_SystemFactIsSkipped()
     {
         var configuration = new SystemTestConfiguration();
-        var shouldSkipSystemTest = configuration.Root.GetValue("SYSTEMFACT_SKIP", defaultValue: false);
-        Assert.True(shouldSkipSystemTest);
+        var shouldSkipSystemTests = configuration.Root.GetValue("SYSTEMFACT_SKIP", defaultValue: false);
+        Assert.True(shouldSkipSystemTests);
     }
 
     [SystemFact]
