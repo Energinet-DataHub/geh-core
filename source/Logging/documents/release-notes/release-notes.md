@@ -1,5 +1,9 @@
 # Logging Middleware for Request and Response Release notes
 
+## Version 5.0.0
+
+- Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
+
 ## Version 4.0.3
 
 - Update tj-actions to v46.0.1
