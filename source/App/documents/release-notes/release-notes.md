@@ -1,9 +1,5 @@
 # App Release notes
 
-## Version 15.0.0
-
-- Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
-
 ## Version 14.0.3
 
 - Update tj-actions to v46.0.1
