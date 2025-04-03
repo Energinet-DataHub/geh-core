@@ -24,7 +24,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.Databricks.Jobs</PackageId>
-    <PackageVersion>12.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>13.0.0$(VersionSuffix)</PackageVersion>
     <Title>Databricks Jobs</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
