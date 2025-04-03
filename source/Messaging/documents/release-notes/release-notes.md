@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 7.0.0
+
+- Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
+
 ## Version 6.1.4
 
 - Update tj-actions to v46.0.1
