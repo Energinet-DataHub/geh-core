@@ -103,7 +103,7 @@ public partial class DatabricksSqlWarehouseQueryExecutor
             yield break;
         }
 
-        await foreach (var p in ProcessChunksInParallel(cancellationToken, response, strategy, options.MaxParallelChunks)) yield return p;
+        await foreach (var p in ProcessChunksInParallel(cancellationToken, response, strategy, options.MaxParallelChunks).ConfigureAwait(false)) yield return p;
     }
 
     private async IAsyncEnumerable<dynamic> ProcessChunksInParallel(
