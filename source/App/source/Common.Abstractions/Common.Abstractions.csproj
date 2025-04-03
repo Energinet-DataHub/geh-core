@@ -23,7 +23,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.Common.Abstractions</PackageId>
-    <PackageVersion>14.0.3$(VersionSuffix)</PackageVersion>
+    <PackageVersion>15.0.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Function Common Abstractions Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>

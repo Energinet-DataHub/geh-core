@@ -67,7 +67,7 @@ internal static class TestCertificateProvider
         using var certificateStore = new X509Store(StoreName.Root, storeLocation);
         certificateStore.Open(OpenFlags.ReadWrite);
 
-        using var testCertificate = new X509Certificate2(FilePath, Password);
+        using var testCertificate = X509CertificateLoader.LoadPkcs12FromFile(FilePath, Password);
         certificateStore.Add(testCertificate);
     }
 }

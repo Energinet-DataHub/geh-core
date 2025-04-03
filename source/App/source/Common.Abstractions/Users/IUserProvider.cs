@@ -30,7 +30,7 @@ public interface IUserProvider<TUser>
     /// <param name="multiTenancy">Specifies whether the user has a claim that allows accessing data across market participants.</param>
     /// <param name="claims">The claims present in the token.</param>
     /// <returns>A subsystem-specific representation of the user; or null.</returns>
-    public Task<TUser?> ProvideUserAsync(
+    Task<TUser?> ProvideUserAsync(
         Guid userId,
         Guid actorId,
         bool multiTenancy,

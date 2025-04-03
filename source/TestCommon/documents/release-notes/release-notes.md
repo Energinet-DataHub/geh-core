@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 8.0.0
+
+- Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
+
 ## Version 7.3.0
 
 - Add attributes to xUnit test methods: `ScenarioStepAttribute` to control execution order

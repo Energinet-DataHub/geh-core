@@ -28,8 +28,6 @@ public static class ApiVersioningExtensions
     /// </summary>
     public static IServiceCollection AddApiVersioningForWebApp(this IServiceCollection services, ApiVersion defaultVersion)
     {
-        ArgumentNullException.ThrowIfNull(nameof(defaultVersion));
-
         services
             .AddApiVersioning(options =>
             {

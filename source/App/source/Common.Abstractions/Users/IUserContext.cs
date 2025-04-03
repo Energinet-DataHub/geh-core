@@ -23,5 +23,5 @@ public interface IUserContext<TUser>
     /// <summary>
     /// Get current user.
     /// </summary>
-    public TUser CurrentUser { get; }
+    TUser CurrentUser { get; }
 }
