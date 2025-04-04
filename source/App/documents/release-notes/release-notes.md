@@ -1,5 +1,10 @@
 # App Release notes
 
+## Version 14.0.4
+
+- Fix build error. Warning: (IDE0040)
+- No functional change.
+
 ## Version 14.0.3
 
 - Add support for full namespace on types when creating SchemaIds in Swagger.
