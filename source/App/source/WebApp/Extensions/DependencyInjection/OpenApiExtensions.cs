@@ -37,17 +37,19 @@ public static class OpenApiExtensions
     /// <param name="executingAssembly">Typically the web app assembly.</param>
     /// <param name="swaggerUITitle">The title which will be display in the swagger UI, independent of the apiVersion</param>
     /// <param name="swaggerUIDescription">The API description to be displayed in the swagger UI, independent of the apiVersion</param>
+    /// <param name="useFullnameForSchemaIds"> SchemaId of types are generated from the fully qualified namespace, assembly not included</param>
     public static IServiceCollection AddSwaggerForWebApp(
         this IServiceCollection services,
         Assembly executingAssembly,
         string swaggerUITitle,
-        string? swaggerUIDescription = null)
+        string? swaggerUIDescription = null,
+        bool useFullnameForSchemaIds = false)
     {
         ArgumentNullException.ThrowIfNull(executingAssembly);
         ArgumentException.ThrowIfNullOrWhiteSpace(swaggerUITitle);
 
         var xmlFile = $"{executingAssembly.GetName().Name}.xml";
-        services.AddSwaggerForWebApp(xmlFile, swaggerUITitle, swaggerUIDescription);
+        services.AddSwaggerForWebApp(xmlFile, swaggerUITitle, swaggerUIDescription, useFullnameForSchemaIds);
 
         return services;
     }
