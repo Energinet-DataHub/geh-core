@@ -47,8 +47,6 @@ public class OutboxRepository : IOutboxRepository
         int limit,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(limit);
-
         var now = _clock.GetCurrentInstant();
         var failedBefore = now.Minus(OutboxMessage.MinimumDurationBetweenFailedAttempts);
         var processingBefore = now.Minus(OutboxMessage.DurationBetweenProcessingAttempts);

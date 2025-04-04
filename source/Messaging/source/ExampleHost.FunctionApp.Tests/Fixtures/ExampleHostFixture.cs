@@ -62,7 +62,7 @@ public class ExampleHostFixture : FunctionAppFixture
         const string csprojname = "ExampleHost.FunctionApp";
         var buildConfiguration = GetBuildConfiguration();
 
-        hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojname}\\bin\\{buildConfiguration}\\net8.0";
+        hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojname}\\bin\\{buildConfiguration}\\net9.0";
     }
 
     protected override void OnConfigureEnvironment()

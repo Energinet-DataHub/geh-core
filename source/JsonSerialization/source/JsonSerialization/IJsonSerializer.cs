@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Energinet.DataHub.Core.JsonSerialization
 {
@@ -90,7 +87,7 @@ namespace Energinet.DataHub.Core.JsonSerialization
         /// <summary>
         /// Parse the value representing a single JSON value into an object of the type <typeparam name="T" />.
         /// </summary>
-        public Task<T> DeserializeAsync<T>(byte[] data);
+        Task<T> DeserializeAsync<T>(byte[] data);
 
         /// <summary>
         /// Convert the provided value into a <see cref="string"/>.

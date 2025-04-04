@@ -27,7 +27,7 @@ public interface IOutboxRepository
     /// <summary>
     /// Get all unprocessed outbox messages.
     /// </summary>
-    public Task<IReadOnlyCollection<OutboxMessageId>> GetUnprocessedOutboxMessageIdsAsync(int limit, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<OutboxMessageId>> GetUnprocessedOutboxMessageIdsAsync(int limit, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get outbox message by id.
