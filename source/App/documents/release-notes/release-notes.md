@@ -2,6 +2,10 @@
 
 ## Version 14.0.3
 
+- Add support for full namespace on types when creating SchemaIds in Swagger.
+
+## Version 14.0.3
+
 - Update tj-actions to v46.0.1
 - No functional change.
 
