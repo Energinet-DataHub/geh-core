@@ -4,6 +4,11 @@
 
 - Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
 
+## Version 12.1.1
+
+- Fix build error. Warning: (CA2007).
+- No functional change.
+
 ## Version 12.1.0
 
 - Add support for using different token providers. Default configuration is to use workspace token as is the current standard. Other options provide either ManagedIdentity or AzureCli as a token provider.
