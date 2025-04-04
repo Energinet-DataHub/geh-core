@@ -62,11 +62,13 @@ public static class OpenApiExtensions
     /// <param name="xmlCommentsFilename">Filename (with extension) of the XML file containing C# documentation comments.</param>
     /// <param name="swaggerUITitle">The title which will be display in the swagger UI, independent of the apiVersion</param>
     /// <param name="swaggerUIDescription">The API description to be displayed in the swagger UI, independent of the apiVersion</param>
+    /// <param name="useFullnameForSchemaIds"> SchemaId of types are generated from the fully qualified namespace, assembly not included</param>
     public static IServiceCollection AddSwaggerForWebApp(
         this IServiceCollection services,
         string xmlCommentsFilename,
         string swaggerUITitle,
-        string? swaggerUIDescription = null)
+        string? swaggerUIDescription = null,
+        bool useFullnameForSchemaIds = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(xmlCommentsFilename);
         ArgumentException.ThrowIfNullOrWhiteSpace(swaggerUITitle);
@@ -83,6 +85,11 @@ public static class OpenApiExtensions
         {
             options.SupportNonNullableReferenceTypes();
             options.UseAllOfToExtendReferenceSchemas();
+
+            if (useFullnameForSchemaIds)
+            {
+                options.CustomSchemaIds(x => x.FullName);
+            }
 
             // Set the comments path for the Swagger JSON and UI.
             // See: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
