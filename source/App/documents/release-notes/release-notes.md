@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 14.1.0
+
+- Added support for full namespace for `SchemaIds` in OpenApiExtensions.
+
 ## Version 14.0.4
 
 - Fix build error. Warning: (IDE0040)
