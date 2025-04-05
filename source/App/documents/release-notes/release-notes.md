@@ -2,7 +2,7 @@
 
 ## Version 14.1.0
 
-- Add support for full namespace on types when creating SchemaIds in Swagger.
+- Added support for full namespace for `SchemaIds` in OpenApiExtensions.
 
 ## Version 14.0.4
 
