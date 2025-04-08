@@ -2,7 +2,7 @@
 
 ## Version 8.0.0
 
-- Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
+- Upgrade from .NET 8 to .NET 9
 
 ## Version 7.3.0
 
