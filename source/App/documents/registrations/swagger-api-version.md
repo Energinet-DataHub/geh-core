@@ -40,6 +40,15 @@ After following the guidelines below, one should have a functional web api proje
 
 ### Additional configuration
 
+#### Support for SchemaIds using full namespace
+By default, the schema ids are generated using the name of the class. This may cause problems if you have multiple classes with the same name in different namespaces.
+To enable the full namespace, add the following to the `AddSwaggerForWebApp` method:
+
+```csharp
+builder.Services
+       .AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: $"{Title to dislay in swagger ui}", useFullNamespace: true);
+```
+
 #### Handling enums
 
 Enum names are add to the x-enumNames via source/App/source/WebApp/Extensibility/Swashbuckle/EnumExtensionSchemaFilter.cs so it is possible
