@@ -4,6 +4,20 @@
 
 - Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
 
+## Version 14.1.0
+
+- Added support for full namespace for `SchemaIds` in OpenApiExtensions.
+
+<<<<<<< HEAD
+## Version 15.0.0
+
+- Upgrade from .NET 8 (8.0.100) to .NET 9 (9.0.100)
+=======
+## Version 14.1.0
+
+- Added support for full namespace for `SchemaIds` in OpenApiExtensions.
+>>>>>>> main
+
 ## Version 14.0.4
 
 - Fix build error. Warning: (IDE0040)
