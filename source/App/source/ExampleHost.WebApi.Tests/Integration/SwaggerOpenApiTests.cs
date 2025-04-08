@@ -112,4 +112,23 @@ public class SwaggerOpenApiTests
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("text/html");
     }
+
+    [Fact]
+    public async Task SwaggerSupportFullNamespaceForSchemaIds()
+    {
+        // Arrange
+        var url = "swagger/v2/swagger.json";
+
+        // Act
+        var actualResponse = await Fixture.Web01HttpClient.GetAsync(url);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        var swagger = System.Text.Json.JsonSerializer.Deserialize<JsonNode>(content);
+        var node = swagger?["components"]?["schemas"]?["ExampleHost.WebApi01.Common.EnumTest"];
+        node.Should().NotBeNull();
+    }
 }
