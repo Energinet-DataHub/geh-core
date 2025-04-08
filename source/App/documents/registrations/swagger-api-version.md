@@ -42,7 +42,7 @@ After following the guidelines below, one should have a functional web api proje
 
 #### Support for SchemaIds using full namespace
 
-By default, the schema ids are generated using the name of the class. This may cause problems if you have multiple classes with the same name in different namespaces.
+By default, the schema ids are generated using the name of the class. This may cause problems if you have multiple classes, with the same name in different namespaces.
 To enable the full namespace, add the following to the `AddSwaggerForWebApp` method:
 
 ```csharp
