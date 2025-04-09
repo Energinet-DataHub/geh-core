@@ -151,7 +151,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         var buildConfiguration = GetBuildConfiguration();
 
         var appHostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
-        appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net8.0";
+        appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net9.0";
         appHostSettings.Port = ++port;
 
         appHostSettings.ProcessEnvironmentVariables = new Dictionary<string, string>()

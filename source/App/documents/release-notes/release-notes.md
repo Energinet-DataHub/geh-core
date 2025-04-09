@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 15.0.0
+
+- Upgrade from .NET 8 to .NET 9
+
 ## Version 14.1.0
 
 - Added support for full namespace for `SchemaIds` in OpenApiExtensions.

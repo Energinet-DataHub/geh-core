@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 13.0.0
+
+- Upgrade from .NET 8 to .NET 9
+
 ## Version 12.1.1
 
 - Fix build error. Warning: (CA2007).

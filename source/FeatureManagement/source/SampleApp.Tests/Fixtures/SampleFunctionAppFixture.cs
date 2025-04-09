@@ -49,7 +49,7 @@ namespace Energinet.DataHub.Core.FeatureManagement.SampleApp.Tests.Fixtures
             }
 
             var buildConfiguration = GetBuildConfiguration();
-            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\SampleApp\\bin\\{buildConfiguration}\\net8.0";
+            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\SampleApp\\bin\\{buildConfiguration}\\net9.0";
 
             hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
             hostSettings.ProcessEnvironmentVariables.Add(EnvironmentSettingNames.FunctionWorkerRuntime, "dotnet-isolated");

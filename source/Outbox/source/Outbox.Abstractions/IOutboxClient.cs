@@ -27,5 +27,5 @@ public interface IOutboxClient
     /// <summary>
     /// Adds an outbox messages to the storage, without commiting the transaction.
     /// </summary>
-    public Task AddToOutboxAsync<TPayload>(IOutboxMessage<TPayload> message);
+    Task AddToOutboxAsync<TPayload>(IOutboxMessage<TPayload> message);
 }
