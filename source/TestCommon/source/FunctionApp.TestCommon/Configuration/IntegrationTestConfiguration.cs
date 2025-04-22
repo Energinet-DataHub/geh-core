@@ -56,7 +56,7 @@ public class IntegrationTestConfiguration
         ApplicationInsightsConnectionString = Configuration.GetValue("AZURE-APPINSIGHTS-CONNECTIONSTRING");
         LogAnalyticsWorkspaceId = Configuration.GetValue("AZURE-LOGANALYTICS-WORKSPACE-ID");
 
-        EventHubNamespaceName = Configuration.GetValue("AZURE-EVENTHUB-NAMESPACE");
+        EventHubNamespaceName = Configuration.GetValue("AZURE-EVENTHUB-NAMESPACE-PREMIUM");
         EventHubFullyQualifiedNamespace = $"{EventHubNamespaceName}.servicebus.windows.net";
         ServiceBusFullyQualifiedNamespace = $"{Configuration.GetValue("AZURE-SERVICEBUS-NAMESPACE")}.servicebus.windows.net";
 
