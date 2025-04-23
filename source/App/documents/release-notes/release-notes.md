@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 15.0.1
+
+- Upgrade certain NuGet packages.
+
 ## Version 15.0.0
 
 - Upgrade from .NET 8 to .NET 9
