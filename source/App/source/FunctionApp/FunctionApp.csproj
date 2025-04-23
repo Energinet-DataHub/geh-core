@@ -23,7 +23,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.FunctionApp</PackageId>
-    <PackageVersion>15.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>15.0.1$(VersionSuffix)</PackageVersion>
     <Title>Azure Function App Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
