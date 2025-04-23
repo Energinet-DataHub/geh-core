@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 8.0.1
+
+- Change `IntegrationTestConfiguration.EventHubNamespaceName` to use new (premium) Event Hub namespace.
+
 ## Version 8.0.0
 
 - Upgrade from .NET 8 to .NET 9
