@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection.Metadata.Ecma335;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.Common.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
@@ -26,6 +24,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication(builder =>
@@ -40,7 +39,9 @@ var host = new HostBuilder()
         //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
         builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
             excludedFunctionNames: [
-                $"{nameof(RestApiExampleFunction.TelemetryAsync)}"]);
+                $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
+                $"{nameof(FeatureManagementFunction.GetMessage)}",
+                $"{nameof(FeatureManagementFunction.CreateMessage)}"]);
     })
     .ConfigureServices((context, services) =>
     {
@@ -75,6 +76,9 @@ var host = new HostBuilder()
         services
             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+
+        // Feature management (verified in tests)
+        services.AddFeatureManagement();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {
