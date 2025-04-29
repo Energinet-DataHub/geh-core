@@ -194,10 +194,24 @@ public class FeatureManagementTests
         private ExampleHostsFixture Fixture { get; }
 
         [Fact]
-        public async Task When_Requested_Then_EnabledTextIsReturned()
+        public async Task When_RequestedForLocalFeatureFlag_Then_EnabledTextIsReturned()
         {
             // Arrange
             using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/Local");
+
+            // Act
+            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+
+            // Assert
+            var content = await actualResponse.Content.ReadAsStringAsync();
+            content.Should().Be("Enabled");
+        }
+
+        [Fact]
+        public async Task When_RequestedForAzureFeatureFlag_Then_EnabledTextIsReturned()
+        {
+            // Arrange
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/Azure");
 
             // Act
             var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
