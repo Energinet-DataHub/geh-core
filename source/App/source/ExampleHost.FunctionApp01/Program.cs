@@ -106,6 +106,7 @@ var host = new HostBuilder()
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
 
         // Feature management (verified in tests)
+        // TODO: Move to extension
         services.AddAzureAppConfiguration();
         services.AddFeatureManagement();
     })
