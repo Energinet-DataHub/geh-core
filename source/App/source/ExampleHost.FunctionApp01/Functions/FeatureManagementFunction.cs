@@ -16,17 +16,25 @@ using System.Net;
 using ExampleHost.FunctionApp01.Common;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.FeatureManagement;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
 public class FeatureManagementFunction
 {
+    private readonly IConfigurationRefresherProvider _configurationRefresherProvider;
     private readonly IFeatureManager _featureManager;
+    private readonly IVariantFeatureManagerSnapshot _variantFeatureManagerSnapshot;
 
-    public FeatureManagementFunction(IFeatureManager featureManager)
+    public FeatureManagementFunction(
+        IConfigurationRefresherProvider configurationRefresherProvider,
+        IFeatureManager featureManager,
+        IVariantFeatureManagerSnapshot variantFeatureManagerSnapshot)
     {
+        _configurationRefresherProvider = configurationRefresherProvider;
         _featureManager = featureManager;
+        _variantFeatureManagerSnapshot = variantFeatureManagerSnapshot;
     }
 
     /// <summary>
@@ -86,7 +94,9 @@ public class FeatureManagementFunction
         if (featureFlagName == "Azure")
             featureFlagName = "edi-integrationtests/disabled-feature-flag";
 
-        var isFeatureEnabled = await _featureManager.IsEnabledAsync(featureFlagName).ConfigureAwait(false);
+        // TODO: Refactor
+        await _configurationRefresherProvider.Refreshers.First().TryRefreshAsync().ConfigureAwait(false);
+        var isFeatureEnabled = await _variantFeatureManagerSnapshot.IsEnabledAsync(featureFlagName).ConfigureAwait(false);
         if (isFeatureEnabled)
         {
             await response.WriteStringAsync("Enabled").ConfigureAwait(false);

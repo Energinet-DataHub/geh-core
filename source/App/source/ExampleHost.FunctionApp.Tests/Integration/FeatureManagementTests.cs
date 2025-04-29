@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.TestCommon;
 using ExampleHost.FunctionApp.Tests.Fixtures;
 using ExampleHost.FunctionApp01.Common;
 using FluentAssertions;
@@ -210,15 +211,23 @@ public class FeatureManagementTests
         [Fact]
         public async Task When_RequestedForAzureFeatureFlag_Then_EnabledTextIsReturned()
         {
-            // Arrange
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/Azure");
+            var waitLimit = TimeSpan.FromMinutes(1);
+            var delay = TimeSpan.FromSeconds(2);
 
-            // Act
-            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            var wasFeatureFlagEnabled = await Awaiter
+                .TryWaitUntilConditionAsync(
+                    async () =>
+                    {
+                        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/Azure");
+                        var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+                        var content = await actualResponse.Content.ReadAsStringAsync();
 
-            // Assert
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Be("Enabled");
+                        return content == "Enabled";
+                    },
+                    waitLimit,
+                    delay);
+
+            wasFeatureFlagEnabled.Should().BeTrue("Because we expected the feature flag to be refreshed after 30 seconds.");
         }
     }
 }

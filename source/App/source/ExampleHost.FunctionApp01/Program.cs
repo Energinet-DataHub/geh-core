@@ -61,8 +61,8 @@ var host = new HostBuilder()
         {
             options
                 .Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
-                // Using dummy key "_" to avoid loading other configuration than feature flags
-                .Select("_")
+                ////// Using dummy key "_" to avoid loading other configuration than feature flags
+                ////.Select("_")
                 // Load all feature flags with no label.
                 // Use the default refresh interval of 30 seconds.
                 .UseFeatureFlags();
