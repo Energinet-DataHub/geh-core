@@ -2,6 +2,10 @@
 
 ## Version 15.0.1
 
+- Add functionality for Feature Management.
+
+## Version 15.0.1
+
 - Upgrade certain NuGet packages.
 
 ## Version 15.0.0
