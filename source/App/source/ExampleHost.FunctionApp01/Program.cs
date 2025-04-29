@@ -15,7 +15,6 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
@@ -46,14 +45,10 @@ var host = new HostBuilder()
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
                 $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
-
-        ////// Configuration verified in tests:
-        //////  * Enable automatic feature flag refresh on each function execution
-        ////builder.UseAzureAppConfiguration();
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
-        //// TODO: Move to extension, similar to how "AddLoggingConfigurationForIsolatedWorker" has been implemented
+        //// TODO: Move to extension (?)
 
         // Configuration verified in tests:
         //  * Only load feature flags from App Configuration
@@ -108,7 +103,6 @@ var host = new HostBuilder()
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
 
         // Feature management (verified in tests)
-        // TODO: Move to extension
         services
             .AddAzureAppConfiguration()
             .AddFeatureManagement();
@@ -118,6 +112,13 @@ var host = new HostBuilder()
         // Configuration verified in tests:
         //  * Ensure Application Insights logging configuration is picked up.
         logging.AddLoggingConfigurationForIsolatedWorker(context);
+    })
+    .ConfigureFunctionsWorkerDefaults(builder =>
+    {
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each function execution
+        //  * Must be called after "ConfigureServices" as it depends on services registered
+        builder.UseAzureAppConfiguration();
     })
     .Build();
 
