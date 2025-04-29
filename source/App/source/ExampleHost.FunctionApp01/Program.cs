@@ -53,18 +53,14 @@ var host = new HostBuilder()
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
+        //// TODO: Move to extension, similar to how "AddLoggingConfigurationForIsolatedWorker" has been implemented
+
         // Configuration verified in tests:
         //  * Only load feature flags from App Configuration
         //  * Use default refresh interval of 30 seconds
-
-        ////var x = context.Configuration.GetValue<string>("AppConfigEndpoint");
-
-        ////// TODO: Move to extension, similar to how "AddLoggingConfigurationForIsolatedWorker" has been implemented
-        ////var appConfigEndpoint = context.Configuration["AppConfigEndpoint"]
-        ////    ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
-
         var settings = configBuilder.Build();
-        var appConfigEndpoint = settings["AppConfigEndpoint"]!;
+        var appConfigEndpoint = settings["AppConfigEndpoint"]!
+            ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
 
         configBuilder.AddAzureAppConfiguration(options =>
         {
