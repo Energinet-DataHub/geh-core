@@ -168,4 +168,43 @@ public class FeatureManagementTests
             actualResponse.StatusCode.Should().Be(expectedStatusCode);
         }
     }
+
+    /// <summary>
+    /// Various tests that proves how Feature Manager can be used together with Azure App Configuration
+    /// to refresh feature flags at runtime.
+    /// </summary>
+    [Collection(nameof(ExampleHostsCollectionFixture))]
+    public class GetFeatureFlagState_LocalFeatureFlagIsTrue
+    {
+        public GetFeatureFlagState_LocalFeatureFlagIsTrue(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+        {
+            Fixture = fixture;
+            Fixture.SetTestOutputHelper(testOutputHelper);
+
+            Fixture.App01HostManager.ClearHostLog();
+
+            // Configure the feature flag (locally) for the test.
+            // The Function App is only restarted if the current state of the feature flag is different from what we need for the test.
+            Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
+            {
+                { $"{FeatureFlags.ConfigurationPrefix}Local", "true" },
+            });
+        }
+
+        private ExampleHostsFixture Fixture { get; }
+
+        [Fact]
+        public async Task When_Requested_Then_EnabledTextIsReturned()
+        {
+            // Arrange
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/Local");
+
+            // Act
+            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+
+            // Assert
+            var content = await actualResponse.Content.ReadAsStringAsync();
+            content.Should().Be("Enabled");
+        }
+    }
 }

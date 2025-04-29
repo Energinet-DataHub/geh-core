@@ -66,4 +66,30 @@ public class FeatureManagementFunction
     {
         return request.CreateResponse(HttpStatusCode.Accepted);
     }
+
+    /// <summary>
+    /// Used by tests to prove how Feature Manager can be used with Azure App Configuration
+    /// to refresh feature flags at runtime.
+    ///
+    /// See the integration tests for this method for more on how it works.
+    /// </summary>
+    [Function(nameof(GetFeatureFlagState))]
+    public async Task<HttpResponseData> GetFeatureFlagState(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "featureflagstate/{featureFlagName}")]
+        HttpRequestData request,
+        string featureFlagName)
+    {
+        var response = request.CreateResponse(HttpStatusCode.OK);
+        response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+        var isFeatureEnabled = await _featureManager.IsEnabledAsync(featureFlagName).ConfigureAwait(false);
+        if (isFeatureEnabled)
+        {
+            await response.WriteStringAsync("Enabled").ConfigureAwait(false);
+            return response;
+        }
+
+        await response.WriteStringAsync("Disabled").ConfigureAwait(false);
+        return response;
+    }
 }

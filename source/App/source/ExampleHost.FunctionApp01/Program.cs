@@ -44,11 +44,12 @@ var host = new HostBuilder()
             excludedFunctionNames: [
                 $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
-                $"{nameof(FeatureManagementFunction.CreateMessage)}"]);
+                $"{nameof(FeatureManagementFunction.CreateMessage)}",
+                $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
 
-        // Configuration verified in tests:
-        //  * Enable automatic feature flag refresh on each function execution
-        builder.UseAzureAppConfiguration();
+        ////// Configuration verified in tests:
+        //////  * Enable automatic feature flag refresh on each function execution
+        ////builder.UseAzureAppConfiguration();
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
@@ -56,9 +57,14 @@ var host = new HostBuilder()
         //  * Only load feature flags from App Configuration
         //  * Use default refresh interval of 30 seconds
 
-        // TODO: Move to extension, similar to how "AddLoggingConfigurationForIsolatedWorker" has been implemented
-        var appConfigEndpoint = context.Configuration["AppConfigEndpoint"]
-            ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
+        ////var x = context.Configuration.GetValue<string>("AppConfigEndpoint");
+
+        ////// TODO: Move to extension, similar to how "AddLoggingConfigurationForIsolatedWorker" has been implemented
+        ////var appConfigEndpoint = context.Configuration["AppConfigEndpoint"]
+        ////    ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
+
+        var settings = configBuilder.Build();
+        var appConfigEndpoint = settings["AppConfigEndpoint"]!;
 
         configBuilder.AddAzureAppConfiguration(options =>
         {
@@ -107,8 +113,9 @@ var host = new HostBuilder()
 
         // Feature management (verified in tests)
         // TODO: Move to extension
-        services.AddAzureAppConfiguration();
-        services.AddFeatureManagement();
+        services
+            .AddAzureAppConfiguration()
+            .AddFeatureManagement();
     })
     .ConfigureLogging((context, logging) =>
     {
