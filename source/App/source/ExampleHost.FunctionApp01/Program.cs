@@ -15,16 +15,19 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
+using Microsoft.IdentityModel.Protocols.Configuration;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication(builder =>
@@ -42,6 +45,31 @@ var host = new HostBuilder()
                 $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}"]);
+
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each function execution
+        builder.UseAzureAppConfiguration();
+    })
+    .ConfigureAppConfiguration((context, configBuilder) =>
+    {
+        // Configuration verified in tests:
+        //  * Only load feature flags from App Configuration
+        //  * Use default refresh interval of 30 seconds
+
+        // TODO: Move to extension, similar to how "AddLoggingConfigurationForIsolatedWorker" has been implemented
+        var appConfigEndpoint = context.Configuration["AppConfigEndpoint"]
+            ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
+
+        configBuilder.AddAzureAppConfiguration(options =>
+        {
+            options
+                .Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
+                // Using dummy key "_" to avoid loading other configuration than feature flags
+                .Select("_")
+                // Load all feature flags with no label.
+                // Use the default refresh interval of 30 seconds.
+                .UseFeatureFlags();
+        });
     })
     .ConfigureServices((context, services) =>
     {
@@ -78,13 +106,14 @@ var host = new HostBuilder()
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
 
         // Feature management (verified in tests)
+        services.AddAzureAppConfiguration();
         services.AddFeatureManagement();
     })
-    .ConfigureLogging((hostingContext, logging) =>
+    .ConfigureLogging((context, logging) =>
     {
         // Configuration verified in tests:
         //  * Ensure Application Insights logging configuration is picked up.
-        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+        logging.AddLoggingConfigurationForIsolatedWorker(context);
     })
     .Build();
 
