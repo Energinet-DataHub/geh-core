@@ -1,6 +1,6 @@
 # App Release notes
 
-## Version 15.0.1
+## Version 15.1.0
 
 - Add functionality for Feature Management.
 
