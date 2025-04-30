@@ -17,6 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
@@ -46,6 +47,10 @@ public class ExampleHostsFixture : IAsyncLifetime
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
         OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings, openIdServerPort: 1052);
+
+        AppConfigurationManager = new AppConfigurationManager(
+            IntegrationTestConfiguration.AppConfigurationEndpoint,
+            IntegrationTestConfiguration.Credential);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
@@ -56,6 +61,8 @@ public class ExampleHostsFixture : IAsyncLifetime
         => IntegrationTestConfiguration.LogAnalyticsWorkspaceId;
 
     public OpenIdJwtManager OpenIdJwtManager { get; }
+
+    public AppConfigurationManager AppConfigurationManager { get; }
 
     [NotNull]
     public FunctionAppHostManager? App01HostManager { get; private set; }

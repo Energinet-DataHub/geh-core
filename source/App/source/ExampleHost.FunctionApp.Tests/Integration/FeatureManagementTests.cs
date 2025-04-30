@@ -177,6 +177,18 @@ public class FeatureManagementTests
     [Collection(nameof(ExampleHostsCollectionFixture))]
     public class GetFeatureFlagState_LocalFeatureFlagIsTrue
     {
+        private const string LocalFeatureFlag = "local";
+
+        private const string NotExistingFeatureFlag = "geh-core-app-not-existing";
+
+        /// <summary>
+        /// This feature flag doesn't exists the very first time we run the tests using it,
+        /// or if the integration test environment is redeployed.
+        /// But after the first time we set its value it will exist, because configuring it will create it.
+        /// We could create this feature flag using infrastructure, but this is simpler.
+        /// </summary>
+        private const string AzureFeatureFlag = "geh-core-app-integrationtests";
+
         public GetFeatureFlagState_LocalFeatureFlagIsTrue(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
         {
             Fixture = fixture;
@@ -188,30 +200,38 @@ public class FeatureManagementTests
             // The Function App is only restarted if the current state of the feature flag is different from what we need for the test.
             Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
             {
-                { $"{FeatureFlags.ConfigurationPrefix}Local", "true" },
+                { $"{FeatureFlags.ConfigurationPrefix}{LocalFeatureFlag}", "true" },
             });
         }
 
         private ExampleHostsFixture Fixture { get; }
 
         [Fact]
-        public async Task When_RequestedForLocalFeatureFlag_Then_EnabledTextIsReturned()
+        public async Task When_RequestedForLocalFeatureFlag_Then_FeatureIsEnabled()
         {
-            // Arrange
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/Local");
-
-            // Act
-            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-            // Assert
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Be("Enabled");
+            var isEnabled = await RequestFeatureFlagStateAsync(LocalFeatureFlag);
+            isEnabled.Should().BeTrue();
         }
 
         [Fact]
-        public async Task When_RequestedForAzureFeatureFlag_Then_EnabledTextIsReturned()
+        public async Task When_RequestedForNotExistingFeatureFlag_Then_FeatureIsDisabled()
         {
-            // TODO: Setup test by using AppConfigurationClient from TestCommon
+            var isEnabled = await RequestFeatureFlagStateAsync(NotExistingFeatureFlag);
+            isEnabled.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task When_ToggleDisabledAzureFeatureFlag_Then_FeatureFlagIsRefreshedAndFeatureIsEnabled()
+        {
+            // Assert
+            await Fixture.AppConfigurationManager.SetFeatureFlagAsync(AzureFeatureFlag, false);
+            var initialState = await RequestFeatureFlagStateAsync(AzureFeatureFlag);
+
+            // Act
+            await Fixture.AppConfigurationManager.SetFeatureFlagAsync(AzureFeatureFlag, true);
+
+            // Assert
+            // => Refresh should happen after 30 seconds
             var waitLimit = TimeSpan.FromMinutes(1);
             var delay = TimeSpan.FromSeconds(2);
 
@@ -219,16 +239,23 @@ public class FeatureManagementTests
                 .TryWaitUntilConditionAsync(
                     async () =>
                     {
-                        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/app-package-feature-flag");
-                        var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-                        var content = await actualResponse.Content.ReadAsStringAsync();
-
-                        return content == "Enabled";
+                        var isEnabled = await RequestFeatureFlagStateAsync(AzureFeatureFlag);
+                        return isEnabled;
                     },
                     waitLimit,
                     delay);
 
             wasFeatureFlagEnabled.Should().BeTrue("Because we expected the feature flag to be refreshed after 30 seconds.");
+            initialState.Should().BeFalse();
+        }
+
+        private async Task<bool> RequestFeatureFlagStateAsync(string featureFlagName)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/{featureFlagName}");
+            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            var content = await actualResponse.Content.ReadAsStringAsync();
+
+            return content == "Enabled";
         }
     }
 }
