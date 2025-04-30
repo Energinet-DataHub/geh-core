@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
@@ -27,11 +27,11 @@ public static class LoggingBuilderExtensions
     /// Make sure the Application Insights logging configuration is picked up from settings.
     /// Found inspiration in https://github.com/Azure/azure-functions-dotnet-worker/issues/1447
     /// </summary>
-    public static ILoggingBuilder AddLoggingConfigurationForIsolatedWorker(this ILoggingBuilder logging, IConfiguration configuration)
+    public static ILoggingBuilder AddLoggingConfigurationForIsolatedWorker(this ILoggingBuilder logging, HostBuilderContext hostingContext)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(hostingContext);
 
-        logging.AddConfiguration(configuration.GetSection("Logging"));
+        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
 
         return logging;
     }

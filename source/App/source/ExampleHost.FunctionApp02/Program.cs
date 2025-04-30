@@ -14,33 +14,20 @@
 
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
-using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Hosting;
 
-var builder = FunctionsApplication.CreateBuilder(args);
+var host = new HostBuilder()
+    .ConfigureFunctionsWebApplication()
+    .ConfigureServices(services =>
+    {
+        // Configuration verified in tests. See comments in FunctionApp01.Program.
+        services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
+    })
+    .ConfigureLogging((hostingContext, logging) =>
+    {
+        // Configuration verified in tests. See comments in FunctionApp01.Program.
+        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+    })
+    .Build();
 
-/*
-// Services
-*/
-
-// Configuration verified in tests. See comments in FunctionApp01.Program.
-builder.Services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
-
-/*
-// Logging
-*/
-
-// Configuration verified in tests. See comments in FunctionApp01.Program.
-builder.Logging.AddLoggingConfigurationForIsolatedWorker(builder.Configuration);
-
-/*
-// ASP.NET Core Integration
-*/
-
-builder.ConfigureFunctionsWebApplication();
-
-/*
-// Run
-*/
-
-builder.Build().Run();
+host.Run();
