@@ -58,7 +58,7 @@ public class AppConfigurationManager
 
         await _client
             .DeleteConfigurationSettingAsync(
-                key: $"{FeatureFlagConfigurationSetting.KeyPrefix}{featureFlagName}")
+                key: BuildFeatureFlagKey(featureFlagName))
             .ConfigureAwait(false);
     }
 
@@ -73,7 +73,7 @@ public class AppConfigurationManager
         {
             var configSetting = await _client
                 .GetConfigurationSettingAsync(
-                    key: $"{FeatureFlagConfigurationSetting.KeyPrefix}{featureFlagName}")
+                    key: BuildFeatureFlagKey(featureFlagName))
                 .ConfigureAwait(false);
 
             var featureFlagSetting = configSetting.Value as FeatureFlagConfigurationSetting;
@@ -86,5 +86,10 @@ public class AppConfigurationManager
 
             throw;
         }
+    }
+
+    private static string BuildFeatureFlagKey(string featureFlagName)
+    {
+        return $"{FeatureFlagConfigurationSetting.KeyPrefix}{featureFlagName}";
     }
 }

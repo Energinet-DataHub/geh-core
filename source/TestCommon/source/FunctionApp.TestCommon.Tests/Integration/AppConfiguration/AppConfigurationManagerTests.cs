@@ -28,7 +28,7 @@ public class AppConfigurationManagerTests : IClassFixture<AppConfigurationManage
     /// But after the first time we set its value it will exist, because configuring it will create it.
     /// We could create this feature flag using infrastructure, but this is simpler.
     /// </summary>
-    private const string ExistingFeatureFlag = "test-common-test";
+    private const string ExistingFeatureFlag = "test-common-integrationtests";
 
     private readonly AppConfigurationManagerFixture _fixture;
 
