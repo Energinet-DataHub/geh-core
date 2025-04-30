@@ -37,16 +37,22 @@ public class AppConfigurationManager
     /// <summary>
     /// Creates feature flag if it doesn't exist, or overwrites the existing value.
     /// </summary>
-    public async Task SetFeatureFlagAsync(string featureFlagName, bool isEnabled, string? label = default)
+    public async Task SetFeatureFlagAsync(string featureFlagName, bool isEnabled)
     {
-        await _client.SetConfigurationSettingAsync(new FeatureFlagConfigurationSetting(featureFlagName, isEnabled, label)).ConfigureAwait(false);
+        await _client
+            .SetConfigurationSettingAsync(
+                new FeatureFlagConfigurationSetting(featureFlagName, isEnabled))
+            .ConfigureAwait(false);
     }
 
     /// <summary>
     /// Delete feature flag if it exists.
     /// </summary>
-    public async Task DeleteFeatureFlagAsync(string featureFlagName, bool isEnabled, string? label = default)
+    public async Task DeleteFeatureFlagAsync(string featureFlagName)
     {
-        await _client.DeleteConfigurationSettingAsync(new FeatureFlagConfigurationSetting(featureFlagName, isEnabled, label)).ConfigureAwait(false);
+        await _client
+            .DeleteConfigurationSettingAsync(
+                key: $"{FeatureFlagConfigurationSetting.KeyPrefix}{featureFlagName}")
+            .ConfigureAwait(false);
     }
 }
