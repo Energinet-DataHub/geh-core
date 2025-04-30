@@ -221,34 +221,35 @@ public class FeatureManagementTests
         }
 
         [Fact]
-        public async Task When_ToggleDisabledAzureFeatureFlag_Then_FeatureFlagIsRefreshedAndFeatureIsEnabled()
+        public async Task When_ToggleAzureFeatureFlag_Then_FeatureFlagIsRefreshedAndToggled()
         {
             // Assert
-            await Fixture.AppConfigurationManager.SetFeatureFlagAsync(AzureFeatureFlag, false);
-            var initialState = await RequestFeatureFlagStateAsync(AzureFeatureFlag);
+            var initialStateInApplication = await RequestFeatureFlagStateAsync(AzureFeatureFlag);
 
             // Act
-            await Fixture.AppConfigurationManager.SetFeatureFlagAsync(AzureFeatureFlag, true);
+            await Fixture.AppConfigurationManager.SetFeatureFlagAsync(AzureFeatureFlag, !initialStateInApplication);
 
             // Assert
             // => Refresh should happen after 30 seconds
             var waitLimit = TimeSpan.FromMinutes(1);
             var delay = TimeSpan.FromSeconds(2);
 
-            var wasFeatureFlagEnabled = await Awaiter
+            var wasFeatureFlagToggled = await Awaiter
                 .TryWaitUntilConditionAsync(
                     async () =>
                     {
-                        var isEnabled = await RequestFeatureFlagStateAsync(AzureFeatureFlag);
-                        return isEnabled;
+                        var currentStateInApplication = await RequestFeatureFlagStateAsync(AzureFeatureFlag);
+                        return currentStateInApplication != initialStateInApplication;
                     },
                     waitLimit,
                     delay);
 
-            wasFeatureFlagEnabled.Should().BeTrue("Because we expected the feature flag to be refreshed after 30 seconds.");
-            initialState.Should().BeFalse();
+            wasFeatureFlagToggled.Should().BeTrue("Because we expected the feature flag to be refreshed after 30 seconds.");
         }
 
+        /// <summary>
+        /// Call application to use its injected 'IFeatureManager' to get the state of the given feature flag name.
+        /// </summary>
         private async Task<bool> RequestFeatureFlagStateAsync(string featureFlagName)
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/{featureFlagName}");

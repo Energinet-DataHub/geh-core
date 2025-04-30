@@ -54,7 +54,7 @@ public class FeatureManagementFunction
     }
 
     /// <summary>
-    /// Demonstrate how we can use an app setting (see local.settings.json) to disable an Azure Function.
+    /// Demonstrate how we can use an app setting (see 'ExampleHostFixture') to disable an Azure Function.
     /// See also: https://docs.microsoft.com/en-us/azure/azure-functions/disable-function
     ///
     /// See the integration tests for this method for more on how it works, and how it can be tested.
