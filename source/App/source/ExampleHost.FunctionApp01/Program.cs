@@ -21,6 +21,7 @@ using ExampleHost.FunctionApp01.Common;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -28,98 +29,110 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Protocols.Configuration;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication(builder =>
-    {
-        // DarkLoop Authorization extension (verified in tests):
-        //  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
-        //    place the middleware in the pipeline where required request information is available.
-        builder.UseFunctionsAuthorization();
+var builder = FunctionsApplication.CreateBuilder(args);
 
-        // Configuration verified in tests:
-        //  * Endpoints for which UserMiddleware is enabled must call the endpoint with a token
-        //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
-        builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
-            excludedFunctionNames: [
-                $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
+/*
+// Configuration
+*/
+
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    // Configuration verified in tests:
+    //  * Only load feature flags from App Configuration
+    //  * Use default refresh interval of 30 seconds
+    var appConfigEndpoint = Environment.GetEnvironmentVariable("AppConfigEndpoint")
+        ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
+
+    options
+        .Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
+        ////// Using dummy key "_" to avoid loading other configuration than feature flags
+        ////.Select("_")
+        // Load all feature flags with no label.
+        // Use the default refresh interval of 30 seconds.
+        .UseFeatureFlags();
+});
+
+/*
+// Services
+*/
+
+// Configuration verified in tests:
+//  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to
+//    appear in Application Insights (can be configured).
+//  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
+//  * Telemetry events are enriched with property "Subsystem" and configured value
+builder.Services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
+
+// Configure ServiceBusSender for calling FunctionApp02
+builder.Services.AddSingleton(_ =>
+{
+    var serviceBusFullyQualifiedNamespace = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventFullyQualifiedNamespace);
+    return new ServiceBusClient(serviceBusFullyQualifiedNamespace, new DefaultAzureCredential());
+});
+builder.Services.AddSingleton<ServiceBusSender>(sp =>
+{
+    var serviceBusClient = sp.GetRequiredService<ServiceBusClient>();
+    var topicName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventTopicName);
+    return serviceBusClient.CreateSender(topicName);
+});
+
+// Health Checks (verified in tests)
+builder.Services.AddHealthChecksForIsolatedWorker();
+builder.Services
+    .AddHealthChecks()
+    .AddCheck("verify-ready", () => HealthCheckResult.Healthy())
+    .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
+
+// Http => Authentication using DarkLoop Authorization extension (verified in tests)
+builder.Services
+    .AddJwtBearerAuthenticationForIsolatedWorker(builder.Configuration)
+    .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+
+// Feature management (verified in tests)
+builder.Services
+    .AddAzureAppConfiguration()
+    .AddFeatureManagement();
+
+/*
+// Logging
+*/
+
+// Configuration verified in tests:
+//  * Ensure Application Insights logging configuration is picked up.
+builder.Logging.AddLoggingConfigurationForIsolatedWorker(builder.Configuration);
+
+/*
+// ASP.NET Core Integration
+*/
+
+builder.ConfigureFunctionsWebApplication();
+
+/*
+// Middleware
+*/
+
+// DarkLoop Authorization extension (verified in tests):
+//  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
+//    place the middleware in the pipeline where required request information is available.
+builder.UseFunctionsAuthorization();
+
+// Configuration verified in tests:
+//  * Endpoints for which UserMiddleware is enabled must call the endpoint with a token
+//  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
+builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
+    excludedFunctionNames: [
+        $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
                 $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
-    })
-    .ConfigureAppConfiguration((context, configBuilder) =>
-    {
-        //// TODO: Move to extension (?)
 
-        // Configuration verified in tests:
-        //  * Only load feature flags from App Configuration
-        //  * Use default refresh interval of 30 seconds
-        var settings = configBuilder.Build();
-        var appConfigEndpoint = settings["AppConfigEndpoint"]!
-            ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
+// Configuration verified in tests:
+//  * Enable automatic feature flag refresh on each function execution
+//  * Must be called after "ConfigureServices" as it depends on services registered
+builder.UseAzureAppConfiguration();
 
-        configBuilder.AddAzureAppConfiguration(options =>
-        {
-            options
-                .Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
-                ////// Using dummy key "_" to avoid loading other configuration than feature flags
-                ////.Select("_")
-                // Load all feature flags with no label.
-                // Use the default refresh interval of 30 seconds.
-                .UseFeatureFlags();
-        });
-    })
-    .ConfigureServices((context, services) =>
-    {
-        // Configuration verified in tests:
-        //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to
-        //    appear in Application Insights (can be configured).
-        //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
-        //  * Telemetry events are enriched with property "Subsystem" and configured value
-        services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
+/*
+// Run
+*/
 
-        // Configure ServiceBusSender for calling FunctionApp02
-        services.AddSingleton(_ =>
-        {
-            var serviceBusFullyQualifiedNamespace = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventFullyQualifiedNamespace);
-            return new ServiceBusClient(serviceBusFullyQualifiedNamespace, new DefaultAzureCredential());
-        });
-        services.AddSingleton<ServiceBusSender>(sp =>
-        {
-            var serviceBusClient = sp.GetRequiredService<ServiceBusClient>();
-            var topicName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventTopicName);
-            return serviceBusClient.CreateSender(topicName);
-        });
-
-        // Health Checks (verified in tests)
-        services.AddHealthChecksForIsolatedWorker();
-        services
-            .AddHealthChecks()
-            .AddCheck("verify-ready", () => HealthCheckResult.Healthy())
-            .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
-
-        // Http => Authentication using DarkLoop Authorization extension (verified in tests)
-        services
-            .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
-            .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
-
-        // Feature management (verified in tests)
-        services
-            .AddAzureAppConfiguration()
-            .AddFeatureManagement();
-    })
-    .ConfigureLogging((context, logging) =>
-    {
-        // Configuration verified in tests:
-        //  * Ensure Application Insights logging configuration is picked up.
-        logging.AddLoggingConfigurationForIsolatedWorker(context);
-    })
-    .ConfigureFunctionsWorkerDefaults(builder =>
-    {
-        // Configuration verified in tests:
-        //  * Enable automatic feature flag refresh on each function execution
-        //  * Must be called after "ConfigureServices" as it depends on services registered
-        builder.UseAzureAppConfiguration();
-    })
-    .Build();
-
-host.Run();
+builder.Build().Run();
