@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.AppCon
 
 public class AppConfigurationManagerTests : IClassFixture<AppConfigurationManagerFixture>
 {
-    private const string NotExistingFeatureFlag = "test-common-not-existing";
+    private const string NotExistingFeatureFlag = "geh-core-test-common-not-existing";
 
     /// <summary>
     /// This feature flag doesn't exists the very first time we run the tests using it,
@@ -28,7 +28,7 @@ public class AppConfigurationManagerTests : IClassFixture<AppConfigurationManage
     /// But after the first time we set its value it will exist, because configuring it will create it.
     /// We could create this feature flag using infrastructure, but this is simpler.
     /// </summary>
-    private const string ExistingFeatureFlag = "test-common-integrationtests";
+    private const string ExistingFeatureFlag = "geh-core-test-common-integrationtests";
 
     private readonly AppConfigurationManagerFixture _fixture;
 
@@ -81,7 +81,7 @@ public class AppConfigurationManagerTests : IClassFixture<AppConfigurationManage
     [Fact]
     public async Task Given_FeatureFlagDoesNotExist_When_SetFeatureFlagAsDisabled_Then_FeatureFlagIsCreatedAndDisabled()
     {
-        var randomFeatureFlag = $"test-common-{Guid.NewGuid()}";
+        var randomFeatureFlag = $"geh-core-test-common-{Guid.NewGuid()}";
 
         try
         {
