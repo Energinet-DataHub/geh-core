@@ -21,6 +21,13 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.AppCon
 public class AppConfigurationManagerTests : IClassFixture<AppConfigurationManagerFixture>
 {
     private const string NotExistingFeatureFlag = "test-common-not-existing";
+
+    /// <summary>
+    /// This feature flag doesn't exists the very first time we run the tests using it,
+    /// or if the integration test environment is redeployed.
+    /// But after the first time we set its value it will exist, because configuring it will create it.
+    /// We could create this feature flag using infrastructure, but this is simpler.
+    /// </summary>
     private const string ExistingFeatureFlag = "test-common-test";
 
     private readonly AppConfigurationManagerFixture _fixture;
@@ -72,18 +79,18 @@ public class AppConfigurationManagerTests : IClassFixture<AppConfigurationManage
     }
 
     [Fact]
-    public async Task Given_FeatureFlagDoesNotExist_When_SetFeatureFlagAsEnabled_Then_FeatureFlagIsCreatedAndEnabled()
+    public async Task Given_FeatureFlagDoesNotExist_When_SetFeatureFlagAsDisabled_Then_FeatureFlagIsCreatedAndDisabled()
     {
         var randomFeatureFlag = $"test-common-{Guid.NewGuid()}";
 
         try
         {
             // Act
-            await _fixture.Sut.SetFeatureFlagAsync(randomFeatureFlag, isEnabled: true);
+            await _fixture.Sut.SetFeatureFlagAsync(randomFeatureFlag, isEnabled: false);
 
             // Assert
             var actual = await _fixture.Sut.GetFeatureFlagStateAsync(randomFeatureFlag);
-            actual.Should().BeTrue();
+            actual.Should().BeFalse();
         }
         finally
         {
