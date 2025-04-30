@@ -26,7 +26,7 @@ var host = new HostBuilder()
     .ConfigureLogging((hostingContext, logging) =>
     {
         // Configuration verified in tests. See comments in FunctionApp01.Program.
-        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext.Configuration);
     })
     .Build();
 

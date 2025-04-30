@@ -74,7 +74,7 @@ Preparing an Azure Function App project:
        })
        .ConfigureLogging((hostingContext, logging) =>
        {
-           logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+           logging.AddLoggingConfigurationForIsolatedWorker(hostingContext.Configuration);
        })
        .Build();
 

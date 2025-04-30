@@ -3,6 +3,7 @@
 ## Version 15.1.0
 
 - Add functionality for Feature Management.
+- Implemented overload of `LoggingBuilderExtensions.AddLoggingConfigurationForIsolatedWorker` that accepts `IConfiguration`. Marked the "old" method as obsolete.
 
 ## Version 15.0.1
 

@@ -137,7 +137,7 @@ public class TelemetryTests : IAsyncLifetime
     ///
     /// 2: And call "ConfigureLogging" with the following:
     /// <code>
-    ///     logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+    ///     logging.AddLoggingConfigurationForIsolatedWorker(hostingContext.Configuration);
     /// </code>
     ///
     /// 3: And configure "Logging:ApplicationInsights:LogLevel:Default" to "Information"; otherwise default level is "Warning".

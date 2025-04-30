@@ -88,7 +88,7 @@ var host = new HostBuilder()
 
         // Configuration verified in tests:
         //  * Enable automatic feature flag refresh on each function execution
-        //  * Must be called after "AddAzureAppConfiguration" as it depends on services registered
+        //  * Must be called after "AddAzureAppConfiguration" as it verifies if services was registered
         builder.UseAzureAppConfiguration();
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
@@ -117,7 +117,7 @@ var host = new HostBuilder()
     {
         // Configuration verified in tests:
         //  * Ensure Application Insights logging configuration is picked up.
-        logging.AddLoggingConfigurationForIsolatedWorker(context);
+        logging.AddLoggingConfigurationForIsolatedWorker(context.Configuration);
     })
     .Build();
 
