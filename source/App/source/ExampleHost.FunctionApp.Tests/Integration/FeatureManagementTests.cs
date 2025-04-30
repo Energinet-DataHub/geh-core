@@ -211,6 +211,7 @@ public class FeatureManagementTests
         [Fact]
         public async Task When_RequestedForAzureFeatureFlag_Then_EnabledTextIsReturned()
         {
+            // TODO: Setup test by using AppConfigurationClient from TestCommon
             var waitLimit = TimeSpan.FromMinutes(1);
             var delay = TimeSpan.FromSeconds(2);
 
