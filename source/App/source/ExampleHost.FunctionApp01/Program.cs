@@ -31,6 +31,38 @@ using Microsoft.IdentityModel.Protocols.Configuration;
 var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
+        // Configuration verified in tests:
+        //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to
+        //    appear in Application Insights (can be configured).
+        //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
+        //  * Telemetry events are enriched with property "Subsystem" and configured value
+        services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
+
+        // Configure ServiceBusSender for calling FunctionApp02
+        services.AddSingleton(_ =>
+        {
+            var serviceBusFullyQualifiedNamespace = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventFullyQualifiedNamespace);
+            return new ServiceBusClient(serviceBusFullyQualifiedNamespace, new DefaultAzureCredential());
+        });
+        services.AddSingleton<ServiceBusSender>(sp =>
+        {
+            var serviceBusClient = sp.GetRequiredService<ServiceBusClient>();
+            var topicName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventTopicName);
+            return serviceBusClient.CreateSender(topicName);
+        });
+
+        // Health Checks (verified in tests)
+        services.AddHealthChecksForIsolatedWorker();
+        services
+            .AddHealthChecks()
+            .AddCheck("verify-ready", () => HealthCheckResult.Healthy())
+            .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
+
+        // Http => Authentication using DarkLoop Authorization extension (verified in tests)
+        services
+            .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
+            .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+
         // Feature management (verified in tests)
         //  * Must call "AddAzureAppConfiguration" before "UseAzureAppConfiguration"
         services
@@ -80,40 +112,6 @@ var host = new HostBuilder()
                 // Use the default refresh interval of 30 seconds.
                 .UseFeatureFlags();
         });
-    })
-    .ConfigureServices((context, services) =>
-    {
-        // Configuration verified in tests:
-        //  * Logging using ILogger<T> will work, but notice that by default we need to log as "Warning" for it to
-        //    appear in Application Insights (can be configured).
-        //  * We can see Trace, Request, Dependencies and other entries in App Insights out-of-box.
-        //  * Telemetry events are enriched with property "Subsystem" and configured value
-        services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
-
-        // Configure ServiceBusSender for calling FunctionApp02
-        services.AddSingleton(_ =>
-        {
-            var serviceBusFullyQualifiedNamespace = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventFullyQualifiedNamespace);
-            return new ServiceBusClient(serviceBusFullyQualifiedNamespace, new DefaultAzureCredential());
-        });
-        services.AddSingleton<ServiceBusSender>(sp =>
-        {
-            var serviceBusClient = sp.GetRequiredService<ServiceBusClient>();
-            var topicName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventTopicName);
-            return serviceBusClient.CreateSender(topicName);
-        });
-
-        // Health Checks (verified in tests)
-        services.AddHealthChecksForIsolatedWorker();
-        services
-            .AddHealthChecks()
-            .AddCheck("verify-ready", () => HealthCheckResult.Healthy())
-            .AddCheck("verify-status", () => HealthCheckResult.Healthy(), tags: [HealthChecksConstants.StatusHealthCheckTag]);
-
-        // Http => Authentication using DarkLoop Authorization extension (verified in tests)
-        services
-            .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
-            .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
     })
     .ConfigureLogging((context, logging) =>
     {
