@@ -63,7 +63,7 @@ public class AppConfigurationManager
     }
 
     /// <summary>
-    /// Get feature flag if it exists; otherwise throws exception.
+    /// Get feature flag state if it exists; otherwise throws exception.
     /// </summary>
     public async Task<bool> GetFeatureFlagStateAsync(string featureFlagName)
     {
