@@ -63,6 +63,8 @@ public class IntegrationTestConfiguration
         ResourceManagementSettings = CreateResourceManagementSettings(Configuration);
         B2CSettings = CreateB2CSettings(Configuration);
         DatabricksSettings = CreateDatabricksSettings(Configuration);
+
+        AppConfigurationEndpoint = Configuration.GetValue("AZURE-APP-CONFIGURATION-ENDPOINT");
     }
 
     /// <summary>
@@ -116,6 +118,11 @@ public class IntegrationTestConfiguration
     /// Settings necessary for using the Databricks workspace and SQL Warehouse.
     /// </summary>
     public DatabricksSettings DatabricksSettings { get; }
+
+    /// <summary>
+    /// Endpoint for Azure App Configuration.
+    /// </summary>
+    public string AppConfigurationEndpoint { get; }
 
     private static IConfigurationRoot BuildKeyVaultConfigurationRoot(TokenCredential credential)
     {
