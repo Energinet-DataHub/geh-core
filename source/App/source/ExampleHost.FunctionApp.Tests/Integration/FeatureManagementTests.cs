@@ -219,7 +219,7 @@ public class FeatureManagementTests
                 .TryWaitUntilConditionAsync(
                     async () =>
                     {
-                        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/Azure");
+                        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/app-package-feature-flag");
                         var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
                         var content = await actualResponse.Content.ReadAsStringAsync();
 

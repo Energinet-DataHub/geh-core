@@ -82,10 +82,6 @@ public class FeatureManagementFunction
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
-        // TODO: Refactor
-        if (featureFlagName == "Azure")
-            featureFlagName = "edi-integrationtests/disabled-feature-flag";
-
         var isFeatureEnabled = await _featureManager.IsEnabledAsync(featureFlagName).ConfigureAwait(false);
         if (isFeatureEnabled)
         {
