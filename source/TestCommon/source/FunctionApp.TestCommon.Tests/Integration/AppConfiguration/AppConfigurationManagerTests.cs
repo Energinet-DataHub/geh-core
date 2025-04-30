@@ -12,39 +12,82 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Fixtures;
+using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Core.FunctionApp.TestCommon.Tests.Integration.AppConfiguration;
 
-public class AppConfigurationManagerTests
+public class AppConfigurationManagerTests : IClassFixture<AppConfigurationManagerFixture>
 {
-    public AppConfigurationManagerTests()
+    private const string NotExistingFeatureFlag = "test-common-not-existing";
+    private const string ExistingFeatureFlag = "test-common-test";
+
+    private readonly AppConfigurationManagerFixture _fixture;
+
+    public AppConfigurationManagerTests(AppConfigurationManagerFixture fixture)
     {
+        _fixture = fixture;
     }
 
     [Fact]
     public async Task Given_FeatureFlagDoesNoExist_When_DeleteFeatureFlagAsync_Then_NoExceptionIsThrown()
     {
-        var sut = new AppConfigurationManager(
-            SingletonIntegrationTestConfiguration.Instance.AppConfigurationEndpoint,
-            SingletonIntegrationTestConfiguration.Instance.Credential);
+        // Act
+        await _fixture.Sut.DeleteFeatureFlagAsync(NotExistingFeatureFlag);
+    }
 
-        var missingFeatureFlag = "missing-feature-flag";
+    [Fact]
+    public async Task Given_FeatureFlagDoesNoExist_When_GetFeatureFlagStateAsync_Then_ThrowsExpectedException()
+    {
+        // Act
+        var act = () => _fixture.Sut.GetFeatureFlagStateAsync(NotExistingFeatureFlag);
 
-        await sut.DeleteFeatureFlagAsync(missingFeatureFlag);
+        // Assert
+        await act.Should()
+            .ThrowAsync<ArgumentException>()
+            .WithMessage("*Invalid feature flag name*");
+    }
+
+    [Fact]
+    public async Task Given_FeatureFlagExists_When_SetFeatureFlagAsDisabled_Then_FeatureFlagIsDisabled()
+    {
+        // Act
+        await _fixture.Sut.SetFeatureFlagAsync(ExistingFeatureFlag, isEnabled: false);
+
+        // Assert
+        var actual = await _fixture.Sut.GetFeatureFlagStateAsync(ExistingFeatureFlag);
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Given_FeatureFlagExists_When_SetFeatureFlagAsEnabled_Then_FeatureFlagIsEnabled()
+    {
+        // Act
+        await _fixture.Sut.SetFeatureFlagAsync(ExistingFeatureFlag, isEnabled: true);
+
+        // Assert
+        var actual = await _fixture.Sut.GetFeatureFlagStateAsync(ExistingFeatureFlag);
+        actual.Should().BeTrue();
     }
 
     [Fact]
     public async Task Given_FeatureFlagDoesNotExist_When_SetFeatureFlagAsEnabled_Then_FeatureFlagIsCreatedAndEnabled()
     {
-        var sut = new AppConfigurationManager(
-            SingletonIntegrationTestConfiguration.Instance.AppConfigurationEndpoint,
-            SingletonIntegrationTestConfiguration.Instance.Credential);
+        var randomFeatureFlag = $"test-common-{Guid.NewGuid()}";
 
-        var missingFeatureFlag = "missing-feature-flag";
+        try
+        {
+            // Act
+            await _fixture.Sut.SetFeatureFlagAsync(randomFeatureFlag, isEnabled: true);
 
-        await sut.SetFeatureFlagAsync(missingFeatureFlag, isEnabled: true);
+            // Assert
+            var actual = await _fixture.Sut.GetFeatureFlagStateAsync(randomFeatureFlag);
+            actual.Should().BeTrue();
+        }
+        finally
+        {
+            await _fixture.Sut.DeleteFeatureFlagAsync(randomFeatureFlag);
+        }
     }
 }

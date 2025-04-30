@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+using Azure;
 using Azure.Core;
 using Azure.Data.AppConfiguration;
 
@@ -39,6 +41,8 @@ public class AppConfigurationManager
     /// </summary>
     public async Task SetFeatureFlagAsync(string featureFlagName, bool isEnabled)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(featureFlagName);
+
         await _client
             .SetConfigurationSettingAsync(
                 new FeatureFlagConfigurationSetting(featureFlagName, isEnabled))
@@ -50,9 +54,37 @@ public class AppConfigurationManager
     /// </summary>
     public async Task DeleteFeatureFlagAsync(string featureFlagName)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(featureFlagName);
+
         await _client
             .DeleteConfigurationSettingAsync(
                 key: $"{FeatureFlagConfigurationSetting.KeyPrefix}{featureFlagName}")
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Get feature flag if it exists; otherwise throws exception.
+    /// </summary>
+    public async Task<bool> GetFeatureFlagStateAsync(string featureFlagName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(featureFlagName);
+
+        try
+        {
+            var configSetting = await _client
+                .GetConfigurationSettingAsync(
+                    key: $"{FeatureFlagConfigurationSetting.KeyPrefix}{featureFlagName}")
+                .ConfigureAwait(false);
+
+            var featureFlagSetting = configSetting.Value as FeatureFlagConfigurationSetting;
+            return featureFlagSetting!.IsEnabled;
+        }
+        catch (RequestFailedException ex)
+        {
+            if (ex.Status == (int)HttpStatusCode.NotFound)
+                throw new ArgumentException(message: "Invalid feature flag name.", paramName: nameof(featureFlagName));
+
+            throw;
+        }
     }
 }
