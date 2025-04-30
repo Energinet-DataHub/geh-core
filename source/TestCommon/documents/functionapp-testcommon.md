@@ -140,6 +140,7 @@ By following these principles, it becomes easier to orchestrate the full flow of
 
 Currently we have the following managers:
 
+* `AppConfigurationManager`; this is used to set/create/delete feature flags in Azure App Configuration.
 * `AzuriteManager`; this is used to start/stop Azurite (a cross platform storage emulator). It can be used with or without OAuth. When using OAuth a test certificate will be installed the first time Azurite is started. See also [TestCertificate ReadMe.md](../source/FunctionApp.TestCommon/TestCertificate/ReadMe.md).
 * `SqlServerDatabaseManager`; this is used to create/destroy local SQL databases. For each database type we have, we should implement a class that inherits from this manager.
 * `FunctionAppHostManager`; this is used to start/stop an Azure Function using Azure Functions Core Tools. It can be the Azure Function we want to integration test, or just one that we depend on in our integration tests.

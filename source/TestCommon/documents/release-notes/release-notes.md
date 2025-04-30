@@ -2,7 +2,8 @@
 
 ## Version 8.1.0
 
-- Add property `IntegrationTestConfiguration.AppConfigurationEndpoint` to be able to use Azure App Configuration.
+- Added property `IntegrationTestConfiguration.AppConfigurationEndpoint` to be able to use Azure App Configuration.
+- Added `AppConfigurationManager` to support use of Azure App Configuration feature flags.
 
 ## Version 8.0.1
 
