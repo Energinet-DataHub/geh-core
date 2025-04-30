@@ -29,6 +29,14 @@ using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Protocols.Configuration;
 
 var host = new HostBuilder()
+    .ConfigureServices((context, services) =>
+    {
+        // Feature management (verified in tests)
+        //  * Must call "AddAzureAppConfiguration" before "UseAzureAppConfiguration"
+        services
+            .AddAzureAppConfiguration()
+            .AddFeatureManagement();
+    })
     .ConfigureFunctionsWebApplication(builder =>
     {
         // DarkLoop Authorization extension (verified in tests):
@@ -45,6 +53,11 @@ var host = new HostBuilder()
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
                 $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
+
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each function execution
+        //  * Must be called after "AddAzureAppConfiguration" as it depends on services registered
+        builder.UseAzureAppConfiguration();
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
@@ -101,24 +114,12 @@ var host = new HostBuilder()
         services
             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
-
-        // Feature management (verified in tests)
-        services
-            .AddAzureAppConfiguration()
-            .AddFeatureManagement();
     })
     .ConfigureLogging((context, logging) =>
     {
         // Configuration verified in tests:
         //  * Ensure Application Insights logging configuration is picked up.
         logging.AddLoggingConfigurationForIsolatedWorker(context);
-    })
-    .ConfigureFunctionsWorkerDefaults(builder =>
-    {
-        // Configuration verified in tests:
-        //  * Enable automatic feature flag refresh on each function execution
-        //  * Must be called after "ConfigureServices" as it depends on services registered
-        builder.UseAzureAppConfiguration();
     })
     .Build();
 
