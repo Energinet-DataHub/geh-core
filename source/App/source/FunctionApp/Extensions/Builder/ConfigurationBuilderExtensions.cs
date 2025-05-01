@@ -15,7 +15,6 @@
 using Azure.Identity;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 
@@ -38,7 +37,7 @@ public static class ConfigurationBuilderExtensions
             .Get<AzureAppConfigurationOptions>();
 
         if (appConfigurationOptions == null)
-            throw new InvalidConfigurationException("Missing Azure App Configuration.");
+            throw new InvalidOperationException("Missing Azure App Configuration.");
 
         configBuilder.AddAzureAppConfiguration(options =>
         {
