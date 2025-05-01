@@ -71,6 +71,8 @@ public class ExampleHostFixture : IAsyncLifetime
                     [$"FeatureManagement:{FeatureManagementTests.LocalFeatureFlag}"] = "true",
                 });
 
+                // The 'Startup' class supported by ASp.NET Core doesn't have an method where we can
+                // perform this configuration, so we have to perform it here (just as we have also added it to Programs.cs).
                 var configuration = configBuilder.Build();
                 configBuilder.AddAzureAppConfigurationForWebApp(configuration);
             })

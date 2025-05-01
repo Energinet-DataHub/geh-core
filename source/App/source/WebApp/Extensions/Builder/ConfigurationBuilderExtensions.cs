@@ -19,12 +19,12 @@ using Microsoft.Extensions.Configuration;
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 
 /// <summary>
-/// Extension methods for performing configuration in a <see cref="IConfigurationBuilder"/>.
+/// Extension methods for performing configuration using <see cref="IConfigurationBuilder"/>
+/// in an ASP.NET Core app.
 /// </summary>
 public static class ConfigurationBuilderExtensions
 {
     /// <summary>
-    /// For use in an ASP.NET Core app..
     /// Configures use of Azure App Configuration for feature flags only.
     ///
     /// Expects <see cref="AzureAppConfigurationOptions"/> has been configured in <see cref="AzureAppConfigurationOptions.SectionName"/>.
