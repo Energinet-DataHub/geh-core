@@ -175,6 +175,10 @@ public class FeatureManagementTests
     /// Various tests that proves how Feature Manager can be used together with Azure App Configuration
     /// to refresh feature flags at runtime.
     /// </summary>
+    /// <remarks>
+    /// Similar tests exists for Web App in the 'FeatureManagementTest' class
+    /// located in the 'ExampleHost.WebApi.Tests' project.
+    /// </remarks>
     [Collection(nameof(ExampleHostsCollectionFixture))]
     public class GetFeatureFlagState_LocalFeatureFlagIsTrue
     {
@@ -280,6 +284,7 @@ public class FeatureManagementTests
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, $"api/featureflagstate/{featureFlagName}");
             var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            actualResponse.EnsureSuccessStatusCode();
             var content = await actualResponse.Content.ReadAsStringAsync();
 
             return content == "Enabled";

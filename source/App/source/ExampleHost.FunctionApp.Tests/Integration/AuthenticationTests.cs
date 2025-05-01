@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
 using ExampleHost.FunctionApp.Tests.Fixtures;
 using FluentAssertions;
-using Microsoft.IdentityModel.Tokens;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -75,6 +75,10 @@ public class FeatureManagementFunction
     ///
     /// See the integration tests for this method for more on how it works.
     /// </summary>
+    /// <remarks>
+    /// Similar functionality exists for Web App in the 'FeatureManagementController' class
+    /// located in the 'ExampleHost.WebApi01' project.
+    /// </remarks>
     [Function(nameof(GetFeatureFlagState))]
     public async Task<HttpResponseData> GetFeatureFlagState(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "featureflagstate/{featureFlagName}")]

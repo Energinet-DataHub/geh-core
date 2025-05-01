@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using ExampleHost.WebApi.Tests.Integration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -66,6 +67,8 @@ public class ExampleHostFixture : IAsyncLifetime
                     ["Logging:ApplicationInsights:LogLevel:Default"] = "Information",
                     // Configure Azure App Configuration
                     [$"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}"] = AppConfigurationManager.AppConfigEndpoint,
+                    // Configure local feature flag
+                    [$"FeatureManagement:{FeatureManagementTests.LocalFeatureFlag}"] = "true",
                 });
 
                 var configuration = configBuilder.Build();

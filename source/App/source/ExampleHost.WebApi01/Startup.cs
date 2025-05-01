@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.FeatureManagement;
 
 namespace ExampleHost.WebApi01;
 
@@ -68,6 +69,11 @@ public class Startup
 
             // Setting default version to 2.0, this will be overwritten if the method has it's own version
             .AddApiVersioningForWebApp(new ApiVersion(2, 0));
+
+        // Feature management (verified in tests)
+        services
+            .AddAzureAppConfiguration()
+            .AddFeatureManagement();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -88,5 +94,9 @@ public class Startup
 
         // Swagger (verified in tests)
         app.UseSwaggerForWebApp();
+
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each http request
+        app.UseAzureAppConfiguration();
     }
 }
