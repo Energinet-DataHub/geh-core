@@ -35,6 +35,7 @@ These allows us to easily debug, as well as implement integration tests, for ver
 * Telemetry or Application Insights configuration. It depends on `ExampleHost.FunctionApp02` for the verification scenario.
 * Health Checks configuration.
 * Authentication and authorization configuration.
+* Feature management (feature flags locally and in Azure App Configuration)
 
 ### ExampleHost.WebApi01 and ExampleHost.WebApi02
 
@@ -42,6 +43,7 @@ These allows us to easily debug, as well as implement integration tests, for ver
 
 * Telemetry or Application Insights configuration. It depends on `ExampleHost.WebApi02` for the verification scenario.
 * Health Checks configuration.
+* Feature management (feature flags locally and in Azure App Configuration)
 
 ### ExampleHost.WebApi03
 
