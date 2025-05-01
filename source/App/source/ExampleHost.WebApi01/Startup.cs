@@ -82,6 +82,11 @@ public class Startup
         app.UseRouting();
         app.UseAuthorization();
 
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each http request
+        //  * Must be placed before "UseEndpoints"
+        app.UseAzureAppConfiguration();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
@@ -94,9 +99,5 @@ public class Startup
 
         // Swagger (verified in tests)
         app.UseSwaggerForWebApp();
-
-        // Configuration verified in tests:
-        //  * Enable automatic feature flag refresh on each http request
-        app.UseAzureAppConfiguration();
     }
 }
