@@ -82,7 +82,7 @@ public class FeatureManagementTests
     ///
     /// 3: Host must configure Azure App Configuration:
     /// <code>
-    ///  configBuilder.AddAzureAppConfigurationForIsolatedWorker();
+    ///  builder.Configuration.AddAzureAppConfigurationForWebApp();
     /// </code>
     ///
     /// 4: Configure AzureAppConfigurationOptions in App Settings or similar.
