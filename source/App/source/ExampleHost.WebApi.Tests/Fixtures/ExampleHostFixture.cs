@@ -14,6 +14,9 @@
 
 using Azure.Identity;
 using Azure.Monitor.Query;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +33,10 @@ public class ExampleHostFixture : IAsyncLifetime
         var web01BaseUrl = "http://localhost:5000";
 
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
+
+        AppConfigurationManager = new AppConfigurationManager(
+            IntegrationTestConfiguration.AppConfigurationEndpoint,
+            IntegrationTestConfiguration.Credential);
 
         // We cannot use TestServer as this would not work with Application Insights.
         Web02Host = WebHost.CreateDefaultBuilder()
@@ -48,16 +55,21 @@ public class ExampleHostFixture : IAsyncLifetime
             .Build();
 
         Web01Host = WebHost.CreateDefaultBuilder()
-            .ConfigureAppConfiguration((context, config) =>
+            .ConfigureAppConfiguration((context, configBuilder) =>
             {
-                config.AddInMemoryCollection(new Dictionary<string, string?>
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     [WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl] = web02BaseUrl,
                     // Application Insights
                     ["ApplicationInsights:ConnectionString"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
                     // Logging to Application Insights
                     ["Logging:ApplicationInsights:LogLevel:Default"] = "Information",
+                    // Configure Azure App Configuration
+                    [$"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}"] = AppConfigurationManager.AppConfigEndpoint,
                 });
+
+                var configuration = configBuilder.Build();
+                configBuilder.AddAzureAppConfigurationForWebApp(configuration);
             })
             .UseStartup<WebApi01.Startup>()
             .UseUrls(web01BaseUrl)
@@ -70,6 +82,8 @@ public class ExampleHostFixture : IAsyncLifetime
 
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
     }
+
+    public AppConfigurationManager AppConfigurationManager { get; }
 
     public HttpClient Web01HttpClient { get; }
 

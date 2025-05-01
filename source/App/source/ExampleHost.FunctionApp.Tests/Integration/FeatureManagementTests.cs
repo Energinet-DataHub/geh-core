@@ -94,7 +94,8 @@ public class FeatureManagementTests
             Fixture.App01HostManager.ClearHostLog();
 
             // Configure the feature flag (locally) for the test.
-            // The Function App is only restarted if the current state of the feature flag is different from what we need for the test.
+            // The Function App is only restarted if the current state of the feature flag
+            // is different from what we need for the test.
             Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
             {
                 { Fixture.UseGetMessageSettingName, "true" },
