@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Identity;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols.Configuration;
 
@@ -26,17 +27,23 @@ public static class ConfigurationBuilderExtensions
     /// <summary>
     /// For use in a Function App isolated worker.
     /// Configures use of Azure App Configuration for feature flags only.
+    ///
+    /// Expects <see cref="AzureAppConfigurationOptions"/> has been configured in <see cref="AzureAppConfigurationOptions.SectionName"/>.
     /// </summary>
     public static IConfigurationBuilder AddAzureAppConfigurationForIsolatedWorker(this IConfigurationBuilder configBuilder)
     {
-        var settings = configBuilder.Build();
-        var appConfigEndpoint = settings["AppConfigEndpoint"]!
-            ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
+        var configuration = configBuilder.Build();
+        var appConfigurationOptions = configuration
+            .GetRequiredSection(AzureAppConfigurationOptions.SectionName)
+            .Get<AzureAppConfigurationOptions>();
+
+        if (appConfigurationOptions == null)
+            throw new InvalidConfigurationException("Missing Azure App Configuration.");
 
         configBuilder.AddAzureAppConfiguration(options =>
         {
             options
-                .Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
+                .Connect(new Uri(appConfigurationOptions.Endpoint), new DefaultAzureCredential())
                 // Using dummy key "_" to avoid loading other configuration than feature flags
                 .Select("_")
                 // Load all feature flags with no label.

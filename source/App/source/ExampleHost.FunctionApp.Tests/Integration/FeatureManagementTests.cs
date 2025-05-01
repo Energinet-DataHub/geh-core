@@ -242,6 +242,8 @@ public class FeatureManagementTests
         /// <code>
         ///  configBuilder.AddAzureAppConfigurationForIsolatedWorker();
         /// </code>
+        ///
+        /// 4: Configure AzureAppConfigurationOptions in App Settings or similar.
         /// </summary>
         [Fact]
         public async Task When_ToggleAzureFeatureFlag_Then_FeatureFlagIsRefreshedAndToggled()

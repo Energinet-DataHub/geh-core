@@ -101,7 +101,8 @@ public class ExampleHostsFixture : IAsyncLifetime
         var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
 
         // => App01 settings for Azure App Configuration (used for feature flags)
-        app01HostSettings.ProcessEnvironmentVariables.Add("AppConfigEndpoint", IntegrationTestConfiguration.Configuration["AZURE-APP-CONFIGURATION-ENDPOINT"]!);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}", AppConfigurationManager.AppConfigEndpoint);
         // => App01 settings for Feature flags
         app01HostSettings.ProcessEnvironmentVariables.Add(UseGetMessageSettingName, "false");
         // => App01 settings for Function Disabled flags
