@@ -16,12 +16,10 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <Content Remove="appsettings.json" />
     <Content Remove="_appsettings.sample.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="appsettings.json" />
     <None Include="_appsettings.sample.json" />
   </ItemGroup>
 
