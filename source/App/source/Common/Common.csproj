@@ -67,7 +67,6 @@ limitations under the License.
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.4" />
-    <PackageReference Include="Microsoft.FeatureManagement" Version="4.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
