@@ -138,4 +138,16 @@ public class IntegrationTestConfigurationTests
         // Assert
         actualValue.Should().NotBeNullOrEmpty();
     }
+
+    [Fact]
+    public void Given_IdentityHasAccess_When_AppConfigurationEndpoint_Then_HasValue()
+    {
+        // Arrange
+
+        // Act
+        var actualValue = Sut.AppConfigurationEndpoint;
+
+        // Assert
+        actualValue.Should().NotBeNullOrEmpty();
+    }
 }

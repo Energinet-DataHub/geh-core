@@ -1,5 +1,10 @@
 # TestCommon Release notes
 
+## Version 8.1.0
+
+- Added property `IntegrationTestConfiguration.AppConfigurationEndpoint` to be able to use Azure App Configuration.
+- Added `AppConfigurationManager` to support use of Azure App Configuration feature flags.
+
 ## Version 8.0.1
 
 - Change `IntegrationTestConfiguration.EventHubNamespaceName` to use new (premium) Event Hub namespace.
