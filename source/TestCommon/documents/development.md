@@ -4,6 +4,7 @@ Notes regarding the development of the NuGet package bundle `TestCommon`.
 
 The bundle contains the following packages:
 
+* `Energinet.DataHub.Core.DurableFunctionApp.TestCommon`
 * `Energinet.DataHub.Core.FunctionApp.TestCommon`
 * `Energinet.DataHub.Core.TestCommon`
 
