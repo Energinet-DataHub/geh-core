@@ -42,7 +42,9 @@ public class FeatureManagementFunction
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
-        var isFeatureEnabled = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.Names.UseGetMessage)).ConfigureAwait(false);
+        var isFeatureEnabled = await _featureManager
+            .IsEnabledAsync(nameof(FeatureFlags.Names.UseGetMessage))
+            .ConfigureAwait(false);
         if (isFeatureEnabled)
         {
             await response.WriteStringAsync("Enabled").ConfigureAwait(false);

@@ -26,7 +26,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
-using Microsoft.IdentityModel.Protocols.Configuration;
 
 var host = new HostBuilder()
     .ConfigureServices((context, services) =>
@@ -93,25 +92,10 @@ var host = new HostBuilder()
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
-        //// TODO: Move to extension (?)
-
         // Configuration verified in tests:
         //  * Only load feature flags from App Configuration
         //  * Use default refresh interval of 30 seconds
-        var settings = configBuilder.Build();
-        var appConfigEndpoint = settings["AppConfigEndpoint"]!
-            ?? throw new InvalidConfigurationException($"Missing 'AppConfigEndpoint'.");
-
-        configBuilder.AddAzureAppConfiguration(options =>
-        {
-            options
-                .Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
-                // Using dummy key "_" to avoid loading other configuration than feature flags
-                .Select("_")
-                // Load all feature flags with no label.
-                // Use the default refresh interval of 30 seconds.
-                .UseFeatureFlags();
-        });
+        configBuilder.AddAzureAppConfigurationForIsolatedWorker();
     })
     .ConfigureLogging((context, logging) =>
     {

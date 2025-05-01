@@ -220,6 +220,29 @@ public class FeatureManagementTests
             isEnabled.Should().BeFalse();
         }
 
+        /// <summary>
+        /// Verifies that changes to feature flags in Azure App Configuration will be
+        /// detected by the host at runtime (refreshed).
+        ///
+        /// Requirements for this test:
+        ///
+        /// 1: Host must register services:
+        /// <code>
+        /// services
+        ///     .AddAzureAppConfiguration()
+        ///     .AddFeatureManagement();
+        /// </code>
+        ///
+        /// 2: Host must enable middleware:
+        /// <code>
+        /// builder.UseAzureAppConfiguration();
+        /// </code>
+        ///
+        /// 3: Host must configure Azure App Configuration:
+        /// <code>
+        ///  configBuilder.AddAzureAppConfigurationForIsolatedWorker();
+        /// </code>
+        /// </summary>
         [Fact]
         public async Task When_ToggleAzureFeatureFlag_Then_FeatureFlagIsRefreshedAndToggled()
         {
