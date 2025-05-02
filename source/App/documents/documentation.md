@@ -42,6 +42,7 @@ Features of the example:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
+- Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing an Azure Function App project:
 
@@ -49,15 +50,10 @@ Preparing an Azure Function App project:
 
 1) Add `Program.cs` with the following content
 
+The order in which the `ConfigureXxx` methods are called is important (see code below).
+
    ```cs
    var host = new HostBuilder()
-       .ConfigureFunctionsWebApplication(builder =>
-       {
-           // Http => Authorization
-           builder.UseFunctionsAuthorization();
-           // Http => Authentication
-           builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
-       })
        .ConfigureServices((context, services) =>
        {
            // Common
@@ -71,6 +67,28 @@ Preparing an Azure Function App project:
 
            // Would typically be registered within functional module registration methods instead of here.
            services.AddNodaTimeForApplication();
+
+           // Feature management
+           services
+               .AddAzureAppConfiguration()
+               .AddFeatureManagement();
+       })
+       .ConfigureFunctionsWebApplication(builder =>
+       {
+           // Http => Authorization
+           builder.UseFunctionsAuthorization();
+           // Http => Authentication
+           builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
+
+           // Feature management
+           //  * Enables middleware that handles refresh from Azure App Configuration
+           builder.UseAzureAppConfiguration();
+       })
+       .ConfigureAppConfiguration((context, configBuilder) =>
+       {
+          // Feature management
+          //  * Configure load/refresh from Azure App Configuration
+           configBuilder.AddAzureAppConfigurationForIsolatedWorker();
        })
        .ConfigureLogging((hostingContext, logging) =>
        {
@@ -102,6 +120,8 @@ Preparing an Azure Function App project:
        "UserAuthentication__ExternalMetadataAddress": "<metadata address>",
        "UserAuthentication__InternalMetadataAddress": "<metadata address>",
        "UserAuthentication__BackendBffAppId": "<app id>",
+       // Feature management (Azure App Configuration)
+       "AzureAppConfiguration__Endpoint": "<azure app config endpoint>",
      }
    }
 
