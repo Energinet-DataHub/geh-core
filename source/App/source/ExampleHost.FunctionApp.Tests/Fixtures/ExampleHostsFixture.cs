@@ -27,6 +27,7 @@ using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using ExampleHost.FunctionApp01.Common;
 using Xunit;
 using Xunit.Abstractions;
+using static ExampleHost.FunctionApp.Tests.Integration.FeatureManagementTests;
 
 namespace ExampleHost.FunctionApp.Tests.Fixtures;
 
@@ -102,11 +103,14 @@ public class ExampleHostsFixture : IAsyncLifetime
 
         // => App01 settings for Azure App Configuration (used for feature flags)
         app01HostSettings.ProcessEnvironmentVariables.Add(
+            AppConfigurationManager.DisableProviderSettingName, "false");
+        app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}", AppConfigurationManager.AppConfigEndpoint);
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}", "5");
         // => App01 settings for Feature flags
         app01HostSettings.ProcessEnvironmentVariables.Add(UseGetMessageSettingName, "false");
+        app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlags.ConfigurationPrefix}{GetFeatureFlagState.LocalFeatureFlag}", "true");
         // => App01 settings for Function Disabled flags
         app01HostSettings.ProcessEnvironmentVariables.Add(CreateMessageDisabledSettingName, "false");
 

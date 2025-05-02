@@ -111,7 +111,7 @@ public class FeatureManagementTests
                 waitLimit,
                 delay);
 
-        wasFeatureFlagToggled.Should().BeTrue("Because we expected the feature flag to be refreshed after 30 seconds.");
+        wasFeatureFlagToggled.Should().BeTrue("Because we expected the feature flag to be refreshed wait limit.");
     }
 
     /// <summary>

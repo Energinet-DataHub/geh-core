@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.TestCommon;
 using ExampleHost.FunctionApp.Tests.Fixtures;
 using ExampleHost.FunctionApp01.Common;
@@ -30,12 +31,14 @@ public class FeatureManagementTests
     private const string MessageRoute = "api/message";
 
     /// <summary>
-    /// Tests demonstrating use of a local <see cref="FeatureFlags.Names.UseGetMessage"/> feature flag.
+    /// Tests demonstrating use of a feature flag.
+    /// See the function triggered to understand how to use feature manager to switch on
+    /// a feature flag named <see cref="FeatureFlags.Names.UseGetMessage"/>.
     /// </summary>
     [Collection(nameof(ExampleHostsCollectionFixture))]
-    public class GetMessage_UseGetMessageFeatureFlagIsFalse
+    public class GetMessage
     {
-        public GetMessage_UseGetMessageFeatureFlagIsFalse(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+        public GetMessage(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
         {
             Fixture = fixture;
             Fixture.SetTestOutputHelper(testOutputHelper);
@@ -48,7 +51,7 @@ public class FeatureManagementTests
         [Theory]
         [InlineData("false", "Disabled")]
         [InlineData("true", "Enabled")]
-        public async Task When_RequestedWhenDisabledValueIs_Then_ExpectedContentIsReturned(string disabledValue, string expectedContent)
+        public async Task Given_DisabledValueIs_When_Requested_Then_ExpectedContentIsReturned(string disabledValue, string expectedContent)
         {
             // Arrange
             // Configure the feature flag (locally) for the test.
@@ -88,7 +91,7 @@ public class FeatureManagementTests
         [Theory]
         [InlineData("false", HttpStatusCode.Accepted)]
         [InlineData("true", HttpStatusCode.NotFound)]
-        public async Task When_RequestedWhenDisabledValueIs_Then_ExpectedStatusCodeIsReturned(string disabledValue, HttpStatusCode expectedStatusCode)
+        public async Task Given_DisabledValueIs_When_Requested_Then_ExpectedStatusCodeIsReturned(string disabledValue, HttpStatusCode expectedStatusCode)
         {
             // Arrange
             // Configure the disabled flag (locally) for the test.
@@ -117,9 +120,9 @@ public class FeatureManagementTests
     /// located in the 'ExampleHost.WebApi.Tests' project.
     /// </remarks>
     [Collection(nameof(ExampleHostsCollectionFixture))]
-    public class GetFeatureFlagState_LocalFeatureFlagIsTrue
+    public class GetFeatureFlagState
     {
-        private const string LocalFeatureFlag = "local";
+        public const string LocalFeatureFlag = "local";
 
         private const string NotExistingFeatureFlag = "geh-core-app-not-existing";
 
@@ -131,32 +134,26 @@ public class FeatureManagementTests
         /// </summary>
         private const string AzureFeatureFlag = "geh-core-app-integrationtests";
 
-        public GetFeatureFlagState_LocalFeatureFlagIsTrue(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
+        public GetFeatureFlagState(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
         {
             Fixture = fixture;
             Fixture.SetTestOutputHelper(testOutputHelper);
 
             Fixture.App01HostManager.ClearHostLog();
-
-            // Configure the feature flag (locally) for the test.
-            // The Function App is only restarted if the current state of the feature flag is different from what we need for the test.
-            Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
-            {
-                { $"{FeatureFlags.ConfigurationPrefix}{LocalFeatureFlag}", "true" },
-            });
         }
 
         private ExampleHostsFixture Fixture { get; }
 
         [Fact]
-        public async Task When_RequestedForLocalFeatureFlag_Then_FeatureIsEnabled()
+        public async Task Given_LocalFeatureFlagIsEnabledInAppSettings_When_RequestedForLocalFeatureFlag_Then_FeatureIsEnabled()
         {
+            // Feature flag is enabled in local settings (configured in fixture)
             var isEnabled = await RequestFeatureFlagStateAsync(LocalFeatureFlag);
             isEnabled.Should().BeTrue();
         }
 
         [Fact]
-        public async Task When_RequestedForNotExistingFeatureFlag_Then_FeatureIsDisabled()
+        public async Task Given_NotExistingFeatureFlag_When_RequestedForNotExistingFeatureFlag_Then_FeatureIsDisabled()
         {
             var isEnabled = await RequestFeatureFlagStateAsync(NotExistingFeatureFlag);
             isEnabled.Should().BeFalse();
@@ -187,10 +184,21 @@ public class FeatureManagementTests
         ///
         /// 4: Configure AzureAppConfigurationOptions in App Settings or similar.
         /// </summary>
-        [Fact]
-        public async Task When_ToggleAzureFeatureFlag_Then_FeatureFlagIsRefreshedAndToggled()
+        [Theory]
+        [InlineData("false", true)]
+        [InlineData("true", false)]
+        public async Task Given_AzureFeatureFlagExistsInAzureAppConfiguration_When_ToggleAzureFeatureFlag_Then_FeatureFlagIsRefreshedAndToggled(
+            string providerDisabledValue,
+            bool expectedWasFeatureFlagToggled)
         {
             // Assert
+            // Configure the Azure App Configuration provider for the test.
+            // The Function App is only restarted if the current state of the flag is different from what we need for the test.
+            Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
+            {
+                { AppConfigurationManager.DisableProviderSettingName, providerDisabledValue },
+            });
+
             var initialStateInApplication = await RequestFeatureFlagStateAsync(AzureFeatureFlag);
 
             // Act
@@ -211,7 +219,7 @@ public class FeatureManagementTests
                     waitLimit,
                     delay);
 
-            wasFeatureFlagToggled.Should().BeTrue("Because we expected the feature flag to be refreshed after 30 seconds.");
+            wasFeatureFlagToggled.Should().Be(expectedWasFeatureFlagToggled, "If the provider is disabled then the feature flag should not be refreshed; otherwise it should be refreshed.");
         }
 
         /// <summary>
