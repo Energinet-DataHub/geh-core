@@ -47,8 +47,9 @@ public static class ConfigurationBuilderExtensions
                 // Using dummy key "_" to avoid loading other configuration than feature flags
                 .Select("_")
                 // Load all feature flags with no label.
-                // Use the default refresh interval of 30 seconds.
-                .UseFeatureFlags();
+                // Configure the refresh interval according to settings.
+                .UseFeatureFlags(options =>
+                    options.SetRefreshInterval(TimeSpan.FromSeconds(appConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)));
         });
 
         return configBuilder;

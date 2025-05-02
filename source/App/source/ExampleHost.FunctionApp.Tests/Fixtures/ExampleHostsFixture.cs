@@ -103,6 +103,8 @@ public class ExampleHostsFixture : IAsyncLifetime
         // => App01 settings for Azure App Configuration (used for feature flags)
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}", AppConfigurationManager.AppConfigEndpoint);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}", "5");
         // => App01 settings for Feature flags
         app01HostSettings.ProcessEnvironmentVariables.Add(UseGetMessageSettingName, "false");
         // => App01 settings for Function Disabled flags

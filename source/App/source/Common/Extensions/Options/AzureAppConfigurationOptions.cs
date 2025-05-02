@@ -25,4 +25,15 @@ public class AzureAppConfigurationOptions
     /// The endpoint of the Azure App Configuration.
     /// </summary>
     public string Endpoint { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The refresh interval used for feature flags.
+    /// Microsoft default for this is 30 seconds.
+    /// </summary>
+    /// <remarks>
+    /// We support the configuration of this to be able to override the default in tests.
+    /// In production we should use the default, unless we learn something new (in which
+    /// case we should consider changing the default).
+    /// </remarks>
+    public long FeatureFlagsRefreshIntervalInSeconds { get; set; } = 30;
 }

@@ -260,8 +260,8 @@ public class FeatureManagementTests
             await Fixture.AppConfigurationManager.SetFeatureFlagAsync(AzureFeatureFlag, !initialStateInApplication);
 
             // Assert
-            // => Refresh should happen after 30 seconds
-            var waitLimit = TimeSpan.FromMinutes(1);
+            // => Refresh should happen after 5 seconds (configured in fixture)
+            var waitLimit = TimeSpan.FromSeconds(6);
             var delay = TimeSpan.FromSeconds(2);
 
             var wasFeatureFlagToggled = await Awaiter

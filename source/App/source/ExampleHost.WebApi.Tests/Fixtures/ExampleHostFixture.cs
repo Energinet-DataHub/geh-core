@@ -67,6 +67,7 @@ public class ExampleHostFixture : IAsyncLifetime
                     ["Logging:ApplicationInsights:LogLevel:Default"] = "Information",
                     // Configure Azure App Configuration
                     [$"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}"] = AppConfigurationManager.AppConfigEndpoint,
+                    [$"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}"] = "5",
                     // Configure local feature flag
                     [$"FeatureManagement:{FeatureManagementTests.LocalFeatureFlag}"] = "true",
                 });
