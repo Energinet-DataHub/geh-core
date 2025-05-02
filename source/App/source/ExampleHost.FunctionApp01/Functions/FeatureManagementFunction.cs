@@ -47,10 +47,12 @@ public class FeatureManagementFunction
             .ConfigureAwait(false);
         if (isFeatureEnabled)
         {
+            // Perform logic when feature is enabled
             await response.WriteStringAsync("Enabled").ConfigureAwait(false);
             return response;
         }
 
+        // Perform logic when feature is disabled
         await response.WriteStringAsync("Disabled").ConfigureAwait(false);
         return response;
     }
@@ -88,7 +90,9 @@ public class FeatureManagementFunction
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
-        var isFeatureEnabled = await _featureManager.IsEnabledAsync(featureFlagName).ConfigureAwait(false);
+        var isFeatureEnabled = await _featureManager
+            .IsEnabledAsync(featureFlagName)
+            .ConfigureAwait(false);
         if (isFeatureEnabled)
         {
             await response.WriteStringAsync("Enabled").ConfigureAwait(false);

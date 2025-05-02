@@ -30,7 +30,7 @@ public class FeatureManagementTests
     private const string MessageRoute = "api/message";
 
     /// <summary>
-    /// Tests where the <see cref="FeatureFlags.Names.UseGetMessage"/> feature is disabled.
+    /// Tests demonstrating use of a local <see cref="FeatureFlags.Names.UseGetMessage"/> feature flag.
     /// </summary>
     [Collection(nameof(ExampleHostsCollectionFixture))]
     public class GetMessage_UseGetMessageFeatureFlagIsFalse
@@ -41,34 +41,23 @@ public class FeatureManagementTests
             Fixture.SetTestOutputHelper(testOutputHelper);
 
             Fixture.App01HostManager.ClearHostLog();
-
-            // Configure the feature flag (locally) for the test.
-            // The Function App is only restarted if the current state of the feature flag is different from what we need for the test.
-            Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
-            {
-                { Fixture.UseGetMessageSettingName, "false" },
-            });
         }
 
         private ExampleHostsFixture Fixture { get; }
 
-        [Fact]
-        public async Task When_Requested_Then_AHttp200ResponseIsReturned()
+        [Theory]
+        [InlineData("false", "Disabled")]
+        [InlineData("true", "Enabled")]
+        public async Task When_RequestedWhenDisabledValueIs_Then_ExpectedContentIsReturned(string disabledValue, string expectedContent)
         {
             // Arrange
-            using var request = new HttpRequestMessage(HttpMethod.Get, MessageRoute);
+            // Configure the feature flag (locally) for the test.
+            // The Function App is only restarted if the current state of the flag is different from what we need for the test.
+            Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
+            {
+                { Fixture.UseGetMessageSettingName, disabledValue },
+            });
 
-            // Act
-            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task When_Requested_Then_DisabledTextIsReturned()
-        {
-            // Arrange
             using var request = new HttpRequestMessage(HttpMethod.Get, MessageRoute);
 
             // Act
@@ -76,59 +65,7 @@ public class FeatureManagementTests
 
             // Assert
             var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Be("Disabled");
-        }
-    }
-
-    /// <summary>
-    /// Tests where the <see cref="FeatureFlags.Names.UseGetMessage"/> feature is enabled.
-    /// </summary>
-    [Collection(nameof(ExampleHostsCollectionFixture))]
-    public class GetMessage_UseGetMessageFeatureFlagIsTrue
-    {
-        public GetMessage_UseGetMessageFeatureFlagIsTrue(ExampleHostsFixture fixture, ITestOutputHelper testOutputHelper)
-        {
-            Fixture = fixture;
-            Fixture.SetTestOutputHelper(testOutputHelper);
-
-            Fixture.App01HostManager.ClearHostLog();
-
-            // Configure the feature flag (locally) for the test.
-            // The Function App is only restarted if the current state of the feature flag
-            // is different from what we need for the test.
-            Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
-            {
-                { Fixture.UseGetMessageSettingName, "true" },
-            });
-        }
-
-        private ExampleHostsFixture Fixture { get; }
-
-        [Fact]
-        public async Task When_Requested_Then_AHttp200ResponseIsReturned()
-        {
-            // Arrange
-            using var request = new HttpRequestMessage(HttpMethod.Get, MessageRoute);
-
-            // Act
-            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task When_Requested_Then_EnabledTextIsReturned()
-        {
-            // Arrange
-            using var request = new HttpRequestMessage(HttpMethod.Get, MessageRoute);
-
-            // Act
-            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-            // Assert
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Be("Enabled");
+            content.Should().Be(expectedContent);
         }
     }
 
