@@ -31,7 +31,7 @@ public class AppConfigurationManager
     /// </summary>
     /// <remarks>
     /// Set to "true" to disable the Azure App Configuration provider
-    /// that is registered when using <code>builder.AddAzureAppConfiguration()</code>.
+    /// that is registered when using <code>IConfigurationBuilder.AddAzureAppConfiguration()</code>.
     ///
     /// See https://github.com/Azure/AppConfiguration-DotnetProvider/blob/bf8b06b9dde1bb219b625939b3d2ea00bd2a61d5/src/Microsoft.Extensions.Configuration.AzureAppConfiguration/AzureAppConfigurationExtensions.cs#L18
     /// </remarks>
