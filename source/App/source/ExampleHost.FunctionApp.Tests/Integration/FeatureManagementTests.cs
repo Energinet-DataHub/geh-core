@@ -163,6 +163,9 @@ public class FeatureManagementTests
         /// Verifies that changes to feature flags in Azure App Configuration will be
         /// detected by the host at runtime (refreshed).
         ///
+        /// Additionally we also show how we can disable the Azure App Configuration provider,
+        /// which means feature flags will NOT be refreshed. This is usefull for integration tests.
+        ///
         /// Requirements for this test:
         ///
         /// 1: Host must register services:
