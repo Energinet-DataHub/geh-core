@@ -50,7 +50,7 @@ Preparing an Azure Function App project:
 
 1) Add `Program.cs` with the following content
 
-The order in which the `ConfigureXxx` methods are called is important (see code below).
+   WARNING: The order in which the `ConfigureXxx` methods are called are important.
 
    ```cs
    var host = new HostBuilder()
@@ -75,19 +75,19 @@ The order in which the `ConfigureXxx` methods are called is important (see code 
        })
        .ConfigureFunctionsWebApplication(builder =>
        {
+           // Feature management
+           //  * Enables middleware that handles refresh from Azure App Configuration
+           builder.UseAzureAppConfiguration();
+
            // Http => Authorization
            builder.UseFunctionsAuthorization();
            // Http => Authentication
            builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
-
-           // Feature management
-           //  * Enables middleware that handles refresh from Azure App Configuration
-           builder.UseAzureAppConfiguration();
        })
        .ConfigureAppConfiguration((context, configBuilder) =>
        {
-          // Feature management
-          //  * Configure load/refresh from Azure App Configuration
+           // Feature management
+           //  * Configure load/refresh from Azure App Configuration
            configBuilder.AddAzureAppConfigurationForIsolatedWorker();
        })
        .ConfigureLogging((hostingContext, logging) =>
@@ -142,6 +142,7 @@ Features of the example:
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
 - Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
+- Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing a Web App project:
 
@@ -149,8 +150,18 @@ Preparing a Web App project:
 
 1) Add `Program.cs` with the following content
 
+   WARNING: The order of middleware enabling methods can be important. The `UseAzureAppConfiguration()` should be called before mapping endpoints.
+
    ```cs
    var builder = WebApplication.CreateBuilder(args);
+
+   /*
+   // Configuration
+   */
+
+   // Feature management
+   //  * Configure load/refresh from Azure App Configuration
+   builder.Configuration.AddAzureAppConfigurationForWebApp(builder.Configuration);
 
    /*
    // Add services to the container.
@@ -178,11 +189,20 @@ Preparing a Web App project:
        .AddUserAuthenticationForWebApp<SubsystemUser, SubsystemUserProvider>()
        .AddPermissionAuthorizationForWebApp();
 
+   // Feature management
+   services
+       .AddAzureAppConfiguration()
+       .AddFeatureManagement();
+
    var app = builder.Build();
 
    /*
    // Configure the HTTP request pipeline.
    */
+
+   // Feature management
+   //  * Enables middleware that handles refresh from Azure App Configuration
+   app.UseAzureAppConfiguration();
 
    app.UseRouting();
    app.UseSwaggerForWebApp();
@@ -231,6 +251,10 @@ Preparing a Web App project:
        "ExternalMetadataAddress": "<metadata address>",
        "InternalMetadataAddress": "<metadata address>",
        "BackendBffAppId": "<app id>"
+     }
+     // Feature management (Azure App Configuration)
+     "AzureAppConfiguration": {
+       "Endpoint": "<azure app config endpoint>"
      }
    }
    ```
