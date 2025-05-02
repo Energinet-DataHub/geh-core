@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 8.1.1
+
+- Added const `AppConfigurationManager.DisableProviderSettingName` to be able to skip using Azure App Configuration in integration tests.
+
 ## Version 8.1.0
 
 - Added property `IntegrationTestConfiguration.AppConfigurationEndpoint` to be able to use Azure App Configuration.

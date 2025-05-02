@@ -24,6 +24,19 @@ namespace Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 /// </summary>
 public class AppConfigurationManager
 {
+    /// <summary>
+    /// Use this to disable the use of App Configuration in Azure during integration tests.
+    /// If we use Azure App Configuration in tests, parallel execution of (e.g. multiple CI's)
+    /// will impact each other. Instead we should use local settings to be in complete control.
+    /// </summary>
+    /// <remarks>
+    /// Set to "true" to disable the Azure App Configuration provider
+    /// that is registered when using <code>IConfigurationBuilder.AddAzureAppConfiguration()</code>.
+    ///
+    /// See https://github.com/Azure/AppConfiguration-DotnetProvider/blob/bf8b06b9dde1bb219b625939b3d2ea00bd2a61d5/src/Microsoft.Extensions.Configuration.AzureAppConfiguration/AzureAppConfigurationExtensions.cs#L18
+    /// </remarks>
+    public const string DisableProviderSettingName = "AZURE_APP_CONFIGURATION_PROVIDER_DISABLED";
+
     private readonly ConfigurationClient _client;
 
     public AppConfigurationManager(string appConfigEndpoint, TokenCredential credential)
