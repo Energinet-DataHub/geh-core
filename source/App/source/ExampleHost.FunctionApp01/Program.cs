@@ -70,6 +70,11 @@ var host = new HostBuilder()
     })
     .ConfigureFunctionsWebApplication(builder =>
     {
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each function execution
+        //  * Must be called after "AddAzureAppConfiguration" as it verifies if services was registered
+        builder.UseAzureAppConfiguration();
+
         // DarkLoop Authorization extension (verified in tests):
         //  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
         //    place the middleware in the pipeline where required request information is available.
@@ -84,11 +89,6 @@ var host = new HostBuilder()
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
                 $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
-
-        // Configuration verified in tests:
-        //  * Enable automatic feature flag refresh on each function execution
-        //  * Must be called after "AddAzureAppConfiguration" as it verifies if services was registered
-        builder.UseAzureAppConfiguration();
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {

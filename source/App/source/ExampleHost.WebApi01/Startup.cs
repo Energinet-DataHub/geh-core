@@ -78,14 +78,14 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
-        // We will not use HTTPS in tests.
-        app.UseRouting();
-        app.UseAuthorization();
-
         // Configuration verified in tests:
         //  * Enable automatic feature flag refresh on each http request
         //  * Must be placed before "UseEndpoints"
         app.UseAzureAppConfiguration();
+
+        // We will not use HTTPS in tests.
+        app.UseRouting();
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
