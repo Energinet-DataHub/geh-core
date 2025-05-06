@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
@@ -19,13 +20,14 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 namespace Energinet.DataHub.Core.App.FunctionApp.Middleware;
 
 /// <summary>
-/// Custom middleware implementation for refreshing Azure App Configuration.
+/// Middleware for Azure App Configuration to use activity-based refresh for key-values registered in the provider.
 /// Should not be used if trigger is an Durable Function Orchestration trigger.
 /// </summary>
 /// <remarks>
 /// As suggested here: https://github.com/Azure/azure-functions-dotnet-worker/issues/1666#issuecomment-1839370553
-/// We only register this middleware to run if it's not a Durable Function Trigger (see "UseAzureAppConfigurationForIsolatedWorker").
-/// The middleware implementation is a copy of the one Microsoft ahs implamanted here: https://github.com/Azure/AppConfiguration-DotnetProvider/blob/e09cb23855a36843f8381b7eb172139a6553f0f1/src/Microsoft.Azure.AppConfiguration.Functions.Worker/AzureAppConfigurationRefreshMiddleware.cs#L17
+/// By using <see cref="ApplicationBuilderExtensions.UseAzureAppConfigurationForIsolatedWorker(IFunctionsWorkerApplicationBuilder)"/>
+/// we only execute this middleware if it's not a Durable Function Orchestration trigger.
+/// The middleware implementation is a copy of the one Microsoft has implemented here: https://github.com/Azure/AppConfiguration-DotnetProvider/blob/e09cb23855a36843f8381b7eb172139a6553f0f1/src/Microsoft.Azure.AppConfiguration.Functions.Worker/AzureAppConfigurationRefreshMiddleware.cs#L17
 /// </remarks>
 public class AzureAppConfigurationRefreshMiddleware : IFunctionsWorkerMiddleware
 {
