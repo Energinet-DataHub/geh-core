@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Azure.Identity;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +30,7 @@ public static class ConfigurationBuilderExtensions
     ///
     /// Expects <see cref="AzureAppConfigurationOptions"/> has been configured in <see cref="AzureAppConfigurationOptions.SectionName"/>.
     /// </summary>
-    public static IConfigurationBuilder AddAzureAppConfigurationForWebApp(this IConfigurationBuilder configBuilder, IConfiguration configuration)
+    public static IConfigurationBuilder AddAzureAppConfigurationForWebApp(this IConfigurationBuilder configBuilder, IConfiguration configuration, TokenCredential? azureCredential = null)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
@@ -43,7 +44,7 @@ public static class ConfigurationBuilderExtensions
         configBuilder.AddAzureAppConfiguration(options =>
         {
             options
-                .Connect(new Uri(appConfigurationOptions.Endpoint), new DefaultAzureCredential())
+                .Connect(new Uri(appConfigurationOptions.Endpoint), azureCredential ?? new DefaultAzureCredential())
                 // Using dummy key "_" to avoid loading other configuration than feature flags
                 .Select("_")
                 // Load all feature flags with no label.
