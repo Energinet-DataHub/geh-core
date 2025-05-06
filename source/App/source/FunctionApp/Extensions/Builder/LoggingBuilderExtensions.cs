@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -27,11 +28,26 @@ public static class LoggingBuilderExtensions
     /// Make sure the Application Insights logging configuration is picked up from settings.
     /// Found inspiration in https://github.com/Azure/azure-functions-dotnet-worker/issues/1447
     /// </summary>
+    [Obsolete("Use overload that takes 'IConfiguration' instead. This can also be used with 'IHostApplicationBuilder'.")]
     public static ILoggingBuilder AddLoggingConfigurationForIsolatedWorker(this ILoggingBuilder logging, HostBuilderContext hostingContext)
     {
         ArgumentNullException.ThrowIfNull(hostingContext);
 
-        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext.Configuration);
+
+        return logging;
+    }
+
+    /// <summary>
+    /// For use in a Function App isolated worker.
+    /// Make sure the Application Insights logging configuration is picked up from settings.
+    /// Found inspiration in https://github.com/Azure/azure-functions-dotnet-worker/issues/1447
+    /// </summary>
+    public static ILoggingBuilder AddLoggingConfigurationForIsolatedWorker(this ILoggingBuilder logging, IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        logging.AddConfiguration(configuration.GetSection("Logging"));
 
         return logging;
     }

@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using ExampleHost.WebApi01;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Must be configured in ExampleHostFixture as well.
+builder.Configuration.AddAzureAppConfigurationForWebApp(builder.Configuration);
 
 // We keep the Startup to be able to create Web01Host using TestServer in integration tests.
 var startup = new Startup(builder.Configuration);

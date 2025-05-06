@@ -12,36 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection.Metadata.Ecma335;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.Common.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication(builder =>
-    {
-        // DarkLoop Authorization extension (verified in tests):
-        //  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
-        //    place the middleware in the pipeline where required request information is available.
-        builder.UseFunctionsAuthorization();
-
-        // Configuration verified in tests:
-        //  * Endpoints for which UserMiddleware is enabled must call the endpoint with a token
-        //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
-        builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
-            excludedFunctionNames: [
-                $"{nameof(RestApiExampleFunction.TelemetryAsync)}"]);
-    })
     .ConfigureServices((context, services) =>
     {
         // Configuration verified in tests:
@@ -75,12 +61,47 @@ var host = new HostBuilder()
         services
             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
+
+        // Feature management (verified in tests)
+        //  * Must call "AddAzureAppConfiguration" before "UseAzureAppConfiguration"
+        services
+            .AddAzureAppConfiguration()
+            .AddFeatureManagement();
     })
-    .ConfigureLogging((hostingContext, logging) =>
+    .ConfigureFunctionsWebApplication(builder =>
+    {
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each function execution
+        //  * Must be called after "AddAzureAppConfiguration" as it verifies if services was registered
+        builder.UseAzureAppConfiguration();
+
+        // DarkLoop Authorization extension (verified in tests):
+        //  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
+        //    place the middleware in the pipeline where required request information is available.
+        builder.UseFunctionsAuthorization();
+
+        // Configuration verified in tests:
+        //  * Endpoints for which UserMiddleware is enabled must call the endpoint with a token
+        //  * We exclude endpoints for which we in tests do not want to, or cannot, send a token
+        builder.UseUserMiddlewareForIsolatedWorker<ExampleSubsystemUser>(
+            excludedFunctionNames: [
+                $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
+                $"{nameof(FeatureManagementFunction.GetMessage)}",
+                $"{nameof(FeatureManagementFunction.CreateMessage)}",
+                $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
+    })
+    .ConfigureAppConfiguration((context, configBuilder) =>
+    {
+        // Configuration verified in tests:
+        //  * Only load feature flags from App Configuration
+        //  * Use default refresh interval of 30 seconds
+        configBuilder.AddAzureAppConfigurationForIsolatedWorker();
+    })
+    .ConfigureLogging((context, logging) =>
     {
         // Configuration verified in tests:
         //  * Ensure Application Insights logging configuration is picked up.
-        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+        logging.AddLoggingConfigurationForIsolatedWorker(context.Configuration);
     })
     .Build();
 

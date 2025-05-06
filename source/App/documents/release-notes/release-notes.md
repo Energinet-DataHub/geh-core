@@ -1,5 +1,14 @@
 # App Release notes
 
+## Version 15.1.0
+
+- Added functionality for Feature Management.
+- Added/updated `FunctionApp` reusable dependency injection extensions:
+    - Added `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker` for configuring the use of Azure App Configuration for feature flags.
+    - Added overload of `LoggingBuilderExtensions.AddLoggingConfigurationForIsolatedWorker` that accepts `IConfiguration`. Marked the "old" method as obsolete.
+- Added/updated `WebApp` reusable dependency injection extensions:
+    - Added `ConfigurationBuilderExtensions.AddAzureAppConfigurationForWebApp` for configuring the use of Azure App Configuration for feature flags.
+
 ## Version 15.0.1
 
 - Upgrade certain NuGet packages.

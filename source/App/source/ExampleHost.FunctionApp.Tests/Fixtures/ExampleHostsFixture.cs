@@ -17,14 +17,17 @@ using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using ExampleHost.FunctionApp01.Common;
 using Xunit;
 using Xunit.Abstractions;
+using static ExampleHost.FunctionApp.Tests.Integration.FeatureManagementTests;
 
 namespace ExampleHost.FunctionApp.Tests.Fixtures;
 
@@ -45,6 +48,10 @@ public class ExampleHostsFixture : IAsyncLifetime
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
         OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings, openIdServerPort: 1052);
+
+        AppConfigurationManager = new AppConfigurationManager(
+            IntegrationTestConfiguration.AppConfigurationEndpoint,
+            IntegrationTestConfiguration.Credential);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
@@ -56,11 +63,23 @@ public class ExampleHostsFixture : IAsyncLifetime
 
     public OpenIdJwtManager OpenIdJwtManager { get; }
 
+    public AppConfigurationManager AppConfigurationManager { get; }
+
     [NotNull]
     public FunctionAppHostManager? App01HostManager { get; private set; }
 
     [NotNull]
     public FunctionAppHostManager? App02HostManager { get; private set; }
+
+    /// <summary>
+    /// The setting name of the <see cref="FeatureFlags.Names.UseGetMessage"/> feature flag.
+    /// </summary>
+    public string UseGetMessageSettingName => $"{FeatureFlags.ConfigurationPrefix}{FeatureFlags.Names.UseGetMessage}";
+
+    /// <summary>
+    /// The setting name of the CreateMessage (function) disabled flag.
+    /// </summary>
+    public string CreateMessageDisabledSettingName => "AzureWebJobs.CreateMessage.Disabled";
 
     private AzuriteManager AzuriteManager { get; }
 
@@ -81,6 +100,19 @@ public class ExampleHostsFixture : IAsyncLifetime
         var port = 8000;
         var app01HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp01", ref port);
         var app02HostSettings = CreateAppHostSettings("ExampleHost.FunctionApp02", ref port);
+
+        // => App01 settings for Azure App Configuration (used for feature flags)
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            AppConfigurationManager.DisableProviderSettingName, "false");
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}", AppConfigurationManager.AppConfigEndpoint);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}", "5");
+        // => App01 settings for Feature flags
+        app01HostSettings.ProcessEnvironmentVariables.Add(UseGetMessageSettingName, "false");
+        app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlags.ConfigurationPrefix}{GetFeatureFlagState.LocalFeatureFlag}", "true");
+        // => App01 settings for Function Disabled flags
+        app01HostSettings.ProcessEnvironmentVariables.Add(CreateMessageDisabledSettingName, "false");
 
         // => App01 settings for authentication
         OpenIdJwtManager.StartServer();

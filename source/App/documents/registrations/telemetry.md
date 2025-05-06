@@ -48,7 +48,7 @@ After following the guidelines below, the default and categories log level of cu
    ```cs
     .ConfigureLogging((hostingContext, logging) =>
     {
-        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext.Configuration);
     });
    ```
 

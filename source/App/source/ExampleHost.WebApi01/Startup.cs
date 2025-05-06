@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.FeatureManagement;
 
 namespace ExampleHost.WebApi01;
 
@@ -68,10 +69,20 @@ public class Startup
 
             // Setting default version to 2.0, this will be overwritten if the method has it's own version
             .AddApiVersioningForWebApp(new ApiVersion(2, 0));
+
+        // Feature management (verified in tests)
+        services
+            .AddAzureAppConfiguration()
+            .AddFeatureManagement();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
+        // Configuration verified in tests:
+        //  * Enable automatic feature flag refresh on each http request
+        //  * Must be placed before "UseEndpoints"
+        app.UseAzureAppConfiguration();
+
         // We will not use HTTPS in tests.
         app.UseRouting();
         app.UseAuthorization();

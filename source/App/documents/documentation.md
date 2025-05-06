@@ -42,6 +42,7 @@ Features of the example:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
+- Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing an Azure Function App project:
 
@@ -49,15 +50,10 @@ Preparing an Azure Function App project:
 
 1) Add `Program.cs` with the following content
 
+   WARNING: The order in which the `ConfigureXxx` methods are called are important.
+
    ```cs
    var host = new HostBuilder()
-       .ConfigureFunctionsWebApplication(builder =>
-       {
-           // Http => Authorization
-           builder.UseFunctionsAuthorization();
-           // Http => Authentication
-           builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
-       })
        .ConfigureServices((context, services) =>
        {
            // Common
@@ -71,10 +67,32 @@ Preparing an Azure Function App project:
 
            // Would typically be registered within functional module registration methods instead of here.
            services.AddNodaTimeForApplication();
+
+           // Feature management
+           services
+               .AddAzureAppConfiguration()
+               .AddFeatureManagement();
+       })
+       .ConfigureFunctionsWebApplication(builder =>
+       {
+           // Feature management
+           //  * Enables middleware that handles refresh from Azure App Configuration
+           builder.UseAzureAppConfiguration();
+
+           // Http => Authorization
+           builder.UseFunctionsAuthorization();
+           // Http => Authentication
+           builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
+       })
+       .ConfigureAppConfiguration((context, configBuilder) =>
+       {
+           // Feature management
+           //  * Configure load/refresh from Azure App Configuration
+           configBuilder.AddAzureAppConfigurationForIsolatedWorker();
        })
        .ConfigureLogging((hostingContext, logging) =>
        {
-           logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+           logging.AddLoggingConfigurationForIsolatedWorker(hostingContext.Configuration);
        })
        .Build();
 
@@ -102,6 +120,8 @@ Preparing an Azure Function App project:
        "UserAuthentication__ExternalMetadataAddress": "<metadata address>",
        "UserAuthentication__InternalMetadataAddress": "<metadata address>",
        "UserAuthentication__BackendBffAppId": "<app id>",
+       // Feature management (Azure App Configuration)
+       "AzureAppConfiguration__Endpoint": "<azure app config endpoint>",
      }
    }
 
@@ -122,6 +142,7 @@ Features of the example:
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
 - Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
+- Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing a Web App project:
 
@@ -129,8 +150,18 @@ Preparing a Web App project:
 
 1) Add `Program.cs` with the following content
 
+   WARNING: The order of middleware enabling methods can be important. The `UseAzureAppConfiguration()` should be called before mapping endpoints.
+
    ```cs
    var builder = WebApplication.CreateBuilder(args);
+
+   /*
+   // Configuration
+   */
+
+   // Feature management
+   //  * Configure load/refresh from Azure App Configuration
+   builder.Configuration.AddAzureAppConfigurationForWebApp(builder.Configuration);
 
    /*
    // Add services to the container.
@@ -158,11 +189,20 @@ Preparing a Web App project:
        .AddUserAuthenticationForWebApp<SubsystemUser, SubsystemUserProvider>()
        .AddPermissionAuthorizationForWebApp();
 
+   // Feature management
+   services
+       .AddAzureAppConfiguration()
+       .AddFeatureManagement();
+
    var app = builder.Build();
 
    /*
    // Configure the HTTP request pipeline.
    */
+
+   // Feature management
+   //  * Enables middleware that handles refresh from Azure App Configuration
+   app.UseAzureAppConfiguration();
 
    app.UseRouting();
    app.UseSwaggerForWebApp();
@@ -211,6 +251,10 @@ Preparing a Web App project:
        "ExternalMetadataAddress": "<metadata address>",
        "InternalMetadataAddress": "<metadata address>",
        "BackendBffAppId": "<app id>"
+     }
+     // Feature management (Azure App Configuration)
+     "AzureAppConfiguration": {
+       "Endpoint": "<azure app config endpoint>"
      }
    }
    ```
