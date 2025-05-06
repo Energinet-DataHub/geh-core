@@ -45,18 +45,17 @@ public class AzureAppConfigurationRefreshMiddleware : IFunctionsWorkerMiddleware
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        long utcNow = DateTimeOffset.UtcNow.Ticks;
-
-        long refreshReadyTime = Interlocked.Read(ref _refreshReadyTime);
+        var utcNow = DateTimeOffset.UtcNow.Ticks;
+        var refreshReadyTime = Interlocked.Read(ref _refreshReadyTime);
 
         if (refreshReadyTime <= utcNow &&
             Interlocked.CompareExchange(ref _refreshReadyTime, utcNow + MinimumRefreshInterval, refreshReadyTime) == refreshReadyTime)
         {
             // Configuration refresh is meant to execute as an isolated background task.
             // To prevent access of request-based resources, such as HttpContext, we suppress the execution context within the refresh operation.
-            using (AsyncFlowControl flowControl = ExecutionContext.SuppressFlow())
+            using (var flowControl = ExecutionContext.SuppressFlow())
             {
-                foreach (IConfigurationRefresher refresher in Refreshers)
+                foreach (var refresher in Refreshers)
                 {
                     _ = Task.Run(() => refresher.TryRefreshAsync());
                 }
@@ -65,5 +64,4 @@ public class AzureAppConfigurationRefreshMiddleware : IFunctionsWorkerMiddleware
 
         await next(context).ConfigureAwait(false);
     }
-
 }
