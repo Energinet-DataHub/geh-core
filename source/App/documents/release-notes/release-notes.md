@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 15.2.0
+
+- Added `ApplicationBuilderExtensions.UseAzureAppConfigurationForIsolatedWorker()`.
+
 ## Version 15.1.0
 
 - Added functionality for Feature Management.
