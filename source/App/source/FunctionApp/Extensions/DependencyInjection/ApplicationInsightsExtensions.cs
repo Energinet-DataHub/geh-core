@@ -19,6 +19,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 
@@ -56,6 +57,8 @@ public static class ApplicationInsightsExtensions
                 .ToString();
         });
         services.ConfigureFunctionsApplicationInsights();
+
+        services.TryAddSingleton<IHealthCheckPublisher, ApplicationInsightsHealthCheckPublisher>();
 
         return services;
     }

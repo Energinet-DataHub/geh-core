@@ -19,6 +19,7 @@ using FluentAssertions.Execution;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Core.App.WebApp.Tests.Extensions.DependencyInjection;
 
@@ -50,6 +51,11 @@ public class ApplicationInsightsExtensionsTests
                 service.ServiceType == typeof(ITelemetryInitializer)
                 && service.ImplementationInstance != null
                 && service.ImplementationInstance.GetType() == typeof(SubsystemInitializer))
+            .Should().Be(1);
+        Services
+            .Count(service =>
+                service.ServiceType == typeof(IHealthCheckPublisher)
+                && service.ImplementationType == typeof(ApplicationInsightsHealthCheckPublisher))
             .Should().Be(1);
     }
 }
