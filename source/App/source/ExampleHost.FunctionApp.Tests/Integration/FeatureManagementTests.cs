@@ -28,7 +28,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 /// </summary>
 public class FeatureManagementTests
 {
-    private const string MessageRoute = "api/message";
+    private const string FeatureManagementRoute = "api/featuremanagement";
 
     /// <summary>
     /// Tests demonstrating use of a feature flag.
@@ -61,7 +61,7 @@ public class FeatureManagementTests
                 { Fixture.UseGetMessageSettingName, disabledValue },
             });
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, MessageRoute);
+            using var request = new HttpRequestMessage(HttpMethod.Get, FeatureManagementRoute);
 
             // Act
             var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
@@ -101,7 +101,7 @@ public class FeatureManagementTests
                 { Fixture.CreateMessageDisabledSettingName, disabledValue },
             });
 
-            using var request = new HttpRequestMessage(HttpMethod.Post, MessageRoute);
+            using var request = new HttpRequestMessage(HttpMethod.Post, FeatureManagementRoute);
 
             // Act
             var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
