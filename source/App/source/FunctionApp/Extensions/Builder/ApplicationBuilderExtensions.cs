@@ -39,7 +39,7 @@ public static class ApplicationBuilderExtensions
     public static IFunctionsWorkerApplicationBuilder UseAzureAppConfigurationForIsolatedWorker(
         this IFunctionsWorkerApplicationBuilder builder)
     {
-        // Verify if AddAzureAppConfiguration was done before calling UseAzureAppConfiguration.
+        // Verify if AddAzureAppConfiguration was done before calling UseAzureAppConfigurationForIsolatedWorker.
         // We use the IConfigurationRefresherProvider to make sure if the required services were added.
         IServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
         var refresherProvider = serviceProvider.GetService<IConfigurationRefresherProvider>()

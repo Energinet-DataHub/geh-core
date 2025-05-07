@@ -177,7 +177,7 @@ public class FeatureManagementTests
         ///
         /// 2: Host must enable middleware:
         /// <code>
-        /// builder.UseAzureAppConfiguration();
+        /// builder.UseAzureAppConfigurationForIsolatedWorker();
         /// </code>
         ///
         /// 3: Host must configure Azure App Configuration:

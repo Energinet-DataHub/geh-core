@@ -63,7 +63,7 @@ var host = new HostBuilder()
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
 
         // Feature management (verified in tests)
-        //  * Must call "AddAzureAppConfiguration" before "UseAzureAppConfiguration"
+        //  * Must call "AddAzureAppConfiguration" before "UseAzureAppConfigurationForIsolatedWorker"
         services
             .AddAzureAppConfiguration()
             .AddFeatureManagement();

@@ -76,8 +76,8 @@ Preparing an Azure Function App project:
        .ConfigureFunctionsWebApplication(builder =>
        {
            // Feature management
-           //  * Enables middleware that handles refresh from Azure App Configuration
-           builder.UseAzureAppConfiguration();
+           //  * Enables middleware that handles refresh from Azure App Configuration (except for DF Orchestration triggers)
+           builder.UseAzureAppConfigurationForIsolatedWorker();
 
            // Http => Authorization
            builder.UseFunctionsAuthorization();
