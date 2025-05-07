@@ -63,7 +63,7 @@ var host = new HostBuilder()
             .AddUserAuthenticationForIsolatedWorker<ExampleSubsystemUser, ExampleSubsystemUserProvider>();
 
         // Feature management (verified in tests)
-        //  * Must call "AddAzureAppConfiguration" before "UseAzureAppConfiguration"
+        //  * Must call "AddAzureAppConfiguration" before "UseAzureAppConfigurationForIsolatedWorker"
         services
             .AddAzureAppConfiguration()
             .AddFeatureManagement();
@@ -71,9 +71,9 @@ var host = new HostBuilder()
     .ConfigureFunctionsWebApplication(builder =>
     {
         // Configuration verified in tests:
-        //  * Enable automatic feature flag refresh on each function execution
+        //  * Enable automatic feature flag refresh on each function execution (except for DF Orchestration triggers)
         //  * Must be called after "AddAzureAppConfiguration" as it verifies if services was registered
-        builder.UseAzureAppConfiguration();
+        builder.UseAzureAppConfigurationForIsolatedWorker();
 
         // DarkLoop Authorization extension (verified in tests):
         //  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
@@ -88,7 +88,8 @@ var host = new HostBuilder()
                 $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
-                $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
+                $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}",
+                $"{nameof(DurableFunction.ExecuteDurableFunction)}"]);
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {

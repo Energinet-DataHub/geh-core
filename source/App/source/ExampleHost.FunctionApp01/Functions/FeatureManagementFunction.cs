@@ -36,7 +36,10 @@ public class FeatureManagementFunction
     /// </summary>
     [Function(nameof(GetMessage))]
     public async Task<HttpResponseData> GetMessage(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "message")]
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "featuremanagement")]
         HttpRequestData request)
     {
         var response = request.CreateResponse(HttpStatusCode.OK);
@@ -65,7 +68,10 @@ public class FeatureManagementFunction
     /// </summary>
     [Function(nameof(CreateMessage))]
     public HttpResponseData CreateMessage(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "message")]
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "post",
+            Route = "featuremanagement")]
         HttpRequestData request)
     {
         return request.CreateResponse(HttpStatusCode.Accepted);
@@ -83,7 +89,10 @@ public class FeatureManagementFunction
     /// </remarks>
     [Function(nameof(GetFeatureFlagState))]
     public async Task<HttpResponseData> GetFeatureFlagState(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "featureflagstate/{featureFlagName}")]
+        [HttpTrigger(
+            AuthorizationLevel.Anonymous,
+            "get",
+            Route = "featureflagstate/{featureFlagName}")]
         HttpRequestData request,
         string featureFlagName)
     {

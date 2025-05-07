@@ -28,7 +28,7 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 /// </summary>
 public class FeatureManagementTests
 {
-    private const string MessageRoute = "api/message";
+    private const string FeatureManagementRoute = "api/featuremanagement";
 
     /// <summary>
     /// Tests demonstrating use of a feature flag.
@@ -61,7 +61,7 @@ public class FeatureManagementTests
                 { Fixture.UseGetMessageSettingName, disabledValue },
             });
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, MessageRoute);
+            using var request = new HttpRequestMessage(HttpMethod.Get, FeatureManagementRoute);
 
             // Act
             var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
@@ -101,7 +101,7 @@ public class FeatureManagementTests
                 { Fixture.CreateMessageDisabledSettingName, disabledValue },
             });
 
-            using var request = new HttpRequestMessage(HttpMethod.Post, MessageRoute);
+            using var request = new HttpRequestMessage(HttpMethod.Post, FeatureManagementRoute);
 
             // Act
             var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
@@ -166,6 +166,9 @@ public class FeatureManagementTests
         /// Additionally we also show how we can disable the Azure App Configuration provider,
         /// which means feature flags will NOT be refreshed. This is usefull for integration tests.
         ///
+        /// We also verifies that we can execute a Durable Function orchestration, and it can complete,
+        /// because we configured the middleware correctly.
+        ///
         /// Requirements for this test:
         ///
         /// 1: Host must register services:
@@ -177,7 +180,7 @@ public class FeatureManagementTests
         ///
         /// 2: Host must enable middleware:
         /// <code>
-        /// builder.UseAzureAppConfiguration();
+        /// builder.UseAzureAppConfigurationForIsolatedWorker();
         /// </code>
         ///
         /// 3: Host must configure Azure App Configuration:
@@ -223,6 +226,10 @@ public class FeatureManagementTests
                     delay);
 
             wasFeatureFlagToggled.Should().Be(expectedWasFeatureFlagToggled, "If the provider is disabled then the feature flag should not be refreshed; otherwise it should be refreshed.");
+
+            // => Verify we can execute a Durable Function orchestration, and that it can be "completed"
+            var metadata = await RequestExecuteDurableFunctionAsync();
+            metadata.Should().NotBeNullOrEmpty();
         }
 
         /// <summary>
@@ -236,6 +243,20 @@ public class FeatureManagementTests
             var content = await actualResponse.Content.ReadAsStringAsync();
 
             return content == "Enabled";
+        }
+
+        /// <summary>
+        /// Call application to execute a Durable Function orchestration,
+        /// wait for it to complete, and then return its metadata.
+        /// </summary>
+        private async Task<string> RequestExecuteDurableFunctionAsync()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/durable");
+            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            actualResponse.EnsureSuccessStatusCode();
+            var content = await actualResponse.Content.ReadAsStringAsync();
+
+            return content;
         }
     }
 }
