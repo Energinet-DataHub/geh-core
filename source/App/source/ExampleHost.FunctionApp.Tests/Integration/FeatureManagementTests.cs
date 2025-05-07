@@ -166,6 +166,9 @@ public class FeatureManagementTests
         /// Additionally we also show how we can disable the Azure App Configuration provider,
         /// which means feature flags will NOT be refreshed. This is usefull for integration tests.
         ///
+        /// We also verifies that we can execute a Durable Function orchestration, and it can complete,
+        /// because we configured the middleware correctly.
+        ///
         /// Requirements for this test:
         ///
         /// 1: Host must register services:
