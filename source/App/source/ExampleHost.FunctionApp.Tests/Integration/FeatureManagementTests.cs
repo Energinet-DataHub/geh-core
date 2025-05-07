@@ -223,6 +223,10 @@ public class FeatureManagementTests
                     delay);
 
             wasFeatureFlagToggled.Should().Be(expectedWasFeatureFlagToggled, "If the provider is disabled then the feature flag should not be refreshed; otherwise it should be refreshed.");
+
+            // => Verify we can execute a Durable Function orchestration, and that it can be "completed"
+            var metadata = await RequestExecuteDurableFunctionAsync();
+            metadata.Should().NotBeNullOrEmpty();
         }
 
         /// <summary>
@@ -236,6 +240,20 @@ public class FeatureManagementTests
             var content = await actualResponse.Content.ReadAsStringAsync();
 
             return content == "Enabled";
+        }
+
+        /// <summary>
+        /// Call application to execute a Durable Function orchestration,
+        /// wait for it to complete, and then return its metadata.
+        /// </summary>
+        private async Task<string> RequestExecuteDurableFunctionAsync()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/durable");
+            var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+            actualResponse.EnsureSuccessStatusCode();
+            var content = await actualResponse.Content.ReadAsStringAsync();
+
+            return content;
         }
     }
 }
