@@ -88,7 +88,8 @@ var host = new HostBuilder()
                 $"{nameof(RestApiExampleFunction.TelemetryAsync)}",
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
-                $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}"]);
+                $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}",
+                $"{nameof(DurableFunction.ExecuteDurableFunction)}"]);
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {
