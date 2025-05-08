@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 8.2.0
+
+- Extended `DatabricksSchemaManager` with a method `DropTableAsync` to drop a table in Databricks.
+
 ## Version 8.1.1
 
 - Added const `AppConfigurationManager.DisableProviderSettingName` to be able to skip using Azure App Configuration in integration tests.
