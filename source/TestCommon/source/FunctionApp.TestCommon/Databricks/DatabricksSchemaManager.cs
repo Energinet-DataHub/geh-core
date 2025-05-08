@@ -88,6 +88,7 @@ public class DatabricksSchemaManager
         await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
     }
 
+    /// <summary>
     /// Creates a unique table name.
     /// </summary>
     public static string CreateTableName(string prefix = "TestTable")
