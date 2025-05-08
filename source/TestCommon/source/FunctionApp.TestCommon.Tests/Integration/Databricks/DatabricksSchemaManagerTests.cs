@@ -69,6 +69,27 @@ public sealed class DatabricksSchemaManagerTests
     }
 
     [Fact]
+    public async Task WhenDropTableThenTableDoesNotExistsAsync()
+    {
+        // Arrange
+        const string schemaPrefix = "test-common";
+        const string expectedCommand = "DROP TABLE";
+        var mockHandler = new MockHttpMessageHandler();
+        var mockHttpClientFactory = CreateHttpClientFactoryMock(mockHandler);
+
+        var sut =
+            new DatabricksSchemaManager(mockHttpClientFactory.Object, new DatabricksSettings(), schemaPrefix);
+
+        // Act
+        await sut.DropTableAsync("test-table");
+
+        // Assert
+        mockHttpClientFactory.Verify(f => f.CreateHttpClient(It.IsAny<DatabricksSettings>()), Times.Once);
+        mockHandler.LastRequest.Should().NotBeNull();
+        (await mockHandler.LastRequest!.Content!.ReadAsStringAsync()).Should().Contain(expectedCommand);
+    }
+
+    [Fact]
     public async Task WhenCreateTableThenTableIsCreatedAsync()
     {
         // Arrange

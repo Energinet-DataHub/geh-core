@@ -79,6 +79,15 @@ public class DatabricksSchemaManager
     }
 
     /// <summary>
+    /// Drops a table with a given name.
+    /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
+    /// </summary>
+    public async Task DropTableAsync(string tableName)
+    {
+        var sqlStatement = $"DROP TABLE IF EXISTS {SchemaName}.{tableName}";
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
+    }
+
     /// Creates a unique table name.
     /// </summary>
     public static string CreateTableName(string prefix = "TestTable")
