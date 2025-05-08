@@ -86,7 +86,7 @@ public sealed class DatabricksSchemaManagerTests
         // Assert
         mockHttpClientFactory.Verify(f => f.CreateHttpClient(It.IsAny<DatabricksSettings>()), Times.Once);
         mockHandler.LastRequest.Should().NotBeNull();
-        (await mockHandler.LastRequest!.Content!.ReadAsStringAsync()).Should().Contain(expectedCommand);
+        (await mockHandler.LastRequest!.Content!.ReadAsStringAsync()).Should().Contain(expectedCommand)""
     }
 
     [Fact]
