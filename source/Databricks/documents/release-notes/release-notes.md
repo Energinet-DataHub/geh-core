@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Versuib 13.1.0
+
+- Extended `DatabricksSchemaManager` with a method `DropTableAsync` to drop a table in Databricks.
+
 ## Version 13.0.0
 
 - Upgrade from .NET 8 to .NET 9
