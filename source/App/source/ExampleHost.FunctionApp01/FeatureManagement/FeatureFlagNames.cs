@@ -25,10 +25,10 @@ namespace ExampleHost.FunctionApp01.FeatureManagement;
 ///
 /// If configured using App Settings, the name of a feature flag
 /// configuration must be prefixed with <see cref="SectionName"/>,
-/// ie. "FeatureManagement__UsePeekMessages".
+/// ie. "FeatureManagement__UseGetMessage".
 /// </summary>
 /// <remarks>
-/// We use "const" for feature flags instead of a enum, because "Produkt Måls"
+/// We use "const" for feature flags instead of a enum, because "Produkt Mål's"
 /// feature flags contain "-" in their name.
 /// </remarks>
 public static class FeatureFlagNames

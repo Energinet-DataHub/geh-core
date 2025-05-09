@@ -25,6 +25,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using ExampleHost.FunctionApp01.FeatureManagement;
+using ExampleHost.FunctionApp01.Functions;
 using Xunit;
 using Xunit.Abstractions;
 using static ExampleHost.FunctionApp.Tests.Integration.FeatureManagementTests;
@@ -71,16 +72,6 @@ public class ExampleHostsFixture : IAsyncLifetime
     [NotNull]
     public FunctionAppHostManager? App02HostManager { get; private set; }
 
-    /// <summary>
-    /// The setting name of the <see cref="FeatureFlagNames.UseGetMessage"/> feature flag.
-    /// </summary>
-    public string UseGetMessageSettingName => $"{FeatureFlagNames.SectionName}__{FeatureFlagNames.UseGetMessage}";
-
-    /// <summary>
-    /// The setting name of the CreateMessage (function) disabled flag.
-    /// </summary>
-    public string CreateMessageDisabledSettingName => "AzureWebJobs.CreateMessage.Disabled";
-
     private AzuriteManager AzuriteManager { get; }
 
     private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
@@ -109,10 +100,10 @@ public class ExampleHostsFixture : IAsyncLifetime
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{AzureAppConfigurationOptions.SectionName}__{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}", "5");
         // => App01 settings for Feature flags
-        app01HostSettings.ProcessEnvironmentVariables.Add(UseGetMessageSettingName, "false");
+        app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlagNames.SectionName}__{FeatureFlagNames.UseGetMessage}", "false");
         app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlagNames.SectionName}__{GetFeatureFlagState.LocalFeatureFlag}", "true");
         // => App01 settings for Function Disabled flags
-        app01HostSettings.ProcessEnvironmentVariables.Add(CreateMessageDisabledSettingName, "false");
+        app01HostSettings.ProcessEnvironmentVariables.Add($"AzureWebJobs.{nameof(FeatureManagementFunction.CreateMessage)}.Disabled", "false");
 
         // => App01 settings for authentication
         OpenIdJwtManager.StartServer();
