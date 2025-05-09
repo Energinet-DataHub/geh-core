@@ -24,7 +24,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.FeatureManagement;
 using Xunit;
 using Xunit.Abstractions;
 using static ExampleHost.FunctionApp.Tests.Integration.FeatureManagementTests;
@@ -72,9 +72,9 @@ public class ExampleHostsFixture : IAsyncLifetime
     public FunctionAppHostManager? App02HostManager { get; private set; }
 
     /// <summary>
-    /// The setting name of the <see cref="FeatureFlags.Names.UseGetMessage"/> feature flag.
+    /// The setting name of the <see cref="FeatureFlagNames.UseGetMessage"/> feature flag.
     /// </summary>
-    public string UseGetMessageSettingName => $"{FeatureFlags.ConfigurationPrefix}{FeatureFlags.Names.UseGetMessage}";
+    public string UseGetMessageSettingName => $"{FeatureFlagNames.SectionName}__{FeatureFlagNames.UseGetMessage}";
 
     /// <summary>
     /// The setting name of the CreateMessage (function) disabled flag.
@@ -110,7 +110,7 @@ public class ExampleHostsFixture : IAsyncLifetime
             $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}", "5");
         // => App01 settings for Feature flags
         app01HostSettings.ProcessEnvironmentVariables.Add(UseGetMessageSettingName, "false");
-        app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlags.ConfigurationPrefix}{GetFeatureFlagState.LocalFeatureFlag}", "true");
+        app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlagNames.SectionName}:{GetFeatureFlagState.LocalFeatureFlag}", "true");
         // => App01 settings for Function Disabled flags
         app01HostSettings.ProcessEnvironmentVariables.Add(CreateMessageDisabledSettingName, "false");
 

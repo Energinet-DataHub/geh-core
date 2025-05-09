@@ -16,7 +16,7 @@ using System.Net;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.TestCommon;
 using ExampleHost.FunctionApp.Tests.Fixtures;
-using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.FeatureManagement;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,7 +33,7 @@ public class FeatureManagementTests
     /// <summary>
     /// Tests demonstrating use of a feature flag.
     /// See the function triggered to understand how to use feature manager to switch on
-    /// a feature flag named <see cref="FeatureFlags.Names.UseGetMessage"/>.
+    /// a feature flag named <see cref="FeatureFlagNames.UseGetMessage"/>.
     /// </summary>
     [Collection(nameof(ExampleHostsCollectionFixture))]
     public class GetMessage
