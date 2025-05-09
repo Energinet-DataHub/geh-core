@@ -33,6 +33,8 @@ public static class ApplicationInsightsExtensions
     /// Register services necessary for enabling an Azure Function App (isolated worker model)
     /// to log telemetry to Application Insights.
     ///
+    /// Health Checks are published to Application Insights using <see cref="ApplicationInsightsHealthCheckPublisher"/>.
+    ///
     /// Configuration of telemetry (initializers, properties etc.) within the isolated worker
     /// only affects logs emitted from the isolated worker and not those emitted from the host.
     /// Logs emitted from the isolated worker will have the following properties set:

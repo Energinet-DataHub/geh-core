@@ -21,6 +21,10 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Core.App.Common.Extensibility.ApplicationInsights;
 
+/// <summary>
+/// Publishes health check reports to Application Insights.
+/// See https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-9.0#health-check-publisher for documentation.
+/// </summary>
 public class ApplicationInsightsHealthCheckPublisher : IHealthCheckPublisher
 {
     private readonly TelemetryConfiguration _telemetryConfiguration;
@@ -36,7 +40,7 @@ public class ApplicationInsightsHealthCheckPublisher : IHealthCheckPublisher
             .GetSourceVersionInformation();
     }
 
-    public async Task PublishAsync(HealthReport report, CancellationToken cancellationToken)
+    public Task PublishAsync(HealthReport report, CancellationToken cancellationToken)
     {
         var client = new TelemetryClient(_telemetryConfiguration);
 
@@ -62,6 +66,6 @@ public class ApplicationInsightsHealthCheckPublisher : IHealthCheckPublisher
                 });
         }
 
-        await client.FlushAsync(cancellationToken).ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 }
