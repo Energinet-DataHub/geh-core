@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.FeatureManagement;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.FeatureManagement;
@@ -30,7 +30,7 @@ public class FeatureManagementFunction
     }
 
     /// <summary>
-    /// Demonstrate how we can use FeatureManager to switch on a feature flag.
+    /// Demonstrate how we can use FeatureManager/FeatureManagerExtensions to switch on a feature flag.
     ///
     /// See the integration tests for this method for more on how it works, and how it can be tested.
     /// </summary>
@@ -45,9 +45,7 @@ public class FeatureManagementFunction
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
-        var isFeatureEnabled = await _featureManager
-            .IsEnabledAsync(nameof(FeatureFlags.Names.UseGetMessage))
-            .ConfigureAwait(false);
+        var isFeatureEnabled = await _featureManager.UseGetMessagesAsync().ConfigureAwait(false);
         if (isFeatureEnabled)
         {
             // Perform logic when feature is enabled
@@ -99,9 +97,7 @@ public class FeatureManagementFunction
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
-        var isFeatureEnabled = await _featureManager
-            .IsEnabledAsync(featureFlagName)
-            .ConfigureAwait(false);
+        var isFeatureEnabled = await _featureManager.IsEnabledAsync(featureFlagName).ConfigureAwait(false);
         if (isFeatureEnabled)
         {
             await response.WriteStringAsync("Enabled").ConfigureAwait(false);
