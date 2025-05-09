@@ -7,6 +7,7 @@ Guidelines for Azure Function App's and ASP.NET Core Web API's on configuring lo
 ## Overview
 
 - [Introduction](#introduction)
+- [Health Check publishing](#health-check-publishing)
 - Implementation
     - [Azure Functions App](#azure-functions-app)
     - [ASP.NET Core Web API](#aspnet-core-web-api)
@@ -24,6 +25,12 @@ In DataHub, any application implemented as an Azure Function App or an ASP.NET C
 - Telemetry are enriched with custom properties, like the `Subsystem` property.
 
 See also [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete).
+
+## Health Check publishing
+
+Health check reports are automatically published to Application Insights every 30 seconds
+
+Reports are tracked as a `CustomEvent` named `AspNetCoreHealthCheck` see [ApplicationInsightsHealthCheckPublisher.cs](../../source/Common/Extensibility/ApplicationInsights/ApplicationInsightsHealthCheckPublisher.cs) for implementation details
 
 ## Azure Functions App
 

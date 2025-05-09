@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 15.3.0
+
+- Added Application Insights healthcheck publisher (No additional configuration is needed by consumer)
+
 ## Version 15.2.0
 
 - Added `ApplicationBuilderExtensions.UseAzureAppConfigurationForIsolatedWorker()`.

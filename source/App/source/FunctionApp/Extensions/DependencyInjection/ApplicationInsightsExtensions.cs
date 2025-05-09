@@ -19,6 +19,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 
@@ -31,6 +32,8 @@ public static class ApplicationInsightsExtensions
     /// <summary>
     /// Register services necessary for enabling an Azure Function App (isolated worker model)
     /// to log telemetry to Application Insights.
+    ///
+    /// Health Checks are published to Application Insights using <see cref="ApplicationInsightsHealthCheckPublisher"/>.
     ///
     /// Configuration of telemetry (initializers, properties etc.) within the isolated worker
     /// only affects logs emitted from the isolated worker and not those emitted from the host.
@@ -56,6 +59,8 @@ public static class ApplicationInsightsExtensions
                 .ToString();
         });
         services.ConfigureFunctionsApplicationInsights();
+
+        services.TryAddSingleton<IHealthCheckPublisher, ApplicationInsightsHealthCheckPublisher>();
 
         return services;
     }

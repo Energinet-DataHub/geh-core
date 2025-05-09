@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.App.Common.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 
@@ -32,6 +33,8 @@ public static class ApplicationInsightsExtensions
     ///
     /// Register services necessary for enabling an ASP.NET Core app to log telemetry
     /// to Application Insights.
+    ///
+    /// Health Checks are published to Application Insights using <see cref="ApplicationInsightsHealthCheckPublisher"/>.
     ///
     /// Tracked events will have the following properties set:
     ///  - "AppVersion" is set according to the AssemblyInformationalVersion of the host.
@@ -52,6 +55,8 @@ public static class ApplicationInsightsExtensions
                 .GetSourceVersionInformation()
                 .ToString();
         });
+
+        services.TryAddSingleton<IHealthCheckPublisher, ApplicationInsightsHealthCheckPublisher>();
 
         return services;
     }
