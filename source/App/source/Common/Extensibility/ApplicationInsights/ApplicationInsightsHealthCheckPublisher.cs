@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+using Energinet.DataHub.Core.App.Common.Reflection;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -22,10 +24,16 @@ namespace Energinet.DataHub.Core.App.Common.Extensibility.ApplicationInsights;
 public class ApplicationInsightsHealthCheckPublisher : IHealthCheckPublisher
 {
     private readonly TelemetryConfiguration _telemetryConfiguration;
+    private readonly SourceVersionInformation _sourceVersionInformation;
 
     public ApplicationInsightsHealthCheckPublisher(IOptions<TelemetryConfiguration> telemetryConfiguration)
     {
         _telemetryConfiguration = telemetryConfiguration.Value;
+
+        _sourceVersionInformation = Assembly
+            .GetEntryAssembly()!
+            .GetAssemblyInformationalVersionAttribute()!
+            .GetSourceVersionInformation();
     }
 
     public async Task PublishAsync(HealthReport report, CancellationToken cancellationToken)
@@ -35,18 +43,22 @@ public class ApplicationInsightsHealthCheckPublisher : IHealthCheckPublisher
         foreach (var reportEntry in report.Entries)
         {
             client.TrackEvent(
-                $"AspNetCoreHealthCheck",
-                properties: new Dictionary<string, string?>()
+                "AspNetCoreHealthCheck",
+                properties: new Dictionary<string, string?>
                 {
-                        { "Name", reportEntry.Key },
-                        { "ExceptionType", reportEntry.Value.Exception?.GetType().Name },
-                        { "ExceptionMessage", reportEntry.Value.Exception?.Message },
-                        { "ExceptionStackTrace", reportEntry.Value.Exception?.StackTrace },
+                    { "Name", reportEntry.Key },
+                    { "ExceptionType", reportEntry.Value.Exception?.GetType().FullName },
+                    { "ExceptionMessage", reportEntry.Value.Exception?.Message },
+                    { "ExceptionStackTrace", reportEntry.Value.Exception?.StackTrace },
+                    { "ProductVersion", _sourceVersionInformation.ProductVersion },
+                    { "PullRequestNumber", _sourceVersionInformation.PullRequestNumber },
+                    { "CommitSha", _sourceVersionInformation.LastMergeCommitSha },
+                    { "Tags", System.Text.Json.JsonSerializer.Serialize(reportEntry.Value.Tags) },
                 },
                 metrics: new Dictionary<string, double>()
                 {
-                        { $"AspNetCoreHealthCheckStatus:", (int)reportEntry.Value.Status },
-                        { "AspNetCoreHealthCheckDuration", reportEntry.Value.Duration.TotalMilliseconds },
+                    { "AspNetCoreHealthCheckStatus", (int)reportEntry.Value.Status },
+                    { "AspNetCoreHealthCheckDuration", reportEntry.Value.Duration.TotalMilliseconds },
                 });
         }
 
