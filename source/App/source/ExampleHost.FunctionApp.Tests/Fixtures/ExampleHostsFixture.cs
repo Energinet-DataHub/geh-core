@@ -105,25 +105,25 @@ public class ExampleHostsFixture : IAsyncLifetime
         app01HostSettings.ProcessEnvironmentVariables.Add(
             AppConfigurationManager.DisableProviderSettingName, "false");
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.Endpoint)}", AppConfigurationManager.AppConfigEndpoint);
+            $"{AzureAppConfigurationOptions.SectionName}__{nameof(AzureAppConfigurationOptions.Endpoint)}", AppConfigurationManager.AppConfigEndpoint);
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}", "5");
+            $"{AzureAppConfigurationOptions.SectionName}__{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}", "5");
         // => App01 settings for Feature flags
         app01HostSettings.ProcessEnvironmentVariables.Add(UseGetMessageSettingName, "false");
-        app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlagNames.SectionName}:{GetFeatureFlagState.LocalFeatureFlag}", "true");
+        app01HostSettings.ProcessEnvironmentVariables.Add($"{FeatureFlagNames.SectionName}__{GetFeatureFlagState.LocalFeatureFlag}", "true");
         // => App01 settings for Function Disabled flags
         app01HostSettings.ProcessEnvironmentVariables.Add(CreateMessageDisabledSettingName, "false");
 
         // => App01 settings for authentication
         OpenIdJwtManager.StartServer();
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", OpenIdJwtManager.ExternalMetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", OpenIdJwtManager.ExternalMetadataAddress);
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", OpenIdJwtManager.ExternalMetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", OpenIdJwtManager.ExternalMetadataAddress);
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", OpenIdJwtManager.TestBffAppId);
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.BackendBffAppId)}", OpenIdJwtManager.TestBffAppId);
         app01HostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.InternalMetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.InternalMetadataAddress);
 
         // => Integration events
         app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_FULLY_QUALIFIED_NAMESPACE", ServiceBusResourceProvider.FullyQualifiedNamespace);
@@ -132,7 +132,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         // https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv5&pivots=programming-language-csharp#identity-based-connections
         var integrationEventSettingPrefix = "INTEGRATIONEVENT";
         app02HostSettings.ProcessEnvironmentVariables.Add($"{integrationEventSettingPrefix}_SETTING_PREFIX", integrationEventSettingPrefix);
-        app02HostSettings.ProcessEnvironmentVariables.Add($"{integrationEventSettingPrefix}:fullyQualifiedNamespace", ServiceBusResourceProvider.FullyQualifiedNamespace);
+        app02HostSettings.ProcessEnvironmentVariables.Add($"{integrationEventSettingPrefix}__FullyQualifiedNamespace", ServiceBusResourceProvider.FullyQualifiedNamespace);
 
         await ServiceBusResourceProvider
             .BuildTopic("integrationevent-topic")
