@@ -104,7 +104,7 @@ The Integration Test environment contains an Azure App Configuration that we can
 
 The Azure App Configuration resource should however not be used from *application tests*, but instead be used to verify *component* code (like the `App` bundle).
 
-Instead we recommend application tests disables the provider. These tests are often run in parallel in CI's, and if they use the same feature flag store (Azure App Configuration resource instance) the tests can interfere with each other, and cause builds to fail.
+Instead we recommend application tests disables the provider. These tests are often run in parallel in CI's, and since they would use the same Azure App Configuration, tests can interfere with each other, and cause builds to fail.
 
 The recommended test configuration for a function app looks like the following (similar can be used for an ASP.NET Core Web API):
 
