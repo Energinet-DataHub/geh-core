@@ -13,6 +13,7 @@ Using the package bundle enables an easy opt-in/opt-out pattern of services duri
     - [ASP.NET Core Web API](#aspnet-core-web-api)
 
 - Detailed walkthrough per subject
+    - [Feature Management](./registrations/feature-management.md)
     - [Health Checks](./registrations/health-checks.md)
     - [JWT Security](./registrations/authorization.md)
     - [Noda Time](./registrations/noda-time.md)
