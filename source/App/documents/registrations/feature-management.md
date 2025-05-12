@@ -30,7 +30,7 @@ After following the configuration described in our [quick-start](../documentatio
 
 ## Guidelines
 
-A few simple guidelines worth considering.
+A few simple guidelines regarding the usage of feature flags.
 
 ### General principles
 
