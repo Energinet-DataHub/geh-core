@@ -30,7 +30,7 @@ For a detailed documentation per registration type, see the walkthroughs listed 
 
 ### Azure Functions App
 
-For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/Orchestrations/Program.cs) for Wholesale Orchestrations application.
+For an implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-process-manager/blob/main/source/ProcessManager.Orchestrations/Program.cs) for Process Manager Orchestrations application.
 
 Features of the example:
 
@@ -129,8 +129,6 @@ Preparing an Azure Function App project:
    ```
 
 ### ASP.NET Core Web API
-
-For a full implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/source/dotnet/wholesale-api/WebApi/Program.cs) for Wholesale Web API application.
 
 Features of the example:
 
