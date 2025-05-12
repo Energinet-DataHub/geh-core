@@ -14,6 +14,7 @@ Guidelines for Azure Function App's and ASP.NET Core Web API's on configuring an
 - ["How to" in tests](#how-to-in-tests)
     - [Changing application settings](#changing-application-settings)
     - [Managing Azure App Configuration](#managing-azure-app-configuration)
+    - [Managing feature flags through IFeatureManager](#managing-feature-flags-through-ifeaturemanager)
 
 ## Introduction
 
@@ -76,6 +77,22 @@ Even though we demonstrate how it is possible to use the Microsoft Feature Manag
 
 In this sample we imagine we have functionality at the application layer represented by the feature `UseGetMessage`. In the sample this functionality is implemented within the function `FeatureManagementFunction.GetMessage` and guarded by the feature flag `FeatureFlagNames.UseGetMessage`.
 
+#### Recommended implementation pattern
+
+1) Create a root folder named `FeatureManagement` in the application.
+
+1) Create a new class file as `FeatureManagement\FeatureFlagNames.cs` to keep track of active feature flags.
+
+1) Create a new class file as `FeatureManagement\FeatureManagerExtensions.cs` and implement a method per active feature flag.
+
+1) To use feature flags in application code inject the `IFeatureManager` interface.
+
+1) In integration tests configure feature flags and Azure App Configuration as mentioned under [Managing Azure App Configuration](#managing-azure-app-configuration).
+
+1) In unit tests control feature flags as mentioned under [Managing feature flags through IFeatureManager](#managing-feature-flags-through-ifeaturemanager).
+
+#### Tests
+
 We can control whether the feature is enabled or not, by changing the value `FeatureManagement__UseGetMessage` in the `local.settings.json` file.
 
 > The test configures the feature flag as an App Setting, but it could as well be configured in Azure App Configuration, in which case it wouldn't require a restart.
@@ -84,7 +101,7 @@ In the test class `FeatureManagementTests.GetMessage` we test scenarious where t
 
 See also [Changing application settings](#changing-application-settings)
 
-## How to in tests
+## "How to" in tests
 
 ### Changing application settings
 
@@ -117,3 +134,13 @@ The recommended test configuration for a function app looks like the following (
         AppConfigurationManager.DisableProviderSettingName,
         "true");
 ```
+
+### Managing feature flags through IFeatureManager
+
+If we need to be control of feature flag values in unit tests, we can:
+
+- Use the `Moq` framework and create a mock for `IFeatureManager` where we setup the method `IsEnabledAsync` to return the feature flag value we want, based on the parameter `feature`.
+
+- Create a stub that implements `IFeatureManager` and returns the feature flag value we want, based on the parameter `feature`.
+
+These techniques will work even when we use extensions of `IFeatureManager`.
