@@ -11,8 +11,9 @@ Guidelines for Azure Function App's and ASP.NET Core Web API's on configuring an
 - [Samples](#samples)
     - [Disabled flag](#disabled-flag)
     - [Feature flag](#feature-flag)
-- [How to](#how-to-guides)
+- ["How to" in tests](#how-to-in-tests)
     - [Changing application settings](#changing-application-settings)
+    - [Managing Azure App Configuration](#managing-azure-app-configuration)
 
 ## Introduction
 
@@ -83,10 +84,36 @@ In the test class `FeatureManagementTests.GetMessage` we test scenarious where t
 
 See also [Changing application settings](#changing-application-settings)
 
-## How to guides
+## How to in tests
 
 ### Changing application settings
 
 When we use an app setting to control the feature flag, we must configure the value before we start the function app host. In some situations this means we have to restart the host from tests. This can be costly if we have many tests and multiple scenarious, so we should always consider this, and aim for the least numbers of restarts for a complete test run.
 
 The method `FunctionAppHostManager.RestartHostIfChanges` can help reduce the number of restarts, as it will only restart the host if the values given are actual different from the current loaded settings. This will only work if environment variables was set using the `FunctionAppHostSettings.ProcessEnvironmentVariables`.
+
+### Managing Azure App Configuration
+
+The Integration Test environment contains an Azure App Configuration that we can use from tests:
+
+- The endpoint value for this resource is available in `IntegrationTestConfiguration.AppConfigurationEndpoint`, implemented in the `TestCommon` bundle.
+
+- The `TestCommon` bundle also contains an `AppConfigurationManager` which can be used from tests to manage feature flags in this resource. With this we can create, delete and read feature flags.
+
+- The manager has a `AppConfigurationManager.DisableProviderSettingName` constant containing the name of a setting that can be used to disable the Azure App Configuration provider.
+
+The Azure App Configuration resource should however not be used from *application tests*, but instead be used to verify *component* code (like the `App` bundle).
+
+Instead we recommend application tests disables the provider. These tests are often run in parallel in CI's, and if they use the same feature flag store (Azure App Configuration resource instance) the tests can interfere with each other, and cause builds to fail.
+
+The recommended test configuration for a function app looks like the following (similar can be used for an ASP.NET Core Web API):
+
+```cs
+    // Feature Management => Azure App Configuration settings
+    appHostSettings.ProcessEnvironmentVariables.Add(
+        $"{AzureAppConfigurationOptions.SectionName}__{nameof(AzureAppConfigurationOptions.Endpoint)}",
+        IntegrationTestConfiguration.AppConfigurationEndpoint);
+    appHostSettings.ProcessEnvironmentVariables.Add(
+        AppConfigurationManager.DisableProviderSettingName,
+        "true");
+```
