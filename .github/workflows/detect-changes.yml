@@ -26,8 +26,6 @@ on:
         value: ${{ jobs.changes.outputs.app_common }}
       databricks:
         value: ${{ jobs.changes.outputs.databricks }}
-      featuremanagement:
-        value: ${{ jobs.changes.outputs.featuremanagement }}
       json_serialization:
         value: ${{ jobs.changes.outputs.json_serialization }}
       logging:
@@ -47,7 +45,6 @@ jobs:
     outputs:
       app_common: ${{ steps.filter.outputs.app_common }}
       databricks: ${{ steps.filter.outputs.databricks }}
-      featuremanagement: ${{ steps.filter.outputs.featuremanagement }}
       json_serialization: ${{ steps.filter.outputs.json_serialization }}
       logging: ${{ steps.filter.outputs.logging }}
       messaging: ${{ steps.filter.outputs.messaging }}
@@ -70,9 +67,6 @@ jobs:
             databricks:
               - 'source/Databricks/**'
               - '.github/workflows/databricks-bundle-publish.yml'
-            featuremanagement:
-              - 'source/FeatureManagement/**'
-              - '.github/workflows/featuremanagement-ci.yml'
             json_serialization:
               - 'source/JsonSerialization/**'
               - '.github/workflows/json-serialization-bundle-publish.yml'

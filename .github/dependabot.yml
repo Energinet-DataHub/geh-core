@@ -55,21 +55,6 @@ updates:
         versions: [9.*]
 
   - package-ecosystem: nuget
-    directory: /source/FeatureManagement
-    schedule:
-      interval: weekly
-    groups:
-      feature-management-package-minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - minor
-          - patch
-      feature-management-package-security:
-        applies-to: security-updates
-        patterns:
-          - "*" # Applies to all security updates
-
-  - package-ecosystem: nuget
     directory: /source/JsonSerialization
     schedule:
       interval: weekly

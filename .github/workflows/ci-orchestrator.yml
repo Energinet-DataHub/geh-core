@@ -50,12 +50,6 @@ jobs:
     uses: ./.github/workflows/app-common-bundle-publish.yml
     secrets: inherit
 
-  featuremanagement:
-    needs: changes
-    if: ${{ needs.changes.outputs.featuremanagement == 'true' }}
-    uses: ./.github/workflows/featuremanagement-ci.yml
-    secrets: inherit
-
   json_serialization:
     needs: changes
     if: ${{ needs.changes.outputs.json_serialization == 'true' }}
@@ -102,7 +96,6 @@ jobs:
       [
         ci_base,
         app_common,
-        featuremanagement,
         json_serialization,
         logging,
         messaging,
