@@ -67,17 +67,31 @@ A few simple guidelines regarding the usage of feature flags.
 
 ### Recommended implementation pattern for feature flag management
 
+The [samples](#samples) mentioned later follow this pattern so we will add links to the code for easy reference.
+
 1) Create a root folder named `FeatureManagement` in the application.
+
+   See [FeatureManagement](https://github.com/Energinet-DataHub/geh-core/tree/main/source/App/source/ExampleHost.FunctionApp01/FeatureManagement)
 
 1) Create a new class file as `FeatureManagement\FeatureFlagNames.cs` to keep track of active feature flags.
 
+   See [FeatureFlagNames.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp01/FeatureManagement/FeatureFlagNames.cs)
+
 1) Create a new class file as `FeatureManagement\FeatureManagerExtensions.cs` and implement a method per active feature flag.
+
+   See [FeatureManagerExtensions.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp01/FeatureManagement/FeatureManagerExtensions.cs)
 
 1) To use feature flags in application code inject the `IFeatureManager` interface.
 
+   See [FeatureManagementFunction.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp01/Functions/FeatureManagementFunction.cs)
+
 1) In integration tests configure feature flags and Azure App Configuration as mentioned under [Managing Azure App Configuration](#managing-azure-app-configuration).
 
+   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Integration/FeatureManagementTests.cs)
+
 1) In unit tests control feature flags as mentioned under [Managing feature flags through IFeatureManager](#managing-feature-flags-through-ifeaturemanager).
+
+   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Unit/FeatureManagementTests.cs)
 
 ## Samples
 
