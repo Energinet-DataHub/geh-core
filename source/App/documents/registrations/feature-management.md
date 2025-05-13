@@ -5,12 +5,15 @@ Guidelines for Azure Function App's and ASP.NET Core Web API's on configuring an
 ## Overview
 
 - [Introduction](#introduction)
+    - [Feature flags](#feature-flags)
+    - [Disabled flags](#disabled-flags)
 - [Guidelines](#guidelines)
     - [General principles](#general-principles)
     - [Document feature flags](#document-feature-flags)
+    - [Recommended implementation pattern for feature flag management](#recommended-implementation-pattern-for-feature-flag-management)
 - [Samples](#samples)
-    - [Disabled flag](#disabled-flag)
     - [Feature flag](#feature-flag)
+    - [Disabled flag](#disabled-flag)
 - ["How to" in tests](#how-to-in-tests)
     - [Changing application settings](#changing-application-settings)
     - [Managing Azure App Configuration](#managing-azure-app-configuration)
@@ -43,11 +46,11 @@ After following the configuration described in our [quick-start](../documentatio
 
 Disabled flag are configured in App Settings (locally or in Azure App Service). The application must be restarted to update the disabled flag value.
 
-### Guidelines
+## Guidelines
 
 A few simple guidelines regarding the usage of feature flags.
 
-#### General principles
+### General principles
 
 - DO keep the number of active feature flags low in an area at all times.
     - Aim for having short lived feature flags, and remove them as soon as they are obsolete.
@@ -57,30 +60,12 @@ A few simple guidelines regarding the usage of feature flags.
 - DO NOT use feature flags to enable/disable functionality at a low level, like:
     - Enable/disable functionality deep within a component.
 
-#### Document feature flags
+### Document feature flags
 
 - DO document all active feature flags within an area, in Confluence or other *easy to spot* place.
 - DO document when a feature flag can be removed so we continuously have focus on keeping the number of active feature flags low.
 
-##### Example: *Active feature flags*
-
-| Name | Purpose | Must be removed when |
-| ---- | ------- | ------------------- |
-| A name | A purpose | Explain the condition under which we can remove this feature flag again |
-
-## Samples
-
-The following samples are implemented in the `ExampleHost.FunctionApp01`.
-
-### Feature flag
-
-This sample shows how we can use a feature flag in C#, and branch the code based on the feature flag value (enabled or disabled).
-
-Even though we demonstrate how it is possible to use the Microsoft Feature Management libraries in an Azure Function App, the same code and principles work with other C# applications, like an ASP.NET Core Web API.
-
-In this sample we imagine we have functionality at the application layer represented by the feature `UseGetMessage`. In the sample this functionality is implemented within the function `FeatureManagementFunction.GetMessage` and guarded by the feature flag `FeatureFlagNames.UseGetMessage`.
-
-#### Recommended implementation pattern
+### Recommended implementation pattern for feature flag management
 
 1) Create a root folder named `FeatureManagement` in the application.
 
@@ -94,7 +79,17 @@ In this sample we imagine we have functionality at the application layer represe
 
 1) In unit tests control feature flags as mentioned under [Managing feature flags through IFeatureManager](#managing-feature-flags-through-ifeaturemanager).
 
-#### Tests
+## Samples
+
+The following samples are implemented in the `ExampleHost.FunctionApp01`.
+
+### Feature flag
+
+This sample shows how we can use a feature flag in C#, and branch the code based on the feature flag value (enabled or disabled).
+
+Even though we demonstrate how it is possible to use the Microsoft Feature Management libraries in an Azure Function App, the same code and principles work with other C# applications, like an ASP.NET Core Web API.
+
+In this sample we imagine we have functionality at the application layer represented by the feature `UseGetMessage`. In the sample this functionality is implemented within the function `FeatureManagementFunction.GetMessage` and guarded by the feature flag `FeatureFlagNames.UseGetMessage`.
 
 We can control whether the feature is enabled or not, by changing the value `FeatureManagement__UseGetMessage` in the `local.settings.json` file.
 
@@ -107,8 +102,6 @@ See also [Changing application settings](#changing-application-settings)
 ### Disabled flag
 
 This sample shows how we can disable a function using an app setting.
-
-> See [How to disable functions in Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/disable-function)
 
 We can control whether the function `FeatureManagementFunction.CreateMessage` is active or not, by changing the value `AzureWebJobs.CreateMessage.Disabled` in the `local.settings.json` file.
 
