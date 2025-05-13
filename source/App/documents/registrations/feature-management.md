@@ -52,32 +52,50 @@ A few simple guidelines regarding the usage of feature flags.
 
 ### General principles
 
-- DO keep the number of active feature flags low in an area at all times.
+- :heavy_check_mark: DO keep the number of active feature flags low in an area at all times.
     - Aim for having short lived feature flags, and remove them as soon as they are obsolete.
-- DO use feature flags to enable/disable functionality at a high level, like:
+- :heavy_check_mark: DO use feature flags to enable/disable functionality at a high level, like:
     - Enable/disable a functionality at an application level by using a *feature flag*.
     - Enable/disable an Azure Function using a *disabled flag*.
-- DO NOT use feature flags to enable/disable functionality at a low level, like:
+- :x: DO NOT use feature flags to enable/disable functionality at a low level, like:
     - Enable/disable functionality deep within a component.
 
 ### Document feature flags
 
-- DO document all active feature flags within an area, in Confluence or other *easy to spot* place.
-- DO document when a feature flag can be removed so we continuously have focus on keeping the number of active feature flags low.
+- :heavy_check_mark: DO document all active feature flags within an area, in Confluence or other *easy to spot* place.
+- :heavy_check_mark: DO document when a feature flag can be removed so we continuously have focus on keeping the number of active feature flags low.
 
 ### Recommended implementation pattern for feature flag management
 
+<!-- markdown-link-check-disable -->
+
+The [samples](#samples) mentioned later follow this pattern so we will add links to the code for easy reference.
+
 1) Create a root folder named `FeatureManagement` in the application.
+
+   See [FeatureManagement](https://github.com/Energinet-DataHub/geh-core/tree/main/source/App/source/ExampleHost.FunctionApp01/FeatureManagement)
 
 1) Create a new class file as `FeatureManagement\FeatureFlagNames.cs` to keep track of active feature flags.
 
+   See [FeatureFlagNames.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp01/FeatureManagement/FeatureFlagNames.cs)
+
 1) Create a new class file as `FeatureManagement\FeatureManagerExtensions.cs` and implement a method per active feature flag.
+
+   See [FeatureManagerExtensions.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp01/FeatureManagement/FeatureManagerExtensions.cs)
 
 1) To use feature flags in application code inject the `IFeatureManager` interface.
 
+   See [FeatureManagementFunction.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp01/Functions/FeatureManagementFunction.cs)
+
 1) In integration tests configure feature flags and Azure App Configuration as mentioned under [Managing Azure App Configuration](#managing-azure-app-configuration).
 
+   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Integration/FeatureManagementTests.cs) and [ExampleHostsFixture.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Fixtures/ExampleHostsFixture.cs)
+
 1) In unit tests control feature flags as mentioned under [Managing feature flags through IFeatureManager](#managing-feature-flags-through-ifeaturemanager).
+
+   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Unit/FeatureManagementTests.cs) and [FeatureManagerStub.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Fixtures/FeatureManagerStub.cs)
+
+<!-- markdown-link-check-enable -->
 
 ## Samples
 
