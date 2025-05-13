@@ -67,6 +67,8 @@ A few simple guidelines regarding the usage of feature flags.
 
 ### Recommended implementation pattern for feature flag management
 
+<!-- markdown-link-check-disable -->
+
 The [samples](#samples) mentioned later follow this pattern so we will add links to the code for easy reference.
 
 1) Create a root folder named `FeatureManagement` in the application.
@@ -92,6 +94,8 @@ The [samples](#samples) mentioned later follow this pattern so we will add links
 1) In unit tests control feature flags as mentioned under [Managing feature flags through IFeatureManager](#managing-feature-flags-through-ifeaturemanager).
 
    See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Unit/FeatureManagementTests.cs) and [FeatureManagerStub.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Fixtures/FeatureManagerStub.cs)
+
+<!-- markdown-link-check-enable -->
 
 ## Samples
 
