@@ -18,6 +18,13 @@ Guidelines for Azure Function App's and ASP.NET Core Web API's on configuring an
 
 ## Introduction
 
+In the code and documentation we demo two ways of branching code:
+
+- *Feature flags*
+- *Disabled flags*
+
+### Feature flags
+
 DataHub subsystems should use Microsoft Feature Management in combination with Azure App Configuration to support toggling feature flags at runtime.
 
 > See also [Azure App Configuration - Feature Management](
@@ -28,26 +35,34 @@ After following the configuration described in our [quick-start](../documentatio
 - In App Settings (locally or in Azure App Service). The application must be restarted to update the feature flag value.
 - In Azure App Configuration under Feature manager. The feature flag value is automatically refreshed and updated at runtime.
 
-## Guidelines
+### Disabled flags
+
+ A built-in functionality of Azure Function that can be used to disable code at the function level.
+
+> See [How to disable functions in Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/disable-function).
+
+Disabled flag are configured in App Settings (locally or in Azure App Service). The application must be restarted to update the disabled flag value.
+
+### Guidelines
 
 A few simple guidelines regarding the usage of feature flags.
 
-### General principles
+#### General principles
 
 - DO keep the number of active feature flags low in an area at all times.
     - Aim for having short lived feature flags, and remove them as soon as they are obsolete.
 - DO use feature flags to enable/disable functionality at a high level, like:
-    - Enable/disable a function using a *disabled flag*.
     - Enable/disable a functionality at an application level by using a *feature flag*.
+    - Enable/disable an Azure Function using a *disabled flag*.
 - DO NOT use feature flags to enable/disable functionality at a low level, like:
     - Enable/disable functionality deep within a component.
 
-### Document feature flags
+#### Document feature flags
 
 - DO document all active feature flags within an area, in Confluence or other *easy to spot* place.
 - DO document when a feature flag can be removed so we continuously have focus on keeping the number of active feature flags low.
 
-#### Example: *Active feature flags*
+##### Example: *Active feature flags*
 
 | Name | Purpose | Must be removed when |
 | ---- | ------- | ------------------- |
@@ -56,18 +71,6 @@ A few simple guidelines regarding the usage of feature flags.
 ## Samples
 
 The following samples are implemented in the `ExampleHost.FunctionApp01`.
-
-### Disabled flag
-
-This sample shows how we can disable a function using an app setting.
-
-> See [How to disable functions in Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/disable-function)
-
-We can control whether the function `FeatureManagementFunction.CreateMessage` is active or not, by changing the value `AzureWebJobs.CreateMessage.Disabled` in the `local.settings.json` file.
-
-In the test class `FeatureManagementTests.CreateMessage` we show how we can test the expected behaviour from an integration test.
-
-See also [Changing application settings](#changing-application-settings)
 
 ### Feature flag
 
@@ -97,7 +100,19 @@ We can control whether the feature is enabled or not, by changing the value `Fea
 
 > The test configures the feature flag as an App Setting, but it could as well be configured in Azure App Configuration, in which case it wouldn't require a restart.
 
-In the test class `FeatureManagementTests.GetMessage` we test scenarious where the feature flag is disabled, and later enabled.
+In the test class `FeatureManagementTests.GetMessage` we test scenarios where the feature flag is disabled, and later enabled.
+
+See also [Changing application settings](#changing-application-settings)
+
+### Disabled flag
+
+This sample shows how we can disable a function using an app setting.
+
+> See [How to disable functions in Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/disable-function)
+
+We can control whether the function `FeatureManagementFunction.CreateMessage` is active or not, by changing the value `AzureWebJobs.CreateMessage.Disabled` in the `local.settings.json` file.
+
+In the test class `FeatureManagementTests.CreateMessage` we show how we can test the expected behaviour from an integration test.
 
 See also [Changing application settings](#changing-application-settings)
 
@@ -105,7 +120,7 @@ See also [Changing application settings](#changing-application-settings)
 
 ### Changing application settings
 
-When we use an app setting to control the feature flag, we must configure the value before we start the function app host. In some situations this means we have to restart the host from tests. This can be costly if we have many tests and multiple scenarious, so we should always consider this, and aim for the least numbers of restarts for a complete test run.
+When we use an app setting to control the feature flag, we must configure the value before we start the function app host. In some situations this means we have to restart the host from tests. This can be costly if we have many tests and multiple scenarios, so we should always consider this, and aim for the least numbers of restarts for a complete test run.
 
 The method `FunctionAppHostManager.RestartHostIfChanges` can help reduce the number of restarts, as it will only restart the host if the values given are actual different from the current loaded settings. This will only work if environment variables was set using the `FunctionAppHostSettings.ProcessEnvironmentVariables`.
 
