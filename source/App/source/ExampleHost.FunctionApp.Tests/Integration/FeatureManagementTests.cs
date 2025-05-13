@@ -16,7 +16,8 @@ using System.Net;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.TestCommon;
 using ExampleHost.FunctionApp.Tests.Fixtures;
-using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.FeatureManagement;
+using ExampleHost.FunctionApp01.Functions;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,7 +34,7 @@ public class FeatureManagementTests
     /// <summary>
     /// Tests demonstrating use of a feature flag.
     /// See the function triggered to understand how to use feature manager to switch on
-    /// a feature flag named <see cref="FeatureFlags.Names.UseGetMessage"/>.
+    /// a feature flag named <see cref="FeatureFlagNames.UseGetMessage"/>.
     /// </summary>
     [Collection(nameof(ExampleHostsCollectionFixture))]
     public class GetMessage
@@ -51,14 +52,14 @@ public class FeatureManagementTests
         [Theory]
         [InlineData("false", "Disabled")]
         [InlineData("true", "Enabled")]
-        public async Task Given_DisabledValueIs_When_Requested_Then_ExpectedContentIsReturned(string disabledValue, string expectedContent)
+        public async Task Given_FeatureFlagValueIs_When_Requested_Then_ExpectedContentIsReturned(string featureFlagValue, string expectedContent)
         {
             // Arrange
             // Configure the feature flag (locally) for the test.
             // The Function App is only restarted if the current state of the flag is different from what we need for the test.
             Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
             {
-                { Fixture.UseGetMessageSettingName, disabledValue },
+                { $"{FeatureFlagNames.SectionName}__{FeatureFlagNames.UseGetMessage}", featureFlagValue },
             });
 
             using var request = new HttpRequestMessage(HttpMethod.Get, FeatureManagementRoute);
@@ -98,7 +99,7 @@ public class FeatureManagementTests
             // The Function App is only restarted if the current state of the flag is different from what we need for the test.
             Fixture.App01HostManager.RestartHostIfChanges(new Dictionary<string, string>
             {
-                { Fixture.CreateMessageDisabledSettingName, disabledValue },
+                { $"AzureWebJobs.{nameof(FeatureManagementFunction.CreateMessage)}.Disabled", disabledValue },
             });
 
             using var request = new HttpRequestMessage(HttpMethod.Post, FeatureManagementRoute);
