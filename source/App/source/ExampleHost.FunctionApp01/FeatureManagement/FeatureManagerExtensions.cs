@@ -20,7 +20,7 @@ namespace ExampleHost.FunctionApp01.FeatureManagement;
 /// <summary>
 /// Extensions for reading feature flags in subsystem.
 /// The extension methods allows us to create an abstraction from the feature flag names,
-/// explaining the meaning of the feature flag in subsystem. This is especially relevant for
+/// explaining the meaning of the feature flag in the subsystem. This is especially relevant for
 /// "Produkt Mål's" feature flags, as they might be used in multiple subsystems, but
 /// mean something different in each subsystem.
 /// </summary>

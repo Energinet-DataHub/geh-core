@@ -17,7 +17,7 @@ using ExampleHost.FunctionApp01.Functions;
 namespace ExampleHost.FunctionApp01.FeatureManagement;
 
 /// <summary>
-/// Names of Feature Flags that exists in subsystem.
+/// Names of Feature Flags that exists in a subsystem.
 ///
 /// The feature flags can be configured:
 ///  * Using App Settings (locally or in Azure)
