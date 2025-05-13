@@ -87,11 +87,11 @@ The [samples](#samples) mentioned later follow this pattern so we will add links
 
 1) In integration tests configure feature flags and Azure App Configuration as mentioned under [Managing Azure App Configuration](#managing-azure-app-configuration).
 
-   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Integration/FeatureManagementTests.cs)
+   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Integration/FeatureManagementTests.cs) and [ExampleHostsFixture.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Fixtures/ExampleHostsFixture.cs)
 
 1) In unit tests control feature flags as mentioned under [Managing feature flags through IFeatureManager](#managing-feature-flags-through-ifeaturemanager).
 
-   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Unit/FeatureManagementTests.cs)
+   See [FeatureManagementTests.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Unit/FeatureManagementTests.cs) and [FeatureManagerStub.cs](https://github.com/Energinet-DataHub/geh-core/blob/main/source/App/source/ExampleHost.FunctionApp.Tests/Fixtures/FeatureManagerStub.cs)
 
 ## Samples
 
