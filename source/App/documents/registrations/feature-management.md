@@ -52,18 +52,18 @@ A few simple guidelines regarding the usage of feature flags.
 
 ### General principles
 
-- DO keep the number of active feature flags low in an area at all times.
+- :heavy_check_mark: DO keep the number of active feature flags low in an area at all times.
     - Aim for having short lived feature flags, and remove them as soon as they are obsolete.
-- DO use feature flags to enable/disable functionality at a high level, like:
+- :heavy_check_mark: DO use feature flags to enable/disable functionality at a high level, like:
     - Enable/disable a functionality at an application level by using a *feature flag*.
     - Enable/disable an Azure Function using a *disabled flag*.
-- DO NOT use feature flags to enable/disable functionality at a low level, like:
+- :x: DO NOT use feature flags to enable/disable functionality at a low level, like:
     - Enable/disable functionality deep within a component.
 
 ### Document feature flags
 
-- DO document all active feature flags within an area, in Confluence or other *easy to spot* place.
-- DO document when a feature flag can be removed so we continuously have focus on keeping the number of active feature flags low.
+- :heavy_check_mark: DO document all active feature flags within an area, in Confluence or other *easy to spot* place.
+- :heavy_check_mark: DO document when a feature flag can be removed so we continuously have focus on keeping the number of active feature flags low.
 
 ### Recommended implementation pattern for feature flag management
 
