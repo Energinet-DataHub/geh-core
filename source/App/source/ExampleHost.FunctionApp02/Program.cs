@@ -14,15 +14,26 @@
 
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
         // Configuration verified in tests. See comments in FunctionApp01.Program.
         services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
+
+        // Http => Subsystem Authentication using DarkLoop Authorization extension (verified in tests)
+        services
+            .AddSubsystemAuthenticationForIsolatedWorker(context.Configuration);
     })
-    .ConfigureFunctionsWebApplication()
+    .ConfigureFunctionsWebApplication(builder =>
+    {
+        // DarkLoop Authorization extension (verified in tests):
+        //  * Explicitly adding the extension middleware because registering middleware when extension is loaded does not
+        //    place the middleware in the pipeline where required request information is available.
+        builder.UseFunctionsAuthorization();
+    })
     .ConfigureLogging((hostingContext, logging) =>
     {
         // Configuration verified in tests. See comments in FunctionApp01.Program.

@@ -35,7 +35,7 @@ public static class SubsystemAuthenticationExtensions
     /// This is using DarkLoop Authorization extension.
     /// Expects <see cref="SubsystemAuthenticationOptions"/> has been configured in <see cref="SubsystemAuthenticationOptions.SectionName"/>.
     /// </remarks>
-    internal static IServiceCollection AddSubsystemAuthenticationForIsolatedWorker(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSubsystemAuthenticationForIsolatedWorker(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
