@@ -89,7 +89,9 @@ var host = new HostBuilder()
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
                 $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}",
-                $"{nameof(DurableFunction.ExecuteDurableFunction)}"]);
+                $"{nameof(DurableFunction.ExecuteDurableFunction)}",
+                $"{nameof(SubsystemAuthenticationFunction.GetAnonymousForSubsystem)}",
+                $"{nameof(SubsystemAuthenticationFunction.GetWithPermissionForSubsystem)}"]);
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {

@@ -20,6 +20,9 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace ExampleHost.FunctionApp02.Functions;
 
+/// <summary>
+/// This class is used for the subsystem-to-subsystem communication scenario (server side)
+/// </summary>
 public class SubsystemAuthenticationFunction
 {
     /// <summary>
