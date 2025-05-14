@@ -26,13 +26,13 @@ public class SubsystemAuthenticationFunction
     /// 1: This method should not require any 'Bearer' token in the 'Authorization' header.
     ///   It should allow anonymous access and always return the given Guid, for tests to verify.
     /// </summary>
-    [Function(nameof(GetAnonymous))]
+    [Function(nameof(GetAnonymousForSubsystem))]
     [AllowAnonymous]
-    public IActionResult GetAnonymous(
+    public IActionResult GetAnonymousForSubsystem(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
-            Route = "authentication/anon/{identification:guid}")]
+            Route = "subsystemauthentication/anonymous/{identification:guid}")]
         HttpRequest httpRequest,
         Guid identification)
     {
@@ -46,13 +46,13 @@ public class SubsystemAuthenticationFunction
     ///   should retrieve the token and validate it.
     /// 3: If successfull the given Guid is returned, for tests to verify.
     /// </summary>
-    [Function(nameof(GetWithPermission))]
+    [Function(nameof(GetWithPermissionForSubsystem))]
     [Authorize]
-    public IActionResult GetWithPermission(
+    public IActionResult GetWithPermissionForSubsystem(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
-            Route = "authentication/auth/{identification:guid}")]
+            Route = "subsystemauthentication/authentication/{identification:guid}")]
         HttpRequest httpRequest,
         Guid identification)
     {

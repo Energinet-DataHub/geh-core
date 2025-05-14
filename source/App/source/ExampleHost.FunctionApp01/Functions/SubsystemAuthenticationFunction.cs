@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.App.Common.Extensions.Options;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
@@ -29,14 +25,14 @@ public class SubsystemAuthenticationFunction
     }
 
     /// <summary>
-    /// This method should call "ExampleHost.FunctionApp002.GetAnonymous" without a token.
+    /// This method should call "ExampleHost.FunctionApp002.GetAnonymousForSubsystem" without a token.
     /// </summary>
-    [Function(nameof(GetAnonymous))]
-    public IActionResult GetAnonymous(
+    [Function(nameof(GetAnonymousForSubsystem))]
+    public IActionResult GetAnonymousForSubsystem(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
-            Route = "authentication/anon/{identification:guid}")]
+            Route = "subsystemauthentication/anonymous/{identification:guid}")]
         HttpRequest httpRequest,
         Guid identification)
     {
@@ -44,14 +40,14 @@ public class SubsystemAuthenticationFunction
     }
 
     /// <summary>
-    /// This method should call "ExampleHost.FunctionApp002.GetWithPermission" with a token.
+    /// This method should call "ExampleHost.FunctionApp002.GetWithPermissionForSubsystem" with a token.
     /// </summary>
-    [Function(nameof(GetWithPermission))]
-    public IActionResult GetWithPermission(
+    [Function(nameof(GetWithPermissionForSubsystem))]
+    public IActionResult GetWithPermissionForSubsystem(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
-            Route = "authentication/auth/{identification:guid}")]
+            Route = "subsystemauthentication/authentication/{identification:guid}")]
         HttpRequest httpRequest,
         Guid identification)
     {
