@@ -17,12 +17,12 @@ using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication()
     .ConfigureServices(services =>
     {
         // Configuration verified in tests. See comments in FunctionApp01.Program.
         services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
     })
+    .ConfigureFunctionsWebApplication()
     .ConfigureLogging((hostingContext, logging) =>
     {
         // Configuration verified in tests. See comments in FunctionApp01.Program.
