@@ -117,10 +117,10 @@ public class ExampleHostsFixture : IAsyncLifetime
             $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.InternalMetadataAddress);
 
         // => App02 settings for authentication
-        app01HostSettings.ProcessEnvironmentVariables.Add(
+        app02HostSettings.ProcessEnvironmentVariables.Add(
             $"{SubsystemAuthenticationOptions.SectionName}__{nameof(SubsystemAuthenticationOptions.ApplicationIdUri)}",
             SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
-        app01HostSettings.ProcessEnvironmentVariables.Add(
+        app02HostSettings.ProcessEnvironmentVariables.Add(
             $"{SubsystemAuthenticationOptions.SectionName}__{nameof(SubsystemAuthenticationOptions.Issuer)}",
             SubsystemAuthenticationOptionsForTests.Issuer);
 
