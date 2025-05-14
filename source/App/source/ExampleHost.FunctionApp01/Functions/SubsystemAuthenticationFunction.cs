@@ -18,6 +18,9 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace ExampleHost.FunctionApp01.Functions;
 
+/// <summary>
+/// This class is used for the subsystem-to-subsystem communication scenario (client side)
+/// </summary>
 public class SubsystemAuthenticationFunction
 {
     public SubsystemAuthenticationFunction()
@@ -25,32 +28,38 @@ public class SubsystemAuthenticationFunction
     }
 
     /// <summary>
-    /// This method should call "ExampleHost.FunctionApp002.GetAnonymousForSubsystem" without a token.
+    /// This method should call "ExampleHost.FunctionApp002.GetAnonymousForSubsystem" without a token
+    /// and respond with the same http status code as the endpoint it calls.
     /// </summary>
     [Function(nameof(GetAnonymousForSubsystem))]
     public IActionResult GetAnonymousForSubsystem(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
-            Route = "subsystemauthentication/anonymous/{identification:guid}")]
-        HttpRequest httpRequest,
-        Guid identification)
+            Route = "subsystemauthentication/anonymous")]
+        HttpRequest httpRequest)
     {
-        return new OkObjectResult(identification.ToString());
+        // TODO: Inject client or service by which we can make call to App002.
+        // TODO: Wait for response and respond to the test with the same http status code.
+        return new OkResult();
     }
 
     /// <summary>
-    /// This method should call "ExampleHost.FunctionApp002.GetWithPermissionForSubsystem" with a token.
+    /// This method should call "ExampleHost.FunctionApp002.GetWithPermissionForSubsystem" with a token
+    /// and respond with the same http status code as the endpoint it calls.
     /// </summary>
     [Function(nameof(GetWithPermissionForSubsystem))]
     public IActionResult GetWithPermissionForSubsystem(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
-            Route = "subsystemauthentication/authentication/{identification:guid}")]
+            Route = "subsystemauthentication/authentication/{requestToken:bool}")]
         HttpRequest httpRequest,
-        Guid identification)
+        bool requestToken)
     {
-        return new OkObjectResult(identification.ToString());
+        // TODO: Inject client or service by which we can make call to App002.
+        // TODO: Add a token to the request, based on the given parameter.
+        // TODO: Wait for response and respond to the test with the same http status code.
+        return new OkResult();
     }
 }

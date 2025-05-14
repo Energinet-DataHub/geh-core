@@ -53,43 +53,19 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     [Fact]
     public async Task Given_NoToken_When_GetAnonymous_Then_IsAllowed()
     {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/anonymous/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/anonymous");
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
     }
 
     [Fact]
     public async Task Given_NoToken_When_GetWithPermission_Then_IsUnauthorized()
     {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/{requestIdentification}");
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task Given_FakeToken_When_GetWithPermission_Then_IsUnauthorized()
-    {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
-        // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/{requestIdentification}");
-        request.Headers.Authorization = Fixture.OpenIdJwtManager.JwtProvider.CreateFakeTokenAuthenticationHeader();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/false");
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
@@ -99,18 +75,11 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     [Fact]
     public async Task Given_ValidToken_When_GetWithPermission_Then_IsAllowed()
     {
-        // Arrange
-        var requestIdentification = Guid.NewGuid().ToString();
-
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/{requestIdentification}");
-        request.Headers.Authorization = await Fixture.OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/true");
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().Be(requestIdentification);
     }
 }
