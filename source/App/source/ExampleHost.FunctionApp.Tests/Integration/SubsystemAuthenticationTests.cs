@@ -22,7 +22,8 @@ using Xunit.Abstractions;
 namespace ExampleHost.FunctionApp.Tests.Integration;
 
 /// <summary>
-/// Subsystem Authentication tests using a standard JWT with the
+/// Subsystem Authentication tests using the ExampleHost.FunctionApp01 to call
+/// the ExampleHost.FunctionApp02 over http using a standard JWT with the
 /// expected "scope" as configured by <see cref="SubsystemAuthenticationOptions"/>.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
