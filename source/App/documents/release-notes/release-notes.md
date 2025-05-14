@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 15.4.0
+
+- Working on PoC for Subsystem Authentication...
+
 ## Version 15.3.0
 
 - Added Application Insights healthcheck publisher (No additional configuration is needed by consumer)
