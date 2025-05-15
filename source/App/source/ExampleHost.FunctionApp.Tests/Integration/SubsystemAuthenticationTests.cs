@@ -23,7 +23,8 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 
 /// <summary>
 /// Subsystem Authentication tests that verifies the subsystem authentication
-/// configuration in ExampleHost.FunctionApp02.
+/// configuration in ExampleHost.FunctionApp02 is working as expected with
+/// the attributes '[AllowAnonymous]' and '[Authorize]'.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
 public class SubsystemAuthenticationTests : IAsyncLifetime
