@@ -23,7 +23,7 @@ internal static class HttpClientExtensions
 {
     /// <summary>
     /// Register ExampleHost.FunctionApp02 HTTP client to automatically
-    /// retrieve a JWT and add it to the "Authorization" header.
+    /// retrieve a JWT and add it to the 'Authorization' header.
     /// </summary>
     /// <remarks>
     /// Expects <see cref="IAuthorizationHeaderProvider"/> has been registered.

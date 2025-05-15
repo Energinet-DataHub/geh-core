@@ -22,9 +22,8 @@ using Xunit.Abstractions;
 namespace ExampleHost.FunctionApp.Tests.Integration;
 
 /// <summary>
-/// Subsystem Authentication tests using the ExampleHost.FunctionApp01 to call
-/// the ExampleHost.FunctionApp02 over http using a standard JWT with the
-/// expected "scope" as configured by <see cref="SubsystemAuthenticationOptions"/>.
+/// Subsystem Authentication tests that verifies the subsystem authentication
+/// configuration in ExampleHost.FunctionApp02.
 /// </summary>
 [Collection(nameof(ExampleHostsCollectionFixture))]
 public class SubsystemAuthenticationTests : IAsyncLifetime
