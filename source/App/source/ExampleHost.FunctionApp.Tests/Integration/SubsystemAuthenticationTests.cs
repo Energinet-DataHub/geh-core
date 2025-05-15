@@ -55,7 +55,7 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     /// This test calls ExampleHost.FunctionApp02 directly without a token.
     /// </summary>
     [Fact]
-    public async Task Given_NoToken_When_GetAnonymous_Then_IsAllowed()
+    public async Task Given_NoToken_When_CallingApp02GetAnonymousForSubsystem_Then_IsAllowed()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -72,7 +72,7 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     /// This test calls ExampleHost.FunctionApp02 directly without a token.
     /// </summary>
     [Fact]
-    public async Task Given_NoToken_When_GetWithPermission_Then_IsUnauthorized()
+    public async Task Given_NoToken_When_CallingApp02GetWithPermissionForSubsystem_Then_IsUnauthorized()
     {
         // Arrange
         var requestIdentification = Guid.NewGuid().ToString();
@@ -92,7 +92,7 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     /// By using this http client we should be able to call the protected endpoint in App02.
     /// </summary>
     [Fact]
-    public async Task Given_ValidToken_When_GetWithPermission_Then_IsAllowed()
+    public async Task Given_ValidToken_When_CallingApp02GetWithPermissionForSubsystemThroughApp01_Then_IsAllowed()
     {
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication");
