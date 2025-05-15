@@ -22,8 +22,12 @@ namespace ExampleHost.FunctionApp01.Extensions.DependencyInjection;
 internal static class HttpClientExtensions
 {
     /// <summary>
-    /// Register ExampleHost.FunctionApp02 HTTP client.
+    /// Register ExampleHost.FunctionApp02 HTTP client to automatically
+    /// retrieve a JWT and add it to the "Authorization" header.
     /// </summary>
+    /// <remarks>
+    /// Expects <see cref="IAuthorizationHeaderProvider"/> has been registered.
+    /// </remarks>
     public static IServiceCollection AddApp02HttpClient(this IServiceCollection services)
     {
         services

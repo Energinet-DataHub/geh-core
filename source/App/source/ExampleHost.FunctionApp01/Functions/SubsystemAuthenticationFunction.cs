@@ -24,6 +24,11 @@ namespace ExampleHost.FunctionApp01.Functions;
 /// </summary>
 public class SubsystemAuthenticationFunction
 {
+    /// <summary>
+    /// The http client has been registered and configured to automatically
+    /// request a token for the configured scope.
+    /// See <see cref="HttpClientExtensions.AddApp02HttpClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>.
+    /// </summary>
     private readonly HttpClient _app02ApiHttpClient;
 
     public SubsystemAuthenticationFunction(IHttpClientFactory httpClientFactory)
@@ -32,36 +37,21 @@ public class SubsystemAuthenticationFunction
     }
 
     /// <summary>
-    /// This method should call "ExampleHost.FunctionApp02.GetAnonymousForSubsystem" without a token
-    /// and respond with the same http status code as the endpoint it calls.
-    /// </summary>
-    [Function(nameof(GetAnonymousForSubsystem))]
-    public IActionResult GetAnonymousForSubsystem(
-        [HttpTrigger(
-            AuthorizationLevel.Anonymous,
-            "get",
-            Route = "subsystemauthentication/anonymous")]
-        HttpRequest httpRequest)
-    {
-        // TODO: Wait for response and respond to the test with the same http status code.
-        return new OkResult();
-    }
-
-    /// <summary>
     /// This method should call "ExampleHost.FunctionApp02.GetWithPermissionForSubsystem" with a token
     /// and respond with the same http status code as the endpoint it calls.
     /// </summary>
-    [Function(nameof(GetWithPermissionForSubsystem))]
-    public IActionResult GetWithPermissionForSubsystem(
+    [Function(nameof(GetWithPermissionForSubsystemAsync))]
+    public async Task<IActionResult> GetWithPermissionForSubsystemAsync(
         [HttpTrigger(
             AuthorizationLevel.Anonymous,
             "get",
-            Route = "subsystemauthentication/authentication/{requestToken:bool}")]
-        HttpRequest httpRequest,
-        bool requestToken)
+            Route = "subsystemauthentication/authentication")]
+        HttpRequest httpRequest)
     {
-        // TODO: Add a token to the request, based on the given parameter.
-        // TODO: Wait for response and respond to the test with the same http status code.
-        return new OkResult();
+        var requestIdentification = Guid.NewGuid().ToString();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/{requestIdentification}");
+        using var response = await _app02ApiHttpClient.SendAsync(request).ConfigureAwait(false);
+
+        return new StatusCodeResult((int)response.StatusCode);
     }
 }

@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
@@ -71,7 +72,8 @@ var host = new HostBuilder()
 
         // Http => Client side subsystem-to-subsystem authentication (verified in tests)
         services
-            .AddAuthorizationHeaderProvider();
+            .AddAuthorizationHeaderProvider()
+            .AddApp02HttpClient();
     })
     .ConfigureFunctionsWebApplication(builder =>
     {
@@ -95,8 +97,7 @@ var host = new HostBuilder()
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
                 $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}",
                 $"{nameof(DurableFunction.ExecuteDurableFunction)}",
-                $"{nameof(SubsystemAuthenticationFunction.GetAnonymousForSubsystem)}",
-                $"{nameof(SubsystemAuthenticationFunction.GetWithPermissionForSubsystem)}"]);
+                $"{nameof(SubsystemAuthenticationFunction.GetWithPermissionForSubsystemAsync)}"]);
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {

@@ -51,33 +51,51 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// This test calls ExampleHost.FunctionApp02 directly without a token.
+    /// </summary>
     [Fact]
     public async Task Given_NoToken_When_GetAnonymous_Then_IsAllowed()
     {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/anonymous");
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/anonymous/{requestIdentification}");
+        using var actualResponse = await Fixture.App02HostManager.HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
+    /// <summary>
+    /// This test calls ExampleHost.FunctionApp02 directly without a token.
+    /// </summary>
     [Fact]
     public async Task Given_NoToken_When_GetWithPermission_Then_IsUnauthorized()
     {
+        // Arrange
+        var requestIdentification = Guid.NewGuid().ToString();
+
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/false");
-        using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/{requestIdentification}");
+        using var actualResponse = await Fixture.App02HostManager.HttpClient.SendAsync(request);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
+    /// <summary>
+    /// This test uses the ExampleHost.FunctionApp01 to call the ExampleHost.FunctionApp02.
+    /// In ExampleHost.FunctionApp01 we have configured a http client to use a standard JWT
+    /// with the expected "scope" as configured by <see cref="SubsystemAuthenticationOptions"/>.
+    /// By using this http client we should be able to call the protected endpoint in App02.
+    /// </summary>
     [Fact]
     public async Task Given_ValidToken_When_GetWithPermission_Then_IsAllowed()
     {
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication/true");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/subsystemauthentication/authentication");
         using var actualResponse = await Fixture.App01HostManager.HttpClient.SendAsync(request);
 
         // Assert
