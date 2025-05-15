@@ -21,6 +21,10 @@ namespace Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 
 public static class IdentityExtensions
 {
+    /// <summary>
+    /// Add an authorization header provider that can be used when configuring
+    /// http clients involved in subsystem-to-subssytem communication.
+    /// </summary>
     public static IServiceCollection AddAuthorizationHeaderProvider(this IServiceCollection services)
     {
         services.TryAddSingleton<IAuthorizationHeaderProvider>(sp =>
