@@ -15,6 +15,7 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
@@ -67,6 +68,10 @@ var host = new HostBuilder()
         services
             .AddAzureAppConfiguration()
             .AddFeatureManagement();
+
+        // Http => Client side subsystem-to-subsystem authentication (verified in tests)
+        services
+            .AddAuthorizationHeaderProvider();
     })
     .ConfigureFunctionsWebApplication(builder =>
     {

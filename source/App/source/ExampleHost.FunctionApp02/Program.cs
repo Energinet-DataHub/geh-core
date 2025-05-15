@@ -23,7 +23,7 @@ var host = new HostBuilder()
         // Configuration verified in tests. See comments in FunctionApp01.Program.
         services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
 
-        // Http => Subsystem-to-subsystem authentication (server side) using DarkLoop Authorization extension (verified in tests)
+        // Http => Server side subsystem-to-subsystem authentication using DarkLoop Authorization extension (verified in tests)
         services
             .AddSubsystemAuthenticationForIsolatedWorker(context.Configuration);
     })
