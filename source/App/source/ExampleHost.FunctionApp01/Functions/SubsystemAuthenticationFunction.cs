@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using ExampleHost.FunctionApp01.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -23,12 +24,15 @@ namespace ExampleHost.FunctionApp01.Functions;
 /// </summary>
 public class SubsystemAuthenticationFunction
 {
-    public SubsystemAuthenticationFunction()
+    private readonly HttpClient _app02ApiHttpClient;
+
+    public SubsystemAuthenticationFunction(IHttpClientFactory httpClientFactory)
     {
+        _app02ApiHttpClient = httpClientFactory.CreateClient(HttpClientNames.App02Api);
     }
 
     /// <summary>
-    /// This method should call "ExampleHost.FunctionApp002.GetAnonymousForSubsystem" without a token
+    /// This method should call "ExampleHost.FunctionApp02.GetAnonymousForSubsystem" without a token
     /// and respond with the same http status code as the endpoint it calls.
     /// </summary>
     [Function(nameof(GetAnonymousForSubsystem))]
@@ -39,13 +43,12 @@ public class SubsystemAuthenticationFunction
             Route = "subsystemauthentication/anonymous")]
         HttpRequest httpRequest)
     {
-        // TODO: Inject client or service by which we can make call to App002.
         // TODO: Wait for response and respond to the test with the same http status code.
         return new OkResult();
     }
 
     /// <summary>
-    /// This method should call "ExampleHost.FunctionApp002.GetWithPermissionForSubsystem" with a token
+    /// This method should call "ExampleHost.FunctionApp02.GetWithPermissionForSubsystem" with a token
     /// and respond with the same http status code as the endpoint it calls.
     /// </summary>
     [Function(nameof(GetWithPermissionForSubsystem))]
@@ -57,7 +60,6 @@ public class SubsystemAuthenticationFunction
         HttpRequest httpRequest,
         bool requestToken)
     {
-        // TODO: Inject client or service by which we can make call to App002.
         // TODO: Add a token to the request, based on the given parameter.
         // TODO: Wait for response and respond to the test with the same http status code.
         return new OkResult();
