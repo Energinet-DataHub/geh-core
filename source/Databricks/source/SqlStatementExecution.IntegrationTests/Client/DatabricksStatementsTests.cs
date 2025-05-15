@@ -98,6 +98,84 @@ public class DatabricksStatementsTests : IClassFixture<DatabricksSqlWarehouseFix
     }
 
     [Fact]
+    public async Task ExecuteStatement_FromRawSqlWithBoolParameters_ShouldReturnRows()
+    {
+        // Arrange
+        const int expectedRows = 3;
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = DatabricksStatement.FromRawSql(
+                @"SELECT * FROM VALUES
+              ('Zen Hui', 25, true),
+              ('Anil B' , 18, true),
+              ('Shone S', 16, false),
+              ('Mike A' , 25, true),
+              ('John A' , 18, false),
+              ('Jack N' , 16, false) AS data(name, age, married)
+              WHERE data.married = :_married;")
+            .WithParameter("_married", true)
+            .Build();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(expectedRows);
+    }
+
+    [Fact]
+    public async Task ExecuteStatement_FromRawSqlWithDatetimeParameters_ShouldReturnRows()
+    {
+        // Arrange
+        const int expectedRows = 3;
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = DatabricksStatement.FromRawSql(
+                @"SELECT * FROM VALUES
+              ('Zen Hui', 25, '2025-02-14T12:43:01Z'),
+              ('Anil B' , 18, '2023-02-14T12:43:01Z'),
+              ('Shone S', 16, '2021-02-14T12:43:01Z'),
+              ('Mike A' , 25, '2029-02-14T12:43:01Z'),
+              ('John A' , 18, '2002-02-14T12:43:01Z'),
+              ('Jack N' , 16, '1998-02-14T12:43:01Z') AS data(name, age, registered)
+              WHERE data.registered > :_registered;")
+            .WithParameter("_registered", new DateTimeOffset(2022, 01, 14, 4, 2, 17, TimeSpan.Zero))
+            .Build();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(expectedRows);
+    }
+
+    [Fact]
+    public async Task ExecuteStatement_FromRawSqlWithNullableBoolParameters_ShouldReturnRows()
+    {
+        // Arrange
+        const int expectedRows = 2;
+        var client = _sqlWarehouseFixture.CreateSqlStatementClient();
+        var statement = DatabricksStatement.FromRawSql(
+                @"SELECT * FROM VALUES
+              ('Zen Hui', 25, null),
+              ('Anil B' , 18, 1),
+              ('Shone S', 16, 2),
+              ('Mike A' , 25, null),
+              ('John A' , 18, 3),
+              ('Jack N' , 16, 2) AS data(name, age, children)
+              WHERE data.children = :_children;")
+            .WithParameter("_children", 2)
+            .Build();
+
+        // Act
+        var result = client.ExecuteStatementAsync(statement);
+        var rowCount = await result.CountAsync();
+
+        // Assert
+        rowCount.Should().Be(expectedRows);
+    }
+
+    [Fact]
     public async Task ExecuteStatement_FromRawSql_ShouldReturnRows()
     {
         // Arrange

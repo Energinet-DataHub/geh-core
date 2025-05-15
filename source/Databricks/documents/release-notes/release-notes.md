@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 13.1.0
+
+- Add support for additional parameter types including nullable types.
+
 ## Version 13.0.0
 
 - Upgrade from .NET 8 to .NET 9
