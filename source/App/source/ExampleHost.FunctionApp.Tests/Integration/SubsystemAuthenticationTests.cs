@@ -52,7 +52,8 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// This test calls ExampleHost.FunctionApp02 directly without a token.
+    /// This test calls an ExampleHost.FunctionApp02 endpoint directly without a token.
+    /// The endpoint is marked with '[AllowAnonymous]'.
     /// </summary>
     [Fact]
     public async Task Given_NoToken_When_CallingApp02GetAnonymousForSubsystem_Then_IsAllowed()
@@ -69,7 +70,8 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// This test calls ExampleHost.FunctionApp02 directly without a token.
+    /// This test calls an ExampleHost.FunctionApp02 endpoint directly without a token.
+    /// The endpoint is marked with '[Authorize]'.
     /// </summary>
     [Fact]
     public async Task Given_NoToken_When_CallingApp02GetWithPermissionForSubsystem_Then_IsUnauthorized()
@@ -86,7 +88,8 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// This test uses the ExampleHost.FunctionApp01 to call the ExampleHost.FunctionApp02.
+    /// This test uses the ExampleHost.FunctionApp01 to call an ExampleHost.FunctionApp02
+    /// endpoint that is marked with '[Authorize]'.
     /// In ExampleHost.FunctionApp01 we have configured a http client to use a standard JWT
     /// with the expected "scope" as configured by <see cref="SubsystemAuthenticationOptions"/>.
     /// By using this http client we should be able to call the protected endpoint in App02.
