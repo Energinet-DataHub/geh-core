@@ -2,7 +2,14 @@
 
 ## Version 15.4.0
 
-- Working on PoC for Subsystem Authentication...
+- Added functionality for subsystem-to-subsystem communication:
+    - Common package:
+        - Added `SubsystemAuthenticationOptions`
+        - Added `IdentityExtensions` with `AddAuthorizationHeaderProvider`
+        - Added internal `AuthorizationHeaderProvider` which implements public `IAuthorizationHeaderProvider`
+    - FunctionApp package:
+        - Renamed `AuthenticationExtensions` to `UserAuthenticationExtensions`
+        - Added `SubsystemAuthenticationExtensions` with `AddSubsystemAuthenticationForIsolatedWorker`
 
 ## Version 15.3.0
 
