@@ -29,7 +29,7 @@ public sealed class DatabricksStatementBuilder
     /// </summary>
     /// <param name="name">Name of parameter</param>
     /// <param name="value">Value for the parameter</param>
-    public DatabricksStatementBuilder WithParameter(string name, string value)
+    public DatabricksStatementBuilder WithParameter(string name, string? value)
     {
         _queryParameters.Add(QueryParameter.Create(name, value));
         return this;
@@ -40,9 +40,41 @@ public sealed class DatabricksStatementBuilder
     /// </summary>
     /// <param name="name">Name of parameter</param>
     /// <param name="value">Value for the parameter</param>
-    public DatabricksStatementBuilder WithParameter(string name, int value)
+    public DatabricksStatementBuilder WithParameter(string name, int? value)
     {
         _queryParameters.Add(QueryParameter.Create(name, value));
+        return this;
+    }
+
+    /// <summary>
+    /// Add a <see cref="DateTimeOffset"/> parameter to the SQL statement
+    /// </summary>
+    /// <param name="name">Name of parameter</param>
+    /// <param name="value">Value for the parameter</param>
+    public DatabricksStatementBuilder WithParameter(string name, DateTimeOffset? value)
+    {
+        _queryParameters.Add(QueryParameter.Create(name, value));
+        return this;
+    }
+
+    /// <summary>
+    /// Add a <see cref="bool"/> parameter to the SQL statement
+    /// </summary>
+    /// <param name="name">Name of parameter</param>
+    /// <param name="value">Value for the parameter</param>
+    public DatabricksStatementBuilder WithParameter(string name, bool? value)
+    {
+        _queryParameters.Add(QueryParameter.Create(name, value));
+        return this;
+    }
+
+    /// <summary>
+    /// Add a <see cref="QueryParameter"/> parameter to the SQL statement
+    /// </summary>
+    /// <param name="queryParameter">Query parameter</param>
+    public DatabricksStatementBuilder WithParameter(QueryParameter queryParameter)
+    {
+        _queryParameters.Add(queryParameter);
         return this;
     }
 
