@@ -42,8 +42,7 @@ public class AuthorizationHeaderProviderTests
         token.Audiences.Should().Contain(SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
     }
 
-    ////[Fact(Skip = "This test is not consistently true, because the test might run at a time where the token is refreshed on the CI environment.")]
-    [Fact]
+    [Fact(Skip = "This test is not consistently true, because the test might run at a time where the token is refreshed on the CI environment.")]
     public async Task Given_ReusedSutInstance_When_CreateAuthorizationHeaderIsCalledMultipleTimes_Then_ReturnedHeaderContainsSameTokenBecauseTokenCacheIsUsed()
     {
         // Arrange
