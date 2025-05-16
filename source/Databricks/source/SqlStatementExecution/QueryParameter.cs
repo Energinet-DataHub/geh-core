@@ -18,6 +18,12 @@ namespace Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 public sealed class QueryParameter
 {
+    private const string VoidType = "VOID";
+    private const string StringType = "STRING";
+    private const string IntType = "INT";
+    private const string TimestampNtzType = "TIMESTAMP_NTZ";
+    private const string BooleanType = "BOOLEAN";
+
     [JsonPropertyName("name")]
     public string Name { get; }
 
@@ -35,18 +41,34 @@ public sealed class QueryParameter
     }
 
     /// <summary>
-    /// Create a new QueryParameter with a name and value. Parameter type will be STRING.
+    /// Create a new QueryParameter with a name and value. Parameter type will be VOID or STRING.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="value"></param>
     /// <returns><see cref="QueryParameter"/></returns>
-    public static QueryParameter Create(string name, string value) => new(name, value, "STRING");
+    public static QueryParameter Create(string name, string? value) => value is null ? new(name, string.Empty, VoidType) : new(name, value, StringType);
 
     /// <summary>
-    /// Create a new QueryParameter with a name and value. Parameter type will be INT.
+    /// Create a new QueryParameter with a name and value. Parameter type will be VOID or INT.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="value"></param>
     /// <returns><see cref="QueryParameter"/></returns>
-    public static QueryParameter Create(string name, int value) => new(name, value, "INT");
+    public static QueryParameter Create(string name, int? value) => value is null ? new(name, string.Empty, VoidType) : new(name, value, IntType);
+
+    /// <summary>
+    /// Create a new QueryParameter with a name and value. Parameter type will be VOID or TIMESTAMP_NTZ.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
+    /// <returns><see cref="QueryParameter"/></returns>
+    public static QueryParameter Create(string name, DateTimeOffset? value) => value is null ? new(name, string.Empty, VoidType) : new(name, value, TimestampNtzType);
+
+    /// <summary>
+    /// Create a new QueryParameter with a name and value. Parameter type will be VOID or BOOLEAN.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="value"></param>
+    /// <returns><see cref="QueryParameter"/></returns>
+    public static QueryParameter Create(string name, bool? value) => value is null ? new(name, string.Empty, VoidType) : new(name, value, BooleanType);
 }
