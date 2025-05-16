@@ -15,6 +15,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using Azure.Identity;
 using Energinet.DataHub.Core.App.Common.Identity;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using FluentAssertions;
 using Xunit;
 
@@ -22,8 +23,6 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Identity;
 
 public class AuthorizationHeaderProviderTests
 {
-    private const string ApplicationIdUriForTests = "https://management.azure.com";
-
     [Fact]
     public void Given_ApplicationIdUriForTests_When_CreateAuthorizationHeader_Then_ReturnedHeaderContainsBearerTokenWithExpectedAudience()
     {
@@ -32,7 +31,7 @@ public class AuthorizationHeaderProviderTests
         var sut = new AuthorizationHeaderProvider(credential);
 
         // Act
-        var actual = sut.CreateAuthorizationHeader(ApplicationIdUriForTests);
+        var actual = sut.CreateAuthorizationHeader(SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
 
         // Assert
         actual.Should().NotBeNull();
@@ -40,7 +39,7 @@ public class AuthorizationHeaderProviderTests
 
         var tokenhandler = new JwtSecurityTokenHandler();
         var token = tokenhandler.ReadJwtToken(actual.Parameter);
-        token.Audiences.Should().Contain(ApplicationIdUriForTests);
+        token.Audiences.Should().Contain(SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
     }
 
     ////[Fact(Skip = "This test is not consistently true, because the test might run at a time where the token is refreshed on the CI environment.")]
@@ -52,9 +51,9 @@ public class AuthorizationHeaderProviderTests
         var sut = new AuthorizationHeaderProvider(credential);
 
         // Act
-        var header01 = sut.CreateAuthorizationHeader(ApplicationIdUriForTests);
+        var header01 = sut.CreateAuthorizationHeader(SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
         await Task.Delay(TimeSpan.FromSeconds(1));
-        var header02 = sut.CreateAuthorizationHeader(ApplicationIdUriForTests);
+        var header02 = sut.CreateAuthorizationHeader(SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
 
         // Assert
         header01.Parameter.Should().Be(header02.Parameter);
