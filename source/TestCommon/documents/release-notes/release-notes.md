@@ -2,7 +2,7 @@
 
 ## Version 8.2.1
 
-- Added `SubsystemAuthenticationOptionsForTests` for use in integration tests where Subsystem Authentication is used.
+- Added `SubsystemAuthenticationOptionsForTests` for use in tests where Subsystem Authentication is used.
 
 ## Version 8.2.0
 
