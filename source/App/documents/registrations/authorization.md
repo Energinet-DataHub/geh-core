@@ -1,4 +1,4 @@
-# JWT Security
+# User Authentication and Authorization
 
 > Each subsystem must implement its own subsystem-specific actor authorization! The middleware ensures only that the token is valid. Failure to do so may lead to escalation of privileges.
 

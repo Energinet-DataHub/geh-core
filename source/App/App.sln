@@ -59,6 +59,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "registrations", "registrati
 		documents\registrations\feature-management.md = documents\registrations\feature-management.md
 		documents\registrations\health-checks.md = documents\registrations\health-checks.md
 		documents\registrations\noda-time.md = documents\registrations\noda-time.md
+		documents\registrations\subsystem-authentication.md = documents\registrations\subsystem-authentication.md
 		documents\registrations\swagger-api-version.md = documents\registrations\swagger-api-version.md
 		documents\registrations\telemetry.md = documents\registrations\telemetry.md
 	EndProjectSection

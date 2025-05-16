@@ -2,7 +2,7 @@
 
 ## Version 15.4.0
 
-- Added functionality for subsystem-to-subsystem communication:
+- Added functionality for Subsystem Authentication when using subsystem-to-subsystem communication:
     - Common package:
         - Added `SubsystemAuthenticationOptions`
         - Added `IdentityExtensions` with `AddAuthorizationHeaderProvider`

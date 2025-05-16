@@ -15,10 +15,11 @@ Using the package bundle enables an easy opt-in/opt-out pattern of services duri
 - Detailed walkthrough per subject
     - [Feature Management](./registrations/feature-management.md)
     - [Health Checks](./registrations/health-checks.md)
-    - [JWT Security](./registrations/authorization.md)
     - [Noda Time](./registrations/noda-time.md)
+    - [Subsystem Authentication](./registrations/subsystem-authentication.md)
     - [Swagger and Api versioning](./registrations/swagger-api-version.md)
     - [Telemetry and logging to Application Insights](./registrations/telemetry.md)
+    - [User Authentication and Authorization](./registrations/authorization.md)
 
 - [Development notes for App](development.md)
 
@@ -42,7 +43,7 @@ Features of the example:
     - Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
-- Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
+- Registers user authentication as documented under [User Authentication and Authorization](./registrations/authorization.md).
 - Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing an Azure Function App project:
@@ -140,7 +141,7 @@ Features of the example:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
-- Registers JWT bearer authentication as documented under [JWT Security](./registrations/authorization.md).
+- Registers user authentication as documented under [User Authentication and Authorization](./registrations/authorization.md).
 - Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing a Web App project:
