@@ -15,9 +15,11 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
+using ExampleHost.FunctionApp01.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Functions;
 using ExampleHost.FunctionApp01.Security;
 using Microsoft.Azure.Functions.Worker;
@@ -67,6 +69,11 @@ var host = new HostBuilder()
         services
             .AddAzureAppConfiguration()
             .AddFeatureManagement();
+
+        // Http => Client side subsystem-to-subsystem authentication (verified in tests)
+        services
+            .AddAuthorizationHeaderProvider()
+            .AddApp02HttpClient();
     })
     .ConfigureFunctionsWebApplication(builder =>
     {
@@ -89,7 +96,8 @@ var host = new HostBuilder()
                 $"{nameof(FeatureManagementFunction.GetMessage)}",
                 $"{nameof(FeatureManagementFunction.CreateMessage)}",
                 $"{nameof(FeatureManagementFunction.GetFeatureFlagState)}",
-                $"{nameof(DurableFunction.ExecuteDurableFunction)}"]);
+                $"{nameof(DurableFunction.ExecuteDurableFunction)}",
+                $"{nameof(SubsystemAuthenticationFunction.GetWithPermissionForSubsystemAsync)}"]);
     })
     .ConfigureAppConfiguration((context, configBuilder) =>
     {

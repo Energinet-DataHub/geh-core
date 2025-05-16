@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 /// Extension methods for <see cref="IServiceCollection"/>
 /// that allow adding authentication services to a Function App.
 /// </summary>
-public static class AuthenticationExtensions
+public static class UserAuthenticationExtensions
 {
     private const string ExternalTokenClaimType = "token";
 

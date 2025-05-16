@@ -22,9 +22,9 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.App.FunctionApp.Tests.Extensions.DependencyInjection;
 
-public class AuthenticationExtensionsTests
+public class UserAuthenticationExtensionsTests
 {
-    public AuthenticationExtensionsTests()
+    public UserAuthenticationExtensionsTests()
     {
         Services = new ServiceCollection();
     }
