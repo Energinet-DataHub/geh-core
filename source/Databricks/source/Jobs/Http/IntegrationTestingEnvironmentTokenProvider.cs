@@ -29,7 +29,6 @@ public class IntegrationTestingEnvironmentTokenProvider : ITokenProvider
             ExcludeWorkloadIdentityCredential = true,
             ExcludeManagedIdentityCredential = true,
             ExcludeVisualStudioCredential = false,
-            ExcludeVisualStudioCodeCredential = true,
             ExcludeAzureCliCredential = false,
             ExcludeAzurePowerShellCredential = true,
             ExcludeAzureDeveloperCliCredential = true,
