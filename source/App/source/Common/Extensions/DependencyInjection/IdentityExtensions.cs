@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Azure.Identity;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,22 +23,71 @@ namespace Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 public static class IdentityExtensions
 {
     /// <summary>
+    /// Add a token credential provider that can be used to retrieve a
+    /// shared <see cref="TokenCredential"/> implementation.
+    /// </summary>
+    /// <remarks>
+    /// The actual token credential implementation registered will depend on whether
+    /// the application is running in an Azure App Service or not (e.g. locally or CI/CD runners).
+    /// </remarks>
+    public static IServiceCollection AddTokenCredentialProvider(this IServiceCollection services)
+    {
+        services.TryAddSingleton<TokenCredentialProvider>(sp =>
+        {
+            if (IsRunningInAzure())
+            {
+                return new TokenCredentialProvider(new ManagedIdentityCredential());
+            }
+            else
+            {
+                // As we register TokenCredentialProvider as singleton and it has the instance
+                // of DefaultAzureCredential, we expect it will use caching and handle token refresh.
+                // However the documentation is a bit unclear: https://learn.microsoft.com/da-dk/dotnet/azure/sdk/authentication/best-practices?tabs=aspdotnet#understand-when-token-lifetime-and-caching-logic-is-needed
+                var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+                {
+                    ExcludeEnvironmentCredential = false,
+                    ExcludeVisualStudioCredential = false,
+                    ExcludeAzureCliCredential = false,
+                    // Here we disable authentication mechanisms that is not used for Integration Test environment
+                    // See also: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#defaultazurecredential
+                    ExcludeWorkloadIdentityCredential = true,
+                    ExcludeManagedIdentityCredential = true,
+                    ExcludeVisualStudioCodeCredential = true,
+                    ExcludeAzurePowerShellCredential = true,
+                    ExcludeAzureDeveloperCliCredential = true,
+                    ExcludeInteractiveBrowserCredential = true,
+                });
+                return new TokenCredentialProvider(credential);
+            }
+        });
+
+        return services;
+    }
+
+    /// <summary>
     /// Add an authorization header provider that can be used when configuring
     /// http clients involved in subsystem-to-subssytem communication.
     /// </summary>
+    /// <remarks>
+    /// Expects <see cref="TokenCredentialProvider"/> has been registered.
+    /// </remarks>
     public static IServiceCollection AddAuthorizationHeaderProvider(this IServiceCollection services)
     {
         services.TryAddSingleton<IAuthorizationHeaderProvider>(sp =>
         {
-            // We currently register AuthorizationHeaderProvider like this to be in control of the
-            // creation of DefaultAzureCredential.
-            // As we register IAuthorizationHeaderProvider as singleton and it has the instance
-            // of DefaultAzureCredential, we expect it will use caching and handle token refresh.
-            // However the documentation is a bit unclear: https://learn.microsoft.com/da-dk/dotnet/azure/sdk/authentication/best-practices?tabs=aspdotnet#understand-when-token-lifetime-and-caching-logic-is-needed
-            var credential = new DefaultAzureCredential();
-            return new AuthorizationHeaderProvider(credential);
+            return new AuthorizationHeaderProvider(
+                sp.GetRequiredService<TokenCredentialProvider>().Credential);
         });
 
         return services;
+    }
+
+    /// <summary>
+    /// Determine if application is running in Azure App Service.
+    /// </summary>
+    /// <returns><see langword="true"/> if application is running in Azure App Service; otherwise <see langword="false"/>.</returns>
+    private static bool IsRunningInAzure()
+    {
+        return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID"));
     }
 }
