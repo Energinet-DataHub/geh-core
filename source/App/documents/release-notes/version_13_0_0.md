@@ -8,7 +8,7 @@ When using ASP.NET Core integration for HTTP it is still possible to have HttpTr
 
 Middleware that uses the `HttpRequestData` should however be refactored to use `HttpContext` and other ASP.NET Core types.
 
-For detailed information of how to use the new capabilities, see [JWT Security](../registrations/authorization.md).
+For detailed information of how to use the new capabilities, see [JWT Security](../registrations/user-authorization.md).
 
 ### How to upgrade
 

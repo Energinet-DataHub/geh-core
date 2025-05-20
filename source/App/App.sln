@@ -55,11 +55,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_Con
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "registrations", "registrations", "{6E808B3E-29F6-48F9-B993-F649B938B546}"
 	ProjectSection(SolutionItems) = preProject
-		documents\registrations\authorization.md = documents\registrations\authorization.md
+		documents\registrations\feature-management.md = documents\registrations\feature-management.md
 		documents\registrations\health-checks.md = documents\registrations\health-checks.md
 		documents\registrations\noda-time.md = documents\registrations\noda-time.md
+		documents\registrations\subsystem-authentication.md = documents\registrations\subsystem-authentication.md
 		documents\registrations\swagger-api-version.md = documents\registrations\swagger-api-version.md
 		documents\registrations\telemetry.md = documents\registrations\telemetry.md
+		documents\registrations\user-authorization.md = documents\registrations\user-authorization.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "function", "function", "{7AA64761-B1AD-4B1D-AC3C-566FD7FE1FCE}"

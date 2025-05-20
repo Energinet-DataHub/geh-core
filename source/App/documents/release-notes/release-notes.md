@@ -1,5 +1,16 @@
 # App Release notes
 
+## Version 15.4.0
+
+- Added functionality for Subsystem Authentication when using subsystem-to-subsystem communication:
+    - Common package:
+        - Added `SubsystemAuthenticationOptions`
+        - Added `IdentityExtensions` with `AddAuthorizationHeaderProvider`
+        - Added internal `AuthorizationHeaderProvider` which implements public `IAuthorizationHeaderProvider`
+    - FunctionApp package:
+        - Renamed `AuthenticationExtensions` to `UserAuthenticationExtensions`
+        - Added `SubsystemAuthenticationExtensions` with `AddSubsystemAuthenticationForIsolatedWorker`
+
 ## Version 15.3.0
 
 - Added Application Insights healthcheck publisher (No additional configuration is needed by consumer)

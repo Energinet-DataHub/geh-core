@@ -21,9 +21,13 @@ limitations under the License.
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Energinet.DataHub.Core.App.Common.Tests" />
+  </ItemGroup>
+
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Core.App.Common</PackageId>
-    <PackageVersion>15.3.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>15.4.0$(VersionSuffix)</PackageVersion>
     <Title>Azure Function Common Library</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -63,6 +67,8 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Core" Version="1.44.1" />
+    <PackageReference Include="Azure.Identity" Version="1.13.2" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.4" />

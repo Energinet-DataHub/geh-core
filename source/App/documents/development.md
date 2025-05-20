@@ -34,8 +34,12 @@ These allows us to easily debug, as well as implement integration tests, for ver
 
 * Telemetry or Application Insights configuration. It depends on `ExampleHost.FunctionApp02` for the verification scenario.
 * Health Checks configuration.
-* Authentication and authorization configuration.
+* User authentication and authorization configuration.
 * Feature management (feature flags locally and in Azure App Configuration)
+
+`ExampleHost.FunctionApp02` is used from integration tests located in `ExampleHost.FunctionApp.Tests` for verifying:
+
+* Subsystem authentication configuration. One scenario also depends on `ExampleHost.FunctionApp01`.
 
 ### ExampleHost.WebApi01 and ExampleHost.WebApi02
 
@@ -49,7 +53,7 @@ These allows us to easily debug, as well as implement integration tests, for ver
 
 `ExampleHost.WebApi03` is used from integration tests located in `ExampleHost.WebApi.Tests` for verifying:
 
-* Authentication and authorization configuration.
+* User authentication and authorization configuration.
 
 ## Setup local environment
 

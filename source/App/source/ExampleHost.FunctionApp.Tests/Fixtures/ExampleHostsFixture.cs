@@ -24,6 +24,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using ExampleHost.FunctionApp01.Extensions.Options;
 using ExampleHost.FunctionApp01.FeatureManagement;
 using ExampleHost.FunctionApp01.Functions;
 using Xunit;
@@ -115,6 +116,22 @@ public class ExampleHostsFixture : IAsyncLifetime
             $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.BackendBffAppId)}", OpenIdJwtManager.TestBffAppId);
         app01HostSettings.ProcessEnvironmentVariables.Add(
             $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", OpenIdJwtManager.InternalMetadataAddress);
+
+        // => App01 settings for subsystem-to-subsystem communication (client side)
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{App02HttpClientsOptions.SectionName}__{nameof(App02HttpClientsOptions.ApplicationIdUri)}",
+            SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
+        app01HostSettings.ProcessEnvironmentVariables.Add(
+            $"{App02HttpClientsOptions.SectionName}__{nameof(App02HttpClientsOptions.ApiBaseAddress)}",
+            $"http://localhost:{app02HostSettings.Port}");
+
+        // => App02 settings for authentication in subsystem-to-subsystem communication (server side)
+        app02HostSettings.ProcessEnvironmentVariables.Add(
+            $"{SubsystemAuthenticationOptions.SectionName}__{nameof(SubsystemAuthenticationOptions.ApplicationIdUri)}",
+            SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
+        app02HostSettings.ProcessEnvironmentVariables.Add(
+            $"{SubsystemAuthenticationOptions.SectionName}__{nameof(SubsystemAuthenticationOptions.Issuer)}",
+            SubsystemAuthenticationOptionsForTests.Issuer);
 
         // => Integration events
         app01HostSettings.ProcessEnvironmentVariables.Add("INTEGRATIONEVENT_FULLY_QUALIFIED_NAMESPACE", ServiceBusResourceProvider.FullyQualifiedNamespace);
