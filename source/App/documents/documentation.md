@@ -31,6 +31,8 @@ For a detailed documentation per registration type, see the walkthroughs listed 
 
 ### Azure Functions App
 
+> The quick start for Azure Functions App uses the Subsystem Authentication feature. If User Authentication and Authorization is required, read [User Authentication and Authorization](./registrations/user-authorization.md).
+
 For an implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-process-manager/blob/main/source/ProcessManager.Orchestrations/Program.cs) for Process Manager Orchestrations application.
 
 Features of the example:
@@ -43,7 +45,7 @@ Features of the example:
     - Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
-- Registers user authentication as documented under [User Authentication and Authorization](./registrations/user-authorization.md).
+- Registers Subsystem Authentication as documented under [Subsystem Authentication](./registrations/subsystem-authentication.md).
 - Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing an Azure Function App project:
@@ -63,9 +65,7 @@ Preparing an Azure Function App project:
            services.AddHealthChecksForIsolatedWorker();
 
            // Http => Authentication
-           services
-             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
-             .AddUserAuthenticationForIsolatedWorker<SubsystemUser, SubsystemUserProvider>();
+           services.AddSubsystemAuthenticationForIsolatedWorker(context.Configuration);
 
            // Would typically be registered within functional module registration methods instead of here.
            services.AddNodaTimeForApplication();
@@ -81,10 +81,8 @@ Preparing an Azure Function App project:
            //  * Enables middleware that handles refresh from Azure App Configuration (except for DF Orchestration triggers)
            builder.UseAzureAppConfigurationForIsolatedWorker();
 
-           // Http => Authorization
+           // Http => DarkLoop Authorization extension
            builder.UseFunctionsAuthorization();
-           // Http => Authentication
-           builder.UseUserMiddlewareForIsolatedWorker<SubsystemUser>();
        })
        .ConfigureAppConfiguration((context, configBuilder) =>
        {
@@ -101,8 +99,6 @@ Preparing an Azure Function App project:
    host.Run();
    ```
 
-1) Implement `SubsystemUser` and `SubsystemUserProvider` accordingly.
-
 1) Perform configuration in application settings
 
    ```json
@@ -117,16 +113,13 @@ Preparing an Azure Function App project:
        // Logging
        // => Default log level for Application Insights
        "Logging__ApplicationInsights__LogLevel__Default": "Information",
-       // Authentication
-       "UserAuthentication__MitIdExternalMetadataAddress": "<metadata address>",
-       "UserAuthentication__ExternalMetadataAddress": "<metadata address>",
-       "UserAuthentication__InternalMetadataAddress": "<metadata address>",
-       "UserAuthentication__BackendBffAppId": "<app id>",
+       // Subsystem Authentication
+       "SubsystemAuthentication__ApplicationIdUri": "<scope>",
+       "SubsystemAuthentication__Issuer": "<tenant>",
        // Feature management (Azure App Configuration)
        "AzureAppConfiguration__Endpoint": "<azure app config endpoint>",
      }
    }
-
    ```
 
 ### ASP.NET Core Web API
