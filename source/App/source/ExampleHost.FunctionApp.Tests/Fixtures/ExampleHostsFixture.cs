@@ -47,7 +47,7 @@ public class ExampleHostsFixture : IAsyncLifetime
         ServiceBusResourceProvider = new ServiceBusResourceProvider(TestLogger, IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace, IntegrationTestConfiguration.Credential);
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
-        LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+        LogsQueryClient = new LogsQueryClient(IntegrationTestConfiguration.Credential);
 
         OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings, openIdServerPort: 1052);
 
