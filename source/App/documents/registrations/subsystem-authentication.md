@@ -2,11 +2,14 @@
 
 By Subsystem Authentication we mean the server side authentication performed in subsystem-to-subssytem communication. Read ADR-141 in Confluence for more information.
 
+The `Common` package also contains code that can be used to implement the client side of subsystem-to-subsystem communication.
+
 ## Overview
 
 - Implementation
     - [Azure Functions App](#azure-functions-app)
     - [ASP.NET Core Web API](#aspnet-core-web-api)
+    - [Client side token retrieval](#client-side-token-retrieval)
 
 ## Azure Functions App
 
@@ -25,3 +28,11 @@ Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` at
 ## ASP.NET Core Web API
 
 > This is not supported yet in the App package. We will implement this in another PR.
+
+## Client side token retrieval
+
+As part of subsystem-to-subsystem communication the client needs to retrieve a token and send it as part of the `Authorization` header. The `Common` package contains the following code that can be used when implementing such a client:
+
+- `IdentityExtensions.AddAuthorizationHeaderProvider()`: Registers an authorization header provider as `IAuthorizationHeaderProvider`. The provider can be used to configure http clients to automatically retrieve a token and set the header during requests.
+
+For an example of implementing and registrering a Http client, see `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
