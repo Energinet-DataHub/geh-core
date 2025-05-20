@@ -1,5 +1,9 @@
 # Databricks Release Notes
 
+## Version 13.1.1
+
+- Upgrade dependencies to latest versions.
+
 ## Version 13.1.0
 
 - Add support for additional parameter types including nullable types.
