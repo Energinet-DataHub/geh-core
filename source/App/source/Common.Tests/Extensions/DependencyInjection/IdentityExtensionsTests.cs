@@ -29,6 +29,41 @@ public class IdentityExtensionsTests
 
     private ServiceCollection Services { get; }
 
+    #region AddTokenCredentialProvider
+
+    [Fact]
+    public void Given_Services_When_AddTokenCredentialProvider_Then_RegistrationsArePerformed()
+    {
+        // Act
+        Services.AddTokenCredentialProvider();
+
+        // Assert
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var actual = serviceProvider.GetRequiredService<TokenCredentialProvider>();
+        actual.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Given_AddTokenCredentialProviderWasCalled_When_AddTokenCredentialProvider_Then_RegistrationsArePerformedOnlyOnce()
+    {
+        // Arrange
+        Services.AddTokenCredentialProvider();
+
+        // Act
+        Services.AddTokenCredentialProvider();
+
+        // Assert
+        var serviceProvider = Services.BuildServiceProvider();
+
+        var actual = serviceProvider.GetServices<TokenCredentialProvider>();
+        actual.Count().Should().Be(1);
+    }
+
+    #endregion
+
+    #region AddAuthorizationHeaderProvider
+
     [Fact]
     public void Given_RequiredServicesNotRegisteredAndAddAuthorizationHeaderProvider_When_GetRequiredService_Then_ThrowsException()
     {
@@ -58,8 +93,8 @@ public class IdentityExtensionsTests
         // Assert
         var serviceProvider = Services.BuildServiceProvider();
 
-        var actualAuthorizationHeaderProvider = serviceProvider.GetRequiredService<IAuthorizationHeaderProvider>();
-        actualAuthorizationHeaderProvider.Should().NotBeNull();
+        var actual = serviceProvider.GetRequiredService<IAuthorizationHeaderProvider>();
+        actual.Should().NotBeNull();
     }
 
     [Fact]
@@ -75,7 +110,9 @@ public class IdentityExtensionsTests
         // Assert
         var serviceProvider = Services.BuildServiceProvider();
 
-        var actualAuthorizationHeaderProviders = serviceProvider.GetServices<IAuthorizationHeaderProvider>();
-        actualAuthorizationHeaderProviders.Count().Should().Be(1);
+        var actual = serviceProvider.GetServices<IAuthorizationHeaderProvider>();
+        actual.Count().Should().Be(1);
     }
+
+    #endregion
 }
