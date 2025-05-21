@@ -13,24 +13,53 @@
 // limitations under the License.
 
 using Azure.Core;
+using Azure.Identity;
 
 namespace Energinet.DataHub.Core.App.Common.Identity;
 
 /// <summary>
-/// We use this provider to be able to register an implementation of
+/// We use this provider to be able to create an implementation of
 /// <see cref="TokenCredential"/> without registering the type directly.
 /// </summary>
+/// <remarks>
+/// The actual token credential implementation created will depend on whether
+/// the application is running in an Azure App Service or not (e.g. locally or CI/CD runners).
+/// </remarks>
 public sealed class TokenCredentialProvider
 {
-    private readonly TokenCredential _credential;
+    private readonly Lazy<TokenCredential> _credential = new(CreateCredential, isThreadSafe: true);
 
-    internal TokenCredentialProvider(TokenCredential credential)
+    public TokenCredential Credential => _credential.Value;
+
+    private static TokenCredential CreateCredential()
     {
-        _credential = credential;
+        if (IsRunningInAzure())
+        {
+            return new ManagedIdentityCredential();
+        }
+        else
+        {
+            // We expect DefaultAzureCredential uses caching and handles token refresh.
+            // However the documentation is a bit unclear: https://learn.microsoft.com/da-dk/dotnet/azure/sdk/authentication/best-practices?tabs=aspdotnet#understand-when-token-lifetime-and-caching-logic-is-needed
+            return new DefaultAzureCredential(new DefaultAzureCredentialOptions
+            {
+                ExcludeEnvironmentCredential = false,
+                ExcludeVisualStudioCredential = false,
+                ExcludeAzureCliCredential = false,
+                // Here we disable authentication mechanisms that is not used for development
+                // See also: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#defaultazurecredential
+                ExcludeWorkloadIdentityCredential = true,
+                ExcludeManagedIdentityCredential = true,
+                ExcludeVisualStudioCodeCredential = true,
+                ExcludeAzurePowerShellCredential = true,
+                ExcludeAzureDeveloperCliCredential = true,
+                ExcludeInteractiveBrowserCredential = true,
+            });
+        }
     }
 
-    /// <summary>
-    /// Represents a credential capable of providing an OAuth token.
-    /// </summary>
-    public TokenCredential Credential => _credential;
+    private static bool IsRunningInAzure()
+    {
+        return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID"));
+    }
 }

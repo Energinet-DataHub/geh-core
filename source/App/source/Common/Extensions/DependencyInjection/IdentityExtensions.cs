@@ -26,41 +26,9 @@ public static class IdentityExtensions
     /// Add a token credential provider that can be used to retrieve a
     /// shared <see cref="TokenCredential"/> implementation.
     /// </summary>
-    /// <remarks>
-    /// The actual token credential implementation registered will depend on whether
-    /// the application is running in an Azure App Service or not (e.g. locally or CI/CD runners).
-    /// </remarks>
     public static IServiceCollection AddTokenCredentialProvider(this IServiceCollection services)
     {
-        services.TryAddSingleton<TokenCredentialProvider>(sp =>
-        {
-            if (IsRunningInAzure())
-            {
-                return new TokenCredentialProvider(new ManagedIdentityCredential());
-            }
-            else
-            {
-                // As we register TokenCredentialProvider as singleton and it has the instance
-                // of DefaultAzureCredential, we expect it will use caching and handle token refresh.
-                // However the documentation is a bit unclear: https://learn.microsoft.com/da-dk/dotnet/azure/sdk/authentication/best-practices?tabs=aspdotnet#understand-when-token-lifetime-and-caching-logic-is-needed
-                var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
-                {
-                    ExcludeEnvironmentCredential = false,
-                    ExcludeVisualStudioCredential = false,
-                    ExcludeAzureCliCredential = false,
-                    // Here we disable authentication mechanisms that is not used for Integration Test environment
-                    // See also: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/identity-readme?view=azure-dotnet#defaultazurecredential
-                    ExcludeWorkloadIdentityCredential = true,
-                    ExcludeManagedIdentityCredential = true,
-                    ExcludeVisualStudioCodeCredential = true,
-                    ExcludeAzurePowerShellCredential = true,
-                    ExcludeAzureDeveloperCliCredential = true,
-                    ExcludeInteractiveBrowserCredential = true,
-                });
-                return new TokenCredentialProvider(credential);
-            }
-        });
-
+        services.TryAddSingleton<TokenCredentialProvider>();
         return services;
     }
 
