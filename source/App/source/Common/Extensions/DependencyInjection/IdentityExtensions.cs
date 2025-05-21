@@ -48,13 +48,4 @@ public static class IdentityExtensions
 
         return services;
     }
-
-    /// <summary>
-    /// Determine if application is running in Azure App Service.
-    /// </summary>
-    /// <returns><see langword="true"/> if application is running in Azure App Service; otherwise <see langword="false"/>.</returns>
-    private static bool IsRunningInAzure()
-    {
-        return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID"));
-    }
 }
