@@ -1,5 +1,16 @@
 # App Release notes
 
+## Version 15.5.0
+
+- Common package:
+    - Added functionality for sharing a token credential implementation using `TokenCredentialProvider`
+    - Implemented `IdentityExtensions.AddTokenCredentialProvider()`
+    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to use `TokenCredentialProvider`
+- FunctionApp package:
+    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker()` to use `TokenCredentialProvider`
+- WebApp package:
+    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForWebApp()` to use `TokenCredentialProvider`
+
 ## Version 15.4.0
 
 - Added functionality for Subsystem Authentication when using subsystem-to-subsystem communication:
