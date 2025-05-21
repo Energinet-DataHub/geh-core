@@ -30,8 +30,28 @@ public class IdentityExtensionsTests
     private ServiceCollection Services { get; }
 
     [Fact]
-    public void Given_Services_When_AddAuthorizationHeaderProvider_Then_RegistrationsArePerformed()
+    public void Given_RequiredServicesNotRegisteredAndAddAuthorizationHeaderProvider_When_GetRequiredService_Then_ThrowsException()
     {
+        // Arrange
+        Services.AddAuthorizationHeaderProvider();
+
+        var serviceProvider = Services.BuildServiceProvider();
+
+        // Act
+        var act = () => serviceProvider.GetRequiredService<IAuthorizationHeaderProvider>();
+
+        // Assert
+        act.Should()
+            .Throw<InvalidOperationException>()
+            .WithMessage("No service for type 'Energinet.DataHub.Core.App.Common.Identity.TokenCredentialProvider' has been registered*");
+    }
+
+    [Fact]
+    public void Given_RequiredServices_When_AddAuthorizationHeaderProvider_Then_RegistrationsArePerformed()
+    {
+        // Arrange
+        Services.AddTokenCredentialProvider();
+
         // Act
         Services.AddAuthorizationHeaderProvider();
 
@@ -43,9 +63,10 @@ public class IdentityExtensionsTests
     }
 
     [Fact]
-    public void Given_AddAuthorizationHeaderProviderWasCalled_When_AddAuthorizationHeaderProvider_Then_RegistrationsArePerformedOnlyOnce()
+    public void Given_RequiredServicesAndAddAuthorizationHeaderProviderWasCalled_When_AddAuthorizationHeaderProvider_Then_RegistrationsArePerformedOnlyOnce()
     {
         // Arrange
+        Services.AddTokenCredentialProvider();
         Services.AddAuthorizationHeaderProvider();
 
         // Act
