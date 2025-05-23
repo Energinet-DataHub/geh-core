@@ -3,13 +3,14 @@
 ## Version 15.5.0
 
 - Common package:
-    - Added functionality for sharing a token credential implementation using `TokenCredentialProvider`
-    - Implemented `IdentityExtensions.AddTokenCredentialProvider()`
-    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to use `TokenCredentialProvider`
+    - Added `TokenCredentialFactory` for creating a token credential matching runtime environment
+    - Added `TokenCredentialHolder` for sharing a token credential implementation in dependency injection container
+    - Implemented `IdentityExtensions.AddTokenCredentialHolder()`
+    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to use `TokenCredentialHolder`
 - FunctionApp package:
-    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker()` to use `TokenCredentialProvider`
+    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker()` to use `TokenCredentialFactory`
 - WebApp package:
-    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForWebApp()` to use `TokenCredentialProvider`
+    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForWebApp()` to use `TokenCredentialFactory`
 
 ## Version 15.4.0
 
