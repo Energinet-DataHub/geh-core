@@ -6,11 +6,11 @@
     - Added `TokenCredentialFactory` for creating a token credential matching runtime environment
     - Added `TokenCredentialProvider` for sharing a token credential implementation in dependency injection container
     - Implemented `IdentityExtensions.AddTokenCredentialProvider()`
-    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to use `TokenCredentialProvider`
+    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to depend on `TokenCredentialProvider`
 - FunctionApp package:
-    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker()` to use `TokenCredentialFactory`
+    - Internal refactoring of `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker()` to use `TokenCredentialFactory`
 - WebApp package:
-    - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForWebApp()` to use `TokenCredentialFactory`
+    - Internal refactoring of `ConfigurationBuilderExtensions.AddAzureAppConfigurationForWebApp()` to use `TokenCredentialFactory`
 
 ## Version 15.4.0
 
