@@ -25,10 +25,8 @@ public static class IdentityExtensions
     /// Add a token credential provider that can be used to retrieve a
     /// shared <see cref="TokenCredential"/> implementation.
     /// </summary>
-    public static IServiceCollection AddTokenCredentialProvider(this IServiceCollection services)
+    public static IServiceCollection AddTokenCredentialHolder(this IServiceCollection services)
     {
-        // TODO: Create the TokenCredential right away, and return the instance.
-        // This is similar to .NET Aspire AddAzureStorage() which also returns<,> see https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-aspire-integration#azure-functions-host-storage
         services.TryAddSingleton<TokenCredentialProvider>();
         return services;
     }
