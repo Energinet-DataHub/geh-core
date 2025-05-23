@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
+using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
@@ -22,12 +22,21 @@ namespace Energinet.DataHub.Core.Messaging.Communication.IntegrationTests.Fixtur
 
 public sealed class ServiceBusFixture : IAsyncLifetime
 {
-    public ServiceBusResourceProvider ServiceBusResourceProvider { get; } = new(
-        new TestDiagnosticsLogger(),
-        new IntegrationTestConfiguration().ServiceBusFullyQualifiedNamespace,
-        new DefaultAzureCredential());
+    public ServiceBusFixture()
+    {
+        var integrationTestConfiguration = new IntegrationTestConfiguration();
 
-    public DefaultAzureCredential AzureCredential { get; } = new();
+        ServiceBusResourceProvider = new(
+            new TestDiagnosticsLogger(),
+            integrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            integrationTestConfiguration.Credential);
+
+        AzureCredential = integrationTestConfiguration.Credential;
+    }
+
+    public ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+
+    public TokenCredential AzureCredential { get; }
 
     public TopicResource? TopicResource { get; private set; }
 

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +29,8 @@ public class BlobDeadLetterLoggerFixture : IAsyncLifetime
         AzuriteManager = new AzuriteManager(useOAuth: true);
 
         BlobContainerName = Guid.NewGuid().ToString().ToLower();
-        BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, new DefaultAzureCredential());
+        var integrationTestConfiguration = new IntegrationTestConfiguration();
+        BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, integrationTestConfiguration.Credential);
 
         ServiceProvider = BuildServiceProvider(AzuriteManager.BlobStorageServiceUri.OriginalString, BlobContainerName);
     }
