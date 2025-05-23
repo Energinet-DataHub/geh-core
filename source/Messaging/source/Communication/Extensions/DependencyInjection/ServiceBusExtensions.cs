@@ -47,20 +47,21 @@ public static class ServiceBusExtensions
             .BindConfiguration(ServiceBusNamespaceOptions.SectionName)
             .ValidateDataAnnotations();
 
-        services.AddAzureClients(builder =>
-        {
-            builder
-                .UseCredential(new DefaultAzureCredential());
+        services
+            .AddAzureClients(builder =>
+            {
+                builder
+                    .UseCredential(new DefaultAzureCredential());
 
-            var serviceBusNamespaceOptions =
-                configuration
-                    .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
-                    .Get<ServiceBusNamespaceOptions>()
-                ?? throw new InvalidOperationException("Missing ServiceBus Namespace configuration.");
+                var serviceBusNamespaceOptions =
+                    configuration
+                        .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
+                        .Get<ServiceBusNamespaceOptions>()
+                    ?? throw new InvalidOperationException("Missing ServiceBus Namespace configuration.");
 
-            builder
-                .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions.FullyQualifiedNamespace);
-        });
+                builder
+                    .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions.FullyQualifiedNamespace);
+            });
 
         return services;
     }
