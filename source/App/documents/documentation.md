@@ -44,6 +44,7 @@ Features of the example:
 - Registers health checks "live", "ready" and "status" endpoints:
     - Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
+- Registers token credential that can be used to retrieve tokens for accessing Azure resources or other subsystems.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers Subsystem Authentication as documented under [Subsystem Authentication](./registrations/subsystem-authentication.md).
 - Register feature management with support for feature flags in app settings and Azure App Configuration.
@@ -63,6 +64,7 @@ Preparing an Azure Function App project:
            // Common
            services.AddApplicationInsightsForIsolatedWorker(subsystemName: "MySubsystem");
            services.AddHealthChecksForIsolatedWorker();
+           services.AddTokenCredentialProvider();
 
            // Http => Authentication
            services.AddSubsystemAuthenticationForIsolatedWorker(context.Configuration);
