@@ -24,4 +24,4 @@ To make it simple and easy to get a correct configured token credential, we have
 
 Any where we have access to `IServiceProvider` and need `TokenCredential`, we should use `TokenCredentialProvider` to get access to the registered `TokenCredential`.
 
-> If we need `TokenCredential` in a places where we haven't got `IServiceProvider` then at least always ensure to use `TokenCredentialFactory.CreateCredential()` to get an instance. This ensure we still use the best choice from a security point of view, when running in Azure.
+> If we need `TokenCredential` in a places where we haven't got `IServiceProvider` then at least always ensure to use `TokenCredentialFactory.CreateCredential()` to get an instance. This ensure we still use the best choice, from a security point of view, when running in Azure.
