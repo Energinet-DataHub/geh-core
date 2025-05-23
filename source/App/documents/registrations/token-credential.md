@@ -4,6 +4,7 @@
 
 - Implementation
     - [Token credential factory](#token-credential-factory)
+    - [Token credential provider](#token-credential-provider)
 
 ## Token credential factory
 
