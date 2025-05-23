@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Core;
-using Azure.Identity;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Microsoft.Extensions.Configuration;
