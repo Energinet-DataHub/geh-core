@@ -4,9 +4,9 @@
 
 - Common package:
     - Added `TokenCredentialFactory` for creating a token credential matching runtime environment
-    - Added `TokenCredentialHolder` for sharing a token credential implementation in dependency injection container
-    - Implemented `IdentityExtensions.AddTokenCredentialHolder()`
-    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to use `TokenCredentialHolder`
+    - Added `TokenCredentialProvider` for sharing a token credential implementation in dependency injection container
+    - Implemented `IdentityExtensions.AddTokenCredentialProvider()`
+    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to use `TokenCredentialProvider`
 - FunctionApp package:
     - Refactored `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker()` to use `TokenCredentialFactory`
 - WebApp package:

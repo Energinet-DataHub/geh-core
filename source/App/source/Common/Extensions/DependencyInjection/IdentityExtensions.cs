@@ -25,7 +25,7 @@ public static class IdentityExtensions
     /// Add a token credential provider that can be used to retrieve a
     /// shared <see cref="TokenCredential"/> implementation.
     /// </summary>
-    public static IServiceCollection AddTokenCredentialHolder(this IServiceCollection services)
+    public static IServiceCollection AddTokenCredentialProvider(this IServiceCollection services)
     {
         services.TryAddSingleton<TokenCredentialProvider>();
         return services;

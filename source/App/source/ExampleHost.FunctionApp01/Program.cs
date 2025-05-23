@@ -43,7 +43,7 @@ var host = new HostBuilder()
         // Configure token credential provider to share token credential
         //  * Used by "AddAuthorizationHeaderProvider"
         //  * Can be used when registering access to Azure resources (e.g. service bus etc.)
-        services.AddTokenCredentialHolder();
+        services.AddTokenCredentialProvider();
 
         // Configure ServiceBusSender for calling FunctionApp02
         services.AddSingleton(sp =>
