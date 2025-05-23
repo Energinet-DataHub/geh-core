@@ -32,7 +32,7 @@ public static class ConfigurationBuilderExtensions
     /// <remarks>
     /// Expects <see cref="AzureAppConfigurationOptions"/> has been configured in <see cref="AzureAppConfigurationOptions.SectionName"/>.
     /// </remarks>
-    public static IConfigurationBuilder AddAzureAppConfigurationForIsolatedWorker(this IConfigurationBuilder configBuilder, TokenCredential? azureCredential = null)
+    public static IConfigurationBuilder AddAzureAppConfigurationForIsolatedWorker(this IConfigurationBuilder configBuilder, TokenCredential? credential = null)
     {
         var configuration = configBuilder.Build();
         var appConfigurationOptions = configuration
@@ -45,7 +45,7 @@ public static class ConfigurationBuilderExtensions
         configBuilder.AddAzureAppConfiguration(options =>
         {
             options
-                .Connect(new Uri(appConfigurationOptions.Endpoint), azureCredential ?? new DefaultAzureCredential())
+                .Connect(new Uri(appConfigurationOptions.Endpoint), credential ?? new TokenCredentialProvider().Credential)
                 // Using dummy key "_" to avoid loading other configuration than feature flags
                 .Select("_")
                 // Load all feature flags with no label.
