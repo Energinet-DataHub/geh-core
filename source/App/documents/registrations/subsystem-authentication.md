@@ -33,6 +33,7 @@ Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` at
 
 As part of subsystem-to-subsystem communication the client needs to retrieve a token and send it as part of the `Authorization` header. The `Common` package contains the following code that can be used when implementing such a client:
 
+- `IdentityExtensions.AddTokenCredentialProvider()`: Registers `TokenCredentialProvider` which provides access to a token credential that is used by `AuthorizationHeaderProvider` for retrieving tokens.
 - `IdentityExtensions.AddAuthorizationHeaderProvider()`: Registers an authorization header provider as `IAuthorizationHeaderProvider`. The provider can be used to configure http clients to automatically retrieve a token and set the header during requests.
 
 For an example of implementing and registering a Http client, see `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
