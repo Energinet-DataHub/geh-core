@@ -15,6 +15,7 @@
 using Azure.Core;
 using Azure.Identity;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
+using Energinet.DataHub.Core.App.Common.Identity;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
@@ -27,9 +28,10 @@ public static class ConfigurationBuilderExtensions
 {
     /// <summary>
     /// Configures use of Azure App Configuration for feature flags only.
-    ///
-    /// Expects <see cref="AzureAppConfigurationOptions"/> has been configured in <see cref="AzureAppConfigurationOptions.SectionName"/>.
     /// </summary>
+    /// <remarks>
+    /// Expects <see cref="AzureAppConfigurationOptions"/> has been configured in <see cref="AzureAppConfigurationOptions.SectionName"/>.
+    /// </remarks>
     public static IConfigurationBuilder AddAzureAppConfigurationForWebApp(this IConfigurationBuilder configBuilder, IConfiguration configuration, TokenCredential? azureCredential = null)
     {
         ArgumentNullException.ThrowIfNull(configuration);
