@@ -282,11 +282,12 @@ services
 
 ```csharp
 services
+    .AddTokenCredentialProvider()
     .AddHealthChecks()
     .AddServiceBusQueueDeadLetter(
         sp => sp.GetRequiredService<IOptions<ServiceBusOptions>>().Value.FullyQualifiedNamespace,
         sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.QueueName,
-        _ => new DefaultAzureCredential(),
+        sp => sp.GetRequiredService<TokenCredentialProvider>().Credential,
         "HealthCheckName",
         [HealthChecksConstants.StatusHealthCheckTag]);
 ```

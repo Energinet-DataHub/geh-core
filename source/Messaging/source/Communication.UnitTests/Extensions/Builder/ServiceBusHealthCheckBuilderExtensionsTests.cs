@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 using FluentAssertions;
@@ -34,6 +35,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
         // Arrange
         var healthChecksBuilder = Services
             .AddLogging()
+            .AddTokenCredentialProvider()
             .AddHealthChecks();
 
         // Act
@@ -41,7 +43,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
             _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "topicName",
             _ => "subscriptionName",
-            _ => new DefaultAzureCredential(),
+            sp => sp.GetRequiredService<TokenCredentialProvider>().Credential,
             "Some_Health_Check_Name");
 
         // Assert
@@ -107,13 +109,14 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
         // Arrange
         var healthChecksBuilder = Services
             .AddLogging()
+            .AddTokenCredentialProvider()
             .AddHealthChecks();
 
         // Act
         healthChecksBuilder.AddServiceBusQueueDeadLetter(
             _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "queueName",
-            _ => new DefaultAzureCredential(),
+            sp => sp.GetRequiredService<TokenCredentialProvider>().Credential,
             "Some_Health_Check_Name");
 
         // Assert

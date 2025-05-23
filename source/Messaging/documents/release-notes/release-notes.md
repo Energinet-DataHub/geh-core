@@ -1,5 +1,9 @@
 # Messaging Release notes
 
+## Version 7.0.1
+
+- Update NuGet package dependencies.
+
 ## Version 7.0.0
 
 - Upgrade from .NET 8 to .NET 9

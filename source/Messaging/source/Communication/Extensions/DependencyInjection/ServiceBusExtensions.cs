@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
@@ -47,20 +48,21 @@ public static class ServiceBusExtensions
             .BindConfiguration(ServiceBusNamespaceOptions.SectionName)
             .ValidateDataAnnotations();
 
-        services.AddAzureClients(builder =>
-        {
-            builder
-                .UseCredential(new DefaultAzureCredential());
+        services
+            .AddTokenCredentialProvider()
+            .AddAzureClients(builder =>
+            {
+                builder.UseCredential(sp => sp.GetRequiredService<TokenCredentialProvider>().Credential);
 
-            var serviceBusNamespaceOptions =
-                configuration
-                    .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
-                    .Get<ServiceBusNamespaceOptions>()
-                ?? throw new InvalidOperationException("Missing ServiceBus Namespace configuration.");
+                var serviceBusNamespaceOptions =
+                    configuration
+                        .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
+                        .Get<ServiceBusNamespaceOptions>()
+                    ?? throw new InvalidOperationException("Missing ServiceBus Namespace configuration.");
 
-            builder
-                .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions.FullyQualifiedNamespace);
-        });
+                builder
+                    .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions.FullyQualifiedNamespace);
+            });
 
         return services;
     }
@@ -120,20 +122,22 @@ public static class ServiceBusExtensions
             .BindConfiguration(BlobDeadLetterLoggerOptions.SectionName)
             .ValidateDataAnnotations();
 
-        services.AddAzureClients(builder =>
-        {
-            builder.UseCredential(new DefaultAzureCredential());
+        services
+            .AddTokenCredentialProvider()
+            .AddAzureClients(builder =>
+            {
+                builder.UseCredential(sp => sp.GetRequiredService<TokenCredentialProvider>().Credential);
 
-            var blobOptions =
-                configuration
-                    .GetRequiredSection(BlobDeadLetterLoggerOptions.SectionName)
-                    .Get<BlobDeadLetterLoggerOptions>()
-                ?? throw new InvalidOperationException("Missing Blob Dead-Letter Logger configuration.");
+                var blobOptions =
+                    configuration
+                        .GetRequiredSection(BlobDeadLetterLoggerOptions.SectionName)
+                        .Get<BlobDeadLetterLoggerOptions>()
+                    ?? throw new InvalidOperationException("Missing Blob Dead-Letter Logger configuration.");
 
-            builder
-                .AddBlobServiceClient(new Uri(blobOptions.StorageAccountUrl))
-                .WithName(blobOptions.ContainerName);
-        });
+                builder
+                    .AddBlobServiceClient(new Uri(blobOptions.StorageAccountUrl))
+                    .WithName(blobOptions.ContainerName);
+            });
 
         services.TryAddScoped<IDeadLetterLogger, BlobDeadLetterLogger>();
         services.TryAddScoped<IDeadLetterHandler, DeadLetterHandler>();

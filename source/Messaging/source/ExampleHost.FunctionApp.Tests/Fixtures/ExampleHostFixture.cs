@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Azure.Identity;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -29,16 +28,15 @@ public class ExampleHostFixture : FunctionAppFixture
 {
     public ExampleHostFixture()
     {
-        var credentials = new DefaultAzureCredential();
         AzuriteManager = new AzuriteManager(useOAuth: true);
-        IntegrationTestConfiguration = new IntegrationTestConfiguration(credentials);
+        IntegrationTestConfiguration = new IntegrationTestConfiguration();
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             TestLogger,
             IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
-            credentials);
+            IntegrationTestConfiguration.Credential);
 
         BlobContainerName = "examplehost";
-        BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, credentials);
+        BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, IntegrationTestConfiguration.Credential);
     }
 
     /// <summary>
