@@ -41,7 +41,7 @@ var host = new HostBuilder()
         services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
 
         // Configure token credential provider to share token credential
-        //  * Retrieved by Subsystem Authentication
+        //  * Used by "AddAuthorizationHeaderProvider"
         //  * Can be used when registering access to Azure resources (e.g. service bus etc.)
         services.AddTokenCredentialHolder();
 
