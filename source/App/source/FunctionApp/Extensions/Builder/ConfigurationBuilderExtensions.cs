@@ -44,7 +44,9 @@ public static class ConfigurationBuilderExtensions
         configBuilder.AddAzureAppConfiguration(options =>
         {
             options
-                .Connect(new Uri(appConfigurationOptions.Endpoint), credential ?? TokenCredentialFactory.CreateCredential())
+                .Connect(
+                    new Uri(appConfigurationOptions.Endpoint),
+                    credential ?? TokenCredentialFactory.CreateCredential())
                 // Using dummy key "_" to avoid loading other configuration than feature flags
                 .Select("_")
                 // Load all feature flags with no label.
