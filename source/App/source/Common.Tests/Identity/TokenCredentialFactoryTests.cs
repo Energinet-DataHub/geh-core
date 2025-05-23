@@ -18,13 +18,13 @@ using Xunit;
 
 namespace Energinet.DataHub.Core.App.Common.Tests.Identity;
 
-public sealed class TokenCredentialProviderTests : IDisposable
+public sealed class TokenCredentialFactoryTests : IDisposable
 {
     private const string WebsiteInstanceId = "test-instance-id";
 
     private readonly string? _originalWebsiteInstanceId;
 
-    public TokenCredentialProviderTests()
+    public TokenCredentialFactoryTests()
     {
         // Save the original environment variable to restore after test
         _originalWebsiteInstanceId = Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
@@ -37,47 +37,28 @@ public sealed class TokenCredentialProviderTests : IDisposable
     }
 
     [Fact]
-    public void Given_RunningInAzure_When_Credential_Then_ReturnsManagedIdentityCredential()
+    public void Given_RunningInAzure_When_CreateCredential_Then_ReturnsManagedIdentityCredential()
     {
         // Arrange
         Environment.SetEnvironmentVariable("WEBSITE_INSTANCE_ID", WebsiteInstanceId);
 
-        var sut = new TokenCredentialProvider();
-
         // Act
-        var credential = sut.Credential;
+        var credential = TokenCredentialFactory.CreateCredential();
 
         // Assert
         Assert.IsType<ManagedIdentityCredential>(credential);
     }
 
     [Fact]
-    public void Given_NotRunningInAzure_When_Credential_Then_ReturnsDefaultAzureCredential()
+    public void Given_NotRunningInAzure_When_CreateCredential_Then_ReturnsDefaultAzureCredential()
     {
         // Arrange
         Environment.SetEnvironmentVariable("WEBSITE_INSTANCE_ID", null);
 
-        var sut = new TokenCredentialProvider();
-
         // Act
-        var credential = sut.Credential;
+        var credential = TokenCredentialFactory.CreateCredential();
 
         // Assert
         Assert.IsType<DefaultAzureCredential>(credential);
-    }
-
-    [Fact]
-    public void Given_NotAccessedYet_When_CredentialIsAccessedMultipleTimes_Then_CredentialIsLazyInitialized()
-    {
-        // Arrange
-        Environment.SetEnvironmentVariable("WEBSITE_INSTANCE_ID", null);
-        var sut = new TokenCredentialProvider();
-
-        // Act
-        var firstCredential = sut.Credential;
-        var secondCredential = sut.Credential;
-
-        // Assert
-        Assert.Same(firstCredential, secondCredential);
     }
 }
