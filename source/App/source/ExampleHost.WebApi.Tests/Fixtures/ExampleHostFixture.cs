@@ -55,12 +55,6 @@ public class ExampleHostFixture : IAsyncLifetime
             .UseUrls(web02BaseUrl)
             .Build();
 
-        var webHost01Builder = WebHost.CreateDefaultBuilder();
-        webHost01Builder.ConfigureServices(services =>
-        {
-            services.
-        });
-
         Web01Host = WebHost.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, configBuilder) =>
             {
