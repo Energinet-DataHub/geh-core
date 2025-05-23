@@ -19,6 +19,7 @@ Using the package bundle enables an easy opt-in/opt-out pattern of services duri
     - [Subsystem Authentication](./registrations/subsystem-authentication.md)
     - [Swagger and Api versioning](./registrations/swagger-api-version.md)
     - [Telemetry and logging to Application Insights](./registrations/telemetry.md)
+    - [Token Credential](./registrations/token-credential.md)
     - [User Authentication and Authorization](./registrations/user-authorization.md)
 
 - [Development notes for App](development.md)

@@ -78,6 +78,7 @@ var host = new HostBuilder()
             .AddFeatureManagement();
 
         // Http => Client side subsystem-to-subsystem authentication (verified in tests)
+        //  * Depends on services registered by "AddTokenCredentialProvider"
         services
             .AddAuthorizationHeaderProvider()
             .AddApp02HttpClient();
