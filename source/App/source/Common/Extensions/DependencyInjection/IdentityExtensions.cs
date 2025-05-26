@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
+using Azure.Core;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -22,20 +22,28 @@ namespace Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 public static class IdentityExtensions
 {
     /// <summary>
+    /// Add a token credential provider that can be used to retrieve a
+    /// shared <see cref="TokenCredential"/> implementation.
+    /// </summary>
+    public static IServiceCollection AddTokenCredentialProvider(this IServiceCollection services)
+    {
+        services.TryAddSingleton<TokenCredentialProvider>();
+        return services;
+    }
+
+    /// <summary>
     /// Add an authorization header provider that can be used when configuring
     /// http clients involved in subsystem-to-subssytem communication.
     /// </summary>
+    /// <remarks>
+    /// Expects <see cref="TokenCredentialProvider"/> has been registered.
+    /// </remarks>
     public static IServiceCollection AddAuthorizationHeaderProvider(this IServiceCollection services)
     {
         services.TryAddSingleton<IAuthorizationHeaderProvider>(sp =>
         {
-            // We currently register AuthorizationHeaderProvider like this to be in control of the
-            // creation of DefaultAzureCredential.
-            // As we register IAuthorizationHeaderProvider as singleton and it has the instance
-            // of DefaultAzureCredential, we expect it will use caching and handle token refresh.
-            // However the documentation is a bit unclear: https://learn.microsoft.com/da-dk/dotnet/azure/sdk/authentication/best-practices?tabs=aspdotnet#understand-when-token-lifetime-and-caching-logic-is-needed
-            var credential = new DefaultAzureCredential();
-            return new AuthorizationHeaderProvider(credential);
+            return new AuthorizationHeaderProvider(
+                sp.GetRequiredService<TokenCredentialProvider>().Credential);
         });
 
         return services;

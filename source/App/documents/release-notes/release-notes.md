@@ -1,5 +1,17 @@
 # App Release notes
 
+## Version 15.5.0
+
+- Common package:
+    - Added `TokenCredentialFactory` for creating a token credential matching runtime environment
+    - Added `TokenCredentialProvider` for sharing a token credential implementation in dependency injection container
+    - Implemented `IdentityExtensions.AddTokenCredentialProvider()`
+    - Refactored `IdentityExtensions.AddAuthorizationHeaderProvider()` to depend on `TokenCredentialProvider`
+- FunctionApp package:
+    - Internal refactoring of `ConfigurationBuilderExtensions.AddAzureAppConfigurationForIsolatedWorker()` to use `TokenCredentialFactory`
+- WebApp package:
+    - Internal refactoring of `ConfigurationBuilderExtensions.AddAzureAppConfigurationForWebApp()` to use `TokenCredentialFactory`
+
 ## Version 15.4.0
 
 - Added functionality for Subsystem Authentication when using subsystem-to-subsystem communication:

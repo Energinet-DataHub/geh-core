@@ -19,6 +19,7 @@ Using the package bundle enables an easy opt-in/opt-out pattern of services duri
     - [Subsystem Authentication](./registrations/subsystem-authentication.md)
     - [Swagger and Api versioning](./registrations/swagger-api-version.md)
     - [Telemetry and logging to Application Insights](./registrations/telemetry.md)
+    - [Token Credential](./registrations/token-credential.md)
     - [User Authentication and Authorization](./registrations/user-authorization.md)
 
 - [Development notes for App](development.md)
@@ -44,8 +45,9 @@ Features of the example:
 - Registers health checks "live", "ready" and "status" endpoints:
     - Requires the `Monitor\HealthCheckEndpoint.cs` as documented under [Health Checks](./registrations/health-checks.md#preparing-an-azure-function-app-project).
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
-- Registers Noda Time to its default time zone "Europe/Copenhagen".
+- Registers token credential that can be used to retrieve tokens for accessing Azure resources or other subsystems.
 - Registers Subsystem Authentication as documented under [Subsystem Authentication](./registrations/subsystem-authentication.md).
+- Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing an Azure Function App project:
@@ -63,6 +65,7 @@ Preparing an Azure Function App project:
            // Common
            services.AddApplicationInsightsForIsolatedWorker(subsystemName: "MySubsystem");
            services.AddHealthChecksForIsolatedWorker();
+           services.AddTokenCredentialProvider();
 
            // Http => Authentication
            services.AddSubsystemAuthenticationForIsolatedWorker(context.Configuration);
@@ -132,6 +135,7 @@ Features of the example:
     - Custom property `Subsystem` set to a configured value.
 - Registers health checks "live", "ready" and "status" endpoints:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
+- Registers token credential that can be used to retrieve tokens for accessing Azure resources or other subsystems.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
 - Registers user authentication as documented under [User Authentication and Authorization](./registrations/user-authorization.md).
@@ -163,6 +167,7 @@ Preparing a Web App project:
    // Common
    builder.Services.AddApplicationInsightsForWebApp(subsystemName: "MySubsystem");
    builder.Services.AddHealthChecksForWebApp();
+   builder.Services.AddTokenCredentialProvider();
 
    // Would typically be registered within functional module registration methods instead of here.
    builder.Services.AddNodaTimeForApplication();

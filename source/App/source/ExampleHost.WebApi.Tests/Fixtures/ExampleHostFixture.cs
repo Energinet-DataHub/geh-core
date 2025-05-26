@@ -86,7 +86,7 @@ public class ExampleHostFixture : IAsyncLifetime
             BaseAddress = new Uri(web01BaseUrl),
         };
 
-        LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+        LogsQueryClient = new LogsQueryClient(IntegrationTestConfiguration.Credential);
     }
 
     public AppConfigurationManager AppConfigurationManager { get; }
