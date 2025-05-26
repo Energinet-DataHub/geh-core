@@ -5,6 +5,7 @@
     <AssemblyName>Energinet.DataHub.Core.Messaging.Communication.IntegrationTests</AssemblyName>
     <RootNamespace>Energinet.DataHub.Core.Messaging.Communication.IntegrationTests</RootNamespace>
     <IsTestProject>true</IsTestProject>
+    <TestTfmsInParallel>false</TestTfmsInParallel>
   </PropertyGroup>
 
   <ItemGroup>
