@@ -76,29 +76,9 @@ public static class ServiceBusExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        services
-            .AddOptions<ServiceBusNamespaceOptions>()
-            .BindConfiguration(ServiceBusNamespaceOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        services
-            .AddAzureClients(builder =>
-            {
-                builder.UseCredential(new DefaultAzureCredential());
-
-                var serviceBusNamespaceOptions =
-                    configuration
-                        .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
-                        .Get<ServiceBusNamespaceOptions>()
-                    ?? throw new InvalidOperationException("Missing ServiceBus Namespace configuration.");
-
-                builder
-                    .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions.FullyQualifiedNamespace);
-            });
-
-        return services;
+        return services.AddServiceBusClientForApplication(
+            configuration,
+            _ => new DefaultAzureCredential());
     }
 
     /// <summary>
@@ -187,32 +167,8 @@ public static class ServiceBusExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        services
-            .AddOptions<BlobDeadLetterLoggerOptions>()
-            .BindConfiguration(BlobDeadLetterLoggerOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        services
-            .AddAzureClients(builder =>
-            {
-                builder.UseCredential(new DefaultAzureCredential());
-
-                var blobOptions =
-                    configuration
-                        .GetRequiredSection(BlobDeadLetterLoggerOptions.SectionName)
-                        .Get<BlobDeadLetterLoggerOptions>()
-                    ?? throw new InvalidOperationException("Missing Blob Dead-Letter Logger configuration.");
-
-                builder
-                    .AddBlobServiceClient(new Uri(blobOptions.StorageAccountUrl))
-                    .WithName(blobOptions.ContainerName);
-            });
-
-        services.TryAddScoped<IDeadLetterLogger, BlobDeadLetterLogger>();
-        services.TryAddScoped<IDeadLetterHandler, DeadLetterHandler>();
-
-        return services;
+        return services.AddDeadLetterHandlerForIsolatedWorker(
+            configuration,
+            _ => new DefaultAzureCredential());
     }
 }
