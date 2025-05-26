@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Core;
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
@@ -52,6 +53,40 @@ public static class ServiceBusExtensions
             .AddAzureClients(builder =>
             {
                 builder.UseCredential(tokenCredentialFactory);
+
+                var serviceBusNamespaceOptions =
+                    configuration
+                        .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
+                        .Get<ServiceBusNamespaceOptions>()
+                    ?? throw new InvalidOperationException("Missing ServiceBus Namespace configuration.");
+
+                builder
+                    .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions.FullyQualifiedNamespace);
+            });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Register a <see cref="ServiceBusClient"/> to be used for the creation of subclients communicating
+    /// within the configured ServiceBus namespace.
+    /// </summary>
+    [Obsolete("This method is obsolete as we don't want to use 'DefaultAzureCredential' directly. Use the overload that accepts 'tokenCredentialFactory'.")]
+    public static IServiceCollection AddServiceBusClientForApplication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services
+            .AddOptions<ServiceBusNamespaceOptions>()
+            .BindConfiguration(ServiceBusNamespaceOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services
+            .AddAzureClients(builder =>
+            {
+                builder.UseCredential(new DefaultAzureCredential());
 
                 var serviceBusNamespaceOptions =
                     configuration
@@ -126,6 +161,43 @@ public static class ServiceBusExtensions
             .AddAzureClients(builder =>
             {
                 builder.UseCredential(tokenCredentialFactory);
+
+                var blobOptions =
+                    configuration
+                        .GetRequiredSection(BlobDeadLetterLoggerOptions.SectionName)
+                        .Get<BlobDeadLetterLoggerOptions>()
+                    ?? throw new InvalidOperationException("Missing Blob Dead-Letter Logger configuration.");
+
+                builder
+                    .AddBlobServiceClient(new Uri(blobOptions.StorageAccountUrl))
+                    .WithName(blobOptions.ContainerName);
+            });
+
+        services.TryAddScoped<IDeadLetterLogger, BlobDeadLetterLogger>();
+        services.TryAddScoped<IDeadLetterHandler, DeadLetterHandler>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Register services necessary for dead-letter handling in a DH3 Function App.
+    /// </summary>
+    [Obsolete("This method is obsolete as we don't want to use 'DefaultAzureCredential' directly. Use the overload that accepts 'tokenCredentialFactory'.")]
+    public static IServiceCollection AddDeadLetterHandlerForIsolatedWorker(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services
+            .AddOptions<BlobDeadLetterLoggerOptions>()
+            .BindConfiguration(BlobDeadLetterLoggerOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services
+            .AddAzureClients(builder =>
+            {
+                builder.UseCredential(new DefaultAzureCredential());
 
                 var blobOptions =
                     configuration
