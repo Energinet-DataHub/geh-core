@@ -75,7 +75,7 @@ jobs:
           azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
           azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
           publish_test_report: "true"
-          # max_concurrent_processes: "1"
+          max_concurrent_processes: "1"
 
       - name: Pack Communication project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v14
