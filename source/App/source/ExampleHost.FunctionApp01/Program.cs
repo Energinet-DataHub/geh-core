@@ -16,6 +16,7 @@ using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp01.Common;
@@ -39,11 +40,17 @@ var host = new HostBuilder()
         //  * Telemetry events are enriched with property "Subsystem" and configured value
         services.AddApplicationInsightsForIsolatedWorker(subsystemName: "ExampleHost.FunctionApp");
 
+        // Configure token credential provider to share token credential
+        //  * Used by "AddAuthorizationHeaderProvider"
+        //  * Can be used when registering access to Azure resources (e.g. service bus etc.)
+        services.AddTokenCredentialProvider();
+
         // Configure ServiceBusSender for calling FunctionApp02
-        services.AddSingleton(_ =>
+        services.AddSingleton(sp =>
         {
             var serviceBusFullyQualifiedNamespace = Environment.GetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventFullyQualifiedNamespace);
-            return new ServiceBusClient(serviceBusFullyQualifiedNamespace, new DefaultAzureCredential());
+            var credential = sp.GetRequiredService<TokenCredentialProvider>().Credential;
+            return new ServiceBusClient(serviceBusFullyQualifiedNamespace, credential);
         });
         services.AddSingleton<ServiceBusSender>(sp =>
         {
@@ -71,6 +78,7 @@ var host = new HostBuilder()
             .AddFeatureManagement();
 
         // Http => Client side subsystem-to-subsystem authentication (verified in tests)
+        //  * Depends on services registered by "AddTokenCredentialProvider"
         services
             .AddAuthorizationHeaderProvider()
             .AddApp02HttpClient();
