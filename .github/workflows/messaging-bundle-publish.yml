@@ -68,7 +68,7 @@ jobs:
           azurite_version: 3.33.0
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@dstenroejl/xunit-maxconcurrentprocess # TODO: Revert to v14
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v14 #dstenroejl/xunit-maxconcurrentprocess # TODO: Revert to v14
         with:
           solution_file_path: ./source/Messaging/Messaging.sln
           azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
