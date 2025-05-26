@@ -135,6 +135,7 @@ Features of the example:
     - Custom property `Subsystem` set to a configured value.
 - Registers health checks "live", "ready" and "status" endpoints:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
+- Registers token credential that can be used to retrieve tokens for accessing Azure resources or other subsystems.
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
 - Registers user authentication as documented under [User Authentication and Authorization](./registrations/user-authorization.md).
@@ -166,6 +167,7 @@ Preparing a Web App project:
    // Common
    builder.Services.AddApplicationInsightsForWebApp(subsystemName: "MySubsystem");
    builder.Services.AddHealthChecksForWebApp();
+   builder.Services.AddTokenCredentialProvider();
 
    // Would typically be registered within functional module registration methods instead of here.
    builder.Services.AddNodaTimeForApplication();
