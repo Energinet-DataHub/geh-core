@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using ExampleHost.FunctionApp.IntegrationEvents;
@@ -41,7 +42,10 @@ var host = new HostBuilder()
 
         // Configuration verified in tests:
         //  * The dead-letter handler is used in the 'IntegrationEventDeadLetterListener'
-        services.AddDeadLetterHandlerForIsolatedWorker(context.Configuration);
+        services.AddDeadLetterHandlerForIsolatedWorker(
+            context.Configuration,
+            //  * IMPORTANT: In a real DH3 applications we should use the App package and call 'AddTokenCredentialProvider'
+            _ => new DefaultAzureCredential());
     })
     .Build();
 

@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Publisher;
 using Energinet.DataHub.Core.Messaging.Communication.Internal.Subscriber;
@@ -39,7 +38,8 @@ public static class ServiceBusExtensions
     /// </summary>
     public static IServiceCollection AddServiceBusClientForApplication(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        Func<IServiceProvider, TokenCredential> tokenCredentialFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
@@ -49,10 +49,9 @@ public static class ServiceBusExtensions
             .ValidateDataAnnotations();
 
         services
-            .AddTokenCredentialProvider()
             .AddAzureClients(builder =>
             {
-                builder.UseCredential(sp => sp.GetRequiredService<TokenCredentialProvider>().Credential);
+                builder.UseCredential(tokenCredentialFactory);
 
                 var serviceBusNamespaceOptions =
                     configuration
@@ -113,7 +112,8 @@ public static class ServiceBusExtensions
     /// </summary>
     public static IServiceCollection AddDeadLetterHandlerForIsolatedWorker(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        Func<IServiceProvider, TokenCredential> tokenCredentialFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
@@ -123,10 +123,9 @@ public static class ServiceBusExtensions
             .ValidateDataAnnotations();
 
         services
-            .AddTokenCredentialProvider()
             .AddAzureClients(builder =>
             {
-                builder.UseCredential(sp => sp.GetRequiredService<TokenCredentialProvider>().Credential);
+                builder.UseCredential(tokenCredentialFactory);
 
                 var blobOptions =
                     configuration

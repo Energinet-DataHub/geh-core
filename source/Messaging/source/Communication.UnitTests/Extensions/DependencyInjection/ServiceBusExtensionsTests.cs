@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.UnitTests.Extensions.DependencyInjection;
@@ -43,7 +45,9 @@ public class ServiceBusExtensionsTests
         });
 
         // Act
-        Services.AddServiceBusClientForApplication(configuration);
+        Services.AddServiceBusClientForApplication(
+            configuration,
+            _ => Mock.Of<TokenCredential>());
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -63,7 +67,9 @@ public class ServiceBusExtensionsTests
         var configuration = CreateInMemoryConfigurations([]);
 
         // Act
-        var act = () => Services.AddServiceBusClientForApplication(configuration);
+        var act = () => Services.AddServiceBusClientForApplication(
+            configuration,
+            _ => Mock.Of<TokenCredential>());
 
         // Assert
         act.Should()
@@ -88,7 +94,9 @@ public class ServiceBusExtensionsTests
         });
 
         // Act
-        Services.AddServiceBusClientForApplication(configuration);
+        Services.AddServiceBusClientForApplication(
+            configuration,
+            _ => Mock.Of<TokenCredential>());
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -123,7 +131,9 @@ public class ServiceBusExtensionsTests
             [$"{IntegrationEventsOptions.SectionName}:{nameof(IntegrationEventsOptions.SubscriptionName)}"] = "subscription",
         });
 
-        Services.AddServiceBusClientForApplication(configuration);
+        Services.AddServiceBusClientForApplication(
+            configuration,
+            _ => Mock.Of<TokenCredential>());
 
         // Act
         Services.AddIntegrationEventsPublisher<IntegrationEventProviderStub>(configuration);
@@ -199,7 +209,9 @@ public class ServiceBusExtensionsTests
         });
 
         // Act
-        Services.AddDeadLetterHandlerForIsolatedWorker(configuration);
+        Services.AddDeadLetterHandlerForIsolatedWorker(
+            configuration,
+            _ => Mock.Of<TokenCredential>());
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -221,7 +233,9 @@ public class ServiceBusExtensionsTests
         var configuration = CreateInMemoryConfigurations([]);
 
         // Act
-        var act = () => Services.AddDeadLetterHandlerForIsolatedWorker(configuration);
+        var act = () => Services.AddDeadLetterHandlerForIsolatedWorker(
+            configuration,
+            _ => Mock.Of<TokenCredential>());
 
         // Assert
         act.Should()
