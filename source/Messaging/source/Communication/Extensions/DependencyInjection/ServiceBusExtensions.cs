@@ -83,7 +83,7 @@ public static class ServiceBusExtensions
 
     /// <summary>
     /// Method for registering an integration events publisher.
-    /// A <see cref="ServiceBusClient"/> must be registered first by calling <see cref="AddServiceBusClientForApplication"/>.
+    /// A <see cref="ServiceBusClient"/> must be registered first by calling <see cref="AddServiceBusClientForApplication(IServiceCollection, IConfiguration, Func{IServiceProvider, TokenCredential})"/>.
     /// It is the responsibility of the caller to register the dependencies of the <see cref="IIntegrationEventProvider"/> implementation.
     /// </summary>
     /// <typeparam name="TIntegrationEventProvider">The type of the service to use for outbound integration events.</typeparam>
