@@ -24,7 +24,7 @@ In the future we might consider moving it to `Common` or share it by other means
 
 ## ExampleHost applications
 
-To be able to develop effeciently, especially with regards to dependency injection extensions and other types of startup configuration, we have implemented a number of `ExampleHost` applications.
+To be able to develop efficiently, especially with regards to dependency injection extensions and other types of startup configuration, we have implemented a number of `ExampleHost` applications.
 
 These allows us to easily debug, as well as implement integration tests, for verifying the runtime behaviour of our code running in the given type of application. This is important as unit tests of that kind of code doesn't offer sufficient confidence as dependencies outside our control changes all the time and a small change might cause our functionality to break.
 
