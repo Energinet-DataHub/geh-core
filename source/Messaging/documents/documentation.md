@@ -266,6 +266,9 @@ Preparing a **Function App** project:
 
 ## Health checks
 
+> Examples expects applications follows the guidelines documented for the App packages and
+therefore `TokenCredentialProvider` should be available.
+
 The package provides an opt-in dead-letter health check, which can be registered using
 `ServiceBusHealthCheckBuilderExtensions` as shown below:
 
@@ -286,7 +289,7 @@ services
     .AddServiceBusQueueDeadLetter(
         sp => sp.GetRequiredService<IOptions<ServiceBusOptions>>().Value.FullyQualifiedNamespace,
         sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.QueueName,
-        _ => new DefaultAzureCredential(),
+        sp => sp.GetRequiredService<TokenCredentialProvider>().Credential,
         "HealthCheckName",
         [HealthChecksConstants.StatusHealthCheckTag]);
 ```

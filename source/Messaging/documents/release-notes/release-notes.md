@@ -1,5 +1,10 @@
 # Messaging Release notes
 
+## Version 7.1.0
+
+- Mark dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` as obsolete, and implemented an overloaded version that accepts a `tokenCredentialFactory`.
+- Mark dependency injection extensions `ServiceBusExtensions.AddDeadLetterHandlerForIsolatedWorker` as obsolete, and implemented an overloaded version that accepts a `tokenCredentialFactory`.
+
 ## Version 7.0.0
 
 - Upgrade from .NET 8 to .NET 9

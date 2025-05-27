@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +29,8 @@ public class BlobDeadLetterLoggerFixture : IAsyncLifetime
         AzuriteManager = new AzuriteManager(useOAuth: true);
 
         BlobContainerName = Guid.NewGuid().ToString().ToLower();
-        BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, new DefaultAzureCredential());
+        IntegrationTestConfiguration = new IntegrationTestConfiguration();
+        BlobServiceClient = new BlobServiceClient(AzuriteManager.BlobStorageServiceUri, IntegrationTestConfiguration.Credential);
 
         ServiceProvider = BuildServiceProvider(AzuriteManager.BlobStorageServiceUri.OriginalString, BlobContainerName);
     }
@@ -41,6 +42,8 @@ public class BlobDeadLetterLoggerFixture : IAsyncLifetime
     public BlobServiceClient BlobServiceClient { get; }
 
     public ServiceProvider ServiceProvider { get; }
+
+    private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
     public Task InitializeAsync()
     {
@@ -55,7 +58,7 @@ public class BlobDeadLetterLoggerFixture : IAsyncLifetime
         await ServiceProvider.DisposeAsync();
     }
 
-    private static ServiceProvider BuildServiceProvider(string storageAccountUrl, string blobContainerName)
+    private ServiceProvider BuildServiceProvider(string storageAccountUrl, string blobContainerName)
     {
         var services = new ServiceCollection();
 
@@ -70,7 +73,9 @@ public class BlobDeadLetterLoggerFixture : IAsyncLifetime
         services
             .AddScoped<IConfiguration>(_ => configurationRoot)
             .AddLogging()
-            .AddDeadLetterHandlerForIsolatedWorker(configurationRoot);
+            .AddDeadLetterHandlerForIsolatedWorker(
+                configurationRoot,
+                _ => IntegrationTestConfiguration.Credential);
 
         return services.BuildServiceProvider();
     }

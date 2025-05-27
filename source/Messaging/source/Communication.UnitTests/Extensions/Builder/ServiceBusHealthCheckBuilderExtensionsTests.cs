@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
+using Azure.Core;
 using Energinet.DataHub.Core.Messaging.Communication.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.UnitTests.Extensions.Builder;
@@ -41,7 +42,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
             _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "topicName",
             _ => "subscriptionName",
-            _ => new DefaultAzureCredential(),
+            _ => Mock.Of<TokenCredential>(),
             "Some_Health_Check_Name");
 
         // Assert
@@ -113,7 +114,7 @@ public sealed class ServiceBusHealthCheckBuilderExtensionsTests
         healthChecksBuilder.AddServiceBusQueueDeadLetter(
             _ => $"https://{Guid.NewGuid():N}.servicebus.windows.net:8080",
             _ => "queueName",
-            _ => new DefaultAzureCredential(),
+            _ => Mock.Of<TokenCredential>(),
             "Some_Health_Check_Name");
 
         // Assert
