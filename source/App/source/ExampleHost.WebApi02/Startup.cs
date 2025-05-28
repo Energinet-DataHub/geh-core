@@ -40,6 +40,9 @@ public class Startup
     {
         // We will not use HTTPS in tests.
         app.UseRouting();
+
+        // Configuration supporting tested scenarios
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
