@@ -35,7 +35,7 @@ public class SubsystemAuthenticationController : ControllerBase
     /// </summary>
     [HttpGet("anonymous/{identification}")]
     [AllowAnonymous]
-    public string Get(string identification)
+    public string GetAnonymousForSubsystem(string identification)
     {
         return identification;
     }
@@ -48,7 +48,7 @@ public class SubsystemAuthenticationController : ControllerBase
     /// </summary>
     [HttpGet("authentication/{identification}")]
     [Authorize]
-    public string GetWithPermission(string identification)
+    public string GetWithPermissionForSubsystem(string identification)
     {
         return identification;
     }

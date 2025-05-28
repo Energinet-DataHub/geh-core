@@ -15,9 +15,11 @@
 using System.Reflection;
 using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using ExampleHost.WebApi01.Common;
+using ExampleHost.WebApi01.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
 
@@ -45,12 +47,10 @@ public class Startup
         //  * Telemetry events are enriched with property "Subsystem" and configured value
         services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApi");
 
-        // Configure HttpClient for calling WebApi02
-        services.AddHttpClient(HttpClientNames.WebApi02, httpClient =>
-        {
-            var baseUrl = _configuration.GetValue<string>(EnvironmentSettingNames.WebApi02BaseUrl);
-            httpClient.BaseAddress = new Uri(baseUrl!);
-        });
+        // Configure token credential provider to share token credential
+        //  * Used by "AddAuthorizationHeaderProvider"
+        //  * Can be used when registering access to Azure resources (e.g. service bus etc.)
+        services.AddTokenCredentialProvider();
 
         // Health Checks (verified in tests)
         services.AddHealthChecksForWebApp();
@@ -74,6 +74,12 @@ public class Startup
         services
             .AddAzureAppConfiguration()
             .AddFeatureManagement();
+
+        // Http => Client side subsystem-to-subsystem authentication (verified in tests)
+        //  * Depends on services registered by "AddTokenCredentialProvider"
+        services
+            .AddAuthorizationHeaderProvider()
+            .AddWebApi02HttpClient();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)

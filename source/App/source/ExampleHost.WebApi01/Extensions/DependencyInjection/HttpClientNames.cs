@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace ExampleHost.WebApi01.Common;
+namespace ExampleHost.WebApi01.Extensions.DependencyInjection;
 
 public static class HttpClientNames
 {
+    /// <summary>
+    /// Http client for the ExampleHost.WebApi02.
+    /// </summary>
     public const string WebApi02 = "WebApi02";
 }

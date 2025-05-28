@@ -31,6 +31,9 @@ public class Startup
 
         // Configuration verified in tests. See comments in WebApi01.Startup.
         services.AddApplicationInsightsForWebApp(subsystemName: "ExampleHost.WebApi");
+
+        // Http => Server side subsystem-to-subsystem authentication (verified in tests)
+        services.AddSubsystemAuthenticationForWebApp(_configuration);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
