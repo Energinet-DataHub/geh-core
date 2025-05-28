@@ -50,7 +50,7 @@ public class ExampleHostFixture : IAsyncLifetime
                     ["ApplicationInsights:ConnectionString"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
                     // Logging to Application Insights
                     ["Logging:ApplicationInsights:LogLevel:Default"] = "Information",
-                    // Subsystem-to-subsystem communication (client side)
+                    // Subsystem-to-subsystem communication (server side)
                     [$"{SubsystemAuthenticationOptions.SectionName}:{nameof(SubsystemAuthenticationOptions.ApplicationIdUri)}"] = SubsystemAuthenticationOptionsForTests.ApplicationIdUri,
                     [$"{SubsystemAuthenticationOptions.SectionName}:{nameof(SubsystemAuthenticationOptions.Issuer)}"] = SubsystemAuthenticationOptionsForTests.Issuer,
                 });
