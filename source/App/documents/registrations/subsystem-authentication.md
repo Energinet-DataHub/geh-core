@@ -27,7 +27,18 @@ Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` at
 
 ## ASP.NET Core Web API
 
-> This is not supported yet in the App package. We will implement this in another PR.
+Endpoint authorization is enforced by using the `Authorize` attribute. If the `AllowAnonymous` atttribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
+
+### Configuration of Authentication
+
+- Add `AddSubsystemAuthenticationForWebApp()` to `IServiceProvider`.
+    - This will enable verification of, and authentication by JWT.
+- Add `UseAuthentication()` to `IApplicationBuilder`.
+    - This will register the built-in authentication middleware.
+    - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
+- Add `UseAuthorization()` after `UseAuthentication()` to `IApplicationBuilder`.
+    - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
+- Configure application settings as specified by `SubsystemAuthenticationOptions`.
 
 ## Client side token retrieval
 
@@ -36,4 +47,6 @@ As part of subsystem-to-subsystem communication the client needs to retrieve a t
 - `IdentityExtensions.AddTokenCredentialProvider()`: Registers `TokenCredentialProvider` which provides access to a token credential that is used by `AuthorizationHeaderProvider` for retrieving tokens.
 - `IdentityExtensions.AddAuthorizationHeaderProvider()`: Registers an authorization header provider as `IAuthorizationHeaderProvider`. The provider can be used to configure http clients to automatically retrieve a token and set the header during requests.
 
-For an example of implementing and registering a Http client, see `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
+For an example of implementing and registering a Http client, see:
+    - `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
+    - `ExampleHost.WebApi01` and the implementation of `HttpClientExtensions.AddWebApi02HttpClient()`.
