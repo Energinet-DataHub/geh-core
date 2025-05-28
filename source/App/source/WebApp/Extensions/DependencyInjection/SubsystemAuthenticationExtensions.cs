@@ -29,7 +29,7 @@ public static class SubsystemAuthenticationExtensions
 {
     /// <summary>
     /// Register services necessary for enabling a Web App
-    /// to use JWT Bearer authentication for HttpTrigger's used in subsystem-to-subsystem communication.
+    /// to use JWT Bearer authentication for endpoints used in subsystem-to-subsystem communication.
     /// </summary>
     /// <remarks>
     /// Expects <see cref="SubsystemAuthenticationOptions"/> has been configured in <see cref="SubsystemAuthenticationOptions.SectionName"/>.
