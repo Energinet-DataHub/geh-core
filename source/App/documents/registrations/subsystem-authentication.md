@@ -1,6 +1,6 @@
 # Subsystem Authentication
 
-By Subsystem Authentication we mean the server side authentication performed in subsystem-to-subssytem communication. Read ADR-141 in Confluence for more information.
+By Subsystem Authentication we mean the server side authentication performed in subsystem-to-subsystem communication. Read ADR-141 in Confluence for more information.
 
 The `Common` package also contains code that can be used to implement the client side of subsystem-to-subsystem communication.
 
@@ -33,10 +33,8 @@ Endpoint authorization is enforced by using the `Authorize` attribute. If the `A
 
 - Add `AddSubsystemAuthenticationForWebApp()` to `IServiceProvider`.
     - This will enable verification of, and authentication by JWT.
-- Add `UseAuthentication()` to `IApplicationBuilder`.
+- Add `UseAuthentication()` and then `UseAuthorization()` to `IApplicationBuilder`.
     - This will register the built-in authentication middleware.
-    - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
-- Add `UseAuthorization()` after `UseAuthentication()` to `IApplicationBuilder`.
     - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
 - Configure application settings as specified by `SubsystemAuthenticationOptions`.
 
