@@ -1,5 +1,12 @@
 # App Release notes
 
+## Version 15.6.0
+
+- Extended functionality for Subsystem Authentication when using subsystem-to-subsystem communication:
+    - WebApp package:
+        - Renamed `AuthenticationExtensions` to `UserAuthenticationExtensions`
+        - Added `SubsystemAuthenticationExtensions` with `AddSubsystemAuthenticationForWebApp`
+
 ## Version 15.5.0
 
 - Common package:

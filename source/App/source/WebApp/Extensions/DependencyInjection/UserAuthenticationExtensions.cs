@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 /// Extension methods for <see cref="IServiceCollection"/>
 /// that allow adding authentication services to an ASP.NET Core app.
 /// </summary>
-public static class AuthenticationExtensions
+public static class UserAuthenticationExtensions
 {
     private const string ExternalTokenClaimType = "token";
 

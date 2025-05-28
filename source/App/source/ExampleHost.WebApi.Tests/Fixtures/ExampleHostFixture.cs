@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.AppConfiguration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using ExampleHost.WebApi.Tests.Integration;
+using ExampleHost.WebApi01.Extensions.Options;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -49,6 +50,9 @@ public class ExampleHostFixture : IAsyncLifetime
                     ["ApplicationInsights:ConnectionString"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
                     // Logging to Application Insights
                     ["Logging:ApplicationInsights:LogLevel:Default"] = "Information",
+                    // Subsystem-to-subsystem communication (server side)
+                    [$"{SubsystemAuthenticationOptions.SectionName}:{nameof(SubsystemAuthenticationOptions.ApplicationIdUri)}"] = SubsystemAuthenticationOptionsForTests.ApplicationIdUri,
+                    [$"{SubsystemAuthenticationOptions.SectionName}:{nameof(SubsystemAuthenticationOptions.Issuer)}"] = SubsystemAuthenticationOptionsForTests.Issuer,
                 });
             })
             .UseStartup<WebApi02.Startup>()
@@ -60,7 +64,6 @@ public class ExampleHostFixture : IAsyncLifetime
             {
                 configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    [WebApi01.Common.EnvironmentSettingNames.WebApi02BaseUrl] = web02BaseUrl,
                     // Application Insights
                     ["ApplicationInsights:ConnectionString"] = IntegrationTestConfiguration.ApplicationInsightsConnectionString,
                     // Logging to Application Insights
@@ -70,6 +73,9 @@ public class ExampleHostFixture : IAsyncLifetime
                     [$"{AzureAppConfigurationOptions.SectionName}:{nameof(AzureAppConfigurationOptions.FeatureFlagsRefreshIntervalInSeconds)}"] = "5",
                     // Configure local feature flag for test
                     [$"FeatureManagement:{FeatureManagementTests.LocalFeatureFlag}"] = "true",
+                    // Subsystem-to-subsystem communication (client side)
+                    [$"{WebApi02HttpClientsOptions.SectionName}:{nameof(WebApi02HttpClientsOptions.ApplicationIdUri)}"] = SubsystemAuthenticationOptionsForTests.ApplicationIdUri,
+                    [$"{WebApi02HttpClientsOptions.SectionName}:{nameof(WebApi02HttpClientsOptions.ApiBaseAddress)}"] = web02BaseUrl,
                 });
 
                 // The 'Startup' class supported by ASp.NET Core doesn't have an method where we can
@@ -86,12 +92,19 @@ public class ExampleHostFixture : IAsyncLifetime
             BaseAddress = new Uri(web01BaseUrl),
         };
 
+        Web02HttpClient = new HttpClient
+        {
+            BaseAddress = new Uri(web02BaseUrl),
+        };
+
         LogsQueryClient = new LogsQueryClient(IntegrationTestConfiguration.Credential);
     }
 
     public AppConfigurationManager AppConfigurationManager { get; }
 
     public HttpClient Web01HttpClient { get; }
+
+    public HttpClient Web02HttpClient { get; }
 
     public LogsQueryClient LogsQueryClient { get; }
 

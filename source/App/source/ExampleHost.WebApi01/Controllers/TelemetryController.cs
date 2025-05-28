@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Text;
-using ExampleHost.WebApi01.Common;
+using ExampleHost.WebApi01.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleHost.WebApi01.Controllers;

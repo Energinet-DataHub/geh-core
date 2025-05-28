@@ -21,9 +21,9 @@ using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace Energinet.DataHub.Core.App.WebApp.Tests.Extensions.DependencyInjection;
 
-public class AuthenticationExtensionsTests
+public class SubsystemAuthenticationExtensionsTests
 {
-    public AuthenticationExtensionsTests()
+    public SubsystemAuthenticationExtensionsTests()
     {
         Services = new ServiceCollection();
     }
@@ -31,54 +31,53 @@ public class AuthenticationExtensionsTests
     private ServiceCollection Services { get; }
 
     [Fact]
-    public void AddJwtBearerAuthenticationForWebApp_WhenCalledWithConfiguredSection_RegistrationsArePerformed()
+    public void Given_ConfiguredSection_When_AddSubsystemAuthenticationForWebApp_Then_RegistrationsArePerformed()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
         {
-            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}"] = "notEmpty",
-            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = "notEmpty",
-            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = "notEmpty",
-            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = "notEmpty",
+            [$"{SubsystemAuthenticationOptions.SectionName}:{nameof(SubsystemAuthenticationOptions.ApplicationIdUri)}"] = "notEmpty",
+            [$"{SubsystemAuthenticationOptions.SectionName}:{nameof(SubsystemAuthenticationOptions.Issuer)}"] = "notEmpty",
         });
 
         // Act
-        Services.AddJwtBearerAuthenticationForWebApp(configuration);
+        var act = () => Services.AddSubsystemAuthenticationForWebApp(configuration);
+
+        // Assert
+        act.Should().NotThrow();
     }
 
     [Fact]
-    public void AddJwtBearerAuthenticationForWebApp_WhenCalledAndNoConfiguredSection_ExceptionIsThrown()
+    public void Given_SectionIsMissing_When_AddSubsystemAuthenticationForWebApp_ExceptionIsThrown()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>());
 
         // Act
-        var act = () => Services.AddJwtBearerAuthenticationForWebApp(configuration);
+        var act = () => Services.AddSubsystemAuthenticationForWebApp(configuration);
 
         // Assert
         act.Should()
             .Throw<InvalidOperationException>()
-            .WithMessage("Section 'UserAuthentication' not found in configuration*");
+            .WithMessage("Section 'SubsystemAuthentication' not found in configuration*");
     }
 
     [Fact]
-    public void AddJwtBearerAuthenticationForWebApp_WhenCalledAndConfiguredPropertyIsMissing_ExceptionIsThrown()
+    public void Given_ApplicationIdUriIsMissing_When_AddSubsystemAuthenticationForWebApp_Then_ExceptionIsThrown()
     {
         // Arrange
         var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
         {
-            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}"] = "notEmpty",
-            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}"] = "notEmpty",
-            [$"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}"] = "notEmpty",
+            [$"{SubsystemAuthenticationOptions.SectionName}:{nameof(SubsystemAuthenticationOptions.Issuer)}"] = "notEmpty",
         });
 
         // Act
-        var act = () => Services.AddJwtBearerAuthenticationForWebApp(configuration);
+        var act = () => Services.AddSubsystemAuthenticationForWebApp(configuration);
 
         // Assert
         act.Should()
             .Throw<InvalidConfigurationException>()
-            .WithMessage("Missing 'MitIdExternalMetadataAddress'*");
+            .WithMessage("Missing 'ApplicationIdUri'*");
     }
 
     private IConfiguration CreateInMemoryConfigurations(Dictionary<string, string?> configurations)

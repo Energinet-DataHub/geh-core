@@ -1,6 +1,6 @@
 # Subsystem Authentication
 
-By Subsystem Authentication we mean the server side authentication performed in subsystem-to-subssytem communication. Read ADR-141 in Confluence for more information.
+By Subsystem Authentication we mean the server side authentication performed in subsystem-to-subsystem communication. Read ADR-141 in Confluence for more information.
 
 The `Common` package also contains code that can be used to implement the client side of subsystem-to-subsystem communication.
 
@@ -15,7 +15,7 @@ The `Common` package also contains code that can be used to implement the client
 
 Azure Functions apps must use [ASP.NET Core integration for HTTP](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration). This allows us to use the ASP.NET Core types for supporting authentication and authorization for HttpTrigger's.
 
-Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` attribute. If the `AllowAnonymous` atttribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
+Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` attribute. If the `AllowAnonymous` attribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
 
 ### Configuration of Authentication
 
@@ -27,13 +27,27 @@ Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` at
 
 ## ASP.NET Core Web API
 
-> This is not supported yet in the App package. We will implement this in another PR.
+Endpoint authorization is enforced by using the `Authorize` attribute. If the `AllowAnonymous` attribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
+
+### Configuration of Authentication
+
+- Add `AddSubsystemAuthenticationForWebApp()` to `IServiceProvider`.
+    - This will enable verification of, and authentication by JWT.
+- Add `UseAuthentication()` and then `UseAuthorization()` to `IApplicationBuilder`.
+    - This will register the built-in authentication middleware.
+    - See [AuthorizationAppBuilderExtensions.UseAuthorization](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization).
+- Configure application settings as specified by `SubsystemAuthenticationOptions`.
 
 ## Client side token retrieval
+
+For more details, see [Token Credential](./token-credential.md).
 
 As part of subsystem-to-subsystem communication the client needs to retrieve a token and send it as part of the `Authorization` header. The `Common` package contains the following code that can be used when implementing such a client:
 
 - `IdentityExtensions.AddTokenCredentialProvider()`: Registers `TokenCredentialProvider` which provides access to a token credential that is used by `AuthorizationHeaderProvider` for retrieving tokens.
 - `IdentityExtensions.AddAuthorizationHeaderProvider()`: Registers an authorization header provider as `IAuthorizationHeaderProvider`. The provider can be used to configure http clients to automatically retrieve a token and set the header during requests.
 
-For an example of implementing and registering a Http client, see `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
+For an example of implementing and registering a Http client, see:
+
+- `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
+- `ExampleHost.WebApi01` and the implementation of `HttpClientExtensions.AddWebApi02HttpClient()`.

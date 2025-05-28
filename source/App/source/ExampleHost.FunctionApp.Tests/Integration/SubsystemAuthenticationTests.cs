@@ -26,6 +26,10 @@ namespace ExampleHost.FunctionApp.Tests.Integration;
 /// configuration in ExampleHost.FunctionApp02 is working as expected with
 /// the attributes '[AllowAnonymous]' and '[Authorize]'.
 /// </summary>
+/// <remarks>
+/// Similar tests exists for Web App in the 'SubsystemAuthenticationTests' class
+/// located in the 'ExampleHost.WebApi.Tests' project.
+/// </remarks>
 [Collection(nameof(ExampleHostsCollectionFixture))]
 public class SubsystemAuthenticationTests : IAsyncLifetime
 {
@@ -92,7 +96,7 @@ public class SubsystemAuthenticationTests : IAsyncLifetime
     /// endpoint that is marked with '[Authorize]'.
     /// In ExampleHost.FunctionApp01 we have configured a http client to use a standard JWT
     /// with the expected "scope" as configured by <see cref="SubsystemAuthenticationOptions"/>.
-    /// By using this http client we should be able to call the protected endpoint in App02.
+    /// By using this http client we should be able to call the protected endpoint in ExampleHost.FunctionApp02.
     /// </summary>
     [Fact]
     public async Task Given_ValidToken_When_CallingApp02GetWithPermissionForSubsystemThroughApp01_Then_IsAllowed()
