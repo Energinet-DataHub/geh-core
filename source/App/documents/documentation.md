@@ -30,9 +30,9 @@ In the following we show a simple example per application type, of how to use al
 
 For a detailed documentation per registration type, see the walkthroughs listed in the [Overview](#overview).
 
-### Azure Functions App
+> The quick start uses the Subsystem Authentication feature. If User Authentication and Authorization is required, read [User Authentication and Authorization](./registrations/user-authorization.md).
 
-> The quick start for Azure Functions App uses the Subsystem Authentication feature. If User Authentication and Authorization is required, read [User Authentication and Authorization](./registrations/user-authorization.md).
+### Azure Functions App
 
 For an implementation, see [Program.cs](https://github.com/Energinet-DataHub/opengeh-process-manager/blob/main/source/ProcessManager.Orchestrations/Program.cs) for Process Manager Orchestrations application.
 
@@ -136,9 +136,9 @@ Features of the example:
 - Registers health checks "live", "ready" and "status" endpoints:
     - Information returned from call to "live" endpoint contains same `AssemblyInformationalVersion` as logged to Application Insights.
 - Registers token credential that can be used to retrieve tokens for accessing Azure resources or other subsystems.
+- Registers Subsystem Authentication as documented under [Subsystem Authentication](./registrations/subsystem-authentication.md).
 - Registers Noda Time to its default time zone "Europe/Copenhagen".
 - Registers API Versioning and Swagger UI to the default API version `v1`.
-- Registers user authentication as documented under [User Authentication and Authorization](./registrations/user-authorization.md).
 - Register feature management with support for feature flags in app settings and Azure App Configuration.
 
 Preparing a Web App project:
@@ -181,11 +181,8 @@ Preparing a Web App project:
    // => API versioning
    builder.Services.AddApiVersioningForWebApp(defaultVersion: new ApiVersion(1, 0));
 
-   // => Authentication/authorization
-   builder.Services
-       .AddJwtBearerAuthenticationForWebApp(builder.Configuration)
-       .AddUserAuthenticationForWebApp<SubsystemUser, SubsystemUserProvider>()
-       .AddPermissionAuthorizationForWebApp();
+   // Http => Authentication
+   services.AddSubsystemAuthenticationForWebApp(builder.Configuration);
 
    // Feature management
    services
@@ -209,7 +206,6 @@ Preparing a Web App project:
    // Authentication/authorization
    app.UseAuthentication();
    app.UseAuthorization();
-   app.UseUserMiddlewareForWebApp<SubsystemUser>();
 
    // Health Checks
    app.MapLiveHealthChecks();
@@ -221,8 +217,6 @@ Preparing a Web App project:
    // Enable testing
    public partial class Program { }
    ```
-
-1) Implement `SubsystemUser` and `SubsystemUserProvider` accordingly.
 
 1) Perform configuration in application settings
 
@@ -243,12 +237,10 @@ Preparing a Web App project:
      },
      // Application Insights
      "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
-     // Authentication
-     "UserAuthentication": {
-       "MitIdExternalMetadataAddress": "<metadata address>",
-       "ExternalMetadataAddress": "<metadata address>",
-       "InternalMetadataAddress": "<metadata address>",
-       "BackendBffAppId": "<app id>"
+     // Subsystem Authentication
+     "SubsystemAuthentication": {
+       "ApplicationIdUri": "<scope>",
+       "Issuer": "<tenant>",
      }
      // Feature management (Azure App Configuration)
      "AzureAppConfiguration": {
