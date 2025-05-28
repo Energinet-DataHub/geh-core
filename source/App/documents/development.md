@@ -49,6 +49,10 @@ These allows us to easily debug, as well as implement integration tests, for ver
 * Health Checks configuration.
 * Feature management (feature flags locally and in Azure App Configuration)
 
+`ExampleHost.WebApi02` is used from integration tests located in `ExampleHost.WebApi.Tests` for verifying:
+
+* Subsystem authentication configuration. One scenario also depends on `ExampleHost.WebApi01`.
+
 ### ExampleHost.WebApi03
 
 `ExampleHost.WebApi03` is used from integration tests located in `ExampleHost.WebApi.Tests` for verifying:
