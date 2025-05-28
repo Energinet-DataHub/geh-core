@@ -15,7 +15,7 @@ The `Common` package also contains code that can be used to implement the client
 
 Azure Functions apps must use [ASP.NET Core integration for HTTP](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#aspnet-core-integration). This allows us to use the ASP.NET Core types for supporting authentication and authorization for HttpTrigger's.
 
-Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` attribute. If the `AllowAnonymous` atttribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
+Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` attribute. If the `AllowAnonymous` attribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
 
 ### Configuration of Authentication
 
