@@ -181,7 +181,7 @@ Preparing a Web App project:
    // => API versioning
    builder.Services.AddApiVersioningForWebApp(defaultVersion: new ApiVersion(1, 0));
 
-   // Http => Authentication
+   // => Authentication
    services.AddSubsystemAuthenticationForWebApp(builder.Configuration);
 
    // Feature management
