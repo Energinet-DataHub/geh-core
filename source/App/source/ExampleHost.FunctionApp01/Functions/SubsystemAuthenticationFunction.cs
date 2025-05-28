@@ -22,6 +22,10 @@ namespace ExampleHost.FunctionApp01.Functions;
 /// <summary>
 /// This class is used for the subsystem-to-subsystem communication scenario (client side)
 /// </summary>
+/// <remarks>
+/// Similar functionality exists for Web App in the 'SubsystemAuthenticationController' class
+/// located in the 'ExampleHost.WebApi01' project.
+/// </remarks>
 public class SubsystemAuthenticationFunction
 {
     /// <summary>
