@@ -48,7 +48,7 @@ public class SubsystemAuthenticationController : ControllerBase
     public async Task<IActionResult> GetWithPermissionForSubsystemAsync()
     {
         var requestIdentification = Guid.NewGuid().ToString();
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"authentication/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/subsystemauthentication/authentication/{requestIdentification}");
         using var response = await _webApi02HttpClient.SendAsync(request).ConfigureAwait(false);
 
         return new StatusCodeResult((int)response.StatusCode);

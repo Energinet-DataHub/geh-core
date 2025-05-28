@@ -50,7 +50,7 @@ public class SubsystemAuthenticationTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/anonymous/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/subsystemauthentication/anonymous/{requestIdentification}");
         using var actualResponse = await Fixture.Web02HttpClient.SendAsync(request);
 
         // Assert
@@ -68,7 +68,7 @@ public class SubsystemAuthenticationTests
         var requestIdentification = Guid.NewGuid().ToString();
 
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/authentication/{requestIdentification}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi02/subsystemauthentication/authentication/{requestIdentification}");
         using var actualResponse = await Fixture.Web02HttpClient.SendAsync(request);
 
         // Assert
@@ -86,7 +86,7 @@ public class SubsystemAuthenticationTests
     public async Task Given_ValidToken_When_CallingApi02GetWithPermissionForSubsystemThroughApi01_Then_IsAllowed()
     {
         // Act
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/authentication");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"webapi01/subsystemauthentication/authentication");
         using var actualResponse = await Fixture.Web01HttpClient.SendAsync(request);
 
         // Assert
