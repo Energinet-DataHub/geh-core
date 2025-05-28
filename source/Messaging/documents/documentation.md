@@ -68,7 +68,10 @@ Preparing a **Web App** project (similar can be done for a Function App project)
 
    ```csharp
    // Registration of dependencies
-   builder.Services.AddServiceBusClientForApplication(builder.configuration);
+   builder.Services.AddTokenCredentialProvider();
+   builder.Services.AddServiceBusClientForApplication(
+       builder.configuration,
+       tokenCredentialFactory: sp => sp.GetRequiredService<TokenCredentialProvider>().Credential);
    builder.Services.AddIntegrationEventsPublisher<IntegrationEventProvider>(builder.Configuration);
    ```
 
