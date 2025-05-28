@@ -21,9 +21,9 @@ using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace Energinet.DataHub.Core.App.WebApp.Tests.Extensions.DependencyInjection;
 
-public class AuthenticationExtensionsTests
+public class UserAuthenticationExtensionsTests
 {
-    public AuthenticationExtensionsTests()
+    public UserAuthenticationExtensionsTests()
     {
         Services = new ServiceCollection();
     }
