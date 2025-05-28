@@ -27,7 +27,7 @@ Endpoint authorization for HttpTrigger's is enforced by using the `Authorize` at
 
 ## ASP.NET Core Web API
 
-Endpoint authorization is enforced by using the `Authorize` attribute. If the `AllowAnonymous` atttribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
+Endpoint authorization is enforced by using the `Authorize` attribute. If the `AllowAnonymous` attribute (or no attribute) is specified, the endpoint is not protected and allow anonymous access.
 
 ### Configuration of Authentication
 
