@@ -35,10 +35,12 @@ Endpoint authorization is enforced by using the `Authorize` attribute. If the `A
     - This will enable verification of, and authentication by JWT.
 - Add `UseAuthentication()` and then `UseAuthorization()` to `IApplicationBuilder`.
     - This will register the built-in authentication middleware.
-    - See <https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization>.
+    - See [AuthorizationAppBuilderExtensions.UseAuthorization](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authorizationappbuilderextensions.useauthorization).
 - Configure application settings as specified by `SubsystemAuthenticationOptions`.
 
 ## Client side token retrieval
+
+For more details, see [Token Credential](./token-credential.md).
 
 As part of subsystem-to-subsystem communication the client needs to retrieve a token and send it as part of the `Authorization` header. The `Common` package contains the following code that can be used when implementing such a client:
 
@@ -46,5 +48,6 @@ As part of subsystem-to-subsystem communication the client needs to retrieve a t
 - `IdentityExtensions.AddAuthorizationHeaderProvider()`: Registers an authorization header provider as `IAuthorizationHeaderProvider`. The provider can be used to configure http clients to automatically retrieve a token and set the header during requests.
 
 For an example of implementing and registering a Http client, see:
-    - `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
-    - `ExampleHost.WebApi01` and the implementation of `HttpClientExtensions.AddWebApi02HttpClient()`.
+
+- `ExampleHost.FunctionApp01` and the implementation of `HttpClientExtensions.AddApp02HttpClient()`.
+- `ExampleHost.WebApi01` and the implementation of `HttpClientExtensions.AddWebApi02HttpClient()`.
