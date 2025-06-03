@@ -1,5 +1,9 @@
 # TestCommon Release notes
 
+## Version 8.3.0
+
+- Update `FunctionAppHostManager` to support Azure Functions Core Tools version greather than 4.0.5455
+
 ## Version 8.2.1
 
 - Added `SubsystemAuthenticationOptionsForTests` for use in tests where Subsystem Authentication is used.
