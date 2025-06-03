@@ -68,7 +68,7 @@ public class FunctionAppHostManager : IDisposable
 
         if (!FunctionAppHostProcess.HasExited)
         {
-            FunctionAppHostProcess.Kill();
+            FunctionAppHostProcess.Kill(entireProcessTree: true);
         }
 
         FunctionAppHostProcess.Dispose();
