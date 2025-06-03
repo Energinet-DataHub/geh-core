@@ -3,7 +3,7 @@
 ## Version 7.1.1
 
 - No functional change.
-- 
+
 ## Version 7.1.0
 
 - Mark dependency injection extensions `ServiceBusExtensions.AddServiceBusClientForApplication` as obsolete, and implemented an overloaded version that accepts a `tokenCredentialFactory`.
