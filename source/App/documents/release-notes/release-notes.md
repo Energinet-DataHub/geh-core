@@ -1,5 +1,9 @@
 # App Release notes
 
+## Version 15.6.1
+
+- No functional change.
+
 ## Version 15.6.0
 
 - Extended functionality for Subsystem Authentication when using subsystem-to-subsystem communication:
