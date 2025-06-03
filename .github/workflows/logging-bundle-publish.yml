@@ -72,7 +72,7 @@ jobs:
 
       - name: Package content or build has changed
         id: changed-content
-        uses: tj-actions/changed-files@v46.0.1
+        uses: tj-actions/changed-files@v46.0.5
         with:
           files: |
             source/Logging/source/Logging/**/*.*
