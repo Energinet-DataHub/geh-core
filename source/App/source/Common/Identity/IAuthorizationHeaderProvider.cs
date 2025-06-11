@@ -29,5 +29,6 @@ public interface IAuthorizationHeaderProvider
     /// You can request a token for only one resource at a time; use
     /// several calls to get tokens for other resources.
     /// </param>
-    AuthenticationHeaderValue CreateAuthorizationHeader(string scope);
+    /// <param name="cancellationToken">Token for cancelling operation.</param>
+    Task<AuthenticationHeaderValue> CreateAuthorizationHeaderAsync(string scope, CancellationToken cancellationToken);
 }

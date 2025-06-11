@@ -24,14 +24,16 @@ namespace Energinet.DataHub.Core.App.Common.Tests.Identity;
 public class AuthorizationHeaderProviderTests
 {
     [Fact]
-    public void Given_ApplicationIdUriForTests_When_CreateAuthorizationHeader_Then_ReturnedHeaderContainsBearerTokenWithExpectedAudience()
+    public async Task Given_ApplicationIdUriForTests_When_CreateAuthorizationHeader_Then_ReturnedHeaderContainsBearerTokenWithExpectedAudience()
     {
         // Arrange
         var credential = new DefaultAzureCredential();
         var sut = new AuthorizationHeaderProvider(credential);
 
         // Act
-        var actual = sut.CreateAuthorizationHeader(SubsystemAuthenticationOptionsForTests.ApplicationIdUri);
+        var actual = await sut.CreateAuthorizationHeaderAsync(
+            SubsystemAuthenticationOptionsForTests.ApplicationIdUri,
+            CancellationToken.None);
 
         // Assert
         actual.Should().NotBeNull();

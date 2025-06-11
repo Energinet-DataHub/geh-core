@@ -27,9 +27,11 @@ internal class AuthorizationHeaderProvider : IAuthorizationHeaderProvider
     }
 
     /// <inheritdoc/>
-    public AuthenticationHeaderValue CreateAuthorizationHeader(string scope)
+    public async Task<AuthenticationHeaderValue> CreateAuthorizationHeaderAsync(string scope, CancellationToken cancellationToken)
     {
-        var tokenResponse = _credential.GetToken(new TokenRequestContext([scope]), CancellationToken.None);
+        var tokenResponse = await _credential
+            .GetTokenAsync(new TokenRequestContext([scope]), cancellationToken)
+            .ConfigureAwait(false);
 
         return new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
     }

@@ -34,13 +34,16 @@ internal static class HttpClientExtensions
             .BindConfiguration(WebApi02HttpClientsOptions.SectionName)
             .ValidateDataAnnotations();
 
-        services.AddHttpClient(HttpClientNames.WebApi02, (sp, httpClient) =>
+        services.AddHttpClient(HttpClientNames.WebApi02, async (sp, httpClient) =>
         {
             var headerProvider = sp.GetRequiredService<IAuthorizationHeaderProvider>();
             var options = sp.GetRequiredService<IOptions<WebApi02HttpClientsOptions>>().Value;
+            var authenticationHeaderValue = await headerProvider
+                .CreateAuthorizationHeaderAsync(options.ApplicationIdUri, CancellationToken.None)
+                .ConfigureAwait(false);
 
             httpClient.BaseAddress = new Uri(options.ApiBaseAddress);
-            httpClient.DefaultRequestHeaders.Authorization = headerProvider.CreateAuthorizationHeader(options.ApplicationIdUri);
+            httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
         });
 
         return services;
